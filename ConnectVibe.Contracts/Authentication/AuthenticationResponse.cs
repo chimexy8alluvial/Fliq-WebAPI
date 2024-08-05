@@ -1,6 +1,6 @@
 ﻿namespace ConnectVibe.Contracts.Authentication;
 
-public record AuthenticationRequest(
+public record AuthenticationResponse(
     int Id,
     string FirstName,
     string LastName,

@@ -1,0 +1,10 @@
+﻿using ConnectVibe.Domain.Entities;
+
+namespace ConnectVibe.Application.Common.Interfaces.Persistence
+{
+    public interface IUserRepository
+    {
+        void Add(User user);
+        User? GetUserByEmail(string email);
+    }
+}
