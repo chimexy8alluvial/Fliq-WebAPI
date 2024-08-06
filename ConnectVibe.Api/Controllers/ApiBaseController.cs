@@ -10,9 +10,25 @@ namespace ConnectVibe.Api.Controllers
     {
         protected IActionResult Problem(List<Error> errors)
         {
+            if (errors.Count is 0)
+            {
+                return Problem();
+            }
+            if (errors.All(error => error.Type == ErrorType.Validation))
+            {
+                return ValidationProblem(errors);
+
+            }
             HttpContext.Items[HttpContextItemKeys.Errors] = errors;
             var firstError = errors[0];
-            var statusCode = firstError.Type switch
+            return Problem(firstError);
+
+
+        }
+        private IActionResult Problem(Error error)
+        {
+
+            var statusCode = error.Type switch
             {
                 ErrorType.Conflict => StatusCodes.Status409Conflict,
                 ErrorType.Validation => StatusCodes.Status400BadRequest,
@@ -20,7 +36,33 @@ namespace ConnectVibe.Api.Controllers
                 _ => StatusCodes.Status500InternalServerError
 
             };
-            return Problem(statusCode: statusCode, title: firstError.Description);
+            return base.Problem(statusCode: statusCode, title: error.Description);
+        }
+        private IActionResult ValidationProblem(List<Error> errors)
+        {
+            var errorDetails = new ValidationProblemDetails();
+
+            foreach (var error in errors)
+            {
+                if (errorDetails.Errors.ContainsKey(error.Code))
+                {
+                    var existingErrors = errorDetails.Errors[error.Code];
+                    var updatedErrors = existingErrors.Concat(new[] { error.Description }).ToArray();
+                    errorDetails.Errors[error.Code] = updatedErrors;
+                }
+                else
+                {
+                    errorDetails.Errors.Add(error.Code, new[] { error.Description });
+                }
+            }
+
+            errorDetails.Status = StatusCodes.Status400BadRequest;
+            errorDetails.Title = "One or more validation errors occurred.";
+
+            return new ObjectResult(errorDetails)
+            {
+                StatusCode = StatusCodes.Status400BadRequest
+            };
         }
     }
 }
