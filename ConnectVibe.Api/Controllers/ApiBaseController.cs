@@ -1,11 +1,13 @@
 ﻿using ConnectVibe.Api.Common.Http;
 using ErrorOr;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ConnectVibe.Api.Controllers
 {
 
     [ApiController]
+    [Authorize]
     public class ApiBaseController : ControllerBase
     {
         protected IActionResult Problem(List<Error> errors)

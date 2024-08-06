@@ -3,11 +3,39 @@ using ConnectVibe.Api.Data;
 using ConnectVibe.Application;
 using ConnectVibe.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 {
     builder.Services.AddApplication();
     builder.Services.AddPresentation();
     builder.Services.AddInfrastructure(builder.Configuration);
+    builder.Services.AddSwaggerGen(c =>
+    {
+        c.SwaggerDoc("v1", new OpenApiInfo { Title = "ConnectVibe", Version = "v1" });
+        c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+        {
+            Name = "Authorization",
+            Type = SecuritySchemeType.ApiKey,
+            Scheme = "Bearer",
+            BearerFormat = "JWT",
+            In = ParameterLocation.Header,
+            Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 12345abcdef\"",
+        });
+        c.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference=new OpenApiReference{
+                       Type=ReferenceType.SecurityScheme,
+                       Id="Bearer"
+                    }
+
+                },
+                  new string[]{}
+            }
+        });
+    });
     builder.Services.AddDbContext<ConnectVibeApiContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectVibeApiContext") ?? throw new InvalidOperationException("Connection string 'ConnectVibeApiContext' not found.")));
 
@@ -27,6 +55,8 @@ var app = builder.Build();
     }
     app.UseExceptionHandler("/error");
     app.UseHttpsRedirection();
+    app.UseAuthentication();
+    app.UseAuthorization();
     app.UseRouting();
     app.MapControllers();
 
