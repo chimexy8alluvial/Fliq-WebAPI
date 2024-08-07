@@ -1,8 +1,7 @@
 using ConnectVibe.Api;
-using ConnectVibe.Api.Data;
 using ConnectVibe.Application;
 using ConnectVibe.Infrastructure;
-using Microsoft.EntityFrameworkCore;
+
 using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 {
@@ -36,8 +35,7 @@ var builder = WebApplication.CreateBuilder(args);
             }
         });
     });
-    builder.Services.AddDbContext<ConnectVibeApiContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectVibeApiContext") ?? throw new InvalidOperationException("Connection string 'ConnectVibeApiContext' not found.")));
+    
 
 }
 
