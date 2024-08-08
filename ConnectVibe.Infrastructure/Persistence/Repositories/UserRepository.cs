@@ -13,14 +13,27 @@ namespace ConnectVibe.Infrastructure.Persistence.Repositories
 
         public void Add(User user)
         {
-            _dbContext.Add(user);
+            if (user.Id > 0)
+            {
+                _dbContext.Update(user);
+            }
+            else
+            {
+                _dbContext.Add(user);
+            }
+
+            _dbContext.SaveChanges();
+        }
+        public void Update(User user)
+        {
+            _dbContext.Update(user);
 
             _dbContext.SaveChanges();
         }
 
         public User? GetUserByEmail(string email)
         {
-            var user = _dbContext.Users.Single(p => p.Email == email);
+            var user = _dbContext.Users.SingleOrDefault(p => p.Email == email);
             return user;
         }
     }

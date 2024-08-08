@@ -10,5 +10,6 @@ namespace ConnectVibe.Infrastructure.Persistence
 
         }
         public DbSet<User> Users { get; set; } = null!;
+        public DbSet<OTP> OTPs { get; set; } = null!;
     }
 }

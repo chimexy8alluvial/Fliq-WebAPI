@@ -21,6 +21,9 @@ namespace ConnectVibe.Infrastructure
             services.AddAuth(configurationManager);
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IOtpRepository, OtpRepository>();
+            services.AddSingleton<IEmailService, EmailService>();
+            services.AddSingleton<IOtpService, OtpService>();
             services.AddDbContext<ConnectVibeDbContext>(options =>
     options.UseSqlServer(configurationManager.GetConnectionString("ConnectVibeDbContext") ?? throw new InvalidOperationException("Connection string 'ConnectVibeDbContext' not found.")));
             return services;
@@ -32,7 +35,7 @@ namespace ConnectVibe.Infrastructure
             services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
 
             var jwtSettings = new JwtSettings();
-            configurationManager.Bind(JwtSettings.SectionName);
+            configurationManager.GetSection(JwtSettings.SectionName).Bind(jwtSettings);
             services.AddAuthentication(defaultScheme: JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
                 options => options.TokenValidationParameters = new TokenValidationParameters
                 {

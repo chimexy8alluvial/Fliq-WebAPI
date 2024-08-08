@@ -1,6 +1,7 @@
 ﻿using ConnectVibe.Application.Authentication.Commands.Register;
-using ConnectVibe.Application.Authentication.Common;
+using ConnectVibe.Application.Authentication.Commands.ValidateOTP;
 using ConnectVibe.Application.Authentication.Queries.Login;
+using ConnectVibe.Application.Common.Interfaces.Persistence;
 using ConnectVibe.Contracts.Authentication;
 using ConnectVibe.Domain.Common.Errors;
 using MapsterMapper;
@@ -19,10 +20,12 @@ namespace ConnectVibe.Api.Controllers
 
         private readonly ISender _mediator;
         private readonly IMapper _mapper;
-        public AuthenticationController(ISender mediator, IMapper mapper)
+        private readonly IOtpRepository _otpRepository;
+        public AuthenticationController(ISender mediator, IMapper mapper, IOtpRepository otpRepository)
         {
             _mediator = mediator;
             _mapper = mapper;
+            _otpRepository = otpRepository;
         }
 
         [HttpPost("Register")]
@@ -32,9 +35,20 @@ namespace ConnectVibe.Api.Controllers
             var authResult = await _mediator.Send(command);
 
             return authResult.Match(
-                authResult => Ok(_mapper.Map<AuthenticationResponse>(authResult)),
+                authResult => Ok(_mapper.Map<RegisterResponse>(authResult)),
                 errors => Problem(errors)
                 );
+        }
+
+        [HttpPost("validate-otp")]
+        public async Task<IActionResult> ValidateOtp([FromBody] ValidateOtpRequest request)
+        {
+            var command = _mapper.Map<ValidateOTPCommand>(request);
+            var authResult = await _mediator.Send(command);
+            return authResult.Match(
+                 authResult => Ok(_mapper.Map<AuthenticationResponse>(authResult)),
+                 errors => Problem(errors)
+                 );
         }
 
         [HttpPost("Login")]

@@ -2,6 +2,7 @@
 using ConnectVibe.Application.Authentication.Queries.Login;
 using ConnectVibe.Application.Common.Interfaces.Authentication;
 using ConnectVibe.Application.Common.Interfaces.Persistence;
+using ConnectVibe.Application.Common.Security;
 using ConnectVibe.Domain.Common.Errors;
 using ErrorOr;
 using MediatR;
@@ -29,6 +30,12 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, ErrorOr<Authenticat
         var user = _userRepository.GetUserByEmail(query.Email);
         if (user == null)
             return Errors.Authentication.InvalidCredentials;
+
+        var isSuccessfull = PasswordHash.Validate(query.Password, user.PasswordSalt, user.PasswordHash);
+
+        if(!isSuccessfull)
+            return Errors.Authentication.InvalidCredentials;
+
 
         var token = _jwtTokenGenerator.GenerateToken(user);
 

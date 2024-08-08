@@ -16,6 +16,9 @@ namespace ConnectVibe.Api.Mapping
             config.NewConfig<AuthenticationResult, AuthenticationResponse>().
                 Map(dest => dest.Token, src => src.Token).
                 Map(dest => dest, src => src.user);
+             config.NewConfig<RegistrationResult, RegisterResponse>().
+                Map(dest => dest.Otp, src => src.otp).
+                Map(dest => dest, src => src.user);
 
 
         }
