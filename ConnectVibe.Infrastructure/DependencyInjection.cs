@@ -24,6 +24,7 @@ namespace ConnectVibe.Infrastructure
             services.AddScoped<IOtpRepository, OtpRepository>();
             services.AddSingleton<IEmailService, EmailService>();
             services.AddSingleton<IOtpService, OtpService>();
+            services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
             services.AddDbContext<ConnectVibeDbContext>(options =>
     options.UseSqlServer(configurationManager.GetConnectionString("ConnectVibeDbContext") ?? throw new InvalidOperationException("Connection string 'ConnectVibeDbContext' not found.")));
             return services;
