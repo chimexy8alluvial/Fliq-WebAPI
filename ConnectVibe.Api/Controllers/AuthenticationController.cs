@@ -1,5 +1,6 @@
 ﻿using ConnectVibe.Application.Authentication.Commands.Register;
 using ConnectVibe.Application.Authentication.Commands.ValidateOTP;
+using ConnectVibe.Application.Common.Interfaces.Services;
 using ConnectVibe.Application.Authentication.Queries.Login;
 using ConnectVibe.Application.Common.Interfaces.Persistence;
 using ConnectVibe.Contracts.Authentication;
@@ -8,6 +9,7 @@ using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -21,23 +23,26 @@ namespace ConnectVibe.Api.Controllers
         private readonly ISender _mediator;
         private readonly IMapper _mapper;
         private readonly IOtpRepository _otpRepository;
-        public AuthenticationController(ISender mediator, IMapper mapper, IOtpRepository otpRepository)
+        private readonly ILoggerManager _logger;
+        public AuthenticationController(ISender mediator, IMapper mapper, IOtpRepository otpRepository, ILoggerManager logger)
         {
             _mediator = mediator;
             _mapper = mapper;
             _otpRepository = otpRepository;
+            _logger = logger;
         }
 
         [HttpPost("Register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
+            _logger.LogInfo($"------About the register the following user: ----{JsonConvert.SerializeObject(request)}");
             var command = _mapper.Map<RegisterCommand>(request);
             var authResult = await _mediator.Send(command);
 
             return authResult.Match(
                 authResult => Ok(_mapper.Map<RegisterResponse>(authResult)),
                 errors => Problem(errors)
-                );
+            );
         }
 
         [HttpPost("validate-otp")]
