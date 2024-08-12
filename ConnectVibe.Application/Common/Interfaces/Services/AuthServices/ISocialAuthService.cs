@@ -4,8 +4,8 @@ namespace ConnectVibe.Application.Common.Interfaces.Services.AuthServices
 {
     public interface ISocialAuthService
     {
-        Task<GooglePayloadResponse> ValidateGoogleToken(string token);
-
         Task<GooglePayloadResponse> ExchangeCodeForTokenAsync(string code);
+
+        Task<FacebookUserInfoResponse?> GetFacebookUserInformation(string accessToken);
     }
 }

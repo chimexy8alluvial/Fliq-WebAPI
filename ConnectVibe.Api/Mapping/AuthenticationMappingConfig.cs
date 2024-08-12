@@ -1,5 +1,6 @@
 ﻿using ConnectVibe.Application.Authentication.Commands.Register;
 using ConnectVibe.Application.Authentication.Common;
+using ConnectVibe.Application.Authentication.Queries.FacebookLogin;
 using ConnectVibe.Application.Authentication.Queries.GoogleLogin;
 using ConnectVibe.Application.Authentication.Queries.Login;
 using ConnectVibe.Contracts.Authentication;
@@ -14,6 +15,7 @@ namespace ConnectVibe.Api.Mapping
             config.NewConfig<RegisterRequest, RegisterCommand>();
             config.NewConfig<LoginRequest, LoginQuery>();
             config.NewConfig<GoogleLoginRequest, GoogleLoginQuery>();
+            config.NewConfig<FacebookLoginRequest, FacebookLoginQuery>();
             //the two configs above are not necessary because the properties are the same, the mapping happens automatically but we just add it here for reference purpose.
             config.NewConfig<AuthenticationResult, AuthenticationResponse>().
                 Map(dest => dest.Token, src => src.Token).
