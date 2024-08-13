@@ -7,6 +7,7 @@ using ErrorOr;
 using MapsterMapper;
 using MediatR;
 namespace ConnectVibe.Application.Authentication.Commands.ValidateOTP
+
 {
     public record ValidateOTPCommand(
         string Email,
@@ -20,21 +21,22 @@ namespace ConnectVibe.Application.Authentication.Commands.ValidateOTP
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
         private readonly IEmailService _emailService;
-        private readonly IOtpRepository _otpRepository;
-        public ValidateOTPCommandHandler(IJwtTokenGenerator jwtTokenGenerator, IUserRepository userRepository, IMapper mapper, IEmailService emailService, IOtpRepository otpRepository)
+        private readonly IOtpService _otpService;
+
+        public ValidateOTPCommandHandler(IJwtTokenGenerator jwtTokenGenerator, IUserRepository userRepository, IMapper mapper, IEmailService emailService, IOtpService otpService)
         {
             _jwtTokenGenerator = jwtTokenGenerator;
             _userRepository = userRepository;
             _mapper = mapper;
             _emailService = emailService;
-            _otpRepository = otpRepository;
+            _otpService = otpService;
         }
         public async Task<ErrorOr<AuthenticationResult>> Handle(ValidateOTPCommand command, CancellationToken cancellationToken)
         {
             await Task.CompletedTask;
-            if (!_otpRepository.CheckActiveOtp(command.Email, command.Otp))
-                return Errors.Authentication.InvalidOTP;
 
+            if (!await _otpService.ValidateOtpAsync(command.Email, command.Otp))
+                return Errors.Authentication.InvalidOTP;
             var user = _userRepository.GetUserByEmail(command.Email);
             user.IsEmailValidated = true;
             _userRepository.Update(user);
