@@ -10,31 +10,30 @@ using MediatR;
 
 namespace ConnectVibe.Application.Authentication.Queries.Login
 {
-    public record LoginQuery(
+    public record ResetPasswordQuery(
+    string Password,
+    string ConfirmPassword,
     string Email,
-    string Password
+    string Token
     ) : IRequest<ErrorOr<AuthenticationResult>>;
 }
-public class LoginQueryHandler : IRequestHandler<LoginQuery, ErrorOr<AuthenticationResult>>
+public class ResetPasswordHandler : IRequestHandler<ResetPasswordQuery, ErrorOr<AuthenticationResult>>
 {
     private readonly IJwtTokenGenerator _jwtTokenGenerator;
     private readonly IUserRepository _userRepository;
-    public LoginQueryHandler(IJwtTokenGenerator jwtTokenGenerator, IUserRepository userRepository)
+    public ResetPasswordHandler(IJwtTokenGenerator jwtTokenGenerator, IUserRepository userRepository)
     {
         _jwtTokenGenerator = jwtTokenGenerator;
         _userRepository = userRepository;
     }
-    public async Task<ErrorOr<AuthenticationResult>> Handle(LoginQuery query, CancellationToken cancellationToken)
+    public async Task<ErrorOr<AuthenticationResult>> Handle(ResetPasswordQuery query, CancellationToken cancellationToken)
     {
         await Task.CompletedTask;
         var user = _userRepository.GetUserByEmail(query.Email);
         if (user == null)
             return Errors.Authentication.InvalidCredentials;
 
-        var isSuccessfull = PasswordHash.Validate(query.Password, user.PasswordSalt, user.PasswordHash);
-
-        if(!isSuccessfull)
-            return Errors.Authentication.InvalidCredentials;
+       
 
 
         var token = _jwtTokenGenerator.GenerateToken(user);

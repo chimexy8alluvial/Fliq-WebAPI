@@ -2,6 +2,7 @@
 using ConnectVibe.Application.Authentication.Commands.ValidateOTP;
 using ConnectVibe.Application.Common.Interfaces.Services;
 using ConnectVibe.Application.Authentication.Queries.Login;
+using ConnectVibe.Application.Authentication.Queries.ChangePassword;
 using ConnectVibe.Application.Common.Interfaces.Persistence;
 using ConnectVibe.Contracts.Authentication;
 using ConnectVibe.Domain.Common.Errors;
@@ -53,7 +54,7 @@ namespace ConnectVibe.Api.Controllers
             return authResult.Match(
                  authResult => Ok(_mapper.Map<AuthenticationResponse>(authResult)),
                  errors => Problem(errors)
-                 );
+            );
         }
 
         [HttpPost("Login")]
@@ -70,7 +71,32 @@ namespace ConnectVibe.Api.Controllers
             return authResult.Match(
                 authResult => Ok(_mapper.Map<AuthenticationResponse>(authResult)),
                 errors => Problem(errors)
-                );
+            );
         }
+
+        [Authorize]
+        [HttpPost("ChangePassword")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
+        {
+            var command = _mapper.Map<ChangePasswordQuery>(request);
+            var authResult = await _mediator.Send(command);
+
+            if (authResult.IsError && authResult.FirstError == Errors.Authentication.InvalidCredentials)
+            {
+                return Problem(statusCode: StatusCodes.Status401Unauthorized, title: authResult.FirstError.Description);
+            }
+
+            return authResult.Match(
+                authResult => Ok(_mapper.Map<ChangePasswordResponse>(authResult)),
+                errors => Problem(errors)
+            );
+        }
+
+        [HttpPost("ResetPassword")]
+        public async Task<IActionResult> ForgetPassword([FromBody] ResetPasswordRequest request)
+        {
+
+        }
+
     }
 }

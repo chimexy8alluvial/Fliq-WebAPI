@@ -22,7 +22,7 @@ namespace ConnectVibe.Infrastructure
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IOtpRepository, OtpRepository>();
-            services.AddSingleton<IEmailService, EmailService>();
+            services.AddScoped<IEmailService, EmailService>();
             services.AddSingleton<ILoggerManager,LoggerManager>();
             services.AddSingleton<IOtpService, OtpService>();
             services.AddDbContext<ConnectVibeDbContext>(options =>
