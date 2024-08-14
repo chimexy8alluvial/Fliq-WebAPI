@@ -1,9 +1,10 @@
 ﻿namespace ConnectVibe.Contracts.Authentication;
 
-public record ResetPasswordRequest(
+public record ForgotPasswordRequest(
 
     string Password,
     string ConfirmPassword,
     string Email,
     string Token
     );
+

@@ -2,7 +2,6 @@
 using ConnectVibe.Application.Authentication.Commands.ValidateOTP;
 using ConnectVibe.Application.Common.Interfaces.Services;
 using ConnectVibe.Application.Authentication.Queries.Login;
-using ConnectVibe.Application.Authentication.Queries.ChangePassword;
 using ConnectVibe.Application.Common.Interfaces.Persistence;
 using ConnectVibe.Contracts.Authentication;
 using ConnectVibe.Domain.Common.Errors;
@@ -11,6 +10,8 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using ConnectVibe.Application.Authentication.Commands.ChangePassword;
+using ConnectVibe.Application.Authentication.Commands.PasswordReset;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -92,10 +93,16 @@ namespace ConnectVibe.Api.Controllers
             );
         }
 
-        [HttpPost("ResetPassword")]
-        public async Task<IActionResult> ForgetPassword([FromBody] ResetPasswordRequest request)
+        [HttpPost("ForgetPassword")]
+        public async Task<IActionResult> ForgetPassword([FromBody] ForgotPasswordRequest request)
         {
+            var command = _mapper.Map<ForgotPasswordCommand>(request);
+            var authResult = await _mediator.Send(command);
 
+            return authResult.Match(
+                authResult => Ok(_mapper.Map<ForgotPasswordResponse>(authResult)),
+                errors => Problem(errors)
+            );
         }
 
     }

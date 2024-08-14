@@ -8,7 +8,7 @@ using MapsterMapper;
 using MediatR;
 
 
-namespace ConnectVibe.Application.Authentication.Queries.ChangePassword
+namespace ConnectVibe.Application.Authentication.Commands.ChangePassword
 {
     public record ChangePasswordQuery(
         string Email,
