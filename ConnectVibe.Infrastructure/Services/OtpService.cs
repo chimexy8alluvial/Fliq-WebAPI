@@ -7,11 +7,9 @@ namespace ConnectVibe.Infrastructure.Services
     {
         private static readonly Random _random = new Random();
         private readonly IOtpRepository _otpRepository;
-        private readonly IOtpService _otpService;
-        public OtpService(IOtpRepository otpRepository, IOtpService otpService)
+        public OtpService(IOtpRepository otpRepository)
         {
             _otpRepository = otpRepository;
-            _otpService = otpService;
         }
         public string GenerateOtp(int length = 6)
         {
@@ -26,7 +24,7 @@ namespace ConnectVibe.Infrastructure.Services
         }
         public async Task<string> GetOtpAsync(string email, int userId)
         {
-            var otp = new OTP { Code = _otpService.GenerateOtp(), Email = email, ExpiresAt = DateTime.UtcNow.AddMinutes(10), UserId = userId };
+            var otp = new OTP { Code = GenerateOtp(), Email = email, ExpiresAt = DateTime.UtcNow.AddMinutes(10), UserId = userId };
             _otpRepository.Add(otp);
             return otp.Code;
         }
