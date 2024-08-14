@@ -79,6 +79,7 @@ namespace ConnectVibe.Api.Controllers
         [HttpPost("ChangePassword")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
         {
+            _logger.LogInfo($"------About to change Password for the following user: ----{JsonConvert.SerializeObject(request)}");
             var command = _mapper.Map<ChangePasswordQuery>(request);
             var authResult = await _mediator.Send(command);
 
