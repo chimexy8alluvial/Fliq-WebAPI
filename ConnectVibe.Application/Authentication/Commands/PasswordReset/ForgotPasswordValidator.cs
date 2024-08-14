@@ -7,7 +7,6 @@ namespace ConnectVibe.Application.Authentication.Commands.PasswordReset
         public ForgotPasswordValidator()
         {
             RuleFor(x => x.ConfirmPassword).NotEmpty();
-            RuleFor(x => x.Token).NotEmpty();
             RuleFor(x => x.Email).NotEmpty().EmailAddress().WithMessage("Invalid email format.");
             RuleFor(x => x.Password).NotEmpty()
                  .MinimumLength(10).WithMessage("Password must be at least 10 characters long.")

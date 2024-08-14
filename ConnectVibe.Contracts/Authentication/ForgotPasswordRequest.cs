@@ -4,7 +4,6 @@ public record ForgotPasswordRequest(
 
     string Password,
     string ConfirmPassword,
-    string Email,
-    string Token
+    string Email
     );
 

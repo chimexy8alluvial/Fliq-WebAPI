@@ -2,7 +2,7 @@
 
 namespace ConnectVibe.Application.Authentication.Commands.ChangePassword
 {
-    public class ChangePasswordValidation : AbstractValidator<ChangePasswordQuery>
+    public class ChangePasswordValidation : AbstractValidator<ChangePasswordCommand>
     {
         public ChangePasswordValidation()
         {

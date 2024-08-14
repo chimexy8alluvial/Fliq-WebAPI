@@ -10,13 +10,13 @@ using MediatR;
 
 namespace ConnectVibe.Application.Authentication.Commands.ChangePassword
 {
-    public record ChangePasswordQuery(
+    public record ChangePasswordCommand(
         string Email,
         string OldPassword,
         string NewPassword
         ) : IRequest<ErrorOr<bool>>;
 
-    public class ChangePasswordQueryHandler : IRequestHandler<ChangePasswordQuery, ErrorOr<bool>>
+    public class ChangePasswordQueryHandler : IRequestHandler<ChangePasswordCommand, ErrorOr<bool>>
     {
         private readonly IJwtTokenGenerator _jwtTokenGenerator;
         private readonly IUserRepository _userRepository;
@@ -33,7 +33,7 @@ namespace ConnectVibe.Application.Authentication.Commands.ChangePassword
             _otpRepository = otpRepository;
             _otpService = otpService;
         }
-        public async Task<ErrorOr<bool>> Handle(ChangePasswordQuery query, CancellationToken cancellationToken)
+        public async Task<ErrorOr<bool>> Handle(ChangePasswordCommand query, CancellationToken cancellationToken)
         {
             await Task.CompletedTask;
             var user = _userRepository.GetUserByEmail(query.Email);

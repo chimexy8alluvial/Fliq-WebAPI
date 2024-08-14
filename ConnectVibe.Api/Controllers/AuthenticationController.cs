@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using ConnectVibe.Application.Authentication.Commands.ChangePassword;
 using ConnectVibe.Application.Authentication.Commands.PasswordReset;
+using ConnectVibe.Application.Authentication.Commands.ValidatePasswordOTP;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -80,7 +81,7 @@ namespace ConnectVibe.Api.Controllers
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
         {
             _logger.LogInfo($"------About to change Password for the following user: ----{JsonConvert.SerializeObject(request)}");
-            var command = _mapper.Map<ChangePasswordQuery>(request);
+            var command = _mapper.Map<ChangePasswordCommand>(request);
             var authResult = await _mediator.Send(command);
 
             if (authResult.IsError && authResult.FirstError == Errors.Authentication.InvalidCredentials)
@@ -102,6 +103,18 @@ namespace ConnectVibe.Api.Controllers
 
             return authResult.Match(
                 authResult => Ok(_mapper.Map<ForgotPasswordResponse>(authResult)),
+                errors => Problem(errors)
+            );
+        }
+
+        [HttpPost("ValidatePassword_otp")]
+        public async Task<IActionResult> ValidatePassword_otp([FromBody] SendPasswordOTPRequest request)
+        {
+            var command = _mapper.Map<ValidatePasswordOTPCommand>(request);
+            var authResult = await _mediator.Send(command);
+
+            return authResult.Match(
+                authResult => Ok(_mapper.Map<ValidatePasswordOTPResponse>(authResult)),
                 errors => Problem(errors)
             );
         }

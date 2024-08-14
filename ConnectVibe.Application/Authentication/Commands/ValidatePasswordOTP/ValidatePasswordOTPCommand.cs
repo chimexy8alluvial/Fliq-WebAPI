@@ -6,15 +6,14 @@ using ConnectVibe.Domain.Common.Errors;
 using ErrorOr;
 using MapsterMapper;
 using MediatR;
-namespace ConnectVibe.Application.Authentication.Commands.ValidateOTP
+namespace ConnectVibe.Application.Authentication.Commands.ValidatePasswordOTP
 {
-    public record ValidateOTPCommand(
-        string Email,
+    public record ValidatePasswordOTPCommand(
+       string Email,
         string Otp
-        ) : IRequest<ErrorOr<AuthenticationResult>>;
+    ) :  IRequest<ErrorOr<ValidatePasswordOTPResult>>;
 
-
-    public class ValidateOTPCommandHandler : IRequestHandler<ValidateOTPCommand, ErrorOr<AuthenticationResult>>
+    public  class ValidatePasswordOTPCommandHandler : IRequestHandler<ValidatePasswordOTPCommand, ErrorOr<ValidatePasswordOTPResult>>
     {
         private readonly IJwtTokenGenerator _jwtTokenGenerator;
         private readonly IUserRepository _userRepository;
@@ -22,7 +21,7 @@ namespace ConnectVibe.Application.Authentication.Commands.ValidateOTP
         private readonly IEmailService _emailService;
         private readonly IOtpService _otpService;
 
-        public ValidateOTPCommandHandler(IJwtTokenGenerator jwtTokenGenerator, IUserRepository userRepository, IMapper mapper, IEmailService emailService, IOtpService otpService)
+        public ValidatePasswordOTPCommandHandler(IJwtTokenGenerator jwtTokenGenerator, IUserRepository userRepository, IMapper mapper, IEmailService emailService, IOtpService otpService)
         {
             _jwtTokenGenerator = jwtTokenGenerator;
             _userRepository = userRepository;
@@ -30,19 +29,15 @@ namespace ConnectVibe.Application.Authentication.Commands.ValidateOTP
             _emailService = emailService;
             _otpService = otpService;
         }
-        public async Task<ErrorOr<AuthenticationResult>> Handle(ValidateOTPCommand command, CancellationToken cancellationToken)
+
+        public async Task<ErrorOr<ValidatePasswordOTPResult>> Handle(ValidatePasswordOTPCommand command, CancellationToken cancellationToken)
         {
             await Task.CompletedTask;
 
             if (!await _otpService.ValidateOtpAsync(command.Email, command.Otp))
                 return Errors.Authentication.InvalidOTP;
-            var user = _userRepository.GetUserByEmail(command.Email);
-            user.IsEmailValidated = true;
-            _userRepository.Update(user);
-            var token = _jwtTokenGenerator.GenerateToken(user);
-            return new AuthenticationResult(user, token);
+            var response = true;
+            return new ValidatePasswordOTPResult(response);
         }
-
     }
-
 }
