@@ -6,7 +6,6 @@ using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using System.Net.Http;
 
 namespace ConnectVibe.Infrastructure.Services.AuthServices
 {

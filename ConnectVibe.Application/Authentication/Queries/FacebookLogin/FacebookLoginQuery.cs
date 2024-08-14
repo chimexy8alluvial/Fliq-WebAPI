@@ -6,11 +6,6 @@ using ConnectVibe.Domain.Common.Errors;
 using ConnectVibe.Domain.Entities;
 using ErrorOr;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ConnectVibe.Application.Authentication.Queries.FacebookLogin
 {
