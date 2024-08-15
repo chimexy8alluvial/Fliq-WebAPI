@@ -37,11 +37,11 @@ namespace ConnectVibe.Application.Authentication.Commands.PasswordReset
             if (user == null)
                 return Errors.Authentication.InvalidCredentials;
 
-            var otp = _otpService.GetOtpAsync(user.Email, user.Id);
+            var otp =await _otpService.GetOtpAsync(user.Email, user.Id);
             _logger.LogInfo($"{user.Email} recieved the following otp--{otp}");
 
             await _emailService.SendEmailAsync(command.Email, "Your OTP Code", $"Your OTP is {otp}");
-            return new ForgotPasswordResult(otp.Result);
+            return new ForgotPasswordResult(otp,user.Email);
         }
 
     }

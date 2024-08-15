@@ -36,5 +36,11 @@ namespace ConnectVibe.Infrastructure.Persistence.Repositories
             var user = _dbContext.Users.SingleOrDefault(p => p.Email == email);
             return user;
         }
-    }
+        public User? GetUserById(int id)
+        {
+            var user = _dbContext.Users.SingleOrDefault(p => p.Id == id);
+            return user;
+        }
+
+}
 }

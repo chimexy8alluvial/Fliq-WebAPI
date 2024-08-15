@@ -11,9 +11,9 @@ namespace ConnectVibe.Application.Authentication.Commands.ValidatePasswordOTP
     public record ValidatePasswordOTPCommand(
        string Email,
         string Otp
-    ) :  IRequest<ErrorOr<ValidatePasswordOTPResult>>;
+    ) : IRequest<ErrorOr<ValidatePasswordOTPResult>>;
 
-    public  class ValidatePasswordOTPCommandHandler : IRequestHandler<ValidatePasswordOTPCommand, ErrorOr<ValidatePasswordOTPResult>>
+    public class ValidatePasswordOTPCommandHandler : IRequestHandler<ValidatePasswordOTPCommand, ErrorOr<ValidatePasswordOTPResult>>
     {
         private readonly IJwtTokenGenerator _jwtTokenGenerator;
         private readonly IUserRepository _userRepository;
@@ -36,8 +36,8 @@ namespace ConnectVibe.Application.Authentication.Commands.ValidatePasswordOTP
 
             if (!await _otpService.ValidateOtpAsync(command.Email, command.Otp))
                 return Errors.Authentication.InvalidOTP;
-            var response = true;
-            return new ValidatePasswordOTPResult(response);
+            var user = _userRepository.GetUserByEmail(command.Email);
+            return new ValidatePasswordOTPResult(user,command.Otp);
         }
     }
 }

@@ -2,7 +2,7 @@
 {
     public record SendPasswordOTPRequest
     (
-        string otp,
-        string Email
+        string Email,
+        string Otp
     );
 }

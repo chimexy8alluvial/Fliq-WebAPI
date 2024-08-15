@@ -36,7 +36,7 @@ namespace ConnectVibe.Api.Controllers
             _logger = logger;
         }
 
-        [HttpPost("Register")]
+        [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
             _logger.LogInfo($"------About the register the following user: ----{JsonConvert.SerializeObject(request)}");
@@ -60,7 +60,7 @@ namespace ConnectVibe.Api.Controllers
             );
         }
 
-        [HttpPost("Login")]
+        [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             var command = _mapper.Map<LoginQuery>(request);
@@ -78,7 +78,7 @@ namespace ConnectVibe.Api.Controllers
         }
 
         [Authorize]
-        [HttpPost("ChangePassword")]
+        [HttpPost("changePassword")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
         {
             _logger.LogInfo($"------About to change Password for the following user: ----{JsonConvert.SerializeObject(request)}");
@@ -97,7 +97,7 @@ namespace ConnectVibe.Api.Controllers
             );
         }
 
-        [HttpPost("ForgetPassword")]
+        [HttpPost("forgetPassword")]
         public async Task<IActionResult> ForgetPassword([FromBody] ForgotPasswordRequest request)
         {
             _logger.LogInfo($"------Forgot Password Request: ----{JsonConvert.SerializeObject(request)}");
@@ -111,8 +111,8 @@ namespace ConnectVibe.Api.Controllers
             );
         }
 
-        [HttpPost("ValidatePassword_otp")]
-        public async Task<IActionResult> ValidatePassword_otp([FromBody] SendPasswordOTPRequest request)
+        [HttpPost("validateforgotpasswordotp")]
+        public async Task<IActionResult> ValidateForgotPasswordPasswordOtp([FromBody] SendPasswordOTPRequest request)
         {
             _logger.LogInfo($"-----ValidatePassword_otp Request: ----{JsonConvert.SerializeObject(request)}");
             var command = _mapper.Map<ValidatePasswordOTPCommand>(request);
@@ -125,7 +125,7 @@ namespace ConnectVibe.Api.Controllers
             );
         }
 
-        [HttpPost("CreatePassword")]
+        [HttpPost("createPassword")]
         public async Task<IActionResult> CreatePassword([FromBody] NewPasswordRequest request)
         {
             _logger.LogInfo($"-----CreatePassword Request: ----{JsonConvert.SerializeObject(request)}");
@@ -139,7 +139,7 @@ namespace ConnectVibe.Api.Controllers
             }
 
             return authResult.Match(
-                authResult => Ok(_mapper.Map<ChangePasswordResponse>(authResult)),
+                authResult => Ok(_mapper.Map<bool>(authResult)),
                 errors => Problem(errors)
             );
         }

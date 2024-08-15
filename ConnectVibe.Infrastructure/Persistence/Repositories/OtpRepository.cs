@@ -29,5 +29,14 @@ namespace ConnectVibe.Infrastructure.Persistence.Repositories
             _dbContext.Add(otp);
             _dbContext.SaveChanges();
         }
+
+        public async Task<bool> OtpExistAsync(string email, string code)
+        {
+            var otp = await _dbContext.OTPs.Where(o => o.Email == email && o.Code == code && o.IsUsed)
+        .FirstOrDefaultAsync();
+            if (otp == null)
+                return false;
+            return true;
+        }
     }
 }

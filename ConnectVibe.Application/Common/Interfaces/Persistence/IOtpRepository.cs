@@ -6,5 +6,6 @@ namespace ConnectVibe.Application.Common.Interfaces.Persistence
     {
         void Add(OTP otp);
         Task<bool> CheckActiveOtpAsync(string email, string code);
+        Task<bool> OtpExistAsync(string email, string code);
     }
 }

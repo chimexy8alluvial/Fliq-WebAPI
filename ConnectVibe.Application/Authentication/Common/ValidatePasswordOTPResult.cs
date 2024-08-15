@@ -9,6 +9,7 @@ namespace ConnectVibe.Application.Authentication.Common
 {
     public record ValidatePasswordOTPResult
     (
-        bool Response
+        User user,
+        string otp
     );
 }

@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ConnectVibe.Contracts.Authentication
+﻿namespace ConnectVibe.Contracts.Authentication
 {
-    public  record ValidatePasswordOTPResponse
+    public record ValidatePasswordOTPResponse
     (
-        bool response
+        int Id,
+    string FirstName,
+    string LastName,
+    string DisplayName,
+    string Email,
+        string otp
     );
 }

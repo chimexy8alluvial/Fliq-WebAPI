@@ -1,6 +1,7 @@
 ﻿namespace ConnectVibe.Contracts.Authentication;
 public record NewPasswordRequest(
-    string Email,
-    string ConfirmPassword,
-    string NewPassword
+     int Id,
+        string ConfirmPassword,
+        string NewPassword,
+        string Otp
 );

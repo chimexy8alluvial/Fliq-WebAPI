@@ -11,7 +11,7 @@ namespace ConnectVibe.Infrastructure.Services
         {
             _otpRepository = otpRepository;
         }
-        public string GenerateOtp(int length = 6)
+        private async Task<string> GenerateOtp(int length = 6)
         {
             const string chars = "0123456789";
             return new string(Enumerable.Repeat(chars, length)
@@ -24,10 +24,14 @@ namespace ConnectVibe.Infrastructure.Services
         }
         public async Task<string> GetOtpAsync(string email, int userId)
         {
-            var otp = new OTP { Code = GenerateOtp(), Email = email, ExpiresAt = DateTime.UtcNow.AddMinutes(10), UserId = userId };
+            var otp = new OTP { Code =await GenerateOtp(), Email = email, ExpiresAt = DateTime.UtcNow.AddMinutes(10), UserId = userId };
             _otpRepository.Add(otp);
             return otp.Code;
         }
 
+        public async Task<bool> OtpExistAsync(string email, string otp)
+        {
+            return await _otpRepository.OtpExistAsync(email, otp);
+        }
     }
 }

@@ -4,6 +4,7 @@ namespace ConnectVibe.Application.Authentication.Common
 {
     public record ForgotPasswordResult
     (
-       string otp
+       string otp,
+       string email
     );
 }

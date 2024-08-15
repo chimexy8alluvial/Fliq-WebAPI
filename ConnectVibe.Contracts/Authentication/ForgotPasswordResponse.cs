@@ -1,6 +1,7 @@
 ﻿namespace ConnectVibe.Contracts.Authentication
 {
     public record ForgotPasswordResponse(
-      string Token
+      string otp,
+      string email
     );
 }

@@ -11,8 +11,8 @@ namespace ConnectVibe.Application.Authentication.Commands.PasswordCreation
     {
         public CreatePasswordValidator() 
         {
-            RuleFor(x => x.Email).NotEmpty().EmailAddress().WithMessage("Invalid email format.");
-            RuleFor(x => x.ConfirmPassword).NotEmpty();
+            RuleFor(x => x.Id).NotEmpty().GreaterThan(0);
+            RuleFor(x => x.ConfirmPassword).NotEmpty().Equal(x=>x.NewPassword);
             RuleFor(x => x.NewPassword).NotEmpty()
                  .MinimumLength(10).WithMessage("Password must be at least 10 characters long.")
                 .Matches(@"[A-Z]").WithMessage("Password must contain at least one uppercase letter.")
