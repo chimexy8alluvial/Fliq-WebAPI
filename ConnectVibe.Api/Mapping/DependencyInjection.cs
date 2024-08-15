@@ -1,6 +1,5 @@
 ﻿using Mapster;
 using MapsterMapper;
-using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
 namespace ConnectVibe.Api.Mapping

@@ -43,8 +43,10 @@ namespace ConnectVibe.Application.Authentication.Commands.Register
         {
             await Task.CompletedTask;
             User user = _userRepository.GetUserByEmail(command.Email);
+
             if (user != null && user.IsEmailValidated)
                 return Errors.User.DuplicateEmail;
+
             if (user == null)
                 user = _mapper.Map<User>(command);
 

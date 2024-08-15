@@ -1,5 +1,7 @@
 ﻿using ConnectVibe.Application.Authentication.Commands.Register;
 using ConnectVibe.Application.Authentication.Commands.ValidateOTP;
+using ConnectVibe.Application.Authentication.Queries.FacebookLogin;
+using ConnectVibe.Application.Authentication.Queries.GoogleLogin;
 using ConnectVibe.Application.Common.Interfaces.Services;
 using ConnectVibe.Application.Authentication.Queries.Login;
 using ConnectVibe.Application.Common.Interfaces.Persistence;
@@ -23,7 +25,6 @@ namespace ConnectVibe.Api.Controllers
     [AllowAnonymous]
     public class AuthenticationController : ApiBaseController
     {
-
         private readonly ISender _mediator;
         private readonly IMapper _mapper;
         private readonly IOtpRepository _otpRepository;
@@ -142,6 +143,40 @@ namespace ConnectVibe.Api.Controllers
                 authResult => Ok(_mapper.Map<bool>(authResult)),
                 errors => Problem(errors)
             );
+        }
+
+        [HttpPost("Login/google")]
+        public async Task<IActionResult> GoogleLogin([FromQuery] GoogleLoginRequest request)
+        {
+            var command = _mapper.Map<GoogleLoginQuery>(request);
+            var authResult = await _mediator.Send(command);
+
+            if (authResult.IsError && authResult.FirstError == Errors.Authentication.InvalidToken)
+            {
+                return Problem(statusCode: StatusCodes.Status401Unauthorized, title: authResult.FirstError.Description);
+            }
+
+            return authResult.Match(
+                authResult => Ok(_mapper.Map<SocialAuthenticationResponse>(authResult)),
+                errors => Problem(errors)
+                );
+        }
+
+        [HttpPost("Login/facebook")]
+        public async Task<IActionResult> FacebookLogin([FromQuery] FacebookLoginRequest request)
+        {
+            var command = _mapper.Map<FacebookLoginQuery>(request);
+            var authResult = await _mediator.Send(command);
+
+            if (authResult.IsError && authResult.FirstError == Errors.Authentication.InvalidToken)
+            {
+                return Problem(statusCode: StatusCodes.Status401Unauthorized, title: authResult.FirstError.Description);
+            }
+
+            return authResult.Match(
+                authResult => Ok(_mapper.Map<SocialAuthenticationResponse>(authResult)),
+                errors => Problem(errors)
+                );
         }
     }
 }
