@@ -41,6 +41,7 @@ namespace ConnectVibe.Application.Authentication.Commands.PasswordReset
             _logger.LogInfo($"{user.Email} recieved the following otp--{otp}");
 
             await _emailService.SendEmailAsync(command.Email, "Your OTP Code", $"Your OTP is {otp}");
+            _logger.LogInfo($"Success sent Otp to the following email--{user.Email}");
             return new ForgotPasswordResult(otp.Result);
         }
 
