@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using ConnectVibe.Application.Authentication.Commands.ChangePassword;
 using ConnectVibe.Application.Authentication.Commands.PasswordReset;
 using ConnectVibe.Application.Authentication.Commands.ValidatePasswordOTP;
+using ConnectVibe.Application.Authentication.Commands.PasswordCreation;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -83,6 +84,7 @@ namespace ConnectVibe.Api.Controllers
             _logger.LogInfo($"------About to change Password for the following user: ----{JsonConvert.SerializeObject(request)}");
             var command = _mapper.Map<ChangePasswordCommand>(request);
             var authResult = await _mediator.Send(command);
+            _logger.LogInfo($"------Change Password AuthResult: ----{JsonConvert.SerializeObject(authResult)}");
 
             if (authResult.IsError && authResult.FirstError == Errors.Authentication.InvalidCredentials)
             {
@@ -98,8 +100,10 @@ namespace ConnectVibe.Api.Controllers
         [HttpPost("ForgetPassword")]
         public async Task<IActionResult> ForgetPassword([FromBody] ForgotPasswordRequest request)
         {
+            _logger.LogInfo($"------Forgot Password Request: ----{JsonConvert.SerializeObject(request)}");
             var command = _mapper.Map<ForgotPasswordCommand>(request);
             var authResult = await _mediator.Send(command);
+            _logger.LogInfo($"------ Forgot AuthResult: ----{JsonConvert.SerializeObject(authResult)}");
 
             return authResult.Match(
                 authResult => Ok(_mapper.Map<ForgotPasswordResponse>(authResult)),
@@ -110,8 +114,10 @@ namespace ConnectVibe.Api.Controllers
         [HttpPost("ValidatePassword_otp")]
         public async Task<IActionResult> ValidatePassword_otp([FromBody] SendPasswordOTPRequest request)
         {
+            _logger.LogInfo($"-----ValidatePassword_otp Request: ----{JsonConvert.SerializeObject(request)}");
             var command = _mapper.Map<ValidatePasswordOTPCommand>(request);
             var authResult = await _mediator.Send(command);
+            _logger.LogInfo($"------ ValidatePassword_otp AuthResult: ----{JsonConvert.SerializeObject(authResult)}");
 
             return authResult.Match(
                 authResult => Ok(_mapper.Map<ValidatePasswordOTPResponse>(authResult)),
@@ -119,5 +125,23 @@ namespace ConnectVibe.Api.Controllers
             );
         }
 
+        [HttpPost("CreatePassword")]
+        public async Task<IActionResult> CreatePassword([FromBody] NewPasswordRequest request)
+        {
+            _logger.LogInfo($"-----CreatePassword Request: ----{JsonConvert.SerializeObject(request)}");
+            var command = _mapper.Map<CreatePasswordCommand>(request);
+            var authResult = await _mediator.Send(command);
+            _logger.LogInfo($"------ CreatePassword AuthResult: ----{JsonConvert.SerializeObject(authResult)}");
+
+            if (authResult.IsError && authResult.FirstError == Errors.Authentication.InvalidCredentials)
+            {
+                return Problem(statusCode: StatusCodes.Status401Unauthorized, title: authResult.FirstError.Description);
+            }
+
+            return authResult.Match(
+                authResult => Ok(_mapper.Map<ChangePasswordResponse>(authResult)),
+                errors => Problem(errors)
+            );
+        }
     }
 }

@@ -11,9 +11,7 @@ using MediatR;
 namespace ConnectVibe.Application.Authentication.Commands.PasswordReset
 {
     public record ForgotPasswordCommand(
-    string Password,
-    string ConfirmPassword,
-    string Email
+      string Email
     ) : IRequest<ErrorOr<ForgotPasswordResult>>;
 
     public class ForgotPasswordHandler : IRequestHandler<ForgotPasswordCommand, ErrorOr<ForgotPasswordResult>>
@@ -33,7 +31,8 @@ namespace ConnectVibe.Application.Authentication.Commands.PasswordReset
         {
             await Task.CompletedTask;
             var user = _userRepository.GetUserByEmail(command.Email);
-            if (user == null || !user.IsEmailValidated)
+
+            if (user == null)
                 return Errors.Authentication.InvalidCredentials;
 
             var otp = _otpService.GetOtpAsync(user.Email, user.Id);
