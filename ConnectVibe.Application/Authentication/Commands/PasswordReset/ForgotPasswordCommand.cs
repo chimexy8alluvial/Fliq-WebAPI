@@ -20,12 +20,14 @@ namespace ConnectVibe.Application.Authentication.Commands.PasswordReset
         private readonly IUserRepository _userRepository;
         private readonly IOtpService _otpService;
         private readonly IEmailService _emailService;
-        public ForgotPasswordHandler(IJwtTokenGenerator jwtTokenGenerator, IUserRepository userRepository, IOtpService otpService, IEmailService emailService)
+        private readonly ILoggerManager _logger;
+        public ForgotPasswordHandler(IJwtTokenGenerator jwtTokenGenerator, IUserRepository userRepository, IOtpService otpService, IEmailService emailService, ILoggerManager logger)
         {
             _jwtTokenGenerator = jwtTokenGenerator;
             _userRepository = userRepository;
             _otpService = otpService;
             _emailService = emailService;
+            _logger = logger;
         }
         public async Task<ErrorOr<ForgotPasswordResult>> Handle(ForgotPasswordCommand command, CancellationToken cancellationToken)
         {
@@ -36,6 +38,7 @@ namespace ConnectVibe.Application.Authentication.Commands.PasswordReset
                 return Errors.Authentication.InvalidCredentials;
 
             var otp = _otpService.GetOtpAsync(user.Email, user.Id);
+            _logger.LogInfo($"{user.Email} recieved the following otp--{otp}");
 
             await _emailService.SendEmailAsync(command.Email, "Your OTP Code", $"Your OTP is {otp}");
             return new ForgotPasswordResult(otp.Result);
