@@ -54,11 +54,9 @@ namespace ConnectVibe.Application.Authentication.Commands.Register
             user.PasswordHash = PasswordHash.Create(command.Password, user.PasswordSalt);
             _userRepository.Add(user);
 
-            var otp = new OTP { Code = _otpService.GenerateOtp(), Email = command.Email, ExpiresAt = DateTime.UtcNow.AddMinutes(10), UserId = user.Id };
-            _otpRepository.Add(otp);
-
-            await _emailService.SendEmailAsync(command.Email, "Your OTP Code", $"Your OTP is {otp.Code}");
-            return new RegistrationResult(user, otp.Code);
+            var otp = await _otpService.GetOtpAsync(user.Email, user.Id);
+            await _emailService.SendEmailAsync(command.Email, "Your OTP Code", $"Your OTP is {otp}");
+            return new RegistrationResult(user, otp);
         }
 
     }

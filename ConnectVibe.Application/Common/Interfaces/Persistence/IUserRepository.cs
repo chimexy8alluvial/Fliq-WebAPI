@@ -8,5 +8,6 @@ namespace ConnectVibe.Application.Common.Interfaces.Persistence
         void Update(User user);
         User? GetUserByEmail(string email);
         IEnumerable<User> GetAllUsers();
+        User? GetUserById(int Id);
     }
 }

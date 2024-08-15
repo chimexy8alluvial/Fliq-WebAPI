@@ -27,6 +27,17 @@ namespace ConnectVibe.Api.Mapping
             config.NewConfig<RegistrationResult, RegisterResponse>().
                 Map(dest => dest.Otp, src => src.otp).
                 Map(dest => dest, src => src.user);
+                Map(dest => dest, src => src.user);
+            config.NewConfig<RegistrationResult, RegisterResponse>().
+               Map(dest => dest.Otp, src => src.otp).
+               Map(dest => dest, src => src.user);
+            config.NewConfig<ValidatePasswordOTPResult, ValidatePasswordOTPResponse>().
+       Map(dest => dest.otp, src => src.otp).
+       Map(dest => dest, src => src.user);
+            config.NewConfig<ForgotPasswordResult, ForgotPasswordResponse>().
+       Map(dest => dest.otp, src => src.otp).
+       Map(dest=>dest.email,src=>src.email);
+
         }
     }
 }

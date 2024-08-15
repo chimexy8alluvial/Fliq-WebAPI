@@ -48,5 +48,11 @@ namespace ConnectVibe.Infrastructure.Persistence.Repositories
                 return users;
             }
         }
-    }
+        public User? GetUserById(int id)
+        {
+            var user = _dbContext.Users.SingleOrDefault(p => p.Id == id);
+            return user;
+        }
+
+}
 }
