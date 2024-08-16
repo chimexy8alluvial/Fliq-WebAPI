@@ -3,7 +3,6 @@ using ConnectVibe.Application.Profile.Commands.Create;
 using ConnectVibe.Contracts.Profile;
 using MapsterMapper;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ConnectVibe.Api.Controllers
