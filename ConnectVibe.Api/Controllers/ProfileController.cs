@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace ConnectVibe.Api.Controllers
 {
     [Route("api/profile")]
-    [AllowAnonymous]
     public class ProfileController : ApiBaseController
     {
         private readonly ISender _mediator;
