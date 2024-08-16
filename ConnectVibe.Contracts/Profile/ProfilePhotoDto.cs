@@ -2,6 +2,10 @@
 
 namespace ConnectVibe.Contracts.Profile
 {
-    public record ProfilePhotoDto
-    (string Caption, IFormFile ImageFile);
+    public class ProfilePhotoDto
+    {
+        public string Caption { get; set; } = default!;
+
+        public IFormFile ImageFile { get; set; } = default!;
+    }
 }

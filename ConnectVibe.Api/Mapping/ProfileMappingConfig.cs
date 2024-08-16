@@ -11,7 +11,8 @@ namespace ConnectVibe.Api.Mapping
         public void Register(TypeAdapterConfig config)
         {
             config.NewConfig<CreateProfileRequest, CreateProfileCommand>()
-                .Map(dest => dest.Photos, src => src.Photos);
+                .Ignore(dest => dest.Photos);
+
             config.NewConfig<EthnicityDto, Ethnicity>()
                 .Map(dest => dest.EthnicityType, src => (EthnicityType)src.EthnicityType);
             config.NewConfig<GenderDto, Gender>()
@@ -27,6 +28,26 @@ namespace ConnectVibe.Api.Mapping
             config.NewConfig<ProfilePhoto, ProfilePhotoResponse>();
             config.NewConfig<UserProfile, ProfileResponse>();
             config.NewConfig<CreateProfileResult, ProfileResponse>();
+            //config.ForType<IFormFile, IFormFile>()
+            //    .MapWith(src => new IFormFile(src));
+        }
+
+        private List<ProfilePhotoDto> MapPhotos(List<ProfilePhotoDto> photoDtos)
+        {
+            // Implement logic to convert ProfilePhotoDto to ProfilePhoto
+            // For example, save files to disk and create ProfilePhoto objects
+            List<ProfilePhotoDto> photos = new();
+
+            foreach (var photoDto in photoDtos)
+            {
+                photos.Add(new ProfilePhotoDto
+                {
+                    Caption = photoDto.Caption,
+                    ImageFile = photoDto.ImageFile
+                });
+            }
+
+            return photos;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using ConnectVibe.Application.Profile.Commands.Create;
+﻿using ConnectVibe.Application.Authentication.Common.Profile;
+using ConnectVibe.Application.Profile.Commands.Create;
 using ConnectVibe.Contracts.Profile;
 using MapsterMapper;
 using MediatR;
@@ -26,11 +27,11 @@ namespace ConnectVibe.Api.Controllers
         {
             //var userId = GetAuthUserId();
             var command = _mapper.Map<CreateProfileCommand>(request);
-
+            command.Photos = request.Photos;
             var profileResult = await _mediator.Send(command);
 
             return profileResult.Match(
-                profileResult => Ok(_mapper.Map<ProfileResponse>(profileResult)),
+                profileResult => Ok(_mapper.Map<CreateProfileResult>(profileResult)),
                 errors => Problem(errors)
                 );
         }

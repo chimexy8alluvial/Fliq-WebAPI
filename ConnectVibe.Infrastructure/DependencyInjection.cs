@@ -28,11 +28,9 @@ namespace ConnectVibe.Infrastructure
             services.AddScoped<IProfileRepository, ProfileRepository>();
             services.AddScoped<ISocialAuthService, SocialAuthService>();
             services.AddScoped<IOtpRepository, OtpRepository>();
-            services.AddSingleton<IEmailService, EmailService>();
-            services.AddSingleton<IOtpService, OtpService>();
             services.AddScoped<IImageService, ImageService>();
             services.AddScoped<IEmailService, EmailService>();
-            services.AddSingleton<ILoggerManager,LoggerManager>();
+            services.AddSingleton<ILoggerManager, LoggerManager>();
             services.AddScoped<IOtpService, OtpService>();
             services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
             services.AddDbContext<ConnectVibeDbContext>(options =>
