@@ -3,6 +3,7 @@ using ConnectVibe.Application;
 using ConnectVibe.Infrastructure;
 
 using Microsoft.OpenApi.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 {
     builder.Services.AddApplication();
@@ -29,25 +30,20 @@ var builder = WebApplication.CreateBuilder(args);
                        Type=ReferenceType.SecurityScheme,
                        Id="Bearer"
                     }
-
                 },
                   new string[]{}
             }
         });
     });
-    
-
 }
-
 
 var app = builder.Build();
 {
-
-        app.UseSwagger();
-        app.UseSwaggerUI(c =>
-        {
-            c.SwaggerEndpoint("/swagger/v1/swagger.json", "ConnectVibe API v1");
-        });
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "ConnectVibe API v1");
+    });
     app.UseExceptionHandler("/error");
     app.UseHttpsRedirection();
     app.UseRouting();
@@ -57,5 +53,3 @@ var app = builder.Build();
 
     app.Run();
 }
-
-

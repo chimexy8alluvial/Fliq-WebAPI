@@ -2,11 +2,13 @@
 using ConnectVibe.Application.Common.Interfaces.Persistence;
 using ConnectVibe.Application.Common.Interfaces.Services;
 using ConnectVibe.Application.Common.Interfaces.Services.AuthServices;
+using ConnectVibe.Application.Common.Interfaces.Services.ImageServices;
 using ConnectVibe.Infrastructure.Authentication;
 using ConnectVibe.Infrastructure.Persistence;
 using ConnectVibe.Infrastructure.Persistence.Repositories;
 using ConnectVibe.Infrastructure.Services;
 using ConnectVibe.Infrastructure.Services.AuthServices;
+using ConnectVibe.Infrastructure.Services.ImageServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -23,10 +25,12 @@ namespace ConnectVibe.Infrastructure
             services.AddAuth(configurationManager);
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IProfileRepository, ProfileRepository>();
             services.AddScoped<ISocialAuthService, SocialAuthService>();
             services.AddScoped<IOtpRepository, OtpRepository>();
             services.AddSingleton<IEmailService, EmailService>();
             services.AddSingleton<IOtpService, OtpService>();
+            services.AddScoped<IImageService, ImageService>();
             services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
             services.AddDbContext<ConnectVibeDbContext>(options =>
     options.UseSqlServer(configurationManager.GetConnectionString("ConnectVibeDbContext") ?? throw new InvalidOperationException("Connection string 'ConnectVibeDbContext' not found.")));
