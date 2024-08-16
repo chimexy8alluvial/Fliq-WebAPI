@@ -1,0 +1,1 @@
+2024-08-11 12:39:15.0958 INFO ------About the register the following user: ----{"FirstName":"Emmanuel","LastName":"Powerful","DisplayName":"Zuzu","Email":"zuzu5050@gmail.com","Password":"Passw0rd@123"}

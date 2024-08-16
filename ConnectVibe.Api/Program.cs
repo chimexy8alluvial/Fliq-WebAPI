@@ -1,14 +1,17 @@
-using ConnectVibe.Api;
+﻿using ConnectVibe.Api;
 using ConnectVibe.Application;
 using ConnectVibe.Infrastructure;
-
 using Microsoft.OpenApi.Models;
+using NLog;
 
 var builder = WebApplication.CreateBuilder(args);
 {
     builder.Services.AddApplication();
     builder.Services.AddPresentation();
     builder.Services.AddInfrastructure(builder.Configuration);
+    // Configure NLog
+    LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
+
     builder.Services.AddSwaggerGen(c =>
     {
         c.SwaggerDoc("v1", new OpenApiInfo { Title = "ConnectVibe", Version = "v1" });
