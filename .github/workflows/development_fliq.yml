@@ -29,7 +29,8 @@ jobs:
         with:
           name: .net-app
           path: ${{ github.workspace }}/output
-
+      - name: List output directory contents
+        run: dir ${{ github.workspace }}/output
   deploy:
     runs-on: windows-latest
     needs: build
