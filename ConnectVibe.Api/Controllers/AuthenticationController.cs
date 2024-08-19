@@ -43,7 +43,7 @@ namespace ConnectVibe.Api.Controllers
             _logger.LogInfo($"------About the register the following user: ----{JsonConvert.SerializeObject(request)}");
             var command = _mapper.Map<RegisterCommand>(request);
             var authResult = await _mediator.Send(command);
-
+            _logger.LogInfo($"------AuthResult for Registeration after the command initiation: ----{JsonConvert.SerializeObject(authResult)}");
             return authResult.Match(
                 authResult => Ok(_mapper.Map<RegisterResponse>(authResult)),
                 errors => Problem(errors)
@@ -53,8 +53,10 @@ namespace ConnectVibe.Api.Controllers
         [HttpPost("validate-otp")]
         public async Task<IActionResult> ValidateOtp([FromBody] ValidateOtpRequest request)
         {
+            _logger.LogInfo($"------Otp Validation request: ----{JsonConvert.SerializeObject(request)}");
             var command = _mapper.Map<ValidateOTPCommand>(request);
             var authResult = await _mediator.Send(command);
+            _logger.LogInfo($"------AuthResult for OTP validation after the command initiation: ----{JsonConvert.SerializeObject(authResult)}");
             return authResult.Match(
                  authResult => Ok(_mapper.Map<AuthenticationResponse>(authResult)),
                  errors => Problem(errors)
@@ -64,14 +66,15 @@ namespace ConnectVibe.Api.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
+            _logger.LogInfo($"------Login request: ----{JsonConvert.SerializeObject(request)}");
             var command = _mapper.Map<LoginQuery>(request);
             var authResult = await _mediator.Send(command);
-
+            _logger.LogInfo($"------AuthResult for Login after the command initiation: ----{JsonConvert.SerializeObject(authResult)}");
             if (authResult.IsError && authResult.FirstError == Errors.Authentication.InvalidCredentials)
             {
                 return Problem(statusCode: StatusCodes.Status401Unauthorized, title: authResult.FirstError.Description);
             }
-
+            _logger.LogInfo($"------AuthResult for Login after the command initiation: ----{JsonConvert.SerializeObject(authResult)}");
             return authResult.Match(
                 authResult => Ok(_mapper.Map<AuthenticationResponse>(authResult)),
                 errors => Problem(errors)
@@ -82,7 +85,7 @@ namespace ConnectVibe.Api.Controllers
         [HttpPost("changePassword")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
         {
-            _logger.LogInfo($"------About to change Password for the following user: ----{JsonConvert.SerializeObject(request)}");
+            _logger.LogInfo($"------About to change Password for the following user(request): ----{JsonConvert.SerializeObject(request)}");
             var command = _mapper.Map<ChangePasswordCommand>(request);
             var authResult = await _mediator.Send(command);
             _logger.LogInfo($"------Change Password AuthResult: ----{JsonConvert.SerializeObject(authResult)}");
@@ -148,9 +151,10 @@ namespace ConnectVibe.Api.Controllers
         [HttpPost("Login/google")]
         public async Task<IActionResult> GoogleLogin([FromQuery] GoogleLoginRequest request)
         {
+            _logger.LogInfo($"-----GoogleLogin Request: ----{JsonConvert.SerializeObject(request)}");
             var command = _mapper.Map<GoogleLoginQuery>(request);
             var authResult = await _mediator.Send(command);
-
+            _logger.LogInfo($"------ GoogleLogin AuthResult: ----{JsonConvert.SerializeObject(authResult)}");
             if (authResult.IsError && authResult.FirstError == Errors.Authentication.InvalidToken)
             {
                 return Problem(statusCode: StatusCodes.Status401Unauthorized, title: authResult.FirstError.Description);
@@ -165,9 +169,10 @@ namespace ConnectVibe.Api.Controllers
         [HttpPost("Login/facebook")]
         public async Task<IActionResult> FacebookLogin([FromQuery] FacebookLoginRequest request)
         {
+            _logger.LogInfo($"-----FacebookLogin Request: ----{JsonConvert.SerializeObject(request)}");
             var command = _mapper.Map<FacebookLoginQuery>(request);
             var authResult = await _mediator.Send(command);
-
+            _logger.LogInfo($"------ FacebookLogin AuthResult: ----{JsonConvert.SerializeObject(authResult)}");
             if (authResult.IsError && authResult.FirstError == Errors.Authentication.InvalidToken)
             {
                 return Problem(statusCode: StatusCodes.Status401Unauthorized, title: authResult.FirstError.Description);

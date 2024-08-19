@@ -4,6 +4,7 @@ using ConnectVibe.Application.Common.Security;
 using ConnectVibe.Domain.Common.Errors;
 using ErrorOr;
 using MediatR;
+using Newtonsoft.Json;
 
 namespace ConnectVibe.Application.Authentication.Commands.PasswordCreation
 {
@@ -19,16 +20,19 @@ namespace ConnectVibe.Application.Authentication.Commands.PasswordCreation
         private readonly IUserRepository _userRepository;
         private readonly IEmailService _emailService;
         private readonly IOtpService _otpService;
-        public CreatePasswordHandler(IUserRepository userRepository, IEmailService emailService, IOtpService otpService)
+        private readonly ILoggerManager _logger;
+        public CreatePasswordHandler(IUserRepository userRepository, IEmailService emailService, IOtpService otpService, ILoggerManager logger)
         {
             _userRepository = userRepository;
             _emailService = emailService;
             _otpService = otpService;
+            _logger = logger;
         }
         public async Task<ErrorOr<bool>> Handle(CreatePasswordCommand command, CancellationToken cancellationToken)
         {
             await Task.CompletedTask;
-            var user = _userRepository.GetUserById(command.Id);
+            var user = _userRepository..GetUserById(command.Id);
+            _logger.LogInfo($"------Create Password command: ----{JsonConvert.SerializeObject(user)}");
             if (user == null)
                 return Errors.Authentication.InvalidCredentials;
 

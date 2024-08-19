@@ -8,6 +8,7 @@ using ConnectVibe.Domain.Entities;
 using ErrorOr;
 using MapsterMapper;
 using MediatR;
+using Newtonsoft.Json;
 
 
 namespace ConnectVibe.Application.Authentication.Commands.Register
@@ -30,7 +31,8 @@ namespace ConnectVibe.Application.Authentication.Commands.Register
         private readonly IEmailService _emailService;
         private readonly IOtpRepository _otpRepository;
         private readonly IOtpService _otpService;
-        public RegisterCommandHandler(IJwtTokenGenerator jwtTokenGenerator, IUserRepository userRepository, IMapper mapper, IEmailService emailService, IOtpRepository otpRepository, IOtpService otpService)
+        private readonly ILoggerManager _logger;
+        public RegisterCommandHandler(IJwtTokenGenerator jwtTokenGenerator, IUserRepository userRepository, IMapper mapper, IEmailService emailService, IOtpRepository otpRepository, IOtpService otpService, ILoggerManager logger)
         {
             _jwtTokenGenerator = jwtTokenGenerator;
             _userRepository = userRepository;
@@ -38,12 +40,13 @@ namespace ConnectVibe.Application.Authentication.Commands.Register
             _emailService = emailService;
             _otpRepository = otpRepository;
             _otpService = otpService;
+            _logger = logger;
         }
         public async Task<ErrorOr<RegistrationResult>> Handle(RegisterCommand command, CancellationToken cancellationToken)
         {
             await Task.CompletedTask;
             User user = _userRepository.GetUserByEmail(command.Email);
-
+            _logger.LogInfo($"------Register command: ----{JsonConvert.SerializeObject(user)}");
             if (user != null && user.IsEmailValidated)
                 return Errors.User.DuplicateEmail;
 
