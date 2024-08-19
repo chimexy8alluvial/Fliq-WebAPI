@@ -7,13 +7,6 @@
     <UserSecretsId>6d17d946-7feb-4ead-b6a6-66dc2117b0f7</UserSecretsId>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Content Remove="nlog.config" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="nlog.config" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Azure.Identity" Version="1.12.0" />
