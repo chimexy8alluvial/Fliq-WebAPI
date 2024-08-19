@@ -31,7 +31,7 @@ namespace ConnectVibe.Application.Authentication.Commands.PasswordCreation
         public async Task<ErrorOr<bool>> Handle(CreatePasswordCommand command, CancellationToken cancellationToken)
         {
             await Task.CompletedTask;
-            var user = _userRepository..GetUserById(command.Id);
+            var user = _userRepository.GetUserById(command.Id);
             _logger.LogInfo($"------Create Password command: ----{JsonConvert.SerializeObject(user)}");
             if (user == null)
                 return Errors.Authentication.InvalidCredentials;
