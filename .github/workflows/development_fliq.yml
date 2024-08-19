@@ -27,12 +27,15 @@ jobs:
       - name: List output directory contents
         run: dir ${{ github.workspace }}/output
 
+      - name: Zip published output
+        run: Compress-Archive -Path ${{ github.workspace }}/output/* -DestinationPath ${{ github.workspace }}/output/output.zip
+
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
-          path: ${{ github.workspace }}/output
-     
+          path: ${{ github.workspace }}/output/output.zip
+
   deploy:
     runs-on: windows-latest
     needs: build
@@ -40,14 +43,20 @@ jobs:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write # This is required for requesting the JWT
+      id-token: write
 
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
           name: .net-app
-      
+
+      - name: Unzip artifact
+        run: Expand-Archive -Path ./.net-app/output.zip -DestinationPath ${{ github.workspace }}/unzipped-output
+
+      - name: List unzipped directory contents
+        run: dir ${{ github.workspace }}/unzipped-output
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -61,4 +70,4 @@ jobs:
         with:
           app-name: 'fliq'
           slot-name: 'Production'
-          package: ${{ github.workspace }}/output
+          package: ${{ github.workspace }}/unzipped-output
