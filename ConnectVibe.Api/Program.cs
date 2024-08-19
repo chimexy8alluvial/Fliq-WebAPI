@@ -14,7 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 
     builder.Services.AddSwaggerGen(c =>
     {
-        c.SwaggerDoc("v1", new OpenApiInfo { Title = "ConnectVibe", Version = "v1" });
+        c.SwaggerDoc("v1", new OpenApiInfo { Title = "Fliq", Version = "v1" });
         c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
         {
             Name = "Authorization",
@@ -50,7 +50,7 @@ var app = builder.Build();
         app.UseSwagger();
         app.UseSwaggerUI(c =>
         {
-            c.SwaggerEndpoint("/swagger/v1/swagger.json", "ConnectVibe API v1");
+            c.SwaggerEndpoint("/swagger/v1/swagger.json", "Fliq API v1");
         });
     app.UseExceptionHandler("/error");
     app.UseHttpsRedirection();
