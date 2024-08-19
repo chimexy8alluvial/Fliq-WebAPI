@@ -24,13 +24,15 @@ jobs:
       - name: dotnet publish
         run: dotnet publish ConnectVibe.Api/ConnectVibe.Api.csproj -c Release -o ${{ github.workspace }}/output
 
+      - name: List output directory contents
+        run: dir ${{ github.workspace }}/output
+
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
           path: ${{ github.workspace }}/output
-      - name: List output directory contents
-        run: dir ${{ github.workspace }}/output
+     
   deploy:
     runs-on: windows-latest
     needs: build
