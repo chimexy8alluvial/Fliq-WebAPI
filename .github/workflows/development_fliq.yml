@@ -1,9 +1,12 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
+
 name: Build and deploy ASP.Net Core app to Azure Web App - fliq
 
 on:
   push:
     branches:
-      - development
+      - dev
   workflow_dispatch:
 
 jobs:
@@ -19,22 +22,16 @@ jobs:
           dotnet-version: '8.x'
 
       - name: Build with dotnet
-        run: dotnet build --configuration Release ConnectVibe.Api/ConnectVibe.Api.csproj
+        run: dotnet build --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish ConnectVibe.Api/ConnectVibe.Api.csproj -c Release -o ${{ github.workspace }}/output
-
-      - name: List output directory contents
-        run: dir ${{ github.workspace }}/output
-
-      - name: Zip published output
-        run: Compress-Archive -Path ${{ github.workspace }}/output/* -DestinationPath ${{ github.workspace }}/output/output.zip
+        run: dotnet publish -c Release -o ${{env.GITHUB_WORKSPACE}}\myapp
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
-          path: ${{ github.workspace }}/output/output.zip
+          path: ${{env.GITHUB_WORKSPACE}}\myapp
 
   deploy:
     runs-on: windows-latest
@@ -42,32 +39,18 @@ jobs:
     environment:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
-    permissions:
-      id-token: write
-
+    
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
           name: .net-app
-
-      - name: Unzip artifact
-        run: Expand-Archive -Path ./.net-app/output.zip -DestinationPath ${{ github.workspace }}/unzipped-output
-
-      - name: List unzipped directory contents
-        run: dir ${{ github.workspace }}/unzipped-output
-
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_C403734509FF4ACC822CFD4C485B6E31 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_8CF8C78EA03C49879FD0A931AED1B50D }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_D9794605284B4B8099F189410FC82DA2 }}
-
+      
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'fliq'
           slot-name: 'Production'
-          package: ${{ github.workspace }}/unzipped-output
+          package: .
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_DF12E2499A78487CA2DC4903C737B91A }}
