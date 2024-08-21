@@ -11,7 +11,7 @@
      EthnicityDto Ethnicity,
      HaveKidsDto HaveKids,
      WantKidsDto WantKids,
-     bool ShareLocation = default!,
+     LocationDto Location,
      bool AllowNotifications = false
 
  );

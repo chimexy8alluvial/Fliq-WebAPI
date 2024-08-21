@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
         public WantKidsType WantKidsType { get; set; }
-        public bool IsVisible { get; set; } = false;
+        public bool IsVisible { get; set; }
     }
 
     public enum WantKidsType

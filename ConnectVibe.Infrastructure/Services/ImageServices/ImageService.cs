@@ -2,41 +2,65 @@
 using ConnectVibe.Application.Common.Interfaces.Services.ImageServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace ConnectVibe.Infrastructure.Services.ImageServices
 {
     public class ImageService : IImageService
     {
-        public async Task<string> UploadImageAsync(IFormFile imageToUpload)
+        public async Task<string?> UploadImageAsync(IFormFile imageToUpload)
         {
-            string imageFullPath = null;
             if (imageToUpload == null || imageToUpload.Length == 0)
             {
                 return null;
             }
 
-            CloudStorageAccount cloudStorageAccount = AzureConnectionString.GetConnectionString();
-            CloudBlobClient cloudBlobClient = cloudStorageAccount.CreateCloudBlobClient();
-            CloudBlobContainer cloudBlobContainer = cloudBlobClient.GetContainerReference("profile-photos");
-
-            if (await cloudBlobContainer.CreateIfNotExistsAsync())
+            // Validate Image Extension
+            var validExtensions = new[] { ".jpg", ".jpeg", ".png" };
+            var extension = Path.GetExtension(imageToUpload.FileName).ToLowerInvariant();
+            if (!validExtensions.Contains(extension))
             {
-                await cloudBlobContainer.SetPermissionsAsync(
-                    new BlobContainerPermissions
-                    {
-                        PublicAccess = BlobContainerPublicAccessType.Blob
-                    }
-                    );
+                return null;
             }
-            string imageName = Guid.NewGuid().ToString() + "-" + Path.GetExtension(imageToUpload.FileName);
 
-            CloudBlockBlob cloudBlockBlob = cloudBlobContainer.GetBlockBlobReference(imageName);
+            // Attempt to create a CloudStorageAccount
+            CloudStorageAccount cloudStorageAccount = AzureConnectionString.GetConnectionString();
+
+            var cloudBlobClient = cloudStorageAccount.CreateCloudBlobClient();
+            var cloudBlobContainer = cloudBlobClient.GetContainerReference("profile-photos");
+
+            string imageName = Guid.NewGuid().ToString() + extension;
+
+            // Validate Image Integrity
+            using (var memoryStream = new MemoryStream())
+            {
+                await imageToUpload.CopyToAsync(memoryStream);
+                try
+                {
+                    memoryStream.Position = 0;
+                    memoryStream.Seek(0, SeekOrigin.Begin);
+                }
+                catch (Exception)
+                {
+                    return null;
+                }
+            }
+
+            var cloudBlockBlob = cloudBlobContainer.GetBlockBlobReference(imageName);
             cloudBlockBlob.Properties.ContentType = imageToUpload.ContentType;
-            await cloudBlockBlob.UploadFromStreamAsync(imageToUpload.OpenReadStream());
 
-            imageFullPath = cloudBlockBlob.Uri.ToString();
-            return imageFullPath;
+            try
+            {
+                // Upload the image to Azure Blob Storage
+                using var imageStream = imageToUpload.OpenReadStream();
+                await cloudBlockBlob.UploadFromStreamAsync(imageStream);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+
+            // Return the full path of the uploaded image
+            return cloudBlockBlob.Uri.ToString();
         }
     }
 }

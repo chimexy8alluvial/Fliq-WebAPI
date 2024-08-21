@@ -27,27 +27,9 @@ namespace ConnectVibe.Api.Mapping
                 .Map(dest => dest.SexualOrientationType, src => (SexualOrientationType)src.SexualOrientationType);
             config.NewConfig<ProfilePhoto, ProfilePhotoResponse>();
             config.NewConfig<UserProfile, ProfileResponse>();
-            config.NewConfig<CreateProfileResult, ProfileResponse>();
-            //config.ForType<IFormFile, IFormFile>()
-            //    .MapWith(src => new IFormFile(src));
-        }
-
-        private List<ProfilePhotoDto> MapPhotos(List<ProfilePhotoDto> photoDtos)
-        {
-            // Implement logic to convert ProfilePhotoDto to ProfilePhoto
-            // For example, save files to disk and create ProfilePhoto objects
-            List<ProfilePhotoDto> photos = new();
-
-            foreach (var photoDto in photoDtos)
-            {
-                photos.Add(new ProfilePhotoDto
-                {
-                    Caption = photoDto.Caption,
-                    ImageFile = photoDto.ImageFile
-                });
-            }
-
-            return photos;
+            config.NewConfig<CreateProfileResult, ProfileResponse>()
+                .Map(dest => dest, src => src.Profile)
+                .Map(dest => dest.DOB, src => src.Profile.DOB);
         }
     }
 }

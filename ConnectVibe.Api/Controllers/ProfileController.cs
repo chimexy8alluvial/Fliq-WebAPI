@@ -1,13 +1,14 @@
-﻿using ConnectVibe.Application.Authentication.Common.Profile;
-using ConnectVibe.Application.Profile.Commands.Create;
+﻿using ConnectVibe.Application.Profile.Commands.Create;
 using ConnectVibe.Contracts.Profile;
 using MapsterMapper;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ConnectVibe.Api.Controllers
 {
     [Route("api/profile")]
+    [AllowAnonymous]
     public class ProfileController : ApiBaseController
     {
         private readonly ISender _mediator;
@@ -23,13 +24,12 @@ namespace ConnectVibe.Api.Controllers
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> Create([FromForm] CreateProfileRequest request)
         {
-            //var userId = GetAuthUserId();
             var command = _mapper.Map<CreateProfileCommand>(request);
             command.Photos = request.Photos;
             var profileResult = await _mediator.Send(command);
 
             return profileResult.Match(
-                profileResult => Ok(_mapper.Map<CreateProfileResult>(profileResult)),
+                profileResult => Ok(_mapper.Map<ProfileResponse>(profileResult)),
                 errors => Problem(errors)
                 );
         }

@@ -9,7 +9,7 @@
      EthnicityDto Ethnicity,
      HaveKidsDto HaveKids,
      WantKidsDto WantKids,
-     bool ShareLocation = default!,
+     LocationDto Location,
      bool AllowNotifications = false,
      List<string> Passions = default!,
     List<ProfilePhotoResponse> Photos = default!);

@@ -41,11 +41,14 @@ namespace ConnectVibe.Application.Profile.Commands.Create
             RuleFor(x => x.Passions)
                 .NotEmpty().WithMessage("Passions cannot be empty.");
 
-            RuleForEach(x => x.Photos)
-                .SetValidator(new ProfilePhotoDtoValidator());
+            RuleFor(x => x.Photos)
+           .NotNull().WithMessage("Photos are required.")
+           .Must(photos => photos.Count >= 6).WithMessage("Exactly 6 photos are required.")
+           .ForEach(photo => photo.SetValidator(new ProfilePhotoDtoValidator()));
 
-            RuleFor(x => x.ShareLocation)
-                .NotNull().WithMessage("ShareLocation is required.");
+            RuleFor(x => x.Location)
+                .NotNull().WithMessage("Location is required.")
+                .SetValidator(new LocationValidator());
 
             RuleFor(x => x.AllowNotifications)
                 .NotNull().WithMessage("AllowNotifications is required.");
@@ -134,6 +137,21 @@ namespace ConnectVibe.Application.Profile.Commands.Create
 
             RuleFor(x => x.ImageFile)
                 .NotNull().WithMessage("ImageFile is required.");
+        }
+    }
+
+    public class LocationValidator : AbstractValidator<Location>
+    {
+        public LocationValidator()
+        {
+            RuleFor(x => x.Address)
+                .NotEmpty().WithMessage("Address is required.");
+            RuleFor(x => x.PostCode)
+                .NotEmpty().WithMessage("PostCode is required.");
+            RuleFor(x => x.Country)
+                .NotEmpty().WithMessage("Country is required.");
+            RuleFor(x => x.IsVisible)
+                .NotNull().WithMessage("IsVisible is required.");
         }
     }
 }

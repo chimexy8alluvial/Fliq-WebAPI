@@ -10,8 +10,8 @@
         public Ethnicity Ethnicity { get; set; } = default!;
         public HaveKids HaveKids { get; set; } = default!;
         public WantKids WantKids { get; set; } = default!;
-        public bool ShareLocation { get; set; } = false;
-        public bool AllowNotifications { get; set; } = false;
+        public Location Location { get; set; } = default!;
+        public bool AllowNotifications { get; set; }
         public List<string> Passions { get; set; } = default!;
         public List<ProfilePhoto> Photos { get; set; } = default!;
         public int UserId { get; set; }

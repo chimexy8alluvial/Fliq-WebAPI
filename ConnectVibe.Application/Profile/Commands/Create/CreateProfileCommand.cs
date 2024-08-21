@@ -22,8 +22,8 @@ namespace ConnectVibe.Application.Profile.Commands.Create
         public Ethnicity Ethnicity { get; set; } = default!;
         public HaveKids HaveKids { get; set; } = default!;
         public WantKids WantKids { get; set; } = default!;
-        public bool ShareLocation { get; set; } = default!;
-        public bool AllowNotifications { get; set; } = false;
+        public Location Location { get; set; } = default!;
+        public bool AllowNotifications { get; set; }
     }
 
     public class CreateProfileCommandHandler : IRequestHandler<CreateProfileCommand, ErrorOr<CreateProfileResult>>
@@ -67,6 +67,10 @@ namespace ConnectVibe.Application.Profile.Commands.Create
                 {
                     ProfilePhoto profilePhoto = new() { PictureUrl = profileUrl, Caption = photo.Caption };
                     userProfile.Photos.Add(profilePhoto);
+                }
+                else
+                {
+                    return Errors.Image.InvalidImage;
                 }
             }
             _profileRepository.Add(userProfile);
