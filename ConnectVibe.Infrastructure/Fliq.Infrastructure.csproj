@@ -33,7 +33,7 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ConnectVibe.Application\ConnectVibe.Application.csproj" />
+    <ProjectReference Include="..\ConnectVibe.Application\Fliq.Application.csproj" />
   </ItemGroup>
 
 </Project>
