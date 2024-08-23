@@ -1,4 +1,4 @@
-﻿using ConnectVibe.Contracts.Profile;
+﻿using ConnectVibe.Application.Profile.Common;
 using ConnectVibe.Domain.Entities.Profile;
 using FluentValidation;
 
@@ -128,7 +128,7 @@ namespace ConnectVibe.Application.Profile.Commands.Create
         }
     }
 
-    public class ProfilePhotoDtoValidator : AbstractValidator<ProfilePhotoDto>
+    public class ProfilePhotoDtoValidator : AbstractValidator<ProfilePhotoMapped>
     {
         public ProfilePhotoDtoValidator()
         {

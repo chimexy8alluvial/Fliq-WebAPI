@@ -1,7 +1,7 @@
 ﻿using ConnectVibe.Application.Authentication.Common.Profile;
 using ConnectVibe.Application.Common.Interfaces.Persistence;
 using ConnectVibe.Application.Common.Interfaces.Services.ImageServices;
-using ConnectVibe.Contracts.Profile;
+using ConnectVibe.Application.Profile.Common;
 using ConnectVibe.Domain.Common.Errors;
 using ConnectVibe.Domain.Entities.Profile;
 using ErrorOr;
@@ -14,7 +14,7 @@ namespace ConnectVibe.Application.Profile.Commands.Create
     {
         public int UserId { get; set; }
         public List<string> Passions { get; set; } = default!;
-        public List<ProfilePhotoDto> Photos { get; set; } = default!;
+        public List<ProfilePhotoMapped> Photos { get; set; } = default!;
         public DateTime DOB { get; set; }
         public Gender Gender { get; set; } = default!;
         public SexualOrientation SexualOrientation { get; set; } = default!;
@@ -62,7 +62,7 @@ namespace ConnectVibe.Application.Profile.Commands.Create
             userProfile.User = user;
             foreach (var photo in command.Photos)
             {
-                var profileUrl = await _imageService.UploadImageAsync(photo.ImageFile);
+                var profileUrl = await _imageService.UploadMediaAsync(photo.ImageFile);
                 if (profileUrl != null)
                 {
                     ProfilePhoto profilePhoto = new() { PictureUrl = profileUrl, Caption = photo.Caption };

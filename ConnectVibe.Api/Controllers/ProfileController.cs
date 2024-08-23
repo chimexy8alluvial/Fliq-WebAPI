@@ -1,4 +1,5 @@
 ﻿using ConnectVibe.Application.Profile.Commands.Create;
+using ConnectVibe.Application.Profile.Common;
 using ConnectVibe.Contracts.Profile;
 using MapsterMapper;
 using MediatR;
@@ -25,7 +26,7 @@ namespace ConnectVibe.Api.Controllers
         public async Task<IActionResult> Create([FromForm] CreateProfileRequest request)
         {
             var command = _mapper.Map<CreateProfileCommand>(request);
-            command.Photos = request.Photos;
+            command.Photos = _mapper.Map<List<ProfilePhotoMapped>>(request.Photos);
             var profileResult = await _mediator.Send(command);
 
             return profileResult.Match(

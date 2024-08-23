@@ -1,5 +1,6 @@
 ﻿using ConnectVibe.Application.Authentication.Common.Profile;
 using ConnectVibe.Application.Profile.Commands.Create;
+using ConnectVibe.Application.Profile.Common;
 using ConnectVibe.Contracts.Profile;
 using ConnectVibe.Domain.Entities.Profile;
 using Mapster;
@@ -26,6 +27,8 @@ namespace ConnectVibe.Api.Mapping
             config.NewConfig<SexualOrientationDto, SexualOrientation>()
                 .Map(dest => dest.SexualOrientationType, src => (SexualOrientationType)src.SexualOrientationType);
             config.NewConfig<ProfilePhoto, ProfilePhotoResponse>();
+            config.NewConfig<ProfilePhotoDto, ProfilePhotoMapped>()
+                .Map(dest => dest.ImageFile, src => src.ImageFile);
             config.NewConfig<UserProfile, ProfileResponse>();
             config.NewConfig<CreateProfileResult, ProfileResponse>()
                 .Map(dest => dest, src => src.Profile)
