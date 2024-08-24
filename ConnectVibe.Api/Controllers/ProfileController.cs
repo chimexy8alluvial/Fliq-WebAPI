@@ -26,7 +26,11 @@ namespace ConnectVibe.Api.Controllers
         public async Task<IActionResult> Create([FromForm] CreateProfileRequest request)
         {
             var command = _mapper.Map<CreateProfileCommand>(request);
-            command.Photos = _mapper.Map<List<ProfilePhotoMapped>>(request.Photos);
+            command.Photos = request.Photos.Select(photo => new ProfilePhotoMapped
+            {
+                Caption = photo.Caption,
+                ImageFile = photo.ImageFile
+            }).ToList();
             var profileResult = await _mediator.Send(command);
 
             return profileResult.Match(

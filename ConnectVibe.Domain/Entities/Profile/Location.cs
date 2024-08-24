@@ -3,9 +3,9 @@
     public class Location
     {
         public int Id { get; set; }
-        public string Address { get; set; } = default!;
-        public string PostCode { get; set; } = default!;
-        public string Country { get; set; } = default!;
+        public double Lat { get; set; }
+        public double Lng { get; set; }
         public bool IsVisible { get; set; }
+        public LocationDetail LocationDetail { get; set; } = default!;
     }
 }

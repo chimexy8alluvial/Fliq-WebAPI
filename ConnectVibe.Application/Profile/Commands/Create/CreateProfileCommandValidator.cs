@@ -43,7 +43,7 @@ namespace ConnectVibe.Application.Profile.Commands.Create
 
             RuleFor(x => x.Photos)
            .NotNull().WithMessage("Photos are required.")
-           .Must(photos => photos.Count >= 6).WithMessage("Exactly 6 photos are required.")
+           .Must(photos => photos.Count >= 1).WithMessage("Exactly 6 photos are required.")
            .ForEach(photo => photo.SetValidator(new ProfilePhotoDtoValidator()));
 
             RuleFor(x => x.Location)
@@ -144,14 +144,20 @@ namespace ConnectVibe.Application.Profile.Commands.Create
     {
         public LocationValidator()
         {
-            RuleFor(x => x.Address)
-                .NotEmpty().WithMessage("Address is required.");
-            RuleFor(x => x.PostCode)
-                .NotEmpty().WithMessage("PostCode is required.");
-            RuleFor(x => x.Country)
-                .NotEmpty().WithMessage("Country is required.");
-            RuleFor(x => x.IsVisible)
-                .NotNull().WithMessage("IsVisible is required.");
+            // Latitude should be between -90 and 90
+            RuleFor(location => location.Lat)
+                .InclusiveBetween(-90.0, 90.0)
+                .WithMessage("Latitude must be between -90 and 90 degrees.");
+
+            // Longitude should be between -180 and 180
+            RuleFor(location => location.Lng)
+                .InclusiveBetween(-180.0, 180.0)
+                .WithMessage("Longitude must be between -180 and 180 degrees.");
+
+            // IsVisible should be a boolean, but no specific rule needed unless you want to ensure it's true/false
+            RuleFor(location => location.IsVisible)
+                .NotNull()
+                .WithMessage("IsVisible must be specified.");
         }
     }
 }

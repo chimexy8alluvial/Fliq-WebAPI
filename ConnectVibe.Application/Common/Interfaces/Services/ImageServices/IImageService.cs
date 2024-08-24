@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Azure.AI.Vision.Face;
+using Microsoft.AspNetCore.Http;
 
 namespace ConnectVibe.Application.Common.Interfaces.Services.ImageServices
 {
@@ -7,5 +8,7 @@ namespace ConnectVibe.Application.Common.Interfaces.Services.ImageServices
         Task<string?> UploadImageAsync(IFormFile imageToUpload);
 
         Task<string?> UploadMediaAsync(IFormFile mediaToUpload);
+
+        Task<(bool IsVerified, double ConfidenceLevel, LivenessWithVerifySession? LivenessWithVerifySession)> GetFaceLivelinessResult(string sessionId);
     }
 }
