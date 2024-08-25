@@ -46,7 +46,7 @@ namespace ConnectVibe.Application.Authentication.Commands.Register
         {
             await Task.CompletedTask;
             User user = _userRepository.GetUserByEmail(command.Email);
-            _logger.LogInfo($"------Register command: ----{JsonConvert.SerializeObject(user)}");
+            _logger.LogInfo($"Register command validation Result: {JsonConvert.SerializeObject(user)}");
             if (user != null && user.IsEmailValidated)
                 return Errors.User.DuplicateEmail;
 

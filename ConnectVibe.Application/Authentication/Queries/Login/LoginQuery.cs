@@ -32,12 +32,11 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, ErrorOr<Authenticat
     {
         await Task.CompletedTask;
         var user = _userRepository.GetUserByEmail(query.Email);
-        _logger.LogInfo($"-----LoginQuery Response: ----{JsonConvert.SerializeObject(user)}");
         if (user == null)
             return Errors.Authentication.InvalidCredentials;
 
         var isSuccessfull = PasswordHash.Validate(query.Password, user.PasswordSalt, user.PasswordHash);
-        _logger.LogInfo($"-----LoginQuery isSuccessful Response: ----{JsonConvert.SerializeObject(isSuccessfull)}");
+        _logger.LogInfo($"Validate user Query Result: {JsonConvert.SerializeObject(isSuccessfull)}");
         if (!isSuccessfull)
             return Errors.Authentication.InvalidCredentials;
 

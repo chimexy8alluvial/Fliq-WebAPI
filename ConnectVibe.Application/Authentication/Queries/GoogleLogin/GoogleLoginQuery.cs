@@ -35,9 +35,9 @@ namespace ConnectVibe.Application.Authentication.Queries.GoogleLogin
             await Task.CompletedTask;
             bool isNewUser = false;
             var googleResponse = await _socialAuthService.ExchangeCodeForTokenAsync(query.Code);
-            _logger.LogInfo($"-----Google login Query Response: ----{JsonConvert.SerializeObject(googleResponse)}");
+            _logger.LogInfo($"Exchange Code For Token Query Result: {JsonConvert.SerializeObject(googleResponse)}");
             var user = _userRepository.GetUserByEmail(googleResponse.Email);
-            _logger.LogInfo($"-----user response for Google login Query: ----{JsonConvert.SerializeObject(user)}");
+            _logger.LogInfo($"Get User by Email Query Result: {JsonConvert.SerializeObject(user)}");
             if (user == null)
             {
                 user = new User()

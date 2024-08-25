@@ -34,7 +34,7 @@ namespace ConnectVibe.Application.Authentication.Commands.PasswordReset
         {
             await Task.CompletedTask;
             var user = _userRepository.GetUserByEmail(command.Email);
-            _logger.LogInfo($"------Forgot Password command: ----{JsonConvert.SerializeObject(user)}");
+            _logger.LogInfo($"Forgot Password validation command: ----{JsonConvert.SerializeObject(user)}");
 
             if (user == null)
                 return Errors.Authentication.InvalidCredentials;
