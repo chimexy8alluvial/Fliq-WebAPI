@@ -36,7 +36,7 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, ErrorOr<Authenticat
             return Errors.Authentication.InvalidCredentials;
 
         var isSuccessfull = PasswordHash.Validate(query.Password, user.PasswordSalt, user.PasswordHash);
-        _logger.LogInfo($"Validate user Query Result: {JsonConvert.SerializeObject(isSuccessfull)}");
+        _logger.LogInfo($"Validate user Query Result: {isSuccessfull}");
         if (!isSuccessfull)
             return Errors.Authentication.InvalidCredentials;
 

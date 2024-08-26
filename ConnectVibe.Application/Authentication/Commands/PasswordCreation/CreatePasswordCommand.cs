@@ -32,7 +32,7 @@ namespace ConnectVibe.Application.Authentication.Commands.PasswordCreation
         {
             await Task.CompletedTask;
             var user = _userRepository.GetUserById(command.Id);
-            _logger.LogInfo($"Create Password command validation Result: {JsonConvert.SerializeObject(user)}");
+            _logger.LogInfo($"Create Password command validation Result: {user}");
             if (user == null)
                 return Errors.Authentication.InvalidCredentials;
 

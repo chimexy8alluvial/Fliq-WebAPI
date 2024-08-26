@@ -44,7 +44,7 @@ namespace ConnectVibe.Application.Authentication.Commands.ChangePassword
                 return Errors.Authentication.InvalidCredentials;
 
             var isSuccessfull = PasswordHash.Validate(command.OldPassword, user.PasswordSalt, user.PasswordHash);
-            _logger.LogInfo($"Change Password command validation Result{JsonConvert.SerializeObject(isSuccessfull)}");
+            _logger.LogInfo($"Change Password command validation Result{isSuccessfull}");
             if (!isSuccessfull)
                 return Errors.Authentication.InvalidCredentials;
 

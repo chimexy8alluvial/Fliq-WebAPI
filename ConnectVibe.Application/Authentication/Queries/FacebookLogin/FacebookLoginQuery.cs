@@ -35,7 +35,7 @@ namespace ConnectVibe.Application.Authentication.Queries.FacebookLogin
             await Task.CompletedTask;
             bool isNewUser = false;
             var facebookResponse = await _socialAuthService.GetFacebookUserInformation(query.Code);
-            _logger.LogInfo($"Get Facebook User Information Query Result: {JsonConvert.SerializeObject(facebookResponse)}");
+            _logger.LogInfo($"Get Facebook User Information Query Result: {facebookResponse}");
             if (facebookResponse == null)
             {
                 return Errors.Authentication.InvalidToken;
