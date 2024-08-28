@@ -1,11 +1,13 @@
 ﻿using ConnectVibe.Application.Authentication.Common;
 using ConnectVibe.Application.Common.Interfaces.Authentication;
 using ConnectVibe.Application.Common.Interfaces.Persistence;
+using ConnectVibe.Application.Common.Interfaces.Services;
 using ConnectVibe.Application.Common.Interfaces.Services.AuthServices;
 using ConnectVibe.Domain.Common.Errors;
 using ConnectVibe.Domain.Entities;
 using ErrorOr;
 using MediatR;
+using Newtonsoft.Json;
 
 namespace ConnectVibe.Application.Authentication.Queries.FacebookLogin
 {
@@ -18,12 +20,14 @@ namespace ConnectVibe.Application.Authentication.Queries.FacebookLogin
         private readonly IJwtTokenGenerator _jwtTokenGenerator;
         private readonly IUserRepository _userRepository;
         private readonly ISocialAuthService _socialAuthService;
+        private readonly ILoggerManager _logger;
 
-        public FacebookLoginQueryHandler(IJwtTokenGenerator jwtTokenGenerator, IUserRepository userRepository, ISocialAuthService socialAuthService)
+        public FacebookLoginQueryHandler(IJwtTokenGenerator jwtTokenGenerator, IUserRepository userRepository, ISocialAuthService socialAuthService, ILoggerManager logger)
         {
             _jwtTokenGenerator = jwtTokenGenerator;
             _userRepository = userRepository;
             _socialAuthService = socialAuthService;
+            _logger = logger;
         }
 
         public async Task<ErrorOr<SocialAuthenticationResult>> Handle(FacebookLoginQuery query, CancellationToken cancellationToken)
@@ -31,6 +35,7 @@ namespace ConnectVibe.Application.Authentication.Queries.FacebookLogin
             await Task.CompletedTask;
             bool isNewUser = false;
             var facebookResponse = await _socialAuthService.GetFacebookUserInformation(query.Code);
+            _logger.LogInfo($"Get Facebook User Information Query Result: {facebookResponse}");
             if (facebookResponse == null)
             {
                 return Errors.Authentication.InvalidToken;
