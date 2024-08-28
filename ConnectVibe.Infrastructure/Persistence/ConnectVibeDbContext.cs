@@ -1,4 +1,5 @@
 ﻿using ConnectVibe.Domain.Entities;
+using ConnectVibe.Domain.Entities.Profile;
 using Microsoft.EntityFrameworkCore;
 
 namespace ConnectVibe.Infrastructure.Persistence
@@ -7,9 +8,11 @@ namespace ConnectVibe.Infrastructure.Persistence
     {
         public ConnectVibeDbContext(DbContextOptions<ConnectVibeDbContext> options) : base(options)
         {
-
         }
+
         public DbSet<User> Users { get; set; } = null!;
         public DbSet<OTP> OTPs { get; set; } = null!;
+        public DbSet<UserProfile> UserProfiles { get; set; } = null!;
+        public DbSet<LocationDetail> LocationDetails { get; set; }
     }
 }

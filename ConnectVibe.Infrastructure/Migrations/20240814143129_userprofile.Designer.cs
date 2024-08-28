@@ -4,6 +4,7 @@ using ConnectVibe.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ConnectVibe.Infrastructure.Migrations
 {
     [DbContext(typeof(ConnectVibeDbContext))]
-    partial class ConnectVibeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240814143129_userprofile")]
+    partial class userprofile
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -54,36 +57,6 @@ namespace ConnectVibe.Infrastructure.Migrations
                     b.ToTable("OTPs");
                 });
 
-            modelBuilder.Entity("ConnectVibe.Domain.Entities.Profile.AddressComponent", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("LocationResultId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("LongName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ShortName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Types")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LocationResultId");
-
-                    b.ToTable("AddressComponent");
-                });
-
             modelBuilder.Entity("ConnectVibe.Domain.Entities.Profile.Ethnicity", b =>
                 {
                     b.Property<int>("Id")
@@ -122,28 +95,6 @@ namespace ConnectVibe.Infrastructure.Migrations
                     b.ToTable("Gender");
                 });
 
-            modelBuilder.Entity("ConnectVibe.Domain.Entities.Profile.Geometry", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("LocationId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("LocationType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LocationId");
-
-                    b.ToTable("Geometry");
-                });
-
             modelBuilder.Entity("ConnectVibe.Domain.Entities.Profile.HaveKids", b =>
                 {
                     b.Property<int>("Id")
@@ -161,105 +112,6 @@ namespace ConnectVibe.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("HaveKids");
-                });
-
-            modelBuilder.Entity("ConnectVibe.Domain.Entities.Profile.Location", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("IsVisible")
-                        .HasColumnType("bit");
-
-                    b.Property<double>("Lat")
-                        .HasColumnType("float");
-
-                    b.Property<double>("Lng")
-                        .HasColumnType("float");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Location");
-                });
-
-            modelBuilder.Entity("ConnectVibe.Domain.Entities.Profile.LocationDetail", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("LocationId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("LocationId")
-                        .IsUnique();
-
-                    b.ToTable("LocationDetails");
-                });
-
-            modelBuilder.Entity("ConnectVibe.Domain.Entities.Profile.LocationResult", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("FormattedAddress")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("GeometryId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("LocationDetailId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PlaceId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Types")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GeometryId");
-
-                    b.HasIndex("LocationDetailId");
-
-                    b.ToTable("LocationResult");
-                });
-
-            modelBuilder.Entity("ConnectVibe.Domain.Entities.Profile.Locationn", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<double>("Lat")
-                        .HasColumnType("float");
-
-                    b.Property<double>("Lng")
-                        .HasColumnType("float");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Locationn");
                 });
 
             modelBuilder.Entity("ConnectVibe.Domain.Entities.Profile.ProfilePhoto", b =>
@@ -349,9 +201,6 @@ namespace ConnectVibe.Infrastructure.Migrations
                     b.Property<int>("HaveKidsId")
                         .HasColumnType("int");
 
-                    b.Property<int>("LocationId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Passions")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -361,6 +210,9 @@ namespace ConnectVibe.Infrastructure.Migrations
 
                     b.Property<int>("SexualOrientationId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("ShareLocation")
+                        .HasColumnType("bit");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -375,8 +227,6 @@ namespace ConnectVibe.Infrastructure.Migrations
                     b.HasIndex("GenderId");
 
                     b.HasIndex("HaveKidsId");
-
-                    b.HasIndex("LocationId");
 
                     b.HasIndex("ReligionId");
 
@@ -460,50 +310,6 @@ namespace ConnectVibe.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ConnectVibe.Domain.Entities.Profile.AddressComponent", b =>
-                {
-                    b.HasOne("ConnectVibe.Domain.Entities.Profile.LocationResult", null)
-                        .WithMany("AddressComponents")
-                        .HasForeignKey("LocationResultId");
-                });
-
-            modelBuilder.Entity("ConnectVibe.Domain.Entities.Profile.Geometry", b =>
-                {
-                    b.HasOne("ConnectVibe.Domain.Entities.Profile.Locationn", "Location")
-                        .WithMany()
-                        .HasForeignKey("LocationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Location");
-                });
-
-            modelBuilder.Entity("ConnectVibe.Domain.Entities.Profile.LocationDetail", b =>
-                {
-                    b.HasOne("ConnectVibe.Domain.Entities.Profile.Location", "Location")
-                        .WithOne("LocationDetail")
-                        .HasForeignKey("ConnectVibe.Domain.Entities.Profile.LocationDetail", "LocationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Location");
-                });
-
-            modelBuilder.Entity("ConnectVibe.Domain.Entities.Profile.LocationResult", b =>
-                {
-                    b.HasOne("ConnectVibe.Domain.Entities.Profile.Geometry", "Geometry")
-                        .WithMany()
-                        .HasForeignKey("GeometryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ConnectVibe.Domain.Entities.Profile.LocationDetail", null)
-                        .WithMany("Results")
-                        .HasForeignKey("LocationDetailId");
-
-                    b.Navigation("Geometry");
-                });
-
             modelBuilder.Entity("ConnectVibe.Domain.Entities.Profile.ProfilePhoto", b =>
                 {
                     b.HasOne("ConnectVibe.Domain.Entities.Profile.UserProfile", null)
@@ -528,12 +334,6 @@ namespace ConnectVibe.Infrastructure.Migrations
                     b.HasOne("ConnectVibe.Domain.Entities.Profile.HaveKids", "HaveKids")
                         .WithMany()
                         .HasForeignKey("HaveKidsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ConnectVibe.Domain.Entities.Profile.Location", "Location")
-                        .WithMany()
-                        .HasForeignKey("LocationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -567,8 +367,6 @@ namespace ConnectVibe.Infrastructure.Migrations
 
                     b.Navigation("HaveKids");
 
-                    b.Navigation("Location");
-
                     b.Navigation("Religion");
 
                     b.Navigation("SexualOrientation");
@@ -576,22 +374,6 @@ namespace ConnectVibe.Infrastructure.Migrations
                     b.Navigation("User");
 
                     b.Navigation("WantKids");
-                });
-
-            modelBuilder.Entity("ConnectVibe.Domain.Entities.Profile.Location", b =>
-                {
-                    b.Navigation("LocationDetail")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("ConnectVibe.Domain.Entities.Profile.LocationDetail", b =>
-                {
-                    b.Navigation("Results");
-                });
-
-            modelBuilder.Entity("ConnectVibe.Domain.Entities.Profile.LocationResult", b =>
-                {
-                    b.Navigation("AddressComponents");
                 });
 
             modelBuilder.Entity("ConnectVibe.Domain.Entities.Profile.UserProfile", b =>

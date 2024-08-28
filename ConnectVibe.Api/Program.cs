@@ -33,16 +33,12 @@ var builder = WebApplication.CreateBuilder(args);
                        Type=ReferenceType.SecurityScheme,
                        Id="Bearer"
                     }
-
                 },
                   new string[]{}
             }
         });
     });
-    
-
 }
-
 
 var app = builder.Build();
 {
@@ -61,5 +57,3 @@ var app = builder.Build();
 
     app.Run();
 }
-
-

@@ -2,11 +2,15 @@
 using ConnectVibe.Application.Common.Interfaces.Persistence;
 using ConnectVibe.Application.Common.Interfaces.Services;
 using ConnectVibe.Application.Common.Interfaces.Services.AuthServices;
+using ConnectVibe.Application.Common.Interfaces.Services.ImageServices;
+using ConnectVibe.Application.Common.Interfaces.Services.LocationServices;
 using ConnectVibe.Infrastructure.Authentication;
 using ConnectVibe.Infrastructure.Persistence;
 using ConnectVibe.Infrastructure.Persistence.Repositories;
 using ConnectVibe.Infrastructure.Services;
 using ConnectVibe.Infrastructure.Services.AuthServices;
+using ConnectVibe.Infrastructure.Services.ImageServices;
+using ConnectVibe.Infrastructure.Services.LocationServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -23,10 +27,13 @@ namespace ConnectVibe.Infrastructure
             services.AddAuth(configurationManager);
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IProfileRepository, ProfileRepository>();
             services.AddScoped<ISocialAuthService, SocialAuthService>();
             services.AddScoped<IOtpRepository, OtpRepository>();
+            services.AddScoped<IImageService, ImageService>();
+            services.AddScoped<ILocationService, LocationService>();
             services.AddScoped<IEmailService, EmailService>();
-            services.AddSingleton<ILoggerManager,LoggerManager>();
+            services.AddSingleton<ILoggerManager, LoggerManager>();
             services.AddScoped<IOtpService, OtpService>();
             services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
             services.AddDbContext<ConnectVibeDbContext>(options =>
@@ -39,14 +46,17 @@ namespace ConnectVibe.Infrastructure
             services.Configure<JwtSettings>(configurationManager.GetSection(JwtSettings.SectionName));
             services.Configure<GoogleAuthSettings>(configurationManager.GetSection(GoogleAuthSettings.SectionName));
             services.Configure<FacebookAuthSettings>(configurationManager.GetSection(FacebookAuthSettings.SectionName));
+            services.Configure<FaceApi>(configurationManager.GetSection(FaceApi.SectionName));
             services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
 
             var jwtSettings = new JwtSettings();
             var googleAuthSettings = new GoogleAuthSettings();
             var facebookAuthSettings = new FacebookAuthSettings();
+            var faceApi = new FaceApi();
             configurationManager.GetSection(JwtSettings.SectionName).Bind(jwtSettings);
             configurationManager.GetSection(GoogleAuthSettings.SectionName).Bind(googleAuthSettings);
             configurationManager.GetSection(FacebookAuthSettings.SectionName).Bind(facebookAuthSettings);
+            configurationManager.GetSection(FaceApi.SectionName).Bind(faceApi);
             services.AddAuthentication(defaultScheme: JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
                 options => options.TokenValidationParameters = new TokenValidationParameters
                 {

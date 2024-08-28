@@ -4,6 +4,7 @@ using ConnectVibe.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ConnectVibe.Infrastructure.Migrations
 {
     [DbContext(typeof(ConnectVibeDbContext))]
-    partial class ConnectVibeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240824105631_plus-code-id-two")]
+    partial class pluscodeidtwo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -196,6 +199,9 @@ namespace ConnectVibe.Infrastructure.Migrations
                     b.Property<int>("LocationId")
                         .HasColumnType("int");
 
+                    b.Property<int>("PlusCodeId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -204,6 +210,8 @@ namespace ConnectVibe.Infrastructure.Migrations
 
                     b.HasIndex("LocationId")
                         .IsUnique();
+
+                    b.HasIndex("PlusCodeId");
 
                     b.ToTable("LocationDetails");
                 });
@@ -230,6 +238,9 @@ namespace ConnectVibe.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("PlusCodeId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Types")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -239,6 +250,8 @@ namespace ConnectVibe.Infrastructure.Migrations
                     b.HasIndex("GeometryId");
 
                     b.HasIndex("LocationDetailId");
+
+                    b.HasIndex("PlusCodeId");
 
                     b.ToTable("LocationResult");
                 });
@@ -260,6 +273,27 @@ namespace ConnectVibe.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Locationn");
+                });
+
+            modelBuilder.Entity("ConnectVibe.Domain.Entities.Profile.PlusCode", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CompoundCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("GlobalCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PlusCode");
                 });
 
             modelBuilder.Entity("ConnectVibe.Domain.Entities.Profile.ProfilePhoto", b =>
@@ -486,7 +520,15 @@ namespace ConnectVibe.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("ConnectVibe.Domain.Entities.Profile.PlusCode", "PlusCode")
+                        .WithMany()
+                        .HasForeignKey("PlusCodeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Location");
+
+                    b.Navigation("PlusCode");
                 });
 
             modelBuilder.Entity("ConnectVibe.Domain.Entities.Profile.LocationResult", b =>
@@ -501,7 +543,15 @@ namespace ConnectVibe.Infrastructure.Migrations
                         .WithMany("Results")
                         .HasForeignKey("LocationDetailId");
 
+                    b.HasOne("ConnectVibe.Domain.Entities.Profile.PlusCode", "PlusCode")
+                        .WithMany()
+                        .HasForeignKey("PlusCodeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Geometry");
+
+                    b.Navigation("PlusCode");
                 });
 
             modelBuilder.Entity("ConnectVibe.Domain.Entities.Profile.ProfilePhoto", b =>

@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ConnectVibe.Api.Controllers
 {
-
     [ApiController]
     [Authorize]
     public class ApiBaseController : ControllerBase
@@ -19,27 +18,24 @@ namespace ConnectVibe.Api.Controllers
             if (errors.All(error => error.Type == ErrorType.Validation))
             {
                 return ValidationProblem(errors);
-
             }
             HttpContext.Items[HttpContextItemKeys.Errors] = errors;
             var firstError = errors[0];
             return Problem(firstError);
-
-
         }
+
         private IActionResult Problem(Error error)
         {
-
             var statusCode = error.Type switch
             {
                 ErrorType.Conflict => StatusCodes.Status409Conflict,
                 ErrorType.Validation => StatusCodes.Status400BadRequest,
                 ErrorType.NotFound => StatusCodes.Status404NotFound,
                 _ => StatusCodes.Status500InternalServerError
-
             };
             return base.Problem(statusCode: statusCode, title: error.Description);
         }
+
         private IActionResult ValidationProblem(List<Error> errors)
         {
             var errorDetails = new ValidationProblemDetails();
@@ -65,6 +61,14 @@ namespace ConnectVibe.Api.Controllers
             {
                 StatusCode = StatusCodes.Status400BadRequest
             };
+        }
+
+        [HttpGet("user")]
+        [NonAction]
+        public int GetAuthUserId()
+        {
+            var userId = HttpContext.User.FindFirst(c => c.Type == "sub")?.Value;
+            return int.Parse(userId ?? "0");
         }
     }
 }
