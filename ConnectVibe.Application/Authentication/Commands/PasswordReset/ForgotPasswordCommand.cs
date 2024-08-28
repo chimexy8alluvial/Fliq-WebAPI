@@ -6,6 +6,7 @@ using ConnectVibe.Application.Common.Interfaces.Services;
 using ConnectVibe.Domain.Common.Errors;
 using ErrorOr;
 using MediatR;
+using Newtonsoft.Json;
 
 
 namespace ConnectVibe.Application.Authentication.Commands.PasswordReset
@@ -33,6 +34,7 @@ namespace ConnectVibe.Application.Authentication.Commands.PasswordReset
         {
             await Task.CompletedTask;
             var user = _userRepository.GetUserByEmail(command.Email);
+            _logger.LogInfo($"Forgot Password validation command: ----{user}");
 
             if (user == null)
                 return Errors.Authentication.InvalidCredentials;

@@ -55,7 +55,7 @@ namespace ConnectVibe.Api.Controllers
             }
 
             errorDetails.Status = StatusCodes.Status400BadRequest;
-            errorDetails.Title = "One or more validation errors occurred.";
+            errorDetails.Title = "One or more validation error occurred.";
 
             return new ObjectResult(errorDetails)
             {

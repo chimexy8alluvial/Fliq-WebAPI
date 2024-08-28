@@ -7,13 +7,6 @@
     <UserSecretsId>6d17d946-7feb-4ead-b6a6-66dc2117b0f7</UserSecretsId>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Content Remove="nlog.config" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="nlog.config" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Azure.Identity" Version="1.12.0" />
@@ -39,9 +32,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ConnectVibe.Application\ConnectVibe.Application.csproj" />
-    <ProjectReference Include="..\ConnectVibe.Contracts\ConnectVibe.Contracts.csproj" />
-    <ProjectReference Include="..\ConnectVibe.Infrastructure\ConnectVibe.Infrastructure.csproj" />
+    <ProjectReference Include="..\ConnectVibe.Application\Fliq.Application.csproj" />
+    <ProjectReference Include="..\ConnectVibe.Contracts\Fliq.Contracts.csproj" />
+    <ProjectReference Include="..\ConnectVibe.Infrastructure\Fliq.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

@@ -34,7 +34,7 @@
     <PackageReference Include="WindowsAzure.Storage" Version="9.3.3" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ConnectVibe.Application\ConnectVibe.Application.csproj" />
+    <ProjectReference Include="..\ConnectVibe.Application\Fliq.Application.csproj" />
   </ItemGroup>
 
 </Project>
