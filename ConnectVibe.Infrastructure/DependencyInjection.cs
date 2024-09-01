@@ -11,6 +11,8 @@ using ConnectVibe.Infrastructure.Services;
 using ConnectVibe.Infrastructure.Services.AuthServices;
 using ConnectVibe.Infrastructure.Services.ImageServices;
 using ConnectVibe.Infrastructure.Services.LocationServices;
+using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Infrastructure.Persistence.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -28,6 +30,7 @@ namespace ConnectVibe.Infrastructure
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IProfileRepository, ProfileRepository>();
+            services.AddScoped<IEventDetailsRepository, EventDetailsRepository>();
             services.AddScoped<ISocialAuthService, SocialAuthService>();
             services.AddScoped<IOtpRepository, OtpRepository>();
             services.AddScoped<IImageService, ImageService>();
