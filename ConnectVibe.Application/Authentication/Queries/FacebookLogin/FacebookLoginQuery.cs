@@ -7,7 +7,6 @@ using ConnectVibe.Domain.Common.Errors;
 using ConnectVibe.Domain.Entities;
 using ErrorOr;
 using MediatR;
-using Newtonsoft.Json;
 
 namespace ConnectVibe.Application.Authentication.Queries.FacebookLogin
 {

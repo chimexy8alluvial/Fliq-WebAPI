@@ -2,11 +2,6 @@
 using ConnectVibe.Infrastructure.Persistence;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {

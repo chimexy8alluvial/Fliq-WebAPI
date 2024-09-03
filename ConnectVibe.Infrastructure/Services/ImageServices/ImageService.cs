@@ -1,12 +1,11 @@
-﻿using Azure.AI.Vision.Face;
-using Azure;
+﻿using Azure;
+using Azure.AI.Vision.Face;
 using ConnectVibe.Application.Common.Helpers;
 using ConnectVibe.Application.Common.Interfaces.Services.ImageServices;
-using Microsoft.AspNetCore.Http;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.Extensions.Options;
 using ConnectVibe.Infrastructure.Authentication;
-using ConnectVibe.Application.Common.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
+using Microsoft.WindowsAzure.Storage;
 
 namespace ConnectVibe.Infrastructure.Services.ImageServices
 {
