@@ -5,8 +5,8 @@ using ConnectVibe.Application.Common.Interfaces.Services.LocationServices;
 using ConnectVibe.Domain.Common.Errors;
 using ConnectVibe.Domain.Entities.Profile;
 using ErrorOr;
+using Fliq.Application.Authentication.Common.Event;
 using Fliq.Application.Common.Interfaces.Persistence;
-using Fliq.Domain.Entities.Event;
 using MapsterMapper;
 using MediatR;
 

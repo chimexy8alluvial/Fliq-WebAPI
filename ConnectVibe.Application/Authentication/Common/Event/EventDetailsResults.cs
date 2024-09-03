@@ -1,6 +1,6 @@
 ﻿using ConnectVibe.Domain.Entities.Profile;
 
-namespace Fliq.Domain.Entities.Event
+namespace Fliq.Application.Authentication.Common.Event
 {
     public record EventDetailsResults
     (

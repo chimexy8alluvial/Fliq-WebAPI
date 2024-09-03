@@ -31,6 +31,7 @@ namespace ConnectVibe.Infrastructure
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IProfileRepository, ProfileRepository>();
             services.AddScoped<IEventDetailsRepository, EventDetailsRepository>();
+            
             services.AddScoped<ISocialAuthService, SocialAuthService>();
             services.AddScoped<IOtpRepository, OtpRepository>();
             services.AddScoped<IImageService, ImageService>();

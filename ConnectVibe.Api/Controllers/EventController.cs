@@ -43,5 +43,19 @@ namespace Fliq.Api.Controllers
            );
 
         }
+
+        [HttpPost("Create Event")]
+        public async Task<IActionResult> CreateEvent([FromBody] CreateEventRequest request)
+        {
+            _logger.LogInfo($"Create Request Received: {request}");
+            var command = _mapper.Map<CreateEventCommand>(request);
+            var EventCreatedResult = await _mediator.Send(command);
+            _logger.LogInfo($"EventCreatedResult command Executed. Result: {EventCreatedResult}");
+
+            return EventCreatedResult.Match(
+                CreateEventResult => Ok(_mapper.Map<CreateEventResponse>(EventCreatedResult)),
+                errors => Problem(errors)
+            );
+        }
     }
 }
