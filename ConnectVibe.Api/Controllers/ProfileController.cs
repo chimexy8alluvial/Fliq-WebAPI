@@ -3,13 +3,11 @@ using ConnectVibe.Application.Profile.Common;
 using ConnectVibe.Contracts.Profile;
 using MapsterMapper;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ConnectVibe.Api.Controllers
 {
     [Route("api/profile")]
-    [AllowAnonymous]
     public class ProfileController : ApiBaseController
     {
         private readonly ISender _mediator;

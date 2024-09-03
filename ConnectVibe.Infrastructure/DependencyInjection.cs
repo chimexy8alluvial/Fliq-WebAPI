@@ -11,6 +11,12 @@ using ConnectVibe.Infrastructure.Services;
 using ConnectVibe.Infrastructure.Services.AuthServices;
 using ConnectVibe.Infrastructure.Services.ImageServices;
 using ConnectVibe.Infrastructure.Services.LocationServices;
+using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Interfaces.Services.PaymentServices;
+using Fliq.Application.Common.Interfaces.Services.SubscriptionServices;
+using Fliq.Infrastructure.Persistence.Repositories;
+using Fliq.Infrastructure.Services.PaymentServices;
+using Fliq.Infrastructure.Services.SubscriptionServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -30,11 +36,15 @@ namespace ConnectVibe.Infrastructure
             services.AddScoped<IProfileRepository, ProfileRepository>();
             services.AddScoped<ISocialAuthService, SocialAuthService>();
             services.AddScoped<IOtpRepository, OtpRepository>();
+            services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+            services.AddScoped<IPaymentRepository, PaymentRepository>();
             services.AddScoped<IImageService, ImageService>();
             services.AddScoped<ILocationService, LocationService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddSingleton<ILoggerManager, LoggerManager>();
             services.AddScoped<IOtpService, OtpService>();
+            services.AddScoped<ISubscriptionService, SubscriptionService>();
+            services.AddScoped<IRevenueCatServices, RevenueCatServices>();
             services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
             services.AddDbContext<ConnectVibeDbContext>(options =>
     options.UseSqlServer(configurationManager.GetConnectionString("ConnectVibeDbContext") ?? throw new InvalidOperationException("Connection string 'ConnectVibeDbContext' not found.")));

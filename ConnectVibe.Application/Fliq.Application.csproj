@@ -33,6 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Payments\Queries\" />
     <Folder Include="Profile\Queries\" />
   </ItemGroup>
 
