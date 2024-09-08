@@ -1,18 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ConnectVibe.Contracts.Profile;
-using Microsoft.AspNetCore.Http;
+﻿using ConnectVibe.Contracts.Profile;
 
 namespace Fliq.Contracts.Event
 {
     public record CreateEventRequest
     (
-        int EventId,
-        string EventType,
-        string Email,
+        int Id,
+        EventType EventType,
+        string eventTitle,
+        string eventDescription,
+        DateTime startDate,
+        DateTime endDate,
+        //TimeZoneInfo timeZone,
+        LocationDto Location,
+        int capacity,
+        string optional,
+        int UserId,
         List<EventDocumentDto> Docs
     );
+
+    //public enum EventType
+    //{
+    //    Physical,
+    //    Live
+    //}
 }

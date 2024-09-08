@@ -9,9 +9,12 @@ using Fliq.Contracts.Event;
 using ConnectVibe.Application.Authentication.Commands.ChangePassword;
 using static Google.Apis.Auth.OAuth2.Web.AuthorizationCodeWebApp;
 using Fliq.Application.Event.Commands.Create;
+using Fliq.Application.Event.Commands.EventCreation;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Fliq.Api.Controllers
 {
+    [Authorize]
     [Route("api/event")]
     [ApiController]
     public class EventController : ApiBaseController
@@ -29,23 +32,23 @@ namespace Fliq.Api.Controllers
             _logger = logger;
         }
 
-        [HttpPost("create eventDetails")]
-        public async Task<IActionResult> EventDetails([FromBody] CreateEventDetailsRequest request)
-        {
-            _logger.LogInfo($"Event Details Request Received: {request}");
-            var command = _mapper.Map<CreateEventDetailsCommand>(request);
-            var EventResult = await _mediator.Send(command);
-            _logger.LogInfo($"EventDetails command Executed. Result: {EventResult}");
+        //[HttpPost("create eventDetails")]
+        //public async Task<IActionResult> EventDetails([FromBody] CreateEventDetailsRequest request)
+        //{
+        //    _logger.LogInfo($"Event Details Request Received: {request}");
+        //    var command = _mapper.Map<CreateEventDetailsCommand>(request);
+        //    var EventResult = await _mediator.Send(command);
+        //    _logger.LogInfo($"EventDetails command Executed. Result: {EventResult}");
 
-            return EventResult.Match(
-               EventResult => Ok(_mapper.Map<CreateEventDetailsResponse>(EventResult)),
-               errors => Problem(errors)
-           );
+        //    return EventResult.Match(
+        //       EventResult => Ok(_mapper.Map<CreateEventDetailsResponse>(EventResult)),
+        //       errors => Problem(errors)
+        //   );
 
-        }
+        //}
 
-        [HttpPost("Create Event")]
-        public async Task<IActionResult> CreateEvent([FromBody] CreateEventRequest request)
+        [HttpPost("CreateEvent")]
+        public async Task<IActionResult> CreateEvent([FromForm] CreateEventRequest request)
         {
             _logger.LogInfo($"Create Request Received: {request}");
             var command = _mapper.Map<CreateEventCommand>(request);

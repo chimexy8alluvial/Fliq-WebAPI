@@ -1,7 +1,8 @@
 ﻿using ConnectVibe.Contracts.Profile;
+
 namespace Fliq.Contracts.Event
 {
-    public record CreateEventDetailsResponse
+    public record CreateEventResponse
     (
        int Id,
        EventType EventType,
@@ -16,10 +17,4 @@ namespace Fliq.Contracts.Event
        int UserId,
        List<EventDocumentDto> Docs
     );
-
-    public enum EventType
-    {
-        Physical,
-        Live
-    }
 }

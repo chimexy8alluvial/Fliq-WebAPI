@@ -2,8 +2,10 @@
 using ConnectVibe.Application.Authentication.Queries.GoogleLogin;
 using ConnectVibe.Application.Common.Interfaces.Authentication;
 using ConnectVibe.Application.Common.Interfaces.Persistence;
+using ConnectVibe.Application.Common.Interfaces.Services;
 using ConnectVibe.Application.Common.Interfaces.Services.AuthServices;
 using ConnectVibe.Domain.Entities;
+using FluentValidation.Resources;
 using Moq;
 
 namespace ConnectVibe.Test.Authentication.Queries.GoogleLogin
@@ -15,6 +17,7 @@ namespace ConnectVibe.Test.Authentication.Queries.GoogleLogin
         private Mock<IJwtTokenGenerator> _jwtTokenGeneratorMock;
         private Mock<IUserRepository> _userRepositoryMock;
         private Mock<ISocialAuthService> _socialAuthServiceMock;
+        private Mock<ILoggerManager> _loggerManagerMock;
 
         [TestInitialize]
         public void Setup()
@@ -22,11 +25,13 @@ namespace ConnectVibe.Test.Authentication.Queries.GoogleLogin
             _jwtTokenGeneratorMock = new Mock<IJwtTokenGenerator>();
             _userRepositoryMock = new Mock<IUserRepository>();
             _socialAuthServiceMock = new Mock<ISocialAuthService>();
+            _loggerManagerMock = new Mock<ILoggerManager>();
 
             _handler = new GoogleLoginQueryHandler(
                 _jwtTokenGeneratorMock.Object,
                 _userRepositoryMock.Object,
-                _socialAuthServiceMock.Object);
+                _socialAuthServiceMock.Object,
+                _loggerManagerMock.Object);
         }
 
         [TestMethod]

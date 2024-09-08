@@ -3,12 +3,12 @@ using ConnectVibe.Application.Common.Interfaces.Authentication;
 using ConnectVibe.Application.Common.Interfaces.Persistence;
 using ConnectVibe.Application.Common.Interfaces.Services;
 using ConnectVibe.Application.Common.Security;
-using ConnectVibe.Domain.Common.Errors;
+//using ConnectVibe.Domain.Common.Errors;
 using ConnectVibe.Domain.Entities;
 using ErrorOr;
+using Fliq.Domain.Common.Errors;
 using MapsterMapper;
 using MediatR;
-using Newtonsoft.Json;
 
 
 namespace ConnectVibe.Application.Authentication.Commands.Register
