@@ -15,7 +15,10 @@ namespace Fliq.Contracts.Event
         int capacity,
         string optional,
         int UserId,
-        List<EventDocumentDto> Docs
+        List<EventDocumentDto> Docs,
+        List<ProfilePhotoDto> Photos,
+        string StartAge,
+        string EndAge
     );
 
     //public enum EventType

@@ -11,11 +11,14 @@ namespace Fliq.Application.Authentication.Common.Event
        DateTime startDate,
        DateTime endDate,
        //TimeZoneInfo timeZone,
-       Location Location, 
+       Location Location,
        int capacity,
        string optional,
        int UserId,
-       List<EventDocument> Docs
+       List<EventDocument> Docs,
+       List<ProfilePhoto> Photos,
+       string StartAge,
+       string EndAge
     );
 
     public enum EventType

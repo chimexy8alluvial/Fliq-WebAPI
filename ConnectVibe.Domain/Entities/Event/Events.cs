@@ -17,6 +17,9 @@ namespace Fliq.Domain.Entities.Event
         public string optional { get; set; } = default!;
         public int UserId { get; set; } = default!;
         public List<EventDocument> Docs { get; set; } = default!;
+        public List<ProfilePhoto> photos { get; set; } = default!;
+        public string StartAge { get; set; } = default!;
+        public string EndAge { get; set; } = default!;
     }
 
     public enum EventType

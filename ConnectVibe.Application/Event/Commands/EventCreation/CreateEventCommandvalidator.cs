@@ -9,8 +9,8 @@ namespace Fliq.Application.Event.Commands.EventCreation
     {
         public CreateEventCommandvalidator()
         {
-            //RuleFor(x => x.Docs)
-            //    .NotNull().WithMessage("Document is required.");
+            RuleFor(x => x.Docs)
+                .NotNull().WithMessage("Document is required.");
             RuleFor(x => x.eventTitle).NotEmpty().WithMessage("Event title must not be empty!.");
             RuleFor(x => x.eventDescription).NotEmpty().WithMessage("Event Description must not be empty!.");
             RuleFor(x => x.Id)
@@ -26,6 +26,13 @@ namespace Fliq.Application.Event.Commands.EventCreation
             RuleFor(x => x.Location)
                .NotNull().WithMessage("Location is required.")
                .SetValidator(new LocationValidator());
+            RuleFor(x => x.StartAge).NotEmpty().WithMessage("Start Age must not be empty!");
+            RuleFor(x => x.EndAge).NotEmpty().WithMessage("End Age must not be empty!");
+            RuleFor(x => x.Photos)
+           .NotNull().WithMessage("Photos are required.")
+           .Must(photos => photos.Count >= 1).WithMessage("Exactly 6 photos are required.")
+           .ForEach(photo => photo.SetValidator(new ProfilePhotoDtoValidator()));
+
         }
      }
 }
