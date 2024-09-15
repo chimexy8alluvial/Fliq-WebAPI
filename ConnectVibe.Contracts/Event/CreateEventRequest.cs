@@ -5,25 +5,21 @@ namespace Fliq.Contracts.Event
     public record CreateEventRequest
     (
         int Id,
-        EventType EventType,
+        EventTypeDto EventType,
         string eventTitle,
         string eventDescription,
         DateTime startDate,
         DateTime endDate,
-        //TimeZoneInfo timeZone,
         LocationDto Location,
         int capacity,
-        string optional,
         int UserId,
-        List<EventDocumentDto> Docs,
-        List<ProfilePhotoDto> Photos,
+        List<EventMediaDto> Docs,
         string StartAge,
-        string EndAge
+        string EndAge,
+        string EventCategory,
+        bool SponsoredEvent,
+        SponsoredEventDetailsDto SponsoredEventDetail,
+        EventCriteriaDto EventCriteria,
+        TicketTypeDto TicketType
     );
-
-    //public enum EventType
-    //{
-    //    Physical,
-    //    Live
-    //}
 }

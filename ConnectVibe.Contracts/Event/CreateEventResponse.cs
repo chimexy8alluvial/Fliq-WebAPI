@@ -5,7 +5,7 @@ namespace Fliq.Contracts.Event
     public record CreateEventResponse
     (
        int Id,
-       EventType EventType,
+       EventTypeDto EventType,
        string eventTitle,
        string eventDescription,
        DateTime startDate,
@@ -15,6 +15,6 @@ namespace Fliq.Contracts.Event
        int capacity,
        string optional,
        int UserId,
-       List<EventDocumentDto> Docs
+       List<EventMediaDto> Docs
     );
 }
