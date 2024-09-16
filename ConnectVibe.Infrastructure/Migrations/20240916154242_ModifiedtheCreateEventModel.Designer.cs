@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ConnectVibe.Infrastructure.Migrations
 {
     [DbContext(typeof(ConnectVibeDbContext))]
-    [Migration("20240905231034_CreatedEventTable")]
-    partial class CreatedEventTable
+    [Migration("20240916154242_ModifiedtheCreateEventModel")]
+    partial class ModifiedtheCreateEventModel
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -432,6 +432,9 @@ namespace ConnectVibe.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsDocumentVerified")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsEmailValidated")
                         .HasColumnType("bit");
 
@@ -452,33 +455,7 @@ namespace ConnectVibe.Infrastructure.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Fliq.Domain.Entities.Event.EventDocument", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("DocumentUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("EventsId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EventsId");
-
-                    b.ToTable("EventDocument");
-                });
-
-            modelBuilder.Entity("Fliq.Domain.Entities.Event.Events", b =>
+            modelBuilder.Entity("Fliq.Domain.Entities.Event.EventCriteria", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -489,38 +466,214 @@ namespace ConnectVibe.Infrastructure.Migrations
                     b.Property<int>("EventType")
                         .HasColumnType("int");
 
+                    b.Property<int>("Gender")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Race")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("EventCriteria");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.Event.EventMedia", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("EventsId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MediaUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventsId");
+
+                    b.ToTable("EventMedia");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.Event.Events", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Capacity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EndAge")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EventCategory")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("EventCriteriaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EventDescription")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EventTitle")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("EventType")
+                        .HasColumnType("int");
+
                     b.Property<int>("LocationId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("SponsoredEvent")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("SponsoredEventDetailId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StartAge")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("TicketTypeId")
                         .HasColumnType("int");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<int>("capacity")
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventCriteriaId");
+
+                    b.HasIndex("LocationId");
+
+                    b.HasIndex("SponsoredEventDetailId");
+
+                    b.HasIndex("TicketTypeId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("events");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.Event.SponsoredEventDetail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("endDate")
-                        .HasColumnType("datetime2");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("eventDescription")
+                    b.Property<float>("Budget")
+                        .HasColumnType("real");
+
+                    b.Property<string>("BusinessAddress")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("eventTitle")
+                    b.Property<string>("BusinessName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("optional")
+                    b.Property<string>("BusinessType")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("startDate")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("ContactInfromation")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DurationOfSponsorship")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("NumberOfInvitees")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PreferedLevelOfInvolvement")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SponsoringBudget")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TargetAudienceType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SponsoredEventDetail");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.Event.TicketType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<float>("Amount")
+                        .HasColumnType("real");
+
+                    b.Property<string>("ClosesOn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("LocationId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OpensOn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TicketDescription")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TicketName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TicketTypes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TimeZone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("LocationId");
 
-                    b.ToTable("events");
+                    b.ToTable("TicketType");
                 });
 
             modelBuilder.Entity("ConnectVibe.Domain.Entities.OTP", b =>
@@ -652,14 +805,57 @@ namespace ConnectVibe.Infrastructure.Migrations
                     b.Navigation("WantKids");
                 });
 
-            modelBuilder.Entity("Fliq.Domain.Entities.Event.EventDocument", b =>
+            modelBuilder.Entity("Fliq.Domain.Entities.Event.EventMedia", b =>
                 {
                     b.HasOne("Fliq.Domain.Entities.Event.Events", null)
-                        .WithMany("Docs")
+                        .WithMany("Media")
                         .HasForeignKey("EventsId");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Event.Events", b =>
+                {
+                    b.HasOne("Fliq.Domain.Entities.Event.EventCriteria", "EventCriteria")
+                        .WithMany()
+                        .HasForeignKey("EventCriteriaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ConnectVibe.Domain.Entities.Profile.Location", "Location")
+                        .WithMany()
+                        .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Fliq.Domain.Entities.Event.SponsoredEventDetail", "SponsoredEventDetail")
+                        .WithMany()
+                        .HasForeignKey("SponsoredEventDetailId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Fliq.Domain.Entities.Event.TicketType", "TicketType")
+                        .WithMany()
+                        .HasForeignKey("TicketTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ConnectVibe.Domain.Entities.Profile.UserProfile", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EventCriteria");
+
+                    b.Navigation("Location");
+
+                    b.Navigation("SponsoredEventDetail");
+
+                    b.Navigation("TicketType");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.Event.TicketType", b =>
                 {
                     b.HasOne("ConnectVibe.Domain.Entities.Profile.Location", "Location")
                         .WithMany()
@@ -698,7 +894,7 @@ namespace ConnectVibe.Infrastructure.Migrations
 
             modelBuilder.Entity("Fliq.Domain.Entities.Event.Events", b =>
                 {
-                    b.Navigation("Docs");
+                    b.Navigation("Media");
                 });
 #pragma warning restore 612, 618
         }
