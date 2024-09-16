@@ -11,7 +11,7 @@ namespace Fliq.Domain.Entities.Event
         public DateTime EndDate { get; set; }
         public Location Location { get; set; } = default!;
         public int Capacity { get; set; }
-        public List<EventMedia> Media { get; set; } = default!;
+        public List<EventMediaa> Media { get; set; } = default!;
         public string StartAge { get; set; } = default!;
         public string EndAge { get; set; } = default!;
         public string EventCategory { get; set; } = default!;

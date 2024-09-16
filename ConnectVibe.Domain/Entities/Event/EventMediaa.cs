@@ -2,7 +2,7 @@
 
 namespace Fliq.Domain.Entities.Event
 {
-    public class EventMedia
+    public class EventMediaa
     {
         public int Id { get; set; }
         public string MediaUrl { get; set; } = default!;

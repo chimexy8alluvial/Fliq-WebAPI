@@ -84,7 +84,7 @@ namespace Fliq.Application.Event.Commands.EventCreation
                 var mediaUrl = await _imageService.UploadMediaAsync(photo.DocFile);
                 if (mediaUrl != null)
                 {
-                    EventMedia eventMedia = new() { MediaUrl = mediaUrl, Title = photo.Title };
+                    EventMediaa eventMedia = new() { MediaUrl = mediaUrl, Title = photo.Title };
                     newEvent.Media.Add(eventMedia);
                 }
                 else

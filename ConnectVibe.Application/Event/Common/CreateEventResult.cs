@@ -12,7 +12,7 @@ namespace Fliq.Application.Event.Common
     DateTime EndDate,
     Location Location,
     int Capacity,
-    List<EventMedia> Media,
+    List<EventMediaa> Media,
     string StartAge,
     string EndAge,
     string EventCategory,

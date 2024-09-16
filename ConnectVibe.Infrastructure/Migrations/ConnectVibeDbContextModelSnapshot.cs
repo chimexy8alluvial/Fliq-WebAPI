@@ -472,10 +472,10 @@ namespace ConnectVibe.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EventCriteria");
+                    b.ToTable("EventCriterias");
                 });
 
-            modelBuilder.Entity("Fliq.Domain.Entities.Event.EventMedia", b =>
+            modelBuilder.Entity("Fliq.Domain.Entities.Event.EventMediaa", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -498,7 +498,7 @@ namespace ConnectVibe.Infrastructure.Migrations
 
                     b.HasIndex("EventsId");
 
-                    b.ToTable("EventMedia");
+                    b.ToTable("EventMedias");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Event.Events", b =>
@@ -571,7 +571,7 @@ namespace ConnectVibe.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("events");
+                    b.ToTable("Events");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Event.SponsoredEventDetail", b =>
@@ -621,7 +621,7 @@ namespace ConnectVibe.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SponsoredEventDetail");
+                    b.ToTable("SponsoredEventDetails");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Event.TicketType", b =>
@@ -670,7 +670,7 @@ namespace ConnectVibe.Infrastructure.Migrations
 
                     b.HasIndex("LocationId");
 
-                    b.ToTable("TicketType");
+                    b.ToTable("TicketTypes");
                 });
 
             modelBuilder.Entity("ConnectVibe.Domain.Entities.OTP", b =>
@@ -802,7 +802,7 @@ namespace ConnectVibe.Infrastructure.Migrations
                     b.Navigation("WantKids");
                 });
 
-            modelBuilder.Entity("Fliq.Domain.Entities.Event.EventMedia", b =>
+            modelBuilder.Entity("Fliq.Domain.Entities.Event.EventMediaa", b =>
                 {
                     b.HasOne("Fliq.Domain.Entities.Event.Events", null)
                         .WithMany("Media")
