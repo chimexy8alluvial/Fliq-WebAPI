@@ -1,5 +1,4 @@
 ﻿using ConnectVibe.Domain.Entities;
-using ConnectVibe.Domain.Entities;
 using Fliq.Domain.Entities.Event;
 
 namespace Fliq.Application.Common.Interfaces.Persistence
@@ -8,5 +7,6 @@ namespace Fliq.Application.Common.Interfaces.Persistence
     {
         void Add(Events events);
         User? GetUserById(int Id);
+        List<Events> GetAllEvents();
     }
 }

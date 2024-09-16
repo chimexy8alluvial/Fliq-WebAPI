@@ -32,9 +32,8 @@ namespace ConnectVibe.Infrastructure
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IProfileRepository, ProfileRepository>();
-            services.AddScoped<IEventDetailsRepository, EventDetailsRepository>();
             services.AddScoped<IEventRepository, EventRepository>();
-            services.AddScoped<IDocumentServices, DocumentService>();
+            services.AddScoped<IMediaServices, MediaService>();
             services.AddScoped<ISocialAuthService, SocialAuthService>();
             services.AddScoped<IOtpRepository, OtpRepository>();
             services.AddScoped<IImageService, ImageService>();

@@ -3,6 +3,7 @@ using ConnectVibe.Domain.Entities;
 using ConnectVibe.Infrastructure.Persistence;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Domain.Entities.Event;
+using Dapper;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {
@@ -34,5 +35,18 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             return user;
         }
 
+        public List<Events> GetAllEvents()
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                const string SQL = "SELECT * FROM Events WHERE EventTitle IS NOT NULL";
+
+                // Ensure 'Events' is a class that matches the schema of your 'Events' table
+                var results = connection.Query<Events>(SQL);
+
+                return results.ToList();
+            }
+          
+        }
     }
 }

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Fliq.Application.Event.Common
 {
-    public class EventDocumentsMapp
+    public class EventMediaMapped
     {
         public string Title { get; set; } = default!;
 
