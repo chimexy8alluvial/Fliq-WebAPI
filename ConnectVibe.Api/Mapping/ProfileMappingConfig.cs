@@ -3,7 +3,6 @@ using ConnectVibe.Application.Common.Models;
 using ConnectVibe.Application.Profile.Commands.Create;
 using ConnectVibe.Application.Profile.Common;
 using ConnectVibe.Contracts.Profile;
-using ConnectVibe.Domain.Entities;
 using ConnectVibe.Domain.Entities.Profile;
 using Mapster;
 

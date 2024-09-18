@@ -1,4 +1,5 @@
 ﻿using ConnectVibe.Domain.Entities.Profile;
+using Fliq.Domain.Entities;
 
 namespace ConnectVibe.Domain.Entities
 {
@@ -14,5 +15,7 @@ namespace ConnectVibe.Domain.Entities
         public bool IsEmailValidated { get; set; }
 
         public UserProfile? UserProfile { get; set; }
+        public List<Payment>? Payments { get; set; }
+        public List<Subscription>? Subscriptions { get; set; }
     }
 }
