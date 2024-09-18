@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-
-namespace Fliq.Domain.Entities.Event
+﻿namespace Fliq.Domain.Entities.Event
 {
     public class EventMediaa
     {

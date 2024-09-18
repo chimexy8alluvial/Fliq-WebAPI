@@ -1,4 +1,5 @@
-﻿using ConnectVibe.Application.Common.Interfaces.Persistence;
+﻿using System.Diagnostics;
+using ConnectVibe.Application.Common.Interfaces.Persistence;
 using ConnectVibe.Application.Common.Interfaces.Services;
 using ConnectVibe.Application.Common.Interfaces.Services.ImageServices;
 using ConnectVibe.Application.Common.Interfaces.Services.LocationServices;
@@ -9,6 +10,7 @@ using Fliq.Application.Common.Interfaces.Services.DocumentServices;
 using Fliq.Application.Event.Common;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Event;
+using Fliq.Domain.Entities.Event.Enums;
 using MapsterMapper;
 using MediatR;
 
@@ -33,11 +35,6 @@ namespace Fliq.Application.Event.Commands.EventCreation
         public SponsoredEventDetail SponsoredEventDetail { get; set; } = default!;
         public EventCriteria EventCriteria { get; set; } = default!;
         public TicketType TicketType { get; set; } = default!;
-    }
-    public enum EventType
-    {
-        Physical,
-        Live
     }
 
     public class CreateEventCommandHandler : IRequestHandler<CreateEventCommand, ErrorOr<CreateEventResult>>
@@ -79,18 +76,32 @@ namespace Fliq.Application.Event.Commands.EventCreation
             }
 
             var newEvent = _mapper.Map<Events>(command);
+            
             foreach (var photo in command.Docs)
             {
-                var mediaUrl = await _imageService.UploadMediaAsync(photo.DocFile);
-                if (mediaUrl != null)
+                //Checking if the Application is running on a debugger mode
+                if (Debugger.IsAttached)
                 {
-                    EventMediaa eventMedia = new() { MediaUrl = mediaUrl, Title = photo.Title };
-                    newEvent.Media.Add(eventMedia);
+                    var eventMediaUrl = await _documentServices.UploadEventMediaAsync(photo.DocFile);
+                    if(eventMediaUrl != null) 
+                    {
+                        EventMediaa eventMedia = new() {MediaUrl = eventMediaUrl, Title = photo.Title };
+                        newEvent.Media.Add(eventMedia);
+                    }
                 }
                 else
                 {
-                    //return Errors.Image.InvalidImage;
-                    return Errors.Document.InvalidDocument;
+                    var mediaUrl = await _imageService.UploadMediaAsync(photo.DocFile);
+                    if (mediaUrl != null)
+                    {
+                        EventMediaa eventMedia = new() { MediaUrl = mediaUrl, Title = photo.Title };
+                        newEvent.Media.Add(eventMedia);
+                    }
+                    else
+                    {
+                        //return Errors.Image.InvalidImage;
+                        return Errors.Document.InvalidDocument;
+                    }
                 }
             }
 

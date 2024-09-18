@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Fliq.Domain.Entities.Event.Enums;
 
 namespace Fliq.Domain.Entities.Event
 {
@@ -13,18 +9,4 @@ namespace Fliq.Domain.Entities.Event
         public Gender Gender { get; set; }
         public List<string> Race { get; set; } = default!;
     }
-
-    public enum Event_Type
-    {
-        Paid,
-        Free,
-        FreeRequiresApproval,
-        RequiresApproval
-    }
-
-    public enum Gender
-    {
-        Male,
-        Female
-    };
 }

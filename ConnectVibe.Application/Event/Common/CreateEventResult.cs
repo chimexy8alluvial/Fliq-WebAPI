@@ -23,10 +23,4 @@ namespace Fliq.Application.Event.Common
     int UserId,
     UserProfile User
     );
-
-    public enum EventType
-    {
-        Physical,
-        Live
-    }
 }

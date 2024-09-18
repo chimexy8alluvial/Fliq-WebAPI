@@ -1,4 +1,6 @@
 ﻿using ConnectVibe.Domain.Entities.Profile;
+using Fliq.Domain.Entities.Event.Enums;
+
 namespace Fliq.Domain.Entities.Event
 {
     public class Events
@@ -21,11 +23,5 @@ namespace Fliq.Domain.Entities.Event
         public TicketType TicketType { get; set; } = default!;
         public int UserId { get; set; } = default!;
         public UserProfile User { get; set; } = default!;
-    }
-
-    public enum EventType
-    {
-        Physical,
-        Live
     }
 }

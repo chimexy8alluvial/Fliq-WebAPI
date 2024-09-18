@@ -1,4 +1,6 @@
-﻿namespace Fliq.Domain.Entities.Event
+﻿using Fliq.Domain.Entities.Event.Enums;
+
+namespace Fliq.Domain.Entities.Event
 {
     public class SponsoredEventDetail
     {
@@ -15,10 +17,5 @@
         public List<string> PreferedLevelOfInvolvement { get; set; } = default!;
     }
 
-    public enum SponsoringBudget
-    {
-        Gold,
-        Silver,
-        Bronze
-    }
+    
 }
