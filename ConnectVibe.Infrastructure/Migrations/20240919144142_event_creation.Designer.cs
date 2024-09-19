@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ConnectVibe.Infrastructure.Migrations
 {
     [DbContext(typeof(ConnectVibeDbContext))]
-    [Migration("20240919060704_ModifiedEventTablettttrrrr")]
-    partial class ModifiedEventTablettttrrrr
+    [Migration("20240919144142_event_creation")]
+    partial class event_creation
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
