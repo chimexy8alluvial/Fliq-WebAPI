@@ -97,12 +97,6 @@ namespace ConnectVibe.Infrastructure.Migrations
                         principalTable: "SponsoredEventDetails",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Events_UserProfiles_UserId",
-                        column: x => x.UserId,
-                        principalTable: "UserProfiles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -177,11 +171,6 @@ namespace ConnectVibe.Infrastructure.Migrations
                 name: "IX_Events_SponsoredEventDetailId",
                 table: "Events",
                 column: "SponsoredEventDetailId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Events_UserId",
-                table: "Events",
-                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TicketTypes_EventsId",

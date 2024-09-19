@@ -564,8 +564,6 @@ namespace ConnectVibe.Infrastructure.Migrations
 
                     b.HasIndex("SponsoredEventDetailId");
 
-                    b.HasIndex("UserId");
-
                     b.ToTable("Events");
                 });
 
@@ -829,19 +827,11 @@ namespace ConnectVibe.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ConnectVibe.Domain.Entities.Profile.UserProfile", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("EventCriteria");
 
                     b.Navigation("Location");
 
                     b.Navigation("SponsoredEventDetail");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Event.TicketType", b =>
