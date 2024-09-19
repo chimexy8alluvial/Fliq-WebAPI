@@ -119,6 +119,7 @@ namespace Fliq.Application.Event.Commands.EventCreation
 
                 newEvent.Location = location;
             }
+            _eventRepository.Add(newEvent);
 
             var createdEvent = _mapper.Map<CreateEventResult>(newEvent);
 

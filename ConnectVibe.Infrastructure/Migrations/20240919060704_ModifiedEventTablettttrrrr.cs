@@ -5,7 +5,7 @@
 namespace ConnectVibe.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class AddedMoreTable : Migration
+    public partial class ModifiedEventTablettttrrrr : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

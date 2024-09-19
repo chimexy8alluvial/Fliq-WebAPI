@@ -5,8 +5,8 @@ namespace Fliq.Domain.Entities.Event
     public class EventCriteria
     {
         public int Id { get; set; }
-        public Event_Type EventType { get; set; }
+        public Event_Type Event_Type { get; set; }
         public Gender Gender { get; set; }
-        public List<string> Race { get; set; } = default!;
+        public string Race { get; set; } = default!;
     }
 }

@@ -94,7 +94,7 @@ namespace Fliq.Application.Event.Commands.EventCreation
             RuleFor(x => x.Gender)
                 .IsInEnum().WithMessage("Invalid Gender Type value.");
 
-            RuleFor(x => x.EventType)
+            RuleFor(x => x.Event_Type)
                 .IsInEnum().WithMessage("Invalid Event Type value.");
 
             RuleFor(x => x.Race)

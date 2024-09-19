@@ -20,7 +20,7 @@ namespace Fliq.Domain.Entities.Event
         public bool SponsoredEvent { get; set; } = default!;
         public SponsoredEventDetail SponsoredEventDetail { get; set; } = default!;
         public EventCriteria EventCriteria { get; set; } = default!;
-        public TicketType TicketType { get; set; } = default!;
+        public List<TicketType> TicketType { get; set; } = default!;
         public int UserId { get; set; } = default!;
         public UserProfile User { get; set; } = default!;
     }

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ConnectVibe.Infrastructure.Migrations
 {
     [DbContext(typeof(ConnectVibeDbContext))]
-    [Migration("20240916160706_AddedMoreTable")]
-    partial class AddedMoreTable
+    [Migration("20240919060704_ModifiedEventTablettttrrrr")]
+    partial class ModifiedEventTablettttrrrr
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -463,7 +463,7 @@ namespace ConnectVibe.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("EventType")
+                    b.Property<int>("Event_Type")
                         .HasColumnType("int");
 
                     b.Property<int>("Gender")
@@ -556,9 +556,6 @@ namespace ConnectVibe.Infrastructure.Migrations
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("TicketTypeId")
-                        .HasColumnType("int");
-
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
@@ -569,8 +566,6 @@ namespace ConnectVibe.Infrastructure.Migrations
                     b.HasIndex("LocationId");
 
                     b.HasIndex("SponsoredEventDetailId");
-
-                    b.HasIndex("TicketTypeId");
 
                     b.HasIndex("UserId");
 
@@ -585,8 +580,8 @@ namespace ConnectVibe.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<float>("Budget")
-                        .HasColumnType("real");
+                    b.Property<double>("Budget")
+                        .HasColumnType("float");
 
                     b.Property<string>("BusinessAddress")
                         .IsRequired()
@@ -635,8 +630,8 @@ namespace ConnectVibe.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<float>("Amount")
-                        .HasColumnType("real");
+                    b.Property<double>("Amount")
+                        .HasColumnType("float");
 
                     b.Property<string>("ClosesOn")
                         .IsRequired()
@@ -645,6 +640,9 @@ namespace ConnectVibe.Infrastructure.Migrations
                     b.Property<string>("Currency")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("EventsId")
+                        .HasColumnType("int");
 
                     b.Property<int>("LocationId")
                         .HasColumnType("int");
@@ -670,6 +668,8 @@ namespace ConnectVibe.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EventsId");
 
                     b.HasIndex("LocationId");
 
@@ -832,12 +832,6 @@ namespace ConnectVibe.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Fliq.Domain.Entities.Event.TicketType", "TicketType")
-                        .WithMany()
-                        .HasForeignKey("TicketTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("ConnectVibe.Domain.Entities.Profile.UserProfile", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -850,13 +844,15 @@ namespace ConnectVibe.Infrastructure.Migrations
 
                     b.Navigation("SponsoredEventDetail");
 
-                    b.Navigation("TicketType");
-
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Event.TicketType", b =>
                 {
+                    b.HasOne("Fliq.Domain.Entities.Event.Events", null)
+                        .WithMany("TicketType")
+                        .HasForeignKey("EventsId");
+
                     b.HasOne("ConnectVibe.Domain.Entities.Profile.Location", "Location")
                         .WithMany()
                         .HasForeignKey("LocationId")
@@ -895,6 +891,8 @@ namespace ConnectVibe.Infrastructure.Migrations
             modelBuilder.Entity("Fliq.Domain.Entities.Event.Events", b =>
                 {
                     b.Navigation("Media");
+
+                    b.Navigation("TicketType");
                 });
 #pragma warning restore 612, 618
         }
