@@ -8,7 +8,7 @@ namespace Fliq.Application.Event.Commands.EventCreation
     {
         public CreateEventCommandvalidator()
         {
-            RuleFor(x => x.Docs)
+            RuleFor(x => x.Media)
                 .NotNull().WithMessage("Document is required.");
 
             RuleFor(x => x.EventTitle).NotEmpty().WithMessage("Event title must not be empty!.");
@@ -48,7 +48,8 @@ namespace Fliq.Application.Event.Commands.EventCreation
 
             RuleFor(x =>x.TicketType)
                 .NotNull().WithMessage("Ticket type is required.")
-                .SetValidator(new TicketTypeValidator());
+                .Must(Tickets => Tickets.Count >= 1).WithMessage("You can add more tickets!")
+                .ForEach(Ticket => Ticket.SetValidator(new TicketTypeValidator()));
         }
     }
 

@@ -77,7 +77,7 @@ namespace Fliq.Application.Event.Commands.EventCreation
 
             var newEvent = _mapper.Map<Events>(command);
             
-            foreach (var photo in command.Docs)
+            foreach (var photo in command.Media)
             {
                 //Checking if the Application is running on a debugger mode
                 if (Debugger.IsAttached)
