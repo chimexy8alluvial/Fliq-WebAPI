@@ -27,14 +27,14 @@ namespace Fliq.Application.Event.Commands.EventCreation
         public Location Location { get; set; } = default!;
         public int Capacity { get; set; }
         public int UserId { get; set; } = default!;
-        public List<EventMediaMapped> Docs { get; set; } = default!;
+        public List<EventMediaMapped> Media { get; set; } = default!;
         public string StartAge { get; set; } = default!;
         public string EndAge { get; set; } = default!;
         public string EventCategory { get; set; } = default!;
         public bool SponsoredEvent { get; set; }
         public SponsoredEventDetail SponsoredEventDetail { get; set; } = default!;
         public EventCriteria EventCriteria { get; set; } = default!;
-        public TicketType TicketType { get; set; } = default!;
+        public List<TicketType> TicketType { get; set; } = default!;
     }
 
     public class CreateEventCommandHandler : IRequestHandler<CreateEventCommand, ErrorOr<CreateEventResult>>

@@ -13,13 +13,13 @@ namespace Fliq.Contracts.Event
         LocationDto Location,
         int Capacity,
         int UserId,
-        List<EventMediaDto> Docs,
+        List<EventMediaDto> Media,
         string StartAge,
         string EndAge,
         string EventCategory,
         bool SponsoredEvent,
         SponsoredEventDetailsDto SponsoredEventDetail,
         EventCriteriaDto EventCriteria,
-        TicketTypeDto TicketType
+        List<TicketTypeDto> TicketType
     );
 }
