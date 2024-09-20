@@ -1,20 +1,24 @@
-﻿using ConnectVibe.Application.Common.Interfaces.Authentication;
-using ConnectVibe.Application.Common.Interfaces.Persistence;
-using ConnectVibe.Application.Common.Interfaces.Services;
-using ConnectVibe.Application.Common.Interfaces.Services.AuthServices;
-using ConnectVibe.Application.Common.Interfaces.Services.ImageServices;
-using ConnectVibe.Application.Common.Interfaces.Services.LocationServices;
-using ConnectVibe.Infrastructure.Authentication;
-using ConnectVibe.Infrastructure.Persistence;
-using ConnectVibe.Infrastructure.Persistence.Repositories;
-using ConnectVibe.Infrastructure.Services;
-using ConnectVibe.Infrastructure.Services.AuthServices;
-using ConnectVibe.Infrastructure.Services.ImageServices;
-using ConnectVibe.Infrastructure.Services.LocationServices;
+﻿using Fliq.Application.Common.Interfaces.Authentication;
 using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.Common.Interfaces.Services.AuthServices;
+using Fliq.Application.Common.Interfaces.Services.ImageServices;
+using Fliq.Application.Common.Interfaces.Services.LocationServices;
+using Fliq.Infrastructure.Authentication;
+using Fliq.Infrastructure.Persistence;
+using Fliq.Infrastructure.Persistence.Repositories;
+using Fliq.Infrastructure.Services;
+using Fliq.Infrastructure.Services.AuthServices;
+using Fliq.Infrastructure.Services.ImageServices;
+using Fliq.Infrastructure.Services.LocationServices;
+
+using Fliq.Application.Common.Interfaces.Persistence;
+
 using Fliq.Application.Common.Interfaces.Services.PaymentServices;
 using Fliq.Application.Common.Interfaces.Services.SubscriptionServices;
+
 using Fliq.Infrastructure.Persistence.Repositories;
+
 using Fliq.Infrastructure.Services.PaymentServices;
 using Fliq.Infrastructure.Services.SubscriptionServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -24,7 +28,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
-namespace ConnectVibe.Infrastructure
+namespace Fliq.Infrastructure
 {
     public static class DependencyInjection
     {
@@ -38,6 +42,7 @@ namespace ConnectVibe.Infrastructure
             services.AddScoped<IOtpRepository, OtpRepository>();
             services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
             services.AddScoped<IPaymentRepository, PaymentRepository>();
+            services.AddScoped<ISettingsRepository, SettingsRepository>();
             services.AddScoped<IImageService, ImageService>();
             services.AddScoped<ILocationService, LocationService>();
             services.AddScoped<IEmailService, EmailService>();
