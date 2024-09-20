@@ -25,7 +25,7 @@ namespace Fliq.Application.Event.Commands.EventCreation
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public Location Location { get; set; } = default!;
-        public int capacity { get; set; }
+        public int Capacity { get; set; }
         public int UserId { get; set; } = default!;
         public List<EventMediaMapped> Docs { get; set; } = default!;
         public string StartAge { get; set; } = default!;
@@ -121,9 +121,7 @@ namespace Fliq.Application.Event.Commands.EventCreation
             }
             _eventRepository.Add(newEvent);
 
-            var createdEvent = _mapper.Map<CreateEventResult>(newEvent);
-
-            return createdEvent;
+            return new CreateEventResult(newEvent);
         }
     }
 }

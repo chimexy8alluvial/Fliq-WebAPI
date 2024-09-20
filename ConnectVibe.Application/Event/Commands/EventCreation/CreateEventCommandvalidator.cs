@@ -15,19 +15,19 @@ namespace Fliq.Application.Event.Commands.EventCreation
 
             RuleFor(x => x.EventDescription).NotEmpty().WithMessage("Event Description must not be empty!.");
 
-            RuleFor(x => x.Id)
-               .GreaterThan(0).WithMessage("Id must be greater than 0.");
+            //RuleFor(x => x.Id)
+            //   .GreaterThan(0).WithMessage("Id must be greater than 0.");
 
             RuleFor(x => x.UserId)
               .GreaterThan(0).WithMessage("UserId must be greater than 0.");
 
-            RuleFor(x => x.EventType).NotEmpty().WithMessage("Event Type must not be empty!");
+            RuleFor(x => x.EventType).NotNull().WithMessage("Event Type is required!");
 
             RuleFor(x => x.StartDate).NotEmpty();
 
             RuleFor(x => x.EndDate).NotEmpty();
 
-            RuleFor(x => x.capacity)
+            RuleFor(x => x.Capacity)
                .GreaterThan(0).WithMessage("Capacity must be greater than 0.");
 
             RuleFor(x => x.Location)
@@ -68,7 +68,7 @@ namespace Fliq.Application.Event.Commands.EventCreation
                 .NotEmpty().WithMessage("Business Type list must not be empty.");
             // Sponsoring Budget
             RuleFor(x => x.SponsoringBudget)
-                .NotEmpty().WithMessage("Pick one of the options for Sponsoring Budget.");
+                .NotNull().WithMessage("Pick one of the options for Sponsoring Budget.");
             // Target Audience
             RuleFor(x => x.TargetAudienceType)
                 .NotEmpty().WithMessage("Target Audience Type is required.");

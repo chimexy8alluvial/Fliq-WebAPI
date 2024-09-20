@@ -10,7 +10,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Fliq.Api.Controllers
 {
-    [Authorize]
+    /// <summary>
+    /// [Authorize]
+    /// </summary>
     [Route("api/event")]
     [ApiController]
     public class EventController : ApiBaseController

@@ -4,6 +4,6 @@
     (
         Event_TypeDto EventType,
         GenderDto Gender,
-        List<string> Race
+        string Race
     );
 }

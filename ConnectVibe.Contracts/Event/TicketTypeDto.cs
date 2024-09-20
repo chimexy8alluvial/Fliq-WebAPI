@@ -10,8 +10,8 @@ namespace Fliq.Contracts.Event
         string ClosesOn,
         string TimeZone,
         LocationDto Location,
-        List<string> TicketType,
-        List<string> Currency,
-        float Amount
+        string TicketTypes,
+        string Currency,
+        double Amount
     );
 }

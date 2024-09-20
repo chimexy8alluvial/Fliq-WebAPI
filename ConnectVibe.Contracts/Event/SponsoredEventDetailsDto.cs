@@ -4,13 +4,13 @@
     (
         string BusinessName,
         string BusinessAddress,
-        List<string> BusinessType,
+        string BusinessType,
         string ContactInfromation,
         SponsoringBudgetDto SponsoringBudget,
-        List<string> TargetAudienceType,
+        string TargetAudienceType,
         int NumberOfInvitees,
-        float Budget,
+        double Budget,
         string DurationOfSponsorship,
-        List<string> PreferedLevelOfInvolvement
+        string PreferedLevelOfInvolvement
     );
 }
