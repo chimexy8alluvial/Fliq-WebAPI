@@ -8,7 +8,6 @@ using MapsterMapper;
 using MediatR;
 using Newtonsoft.Json;
 
-
 namespace ConnectVibe.Application.Authentication.Commands.ChangePassword
 {
     public record ChangePasswordCommand(
@@ -26,6 +25,7 @@ namespace ConnectVibe.Application.Authentication.Commands.ChangePassword
         private readonly IOtpRepository _otpRepository;
         private readonly IOtpService _otpService;
         private readonly ILoggerManager _logger;
+
         public ChangePasswordQueryHandler(IJwtTokenGenerator jwtTokenGenerator, IUserRepository userRepository, IMapper mapper, IEmailService emailService, IOtpRepository otpRepository, IOtpService otpService, ILoggerManager logger)
         {
             _jwtTokenGenerator = jwtTokenGenerator;
@@ -36,6 +36,7 @@ namespace ConnectVibe.Application.Authentication.Commands.ChangePassword
             _otpService = otpService;
             _logger = logger;
         }
+
         public async Task<ErrorOr<bool>> Handle(ChangePasswordCommand command, CancellationToken cancellationToken)
         {
             await Task.CompletedTask;

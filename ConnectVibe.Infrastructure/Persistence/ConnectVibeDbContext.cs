@@ -1,6 +1,7 @@
 ﻿using ConnectVibe.Domain.Entities;
 using ConnectVibe.Domain.Entities.Profile;
 using Fliq.Domain.Entities;
+using Fliq.Domain.Entities.Settings;
 using Microsoft.EntityFrameworkCore;
 
 namespace ConnectVibe.Infrastructure.Persistence
@@ -18,5 +19,13 @@ namespace ConnectVibe.Infrastructure.Persistence
 
         public DbSet<Subscription> Subscriptions { get; set; } = null!;
         public DbSet<Payment> Payments { get; set; } = null!;
+        public DbSet<Setting> Settings { get; set; } = null!;
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Payment>()
+                .Property(p => p.Amount)
+                .HasPrecision(18, 2); // Example: 18 digits total, 2 after decimal
+        }
     }
 }

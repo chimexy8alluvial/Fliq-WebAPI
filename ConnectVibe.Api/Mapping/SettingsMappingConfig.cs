@@ -1,0 +1,18 @@
+﻿using Fliq.Application.Settings.Commands.Update;
+using Fliq.Application.Settings.Common;
+using Fliq.Contracts.Settings;
+using Fliq.Domain.Entities.Settings;
+using Mapster;
+
+namespace Fliq.Api.Mapping
+{
+    public class SettingsMappingConfig : IRegister
+    {
+        public void Register(TypeAdapterConfig config)
+        {
+            config.NewConfig<UpdateSettingsRequest, UpdateSettingsCommand>();
+            config.NewConfig<GetSettingsResult, GetSettingsResponse>();
+            config.NewConfig<NotificationPreferenceDto, NotificationPreference>();
+        }
+    }
+}

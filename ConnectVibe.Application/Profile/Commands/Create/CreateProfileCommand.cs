@@ -6,6 +6,8 @@ using ConnectVibe.Application.Profile.Common;
 using ConnectVibe.Domain.Common.Errors;
 using ConnectVibe.Domain.Entities.Profile;
 using ErrorOr;
+using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Domain.Entities.Settings;
 using MapsterMapper;
 using MediatR;
 
@@ -35,14 +37,16 @@ namespace ConnectVibe.Application.Profile.Commands.Create
         private readonly IProfileRepository _profileRepository;
         private readonly IUserRepository _userRepository;
         private readonly ILocationService _locationService;
+        private readonly ISettingsRepository _settingsRepository;
 
-        public CreateProfileCommandHandler(IMapper mapper, IImageService imageService, IProfileRepository profileRepository, IUserRepository userRepository, ILocationService locationService)
+        public CreateProfileCommandHandler(IMapper mapper, IImageService imageService, IProfileRepository profileRepository, IUserRepository userRepository, ILocationService locationService, ISettingsRepository settingsRepository)
         {
             _mapper = mapper;
             _imageService = imageService;
             _profileRepository = profileRepository;
             _userRepository = userRepository;
             _locationService = locationService;
+            _settingsRepository = settingsRepository;
         }
 
         public async Task<ErrorOr<CreateProfileResult>> Handle(CreateProfileCommand command, CancellationToken cancellationToken)
@@ -95,6 +99,12 @@ namespace ConnectVibe.Application.Profile.Commands.Create
             }
 
             _profileRepository.Add(userProfile);
+
+            Setting setting = new()
+            {
+                UserId = command.UserId
+            };
+            _settingsRepository.Add(setting);
 
             return new CreateProfileResult(userProfile);
         }
