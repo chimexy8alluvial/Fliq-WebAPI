@@ -6,6 +6,6 @@ namespace Fliq.Contracts.Event
     {
         public string Title { get; set; } = default!;
 
-        public IFormFile Documentfile { get; set; } = default!;
+        public IFormFile DocFile { get; set; } = default!;
     }
 }

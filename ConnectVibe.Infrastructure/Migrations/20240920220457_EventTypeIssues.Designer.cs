@@ -4,6 +4,7 @@ using ConnectVibe.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ConnectVibe.Infrastructure.Migrations
 {
     [DbContext(typeof(ConnectVibeDbContext))]
-    partial class ConnectVibeDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240920220457_EventTypeIssues")]
+    partial class EventTypeIssues
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -639,6 +642,9 @@ namespace ConnectVibe.Infrastructure.Migrations
                     b.Property<int?>("EventsId")
                         .HasColumnType("int");
 
+                    b.Property<int>("LocationId")
+                        .HasColumnType("int");
+
                     b.Property<string>("OpensOn")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -662,6 +668,8 @@ namespace ConnectVibe.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("EventsId");
+
+                    b.HasIndex("LocationId");
 
                     b.ToTable("TicketTypes");
                 });
@@ -834,6 +842,14 @@ namespace ConnectVibe.Infrastructure.Migrations
                     b.HasOne("Fliq.Domain.Entities.Event.Events", null)
                         .WithMany("TicketType")
                         .HasForeignKey("EventsId");
+
+                    b.HasOne("ConnectVibe.Domain.Entities.Profile.Location", "Location")
+                        .WithMany()
+                        .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Location");
                 });
 
             modelBuilder.Entity("ConnectVibe.Domain.Entities.Profile.Location", b =>

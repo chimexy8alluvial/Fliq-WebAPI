@@ -13,7 +13,7 @@ namespace Fliq.Contracts.Event
         LocationDto Location,
         int Capacity,
         int UserId,
-        List<EventMediaDto> Media,
+        List<EventMediaDto> Docs,
         string StartAge,
         string EndAge,
         string EventCategory,

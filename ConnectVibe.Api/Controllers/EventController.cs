@@ -10,10 +10,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Fliq.Api.Controllers
 {
-    
-    [Authorize]
+
+    //[Authorize]
+    //[Route("api/event")]
+    //[ApiController]
     [Route("api/event")]
-    [ApiController]
+    [AllowAnonymous]
     public class EventController : ApiBaseController
     {
         private readonly ISender _mediator;
@@ -30,7 +32,7 @@ namespace Fliq.Api.Controllers
         }
 
         [HttpPost("CreateEvent")]
-        public async Task<IActionResult> CreateEvent([FromForm] CreateEventRequest request)
+        public async Task<IActionResult> CreateEvent([FromForm]CreateEventRequest request)
         {
             _logger.LogInfo($"Create Request Received: {request}");
             var command = _mapper.Map<CreateEventCommand>(request);

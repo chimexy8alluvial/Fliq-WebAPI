@@ -8,7 +8,7 @@ namespace Fliq.Application.Event.Commands.EventCreation
     {
         public CreateEventCommandvalidator()
         {
-            RuleFor(x => x.Media)
+            RuleFor(x => x.Docs)
                 .NotNull().WithMessage("Document is required.");
 
             RuleFor(x => x.EventTitle).NotEmpty().WithMessage("Event title must not be empty!.");
@@ -21,7 +21,7 @@ namespace Fliq.Application.Event.Commands.EventCreation
             RuleFor(x => x.UserId)
               .GreaterThan(0).WithMessage("UserId must be greater than 0.");
 
-            RuleFor(x => x.EventType).NotNull().WithMessage("Event Type is required!");
+            RuleFor(x => x.EventType).IsInEnum().WithMessage("Event Type is required!");
 
             RuleFor(x => x.StartDate).NotEmpty();
 
@@ -46,7 +46,7 @@ namespace Fliq.Application.Event.Commands.EventCreation
                 .NotNull().WithMessage("Event Criteria is required.")
                 .SetValidator(new EventCriteriaValidator());
 
-            RuleFor(x =>x.TicketType)
+            RuleFor(x => x.TicketType)
                 .NotNull().WithMessage("Ticket type is required.")
                 .Must(Tickets => Tickets.Count >= 1).WithMessage("You can add more tickets!")
                 .ForEach(Ticket => Ticket.SetValidator(new TicketTypeValidator()));
@@ -95,7 +95,7 @@ namespace Fliq.Application.Event.Commands.EventCreation
             RuleFor(x => x.Gender)
                 .IsInEnum().WithMessage("Invalid Gender Type value.");
 
-            RuleFor(x => x.Event_Type)
+            RuleFor(x => x.EventType)
                 .IsInEnum().WithMessage("Invalid Event Type value.");
 
             RuleFor(x => x.Race)
@@ -103,10 +103,10 @@ namespace Fliq.Application.Event.Commands.EventCreation
         }
     }
 
-    // Ticket Validator for Payment Details
-    public class TicketTypeValidator : AbstractValidator<TicketType> 
+    //Ticket Validator for Payment Details
+    public class TicketTypeValidator : AbstractValidator<TicketType>
     {
-        public TicketTypeValidator() 
+        public TicketTypeValidator()
         {
             RuleFor(x => x.TicketName)
                 .NotEmpty().WithMessage("Ticket Name is required.");
@@ -122,10 +122,6 @@ namespace Fliq.Application.Event.Commands.EventCreation
 
             RuleFor(x => x.TimeZone)
                 .NotEmpty().WithMessage("Timezone is required.");
-
-            RuleFor(x => x.Location)
-               .NotNull().WithMessage("Location is required.")
-               .SetValidator(new LocationValidator());
 
             RuleFor(x => x.TicketTypes)
                 .NotEmpty().WithMessage("Ticket Type is required.");

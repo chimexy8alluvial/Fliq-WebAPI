@@ -9,7 +9,6 @@ namespace Fliq.Domain.Entities.Event
         public string OpensOn { get; set; } = default!;
         public string ClosesOn { get; set; } = default!;
         public string TimeZone { get; set; } = default!;
-        public Location Location { get; set; } = default!;
         public string TicketTypes { get; set; } = default!;
         public string Currency { get; set; } = default!;
         public double Amount { get; set; } = default!;

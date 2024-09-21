@@ -27,7 +27,7 @@ namespace Fliq.Application.Event.Commands.EventCreation
         public Location Location { get; set; } = default!;
         public int Capacity { get; set; }
         public int UserId { get; set; } = default!;
-        public List<EventMediaMapped> Media { get; set; } = default!;
+        public List<EventMediaMapped> Docs { get; set; } = default!;
         public string StartAge { get; set; } = default!;
         public string EndAge { get; set; } = default!;
         public string EventCategory { get; set; } = default!;
@@ -77,7 +77,7 @@ namespace Fliq.Application.Event.Commands.EventCreation
 
             var newEvent = _mapper.Map<Events>(command);
             
-            foreach (var photo in command.Media)
+            foreach (var photo in command.Docs)
             {
                 //Checking if the Application is running on a debugger mode
                 if (Debugger.IsAttached)
