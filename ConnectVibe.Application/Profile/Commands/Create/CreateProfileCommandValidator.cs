@@ -53,7 +53,7 @@ namespace ConnectVibe.Application.Profile.Commands.Create
 
             RuleFor(x => x.Photos)
            .NotNull().WithMessage("Photos are required.")
-           .Must(photos => photos.Count >= 1).WithMessage("Exactly 6 photos are required.")
+           .Must(photos => photos.Count == 6).WithMessage("Exactly 6 photos are required.")
            .ForEach(photo => photo.SetValidator(new ProfilePhotoDtoValidator()));
 
             RuleFor(x => x.Location)
