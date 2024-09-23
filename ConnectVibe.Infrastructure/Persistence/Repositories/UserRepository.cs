@@ -1,9 +1,9 @@
-﻿using ConnectVibe.Application.Common.Interfaces.Persistence;
-using ConnectVibe.Domain.Entities;
+﻿using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Domain.Entities;
 using Dapper;
 using System.Data;
 
-namespace ConnectVibe.Infrastructure.Persistence.Repositories
+namespace Fliq.Infrastructure.Persistence.Repositories
 {
     public class UserRepository : IUserRepository
     {

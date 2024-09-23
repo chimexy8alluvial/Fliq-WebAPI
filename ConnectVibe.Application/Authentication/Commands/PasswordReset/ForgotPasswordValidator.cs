@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace ConnectVibe.Application.Authentication.Commands.PasswordReset
+namespace Fliq.Application.Authentication.Commands.PasswordReset
 {
     public class ForgotPasswordValidator : AbstractValidator<ForgotPasswordCommand>
     {

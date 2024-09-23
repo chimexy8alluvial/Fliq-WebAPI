@@ -1,14 +1,14 @@
-﻿using ConnectVibe.Application.Common.Interfaces.Authentication;
-using ConnectVibe.Application.Common.Interfaces.Persistence;
-using ConnectVibe.Application.Common.Interfaces.Services;
-using ConnectVibe.Application.Common.Security;
-using ConnectVibe.Domain.Common.Errors;
+﻿using Fliq.Application.Common.Interfaces.Authentication;
+using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.Common.Security;
+using Fliq.Domain.Common.Errors;
 using ErrorOr;
 using MapsterMapper;
 using MediatR;
 using Newtonsoft.Json;
 
-namespace ConnectVibe.Application.Authentication.Commands.ChangePassword
+namespace Fliq.Application.Authentication.Commands.ChangePassword
 {
     public record ChangePasswordCommand(
         string Email,

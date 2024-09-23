@@ -1,7 +1,7 @@
-﻿using ConnectVibe.Application.Common.Interfaces.Persistence;
-using ConnectVibe.Domain.Entities.Profile;
+﻿using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Domain.Entities.Profile;
 
-namespace ConnectVibe.Infrastructure.Persistence.Repositories
+namespace Fliq.Infrastructure.Persistence.Repositories
 {
     public class ProfileRepository : IProfileRepository
     {

@@ -1,7 +1,7 @@
 ﻿using Azure.AI.Vision.Face;
 using Microsoft.AspNetCore.Http;
 
-namespace ConnectVibe.Application.Common.Interfaces.Services.ImageServices
+namespace Fliq.Application.Common.Interfaces.Services.ImageServices
 {
     public interface IImageService
     {

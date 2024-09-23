@@ -1,10 +1,9 @@
-﻿using ConnectVibe.Domain.Entities;
-using ConnectVibe.Domain.Entities.Profile;
-using Fliq.Domain.Entities;
+﻿using Fliq.Domain.Entities;
+using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Entities.Settings;
 using Microsoft.EntityFrameworkCore;
 
-namespace ConnectVibe.Infrastructure.Persistence
+namespace Fliq.Infrastructure.Persistence
 {
     public class ConnectVibeDbContext : DbContext
     {

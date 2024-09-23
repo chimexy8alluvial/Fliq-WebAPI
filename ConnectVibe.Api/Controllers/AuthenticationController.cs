@@ -1,25 +1,25 @@
-﻿using ConnectVibe.Application.Authentication.Commands.Register;
-using ConnectVibe.Application.Authentication.Commands.ValidateOTP;
-using ConnectVibe.Application.Authentication.Queries.FacebookLogin;
-using ConnectVibe.Application.Authentication.Queries.GoogleLogin;
-using ConnectVibe.Application.Common.Interfaces.Services;
-using ConnectVibe.Application.Authentication.Queries.Login;
-using ConnectVibe.Application.Common.Interfaces.Persistence;
-using ConnectVibe.Contracts.Authentication;
-using ConnectVibe.Domain.Common.Errors;
+﻿using Fliq.Application.Authentication.Commands.Register;
+using Fliq.Application.Authentication.Commands.ValidateOTP;
+using Fliq.Application.Authentication.Queries.FacebookLogin;
+using Fliq.Application.Authentication.Queries.GoogleLogin;
+using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.Authentication.Queries.Login;
+using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Contracts.Authentication;
+using Fliq.Domain.Common.Errors;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using ConnectVibe.Application.Authentication.Commands.ChangePassword;
-using ConnectVibe.Application.Authentication.Commands.PasswordReset;
-using ConnectVibe.Application.Authentication.Commands.ValidatePasswordOTP;
-using ConnectVibe.Application.Authentication.Commands.PasswordCreation;
+using Fliq.Application.Authentication.Commands.ChangePassword;
+using Fliq.Application.Authentication.Commands.PasswordReset;
+using Fliq.Application.Authentication.Commands.ValidatePasswordOTP;
+using Fliq.Application.Authentication.Commands.PasswordCreation;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace ConnectVibe.Api.Controllers
+namespace Fliq.Api.Controllers
 {
     [Route("api/auth")]
     [AllowAnonymous]
@@ -29,6 +29,7 @@ namespace ConnectVibe.Api.Controllers
         private readonly IMapper _mapper;
         private readonly IOtpRepository _otpRepository;
         private readonly ILoggerManager _logger;
+
         public AuthenticationController(ISender mediator, IMapper mapper, IOtpRepository otpRepository, ILoggerManager logger)
         {
             _mediator = mediator;

@@ -1,7 +1,6 @@
-﻿using ConnectVibe.Domain.Entities.Profile;
-using Fliq.Domain.Entities;
+﻿using Fliq.Domain.Entities.Profile;
 
-namespace ConnectVibe.Domain.Entities
+namespace Fliq.Domain.Entities
 {
     public class User
     {

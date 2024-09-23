@@ -2,7 +2,7 @@
 using MapsterMapper;
 using System.Reflection;
 
-namespace ConnectVibe.Api.Mapping
+namespace Fliq.Api.Mapping
 {
     public static class DependencyInjection
     {

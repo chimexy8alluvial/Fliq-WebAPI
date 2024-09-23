@@ -1,18 +1,18 @@
-﻿using ConnectVibe.Application.Authentication.Common;
-using ConnectVibe.Application.Common.Interfaces.Authentication;
-using ConnectVibe.Application.Common.Interfaces.Persistence;
-using ConnectVibe.Application.Common.Interfaces.Services;
-using ConnectVibe.Domain.Common.Errors;
+﻿using Fliq.Application.Authentication.Common;
+using Fliq.Application.Common.Interfaces.Authentication;
+using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Domain.Common.Errors;
 using ErrorOr;
 using MapsterMapper;
 using MediatR;
-namespace ConnectVibe.Application.Authentication.Commands.ValidateOTP
+
+namespace Fliq.Application.Authentication.Commands.ValidateOTP
 {
     public record ValidateOTPCommand(
         string Email,
         string Otp
         ) : IRequest<ErrorOr<AuthenticationResult>>;
-
 
     public class ValidateOTPCommandHandler : IRequestHandler<ValidateOTPCommand, ErrorOr<AuthenticationResult>>
     {
@@ -32,6 +32,7 @@ namespace ConnectVibe.Application.Authentication.Commands.ValidateOTP
             _otpService = otpService;
             _logger = logger;
         }
+
         public async Task<ErrorOr<AuthenticationResult>> Handle(ValidateOTPCommand command, CancellationToken cancellationToken)
         {
             await Task.CompletedTask;
@@ -44,7 +45,5 @@ namespace ConnectVibe.Application.Authentication.Commands.ValidateOTP
             var token = _jwtTokenGenerator.GenerateToken(user);
             return new AuthenticationResult(user, token);
         }
-
     }
-
 }

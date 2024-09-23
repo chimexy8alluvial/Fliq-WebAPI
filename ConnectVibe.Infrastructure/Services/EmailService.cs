@@ -1,6 +1,6 @@
-﻿using ConnectVibe.Application.Common.Interfaces.Services;
+﻿using Fliq.Application.Common.Interfaces.Services;
 
-namespace ConnectVibe.Infrastructure.Services
+namespace Fliq.Infrastructure.Services
 {
     public class EmailService : IEmailService
     {

@@ -1,9 +1,9 @@
-﻿using ConnectVibe.Application.Common.Interfaces.Persistence;
+﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using System.Data;
 
-namespace ConnectVibe.Infrastructure.Persistence
+namespace Fliq.Infrastructure.Persistence
 {
     public class DbConnectionFactory : IDbConnectionFactory
     {

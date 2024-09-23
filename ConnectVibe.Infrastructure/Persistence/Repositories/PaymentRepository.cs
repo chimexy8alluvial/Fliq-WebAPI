@@ -1,6 +1,8 @@
-﻿using ConnectVibe.Application.Common.Interfaces.Persistence;
-using ConnectVibe.Infrastructure.Persistence;
+﻿using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Infrastructure.Persistence;
+
 using Fliq.Application.Common.Interfaces.Persistence;
+
 using Fliq.Domain.Entities;
 
 namespace Fliq.Infrastructure.Persistence.Repositories

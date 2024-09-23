@@ -1,7 +1,9 @@
-﻿using ConnectVibe.Application.Common.Interfaces.Persistence;
-using ConnectVibe.Application.Common.Interfaces.Services;
+﻿using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Interfaces.Services;
 using ErrorOr;
+
 using Fliq.Application.Common.Interfaces.Persistence;
+
 using Fliq.Application.Settings.Common;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Settings;

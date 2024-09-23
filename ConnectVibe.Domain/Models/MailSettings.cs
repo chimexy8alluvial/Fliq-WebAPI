@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConnectVibe.Domain.Models
+namespace Fliq.Domain.Models
 {
     public class MailSettings
     {

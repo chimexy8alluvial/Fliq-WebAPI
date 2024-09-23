@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace ConnectVibe.Application.Authentication.Queries.FacebookLogin
+namespace Fliq.Application.Authentication.Queries.FacebookLogin
 {
     public class FacebookLoginQueryValidator : AbstractValidator<FacebookLoginQuery>
     {

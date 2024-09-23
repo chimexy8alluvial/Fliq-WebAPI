@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace ConnectVibe.Infrastructure.Migrations
+namespace Fliq.Infrastructure.Migrations
 {
     /// <inheritdoc />
     public partial class initialCreate : Migration

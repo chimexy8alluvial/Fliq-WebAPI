@@ -1,17 +1,19 @@
-﻿using ConnectVibe.Application.Authentication.Common.Profile;
-using ConnectVibe.Application.Common.Interfaces.Persistence;
-using ConnectVibe.Application.Common.Interfaces.Services.ImageServices;
-using ConnectVibe.Application.Common.Interfaces.Services.LocationServices;
-using ConnectVibe.Application.Profile.Common;
-using ConnectVibe.Domain.Common.Errors;
-using ConnectVibe.Domain.Entities.Profile;
-using ErrorOr;
+﻿using Fliq.Application.Authentication.Common.Profile;
 using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Interfaces.Services.ImageServices;
+using Fliq.Application.Common.Interfaces.Services.LocationServices;
+using Fliq.Application.Profile.Common;
+using Fliq.Domain.Common.Errors;
+using Fliq.Domain.Entities.Profile;
+using ErrorOr;
+
+using Fliq.Application.Common.Interfaces.Persistence;
+
 using Fliq.Domain.Entities.Settings;
 using MapsterMapper;
 using MediatR;
 
-namespace ConnectVibe.Application.Profile.Commands.Create
+namespace Fliq.Application.Profile.Commands.Create
 {
     public class CreateProfileCommand : IRequest<ErrorOr<CreateProfileResult>>
     {

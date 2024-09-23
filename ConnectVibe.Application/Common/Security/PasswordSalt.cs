@@ -1,6 +1,6 @@
 ﻿using System.Security.Cryptography;
 
-namespace ConnectVibe.Application.Common.Security
+namespace Fliq.Application.Common.Security
 {
     public class PasswordSalt
     {

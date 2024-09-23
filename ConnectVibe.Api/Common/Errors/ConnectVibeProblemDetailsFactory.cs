@@ -1,4 +1,4 @@
-﻿using ConnectVibe.Api.Common.Http;
+﻿using Fliq.Api.Common.Http;
 using ErrorOr;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
 
-namespace ConnectVibe.Api.Common.Errors
+namespace Fliq.Api.Common.Errors
 {
     public class ConnectVibeProblemDetailsFactory : ProblemDetailsFactory
     {

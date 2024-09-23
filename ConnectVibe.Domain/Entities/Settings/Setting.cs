@@ -1,4 +1,4 @@
-﻿using ConnectVibe.Domain.Entities;
+﻿using Fliq.Domain.Entities;
 
 namespace Fliq.Domain.Entities.Settings
 {

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FluentValidation;
 
-namespace ConnectVibe.Application.Authentication.Commands.ValidatePasswordOTP
+namespace Fliq.Application.Authentication.Commands.ValidatePasswordOTP
 {
     public class ValidatePasswordOTPValidator : AbstractValidator<ValidatePasswordOTPCommand>
     {

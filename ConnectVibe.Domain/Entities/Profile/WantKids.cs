@@ -1,4 +1,4 @@
-﻿namespace ConnectVibe.Domain.Entities.Profile
+﻿namespace Fliq.Domain.Entities.Profile
 {
     public class WantKids
     {

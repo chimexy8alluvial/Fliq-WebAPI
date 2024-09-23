@@ -1,12 +1,12 @@
-﻿using ConnectVibe.Application.Authentication.Common.Profile;
-using ConnectVibe.Application.Common.Models;
-using ConnectVibe.Application.Profile.Commands.Create;
-using ConnectVibe.Application.Profile.Common;
-using ConnectVibe.Contracts.Profile;
-using ConnectVibe.Domain.Entities.Profile;
+﻿using Fliq.Application.Authentication.Common.Profile;
+using Fliq.Application.Common.Models;
+using Fliq.Application.Profile.Commands.Create;
+using Fliq.Application.Profile.Common;
+using Fliq.Contracts.Profile;
+using Fliq.Domain.Entities.Profile;
 using Mapster;
 
-namespace ConnectVibe.Api.Mapping
+namespace Fliq.Api.Mapping
 {
     public class ProfileMappingConfig : IRegister
     {

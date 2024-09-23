@@ -1,6 +1,6 @@
 ﻿using Microsoft.WindowsAzure.Storage;
 
-namespace ConnectVibe.Application.Common.Helpers
+namespace Fliq.Application.Common.Helpers
 {
     public class AzureConnectionString
     {

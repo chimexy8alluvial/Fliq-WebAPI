@@ -1,9 +1,9 @@
-﻿using ConnectVibe.Api.Common.Http;
-using ErrorOr;
+﻿using ErrorOr;
+using Fliq.Api.Common.Http;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ConnectVibe.Api.Controllers
+namespace Fliq.Api.Controllers
 {
     [ApiController]
     [Authorize]
