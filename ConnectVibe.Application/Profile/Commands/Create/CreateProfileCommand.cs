@@ -6,6 +6,8 @@ using ConnectVibe.Application.Profile.Common;
 using ConnectVibe.Domain.Common.Errors;
 using ConnectVibe.Domain.Entities.Profile;
 using ErrorOr;
+using Fliq.Domain.Entities.Profile;
+using Fliq.Domain.Enums;
 using MapsterMapper;
 using MediatR;
 
@@ -14,15 +16,19 @@ namespace ConnectVibe.Application.Profile.Commands.Create
     public class CreateProfileCommand : IRequest<ErrorOr<CreateProfileResult>>
     {
         public int UserId { get; set; }
-        public List<string> Passions { get; set; } = default!;
-        public List<ProfilePhotoMapped> Photos { get; set; } = default!;
+        public List<string> Passions { get; set; } = new();
+        public string? ProfileDescription { get; set; }
+        public List<ProfilePhotoMapped> Photos { get; set; } = new();
+        public List<ProfileType> ProfileTypes { get; set; } = new();
         public DateTime DOB { get; set; }
         public Gender Gender { get; set; } = default!;
-        public SexualOrientation SexualOrientation { get; set; } = default!;
+        public SexualOrientation? SexualOrientation { get; set; }
         public Religion Religion { get; set; } = default!;
         public Ethnicity Ethnicity { get; set; } = default!;
-        public HaveKids HaveKids { get; set; } = default!;
-        public WantKids WantKids { get; set; } = default!;
+        public Occupation Occupation { get; set; } = default!;
+        public EducationStatus EducationStatus { get; set; } = default!;
+        public HaveKids? HaveKids { get; set; }
+        public WantKids? WantKids { get; set; }
         public Location Location { get; set; } = default!;
         public LocationDetail LocationDetail { get; set; } = default!;
         public bool AllowNotifications { get; set; }

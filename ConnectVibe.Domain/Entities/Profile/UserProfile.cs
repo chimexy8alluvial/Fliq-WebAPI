@@ -8,6 +8,7 @@ namespace ConnectVibe.Domain.Entities.Profile
         public int Id { get; set; }
         public DateTime DOB { get; set; }
         public Gender Gender { get; set; } = default!;
+        public string? ProfileDescription { get; set; }  //Nullable
         public SexualOrientation? SexualOrientation { get; set; }  //Nullable
         public Religion Religion { get; set; } = default!;
         public Ethnicity Ethnicity { get; set; } = default!;

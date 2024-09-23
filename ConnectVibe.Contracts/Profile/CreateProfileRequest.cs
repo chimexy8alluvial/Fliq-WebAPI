@@ -8,6 +8,7 @@ namespace ConnectVibe.Contracts.Profile
       List<string> Passions,
     List<ProfilePhotoDto> Photos,
     List<ProfileTypeDto> profileTypes,
+    string ProfileDescription,
      GenderDto Gender,
      SexualOrientationDto SexualOrientation,
      ReligionDto Religion,
