@@ -18,22 +18,22 @@ namespace Fliq.Application.Event.Commands.EventCreation
 {
     public class CreateEventCommand : IRequest<ErrorOr<CreateEventResult>>
     {
-        public int Id { get; set; }
-        public EventType EventType { get; set; }
-        public string EventTitle { get; set; } = default!;
-        public string EventDescription { get; set; } = default!;
+
+        public EventType Type { get; set; }
+        public string Title { get; set; } = default!;
+        public string Description { get; set; } = default!;
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public Location Location { get; set; } = default!;
-        public int Capacity { get; set; }
+        public double Capacity { get; set; }
         public int UserId { get; set; } = default!;
-        public List<EventMediaMapped> Docs { get; set; } = default!;
+        public List<EventMediaMapped> MediaDocuments { get; set; } = default!;
         public string StartAge { get; set; } = default!;
         public string EndAge { get; set; } = default!;
-        public string EventCategory { get; set; } = default!;
-        public bool SponsoredEvent { get; set; }
-        public SponsoredEventDetail SponsoredEventDetail { get; set; } = default!;
-        public EventCriteria EventCriteria { get; set; } = default!;
+        public string Category { get; set; } = default!;
+        public bool IsSponsored { get; set; }
+        public SponsoredEventDetail SponsoredDetail { get; set; } = default!;
+        public EventCriteria Criteria { get; set; } = default!;
         public List<TicketType> TicketType { get; set; } = default!;
     }
 
@@ -70,14 +70,14 @@ namespace Fliq.Application.Event.Commands.EventCreation
                 return Errors.User.DuplicateEmail;
             }
 
-            if (user.IsDocumentVerified == false && command.EventType == EventType.Physical)
+            if (user.IsDocumentVerified == false && command.Type == EventType.Physical)
             {
                 return Errors.User.DuplicateEmail;
             }
 
             var newEvent = _mapper.Map<Events>(command);
             
-            foreach (var photo in command.Docs)
+            foreach (var photo in command.MediaDocuments)
             {
                 //Checking if the Application is running on a debugger mode
                 if (Debugger.IsAttached)

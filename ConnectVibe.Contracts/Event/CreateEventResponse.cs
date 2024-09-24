@@ -1,11 +1,12 @@
 ﻿using ConnectVibe.Contracts.Profile;
+using Fliq.Contracts.Event.Enums;
 
 namespace Fliq.Contracts.Event
 {
     public record CreateEventResponse
     (
        int Id,
-       EventTypeDto EventType,
+       EventTypeDtoEnum EventType,
        string eventTitle,
        string eventDescription,
        DateTime startDate,
