@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ConnectVibe.Api.Controllers
 {
-    [Route("api/profile")]
+    [Route("api/user-profile")]
     public class UserProfileController : ApiBaseController
     {
         private readonly ISender _mediator;
