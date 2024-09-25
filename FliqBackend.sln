@@ -25,6 +25,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FliqDomain", "FliqDomain", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FliqInfrastructure", "FliqInfrastructure", "{AEA77C1A-FC61-4685-9D63-741DD6562941}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fliq.Test", "ConnectVibe.Test\Fliq.Test.csproj", "{937173F8-E7B4-453A-8384-7EB433DB4E5F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{9E96AE2B-5103-438A-9680-93905563332A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9E96AE2B-5103-438A-9680-93905563332A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9E96AE2B-5103-438A-9680-93905563332A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{937173F8-E7B4-453A-8384-7EB433DB4E5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{937173F8-E7B4-453A-8384-7EB433DB4E5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{937173F8-E7B4-453A-8384-7EB433DB4E5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{937173F8-E7B4-453A-8384-7EB433DB4E5F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -61,6 +67,7 @@ Global
 		{3E862705-96F6-4A8D-A515-B560B3C0BB1E} = {1FE50622-6CF4-493B-9410-91DA01117328}
 		{303DB843-ABFC-4CFD-B7A7-FD7137C8426D} = {AEA77C1A-FC61-4685-9D63-741DD6562941}
 		{9E96AE2B-5103-438A-9680-93905563332A} = {AC7659F6-A189-4BBE-8464-1C2029B56010}
+		{937173F8-E7B4-453A-8384-7EB433DB4E5F} = {9682F711-25D1-42AF-8019-03C0B1B462B6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3D756387-E1A3-4CE0-9BDC-9249FD00FEAB}
