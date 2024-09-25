@@ -8,12 +8,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace ConnectVibe.Api.Controllers
 {
     [Route("api/profile")]
-    public class ProfileController : ApiBaseController
+    public class UserProfileController : ApiBaseController
     {
         private readonly ISender _mediator;
         private readonly IMapper _mapper;
 
-        public ProfileController(ISender mediator, IMapper mapper)
+        public UserProfileController(ISender mediator, IMapper mapper)
         {
             _mediator = mediator;
             _mapper = mapper;
