@@ -10,9 +10,6 @@ namespace ConnectVibe.Application.Profile.Commands.Create
     {
         public CreateProfileCommandValidator()
         {
-            RuleFor(x => x.UserId)
-                .GreaterThan(0).WithMessage("UserId must be greater than 0.");
-
             RuleFor(x => x.DOB)
                 .NotEmpty().WithMessage("Date of Birth is required.");
 
