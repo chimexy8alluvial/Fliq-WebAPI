@@ -12,7 +12,6 @@ using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.JsonWebTokens;
-using System.Security;
 
 namespace ConnectVibe.Application.Profile.Commands.Create
 {
