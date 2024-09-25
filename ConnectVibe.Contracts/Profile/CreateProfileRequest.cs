@@ -3,7 +3,6 @@
 namespace ConnectVibe.Contracts.Profile
 {
     public record CreateProfileRequest(
-    int UserId,
      DateTime DOB,
       List<string> Passions,
     List<ProfilePhotoDto> Photos,
