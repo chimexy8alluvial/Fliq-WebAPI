@@ -6,6 +6,7 @@ using NLog;
 
 var builder = WebApplication.CreateBuilder(args);
 {
+    builder.Services.AddHttpContextAccessor();
     builder.Services.AddApplication();
     builder.Services.AddPresentation();
     builder.Services.AddInfrastructure(builder.Configuration);
