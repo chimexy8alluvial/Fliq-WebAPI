@@ -26,6 +26,7 @@ namespace Fliq.Test.Profile.Commands.Create
         private Mock<ILocationService> _locationServiceMock;
         private Mock<IHttpContextAccessor> _httpContextAccessorMock;
         private Mock<ClaimsPrincipal> _claimsPrincipalMock;
+        
 
 
         [TestInitialize]
@@ -84,6 +85,9 @@ namespace Fliq.Test.Profile.Commands.Create
         public async Task Handle_DuplicateProfile_ReturnsDuplicateProfileError()
         {
             // Arrange
+
+            var location = new Location { Lat = 51.5074, Lng = -0.1278, IsVisible = true };
+           
             var command = new CreateProfileCommand
             {
                 DOB = DateTime.Now.AddYears(-25),
@@ -93,16 +97,23 @@ namespace Fliq.Test.Profile.Commands.Create
                 [
                     new ProfilePhotoMapped { ImageFile = CreateMockFormFile(), Caption = "Test Photo" }
                 ],
+                Location = location,
             };
 
             var user = new User { Id = 1 };
-            var existingProfile = new UserProfile { UserId = user.Id };
+            var existingProfile = new UserProfile { UserId = 1 };
+            var image = CreateMockFormFile();
 
             _userRepositoryMock.Setup(repo => repo.GetUserById(It.IsAny<int>()))
                 .Returns(user);
 
-            _profileRepositoryMock.Setup(repo => repo.GetUserProfileByUserId(user.Id))
+            _profileRepositoryMock.Setup(repo => repo.GetUserProfileByUserId(It.IsAny<int>()))
                 .Returns(existingProfile);
+
+            _mapperMock.Setup(mapper => mapper.Map<UserProfile>(command))
+                .Returns(new UserProfile());
+
+           
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -116,19 +127,26 @@ namespace Fliq.Test.Profile.Commands.Create
         public async Task Handle_ValidCommand_CreatesUserProfileSuccessfully()
         {
             // Arrange
-
             var location = new Location { Lat = 51.5074, Lng = -0.1278, IsVisible = true };
-
+            var profileDescription = "I am a software engineer who admires hardworking women in tech description";
             var command = new CreateProfileCommand
             {
                 DOB = DateTime.Now.AddYears(-25),
                 Gender = new Gender { GenderType = GenderType.Male },
-                ProfileDescription = "I am a software engineer who admires hardworking women in tech description",
+                ProfileDescription = profileDescription,
                 Photos =
                 [
                     new ProfilePhotoMapped { ImageFile = CreateMockFormFile(), Caption = "Test Photo" }
                 ],
                 Location = location,
+            };
+
+            var userProfile = new UserProfile
+            {
+                DOB = DateTime.Now.AddYears(-25),
+                Gender = new Gender { GenderType = GenderType.Male },
+                ProfileDescription = "I am a software engineer who admires hardworking women in tech description",
+                UserId = 1,
             };
 
             var user = new User { Id = 1 };
@@ -159,14 +177,19 @@ namespace Fliq.Test.Profile.Commands.Create
             _userRepositoryMock.Setup(repo => repo.GetUserById(It.IsAny<int>()))
                 .Returns(user);
 
-            _profileRepositoryMock.Setup(repo => repo.GetUserProfileByUserId(user.Id))
+            _profileRepositoryMock.Setup(repo => repo.GetUserProfileByUserId(It.IsAny<int>()))
                 .Returns((UserProfile?)null);
-
-            _imageServiceMock.Setup(service => service.UploadMediaAsync(CreateMockFormFile()))
-                .ReturnsAsync("image/jpeg");
 
             _locationServiceMock.Setup(service => service.GetAddressFromCoordinatesAsync(It.IsAny<double>(), It.IsAny<double>()))
                 .ReturnsAsync(locationResponse);
+
+            _imageServiceMock.Setup(service => service.UploadMediaAsync(It.IsAny<IFormFile>()))
+              .ReturnsAsync("image.jpeg");
+
+            _mapperMock.Setup(mapper => mapper.Map<LocationDetail>(new LocationQueryResponse()));
+
+            _mapperMock.Setup(mapper => mapper.Map<UserProfile>(command))
+                .Returns(userProfile);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -174,7 +197,7 @@ namespace Fliq.Test.Profile.Commands.Create
             // Assert
             Assert.IsFalse(result.IsError);
             Assert.IsNotNull(result.Value);
-            Assert.AreEqual(1, result.Value.Profile.UserId);
+            Assert.AreEqual(profileDescription, result.Value.Profile.ProfileDescription);
             _profileRepositoryMock.Verify(repo => repo.Add(It.IsAny<UserProfile>()), Times.Once);
         }
 
@@ -182,18 +205,32 @@ namespace Fliq.Test.Profile.Commands.Create
         {
             var fileMock = new Mock<IFormFile>();
 
-            // Setup the file's properties
+            // Mock file content
             var content = "Fake file content";
             var fileName = "test.jpg";
             var ms = new MemoryStream(Encoding.UTF8.GetBytes(content));
 
+            // Set up the stream for reading
             fileMock.Setup(_ => _.OpenReadStream()).Returns(ms);
+
+            // Setup file properties
             fileMock.Setup(_ => _.FileName).Returns(fileName);
             fileMock.Setup(_ => _.Length).Returns(ms.Length);
             fileMock.Setup(_ => _.ContentType).Returns("image/jpeg");
+            fileMock.Setup(_ => _.Name).Returns("file");
+            fileMock.Setup(_ => _.Headers).Returns(new HeaderDictionary()); // Headers mock
+
+            // Mock the CopyTo method (synchronous)
+            fileMock.Setup(_ => _.CopyTo(It.IsAny<Stream>()))
+                .Callback<Stream>(stream => ms.CopyTo(stream));
+
+            // Mock the CopyToAsync method (asynchronous)
+            fileMock.Setup(_ => _.CopyToAsync(It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
+                .Returns<Stream, CancellationToken>((stream, token) => ms.CopyToAsync(stream, token));
 
             return fileMock.Object;
         }
+
     }
 
  

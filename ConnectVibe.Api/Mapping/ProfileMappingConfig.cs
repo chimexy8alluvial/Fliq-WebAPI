@@ -4,6 +4,9 @@ using ConnectVibe.Application.Profile.Commands.Create;
 using ConnectVibe.Application.Profile.Common;
 using ConnectVibe.Contracts.Profile;
 using ConnectVibe.Domain.Entities.Profile;
+using Fliq.Contracts.Profile;
+using Fliq.Domain.Entities.Profile;
+using Fliq.Domain.Enums;
 using Mapster;
 
 namespace ConnectVibe.Api.Mapping
@@ -13,7 +16,12 @@ namespace ConnectVibe.Api.Mapping
         public void Register(TypeAdapterConfig config)
         {
             config.NewConfig<CreateProfileRequest, CreateProfileCommand>()
-                .Ignore(dest => dest.Photos);
+                .Ignore(dest => dest.Photos)
+                .Map(dest => dest.ProfileTypes,
+            src => src.profileTypes.Select(dto => (ProfileType)dto.ProfileType).ToList());  // Explicitly map ProfileTypeDto to ProfileType enum;
+
+            config.NewConfig<CreateProfileCommand, UserProfile>().Ignore(dest => dest.Photos)
+                .Map(dest => dest.ProfileTypes, src => src.ProfileTypes);
 
             config.NewConfig<EthnicityDto, Ethnicity>()
                 .Map(dest => dest.EthnicityType, src => (EthnicityType)src.EthnicityType);
@@ -27,6 +35,10 @@ namespace ConnectVibe.Api.Mapping
                 .Map(dest => dest.ReligionType, src => (ReligionType)src.ReligionType);
             config.NewConfig<SexualOrientationDto, SexualOrientation>()
                 .Map(dest => dest.SexualOrientationType, src => (SexualOrientationType)src.SexualOrientationType);
+            config.NewConfig<EducationStatusDto, EducationStatus>()
+                .Map(dest => dest.EducationLevel, src => (EducationLevel)src.EducationLevel);
+            config.NewConfig<Occupation, OccupationDto>()
+                .Map(dest => dest.OccupationName, src => src.OccupationName);
             config.NewConfig<ProfilePhoto, ProfilePhotoResponse>();
             config.NewConfig<ProfilePhotoDto, ProfilePhotoMapped>()
                 .Map(dest => dest.ImageFile, src => src.ImageFile)
