@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace ConnectVibe.Application.Authentication.Queries.GoogleLogin
+namespace Fliq.Application.Authentication.Queries.GoogleLogin
 {
     public class GoogleLoginQueryValidator : AbstractValidator<GoogleLoginQuery>
     {

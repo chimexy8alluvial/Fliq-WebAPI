@@ -1,13 +1,13 @@
-﻿using ConnectVibe.Application.Common.Interfaces.Authentication;
-using ConnectVibe.Application.Common.Interfaces.Services;
-using ConnectVibe.Domain.Entities;
+﻿using Fliq.Application.Common.Interfaces.Authentication;
+using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Domain.Entities;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace ConnectVibe.Infrastructure.Authentication
+namespace Fliq.Infrastructure.Authentication
 {
     public class JwtTokenGenerator : IJwtTokenGenerator
     {

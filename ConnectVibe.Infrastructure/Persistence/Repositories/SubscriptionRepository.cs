@@ -1,5 +1,5 @@
-﻿using ConnectVibe.Application.Common.Interfaces.Persistence;
-using ConnectVibe.Infrastructure.Persistence;
+﻿using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Infrastructure.Persistence;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Domain.Entities;
 
@@ -7,10 +7,10 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 {
     public class SubscriptionRepository : ISubscriptionRepository
     {
-        private readonly ConnectVibeDbContext _dbContext;
+        private readonly FliqDbContext _dbContext;
         private readonly IDbConnectionFactory _connectionFactory;
 
-        public SubscriptionRepository(ConnectVibeDbContext dbContext, IDbConnectionFactory connectionFactory)
+        public SubscriptionRepository(FliqDbContext dbContext, IDbConnectionFactory connectionFactory)
         {
             _dbContext = dbContext;
             _connectionFactory = connectionFactory;

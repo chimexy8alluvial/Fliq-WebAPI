@@ -1,6 +1,6 @@
-﻿using ConnectVibe.Domain.Entities.Profile;
+﻿using Fliq.Domain.Entities.Profile;
 
-namespace ConnectVibe.Application.Authentication.Common.Profile
+namespace Fliq.Application.Authentication.Common.Profile
 {
     public record CreateProfileResult(
         UserProfile Profile

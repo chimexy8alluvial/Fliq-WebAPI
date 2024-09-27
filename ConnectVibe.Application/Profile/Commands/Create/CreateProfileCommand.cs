@@ -1,19 +1,19 @@
-﻿using ConnectVibe.Application.Authentication.Common.Profile;
-using ConnectVibe.Application.Common.Interfaces.Persistence;
-using ConnectVibe.Application.Common.Interfaces.Services.ImageServices;
-using ConnectVibe.Application.Common.Interfaces.Services.LocationServices;
-using ConnectVibe.Application.Profile.Common;
-using ConnectVibe.Domain.Common.Errors;
-using ConnectVibe.Domain.Entities.Profile;
-using ErrorOr;
+﻿using ErrorOr;
+using Fliq.Application.Authentication.Common.Profile;
+using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Interfaces.Services.ImageServices;
+using Fliq.Application.Common.Interfaces.Services.LocationServices;
+using Fliq.Application.Profile.Common;
+using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Profile;
+using Fliq.Domain.Entities.Settings;
 using Fliq.Domain.Enums;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.JsonWebTokens;
 
-namespace ConnectVibe.Application.Profile.Commands.Create
+namespace Fliq.Application.Profile.Commands.Create
 {
     public class CreateProfileCommand : IRequest<ErrorOr<CreateProfileResult>>
     {
@@ -43,9 +43,10 @@ namespace ConnectVibe.Application.Profile.Commands.Create
         private readonly IUserRepository _userRepository;
         private readonly ILocationService _locationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ISettingsRepository _settingsRepository;
         private const int UnauthorizedUserId = -1;
 
-        public CreateProfileCommandHandler(IMapper mapper, IImageService imageService, IProfileRepository profileRepository, IUserRepository userRepository, ILocationService locationService, IHttpContextAccessor httpContextAccessor)
+        public CreateProfileCommandHandler(IMapper mapper, IImageService imageService, IProfileRepository profileRepository, IUserRepository userRepository, ILocationService locationService, IHttpContextAccessor httpContextAccessor, ISettingsRepository settingsRepository)
         {
             _mapper = mapper;
             _imageService = imageService;
@@ -53,6 +54,7 @@ namespace ConnectVibe.Application.Profile.Commands.Create
             _userRepository = userRepository;
             _locationService = locationService;
             _httpContextAccessor = httpContextAccessor;
+            _settingsRepository = settingsRepository;
         }
 
         public async Task<ErrorOr<CreateProfileResult>> Handle(CreateProfileCommand command, CancellationToken cancellationToken)
@@ -108,6 +110,12 @@ namespace ConnectVibe.Application.Profile.Commands.Create
 
             _profileRepository.Add(userProfile);
 
+            Setting setting = new()
+            {
+                UserId = userId
+            };
+            _settingsRepository.Add(setting);
+
             return new CreateProfileResult(userProfile);
         }
 
@@ -116,6 +124,5 @@ namespace ConnectVibe.Application.Profile.Commands.Create
             var userIdClaim = _httpContextAccessor.HttpContext?.User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
             return int.TryParse(userIdClaim, out int userId) ? userId : UnauthorizedUserId;
         }
-
     }
 }

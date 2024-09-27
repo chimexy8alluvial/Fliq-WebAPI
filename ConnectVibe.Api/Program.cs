@@ -1,6 +1,6 @@
-﻿using ConnectVibe.Api;
-using ConnectVibe.Application;
-using ConnectVibe.Infrastructure;
+﻿using Fliq.Api;
+using Fliq.Application;
+using Fliq.Infrastructure;
 using Microsoft.OpenApi.Models;
 using NLog;
 

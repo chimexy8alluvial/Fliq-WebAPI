@@ -1,16 +1,15 @@
-﻿using ConnectVibe.Application.Common.Interfaces.Persistence;
-using ConnectVibe.Infrastructure.Persistence;
-using Fliq.Application.Common.Interfaces.Persistence;
+﻿using Fliq.Application.Common.Interfaces.Persistence;
+
 using Fliq.Domain.Entities;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {
     public class PaymentRepository : IPaymentRepository
     {
-        private readonly ConnectVibeDbContext _dbContext;
+        private readonly FliqDbContext _dbContext;
         private readonly IDbConnectionFactory _connectionFactory;
 
-        public PaymentRepository(ConnectVibeDbContext dbContext, IDbConnectionFactory connectionFactory)
+        public PaymentRepository(FliqDbContext dbContext, IDbConnectionFactory connectionFactory)
         {
             _dbContext = dbContext;
             _connectionFactory = connectionFactory;

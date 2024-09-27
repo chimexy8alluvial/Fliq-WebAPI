@@ -1,6 +1,6 @@
-﻿using ConnectVibe.Application.Authentication.Common;
+﻿using Fliq.Application.Authentication.Common;
 
-namespace ConnectVibe.Application.Common.Interfaces.Services.AuthServices
+namespace Fliq.Application.Common.Interfaces.Services.AuthServices
 {
     public interface ISocialAuthService
     {

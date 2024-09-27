@@ -1,4 +1,4 @@
-﻿namespace ConnectVibe.Contracts.Authentication
+﻿namespace Fliq.Contracts.Authentication
 {
     public record RegisterResponse(
            int Id,

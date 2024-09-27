@@ -1,15 +1,15 @@
-﻿using ConnectVibe.Application.Authentication.Commands.PasswordReset;
-using ConnectVibe.Application.Authentication.Common;
-using ConnectVibe.Application.Common.Interfaces.Authentication;
-using ConnectVibe.Application.Common.Interfaces.Persistence;
-using ConnectVibe.Application.Common.Interfaces.Services;
-using ConnectVibe.Domain.Common.Errors;
+﻿using Fliq.Application.Authentication.Commands.PasswordReset;
+using Fliq.Application.Authentication.Common;
+using Fliq.Application.Common.Interfaces.Authentication;
+using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Domain.Common.Errors;
 using ErrorOr;
 using MediatR;
 using Newtonsoft.Json;
 
 
-namespace ConnectVibe.Application.Authentication.Commands.PasswordReset
+namespace Fliq.Application.Authentication.Commands.PasswordReset
 {
     public record ForgotPasswordCommand(
       string Email

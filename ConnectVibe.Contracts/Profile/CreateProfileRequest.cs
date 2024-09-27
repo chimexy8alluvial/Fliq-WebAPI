@@ -1,6 +1,6 @@
 ﻿using Fliq.Contracts.Profile;
 
-namespace ConnectVibe.Contracts.Profile
+namespace Fliq.Contracts.Profile
 {
     public record CreateProfileRequest(
      DateTime DOB,

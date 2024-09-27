@@ -1,7 +1,7 @@
 ﻿using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Enums;
 
-namespace ConnectVibe.Domain.Entities.Profile
+namespace Fliq.Domain.Entities.Profile
 {
     public class UserProfile
     {

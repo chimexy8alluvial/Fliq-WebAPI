@@ -1,4 +1,4 @@
-﻿namespace ConnectVibe.Api.Common.Http
+﻿namespace Fliq.Api.Common.Http
 {
     public class HttpContextItemKeys
     {

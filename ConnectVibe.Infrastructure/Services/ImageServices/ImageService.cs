@@ -1,13 +1,13 @@
 ﻿using Azure;
 using Azure.AI.Vision.Face;
-using ConnectVibe.Application.Common.Helpers;
-using ConnectVibe.Application.Common.Interfaces.Services.ImageServices;
-using ConnectVibe.Infrastructure.Authentication;
+using Fliq.Application.Common.Helpers;
+using Fliq.Application.Common.Interfaces.Services.ImageServices;
+using Fliq.Infrastructure.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.WindowsAzure.Storage;
 
-namespace ConnectVibe.Infrastructure.Services.ImageServices
+namespace Fliq.Infrastructure.Services.ImageServices
 {
     public class ImageService : IImageService
     {

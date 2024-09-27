@@ -1,11 +1,11 @@
-﻿using ConnectVibe.Application.Profile.Commands.Create;
-using ConnectVibe.Application.Profile.Common;
-using ConnectVibe.Contracts.Profile;
+﻿using Fliq.Application.Profile.Commands.Create;
+using Fliq.Application.Profile.Common;
+using Fliq.Contracts.Profile;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ConnectVibe.Api.Controllers
+namespace Fliq.Api.Controllers
 {
     [Route("api/user-profile")]
     public class UserProfileController : ApiBaseController

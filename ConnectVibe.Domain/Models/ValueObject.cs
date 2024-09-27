@@ -1,4 +1,4 @@
-﻿namespace ConnectVibe.Domain.Models
+﻿namespace Fliq.Domain.Models
 {
     public abstract class ValueObject:IEquatable<ValueObject>
     {

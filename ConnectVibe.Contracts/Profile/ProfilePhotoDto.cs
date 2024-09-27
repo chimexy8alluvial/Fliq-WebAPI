@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace ConnectVibe.Contracts.Profile
+namespace Fliq.Contracts.Profile
 {
     public class ProfilePhotoDto
     {

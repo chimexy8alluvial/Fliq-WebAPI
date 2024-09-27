@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace ConnectVibe.Application.Profile.Common
+namespace Fliq.Application.Profile.Common
 {
     public class ProfilePhotoMapped
     {

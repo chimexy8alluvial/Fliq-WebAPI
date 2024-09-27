@@ -1,13 +1,13 @@
-﻿using ConnectVibe.Application.Authentication.Commands.Register;
-using ConnectVibe.Application.Common.Interfaces.Authentication;
-using ConnectVibe.Application.Common.Interfaces.Persistence;
-using ConnectVibe.Application.Common.Interfaces.Services;
-using ConnectVibe.Domain.Common.Errors;
-using ConnectVibe.Domain.Entities;
+﻿using Fliq.Application.Authentication.Commands.Register;
+using Fliq.Application.Common.Interfaces.Authentication;
+using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Domain.Common.Errors;
+using Fliq.Domain.Entities;
 using MapsterMapper;
 using Moq;
 
-namespace ConnectVibe.Test.Authentication.Commands.Register
+namespace Fliq.Test.Authentication.Commands.Register
 {
     [TestClass]
     public class RegisterCommandHandlerTests

@@ -1,10 +1,9 @@
-﻿using ConnectVibe.Application.Profile.Common;
-using ConnectVibe.Domain.Entities.Profile;
+﻿using Fliq.Application.Profile.Common;
 using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Enums;
 using FluentValidation;
 
-namespace ConnectVibe.Application.Profile.Commands.Create
+namespace Fliq.Application.Profile.Commands.Create
 {
     public class CreateProfileCommandValidator : AbstractValidator<CreateProfileCommand>
     {
@@ -67,7 +66,6 @@ namespace ConnectVibe.Application.Profile.Commands.Create
             RuleFor(x => x.ProfileDescription)
                 .NotEmpty().When(x => x.ProfileTypes.Any(pt => pt == ProfileType.Dating || pt == ProfileType.Friendship))
                 .WithMessage("Profile description is required for Dating or Friendship profile types.");
-
         }
     }
 
@@ -210,5 +208,4 @@ namespace ConnectVibe.Application.Profile.Commands.Create
                 .NotNull().WithMessage("IsVisible is required.");
         }
     }
-
 }

@@ -1,7 +1,7 @@
-﻿using ConnectVibe.Application.Common.Interfaces.Services;
+﻿using Fliq.Application.Common.Interfaces.Services;
 using NLog;
 
-namespace ConnectVibe.Infrastructure.Services
+namespace Fliq.Infrastructure.Services
 {
     public class LoggerManager : ILoggerManager
     {

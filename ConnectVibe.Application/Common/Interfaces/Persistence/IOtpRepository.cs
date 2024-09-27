@@ -1,6 +1,6 @@
-﻿using ConnectVibe.Domain.Entities;
+﻿using Fliq.Domain.Entities;
 
-namespace ConnectVibe.Application.Common.Interfaces.Persistence
+namespace Fliq.Application.Common.Interfaces.Persistence
 {
     public interface IOtpRepository
     {
