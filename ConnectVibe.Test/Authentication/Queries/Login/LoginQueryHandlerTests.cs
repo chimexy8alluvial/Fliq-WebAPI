@@ -5,6 +5,7 @@ using ConnectVibe.Application.Common.Security;
 using Moq;
 using ConnectVibe.Domain.Common.Errors;
 using ConnectVibe.Domain.Entities;
+using ConnectVibe.Application.Common.Interfaces.Services;
 namespace ConnectVibe.Test.Authentication.Queries.Login
 {
     [TestClass]
@@ -13,16 +14,19 @@ namespace ConnectVibe.Test.Authentication.Queries.Login
         private LoginQueryHandler _handler;
         private Mock<IJwtTokenGenerator> _jwtTokenGeneratorMock;
         private Mock<IUserRepository> _userRepositoryMock;
+        private Mock<ILoggerManager> _loggerManagerMock;
 
         [TestInitialize]
         public void Setup()
         {
             _jwtTokenGeneratorMock = new Mock<IJwtTokenGenerator>();
             _userRepositoryMock = new Mock<IUserRepository>();
+            _loggerManagerMock = new Mock<ILoggerManager>();
 
             _handler = new LoginQueryHandler(
                 _jwtTokenGeneratorMock.Object,
-                _userRepositoryMock.Object);
+                _userRepositoryMock.Object,
+                _loggerManagerMock.Object);
         }
 
         [TestMethod]

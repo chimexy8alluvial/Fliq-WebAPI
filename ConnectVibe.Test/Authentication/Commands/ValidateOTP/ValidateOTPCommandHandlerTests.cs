@@ -18,6 +18,7 @@ namespace ConnectVibe.Test.Authentication.Commands.ValidateOTP
         private Mock<IMapper> _mapperMock;
         private Mock<IEmailService> _emailServiceMock;
         private Mock<IOtpService> _otpServiceMock;
+        private Mock<ILoggerManager> _loggerManagerMock;
 
         [TestInitialize]
         public void Setup()
@@ -27,13 +28,16 @@ namespace ConnectVibe.Test.Authentication.Commands.ValidateOTP
             _mapperMock = new Mock<IMapper>();
             _emailServiceMock = new Mock<IEmailService>();
             _otpServiceMock = new Mock<IOtpService>();
+            _loggerManagerMock = new Mock<ILoggerManager>();
+            
 
             _handler = new ValidateOTPCommandHandler(
                 _jwtTokenGeneratorMock.Object,
                 _userRepositoryMock.Object,
                 _mapperMock.Object,
                 _emailServiceMock.Object,
-                _otpServiceMock.Object);
+                _otpServiceMock.Object,
+                _loggerManagerMock.Object);
         }
 
         [TestMethod]
