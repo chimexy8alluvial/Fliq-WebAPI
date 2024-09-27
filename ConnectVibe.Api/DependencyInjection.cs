@@ -11,7 +11,7 @@ namespace Fliq.Api
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
             services.AddControllers();
-            services.AddSingleton<ProblemDetailsFactory, ConnectVibeProblemDetailsFactory>();
+            services.AddSingleton<ProblemDetailsFactory, FliqProblemDetailsFactory>();
             services.AddMappings();
             return services;
         }

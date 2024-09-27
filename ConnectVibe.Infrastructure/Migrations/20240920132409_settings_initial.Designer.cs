@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Fliq.Infrastructure.Migrations
 {
-    [DbContext(typeof(ConnectVibeDbContext))]
+    [DbContext(typeof(FliqDbContext))]
     [Migration("20240920132409_settings_initial")]
     partial class settings_initial
     {

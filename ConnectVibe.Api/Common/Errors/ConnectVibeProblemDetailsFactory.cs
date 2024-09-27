@@ -8,10 +8,10 @@ using System.Diagnostics;
 
 namespace Fliq.Api.Common.Errors
 {
-    public class ConnectVibeProblemDetailsFactory : ProblemDetailsFactory
+    public class FliqProblemDetailsFactory : ProblemDetailsFactory
     {
         private readonly ApiBehaviorOptions _options;
-        public ConnectVibeProblemDetailsFactory(IOptions<ApiBehaviorOptions> option)
+        public FliqProblemDetailsFactory(IOptions<ApiBehaviorOptions> option)
         {
             _options = option?.Value ?? throw new ArgumentNullException(nameof(option));
         }

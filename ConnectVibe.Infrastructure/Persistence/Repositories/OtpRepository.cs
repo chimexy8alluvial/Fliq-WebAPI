@@ -6,8 +6,8 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 {
     public class OtpRepository : IOtpRepository
     {
-        private readonly ConnectVibeDbContext _dbContext;
-        public OtpRepository(ConnectVibeDbContext dbContext)
+        private readonly FliqDbContext _dbContext;
+        public OtpRepository(FliqDbContext dbContext)
         {
             _dbContext = dbContext;
         }

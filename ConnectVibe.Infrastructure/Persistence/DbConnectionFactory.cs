@@ -11,7 +11,7 @@ namespace Fliq.Infrastructure.Persistence
 
         public DbConnectionFactory(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("ConnectVibeDbContext")?? throw new InvalidOperationException("Connection string 'ConnectVibeDbContext' not found.");
+            _connectionString = configuration.GetConnectionString("FliqDbContext")?? throw new InvalidOperationException("Connection string 'FliqDbContext' not found.");
         }
 
         public IDbConnection CreateConnection()

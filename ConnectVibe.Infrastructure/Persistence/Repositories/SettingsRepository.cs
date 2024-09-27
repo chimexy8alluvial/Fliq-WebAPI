@@ -1,23 +1,15 @@
 ﻿using Fliq.Application.Common.Interfaces.Persistence;
-using Fliq.Infrastructure.Persistence;
-
-using Fliq.Application.Common.Interfaces.Persistence;
 
 using Fliq.Domain.Entities.Settings;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {
     public class SettingsRepository : ISettingsRepository
     {
-        private readonly ConnectVibeDbContext _dbContext;
+        private readonly FliqDbContext _dbContext;
         private readonly IDbConnectionFactory _connectionFactory;
 
-        public SettingsRepository(ConnectVibeDbContext dbContext, IDbConnectionFactory connectionFactory)
+        public SettingsRepository(FliqDbContext dbContext, IDbConnectionFactory connectionFactory)
         {
             _dbContext = dbContext;
             _connectionFactory = connectionFactory;

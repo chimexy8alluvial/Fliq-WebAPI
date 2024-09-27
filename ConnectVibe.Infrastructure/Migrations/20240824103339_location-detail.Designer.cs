@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Fliq.Infrastructure.Migrations
 {
-    [DbContext(typeof(ConnectVibeDbContext))]
+    [DbContext(typeof(FliqDbContext))]
     [Migration("20240824103339_location-detail")]
     partial class locationdetail
     {

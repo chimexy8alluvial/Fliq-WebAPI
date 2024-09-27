@@ -1,14 +1,14 @@
-﻿using ConnectVibe.Application.Authentication.Queries.FacebookLogin;
-using ConnectVibe.Application.Common.Interfaces.Authentication;
-using ConnectVibe.Application.Common.Interfaces.Persistence;
-using ConnectVibe.Application.Common.Interfaces.Services.AuthServices;
+﻿using Fliq.Application.Authentication.Queries.FacebookLogin;
+using Fliq.Application.Common.Interfaces.Authentication;
+using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Interfaces.Services.AuthServices;
 using Moq;
-using ConnectVibe.Domain.Common.Errors;
-using ConnectVibe.Domain.Entities;
-using ConnectVibe.Application.Authentication.Common;
-using ConnectVibe.Application.Common.Interfaces.Services;
+using Fliq.Domain.Common.Errors;
+using Fliq.Domain.Entities;
+using Fliq.Application.Authentication.Common;
+using Fliq.Application.Common.Interfaces.Services;
 
-namespace ConnectVibe.Test.Authentication.Queries.FacebookLogin
+namespace Fliq.Test.Authentication.Queries.FacebookLogin
 {
     [TestClass]
     public class FacebookLoginQueryHandlerTests

@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Fliq.Infrastructure.Persistence
 {
-    public class ConnectVibeDbContext : DbContext
+    public class FliqDbContext : DbContext
     {
-        public ConnectVibeDbContext(DbContextOptions<ConnectVibeDbContext> options) : base(options)
+        public FliqDbContext(DbContextOptions<FliqDbContext> options) : base(options)
         {
         }
 

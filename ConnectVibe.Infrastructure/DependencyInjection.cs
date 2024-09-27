@@ -4,6 +4,8 @@ using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Interfaces.Services.AuthServices;
 using Fliq.Application.Common.Interfaces.Services.ImageServices;
 using Fliq.Application.Common.Interfaces.Services.LocationServices;
+using Fliq.Application.Common.Interfaces.Services.PaymentServices;
+using Fliq.Application.Common.Interfaces.Services.SubscriptionServices;
 using Fliq.Infrastructure.Authentication;
 using Fliq.Infrastructure.Persistence;
 using Fliq.Infrastructure.Persistence.Repositories;
@@ -11,14 +13,6 @@ using Fliq.Infrastructure.Services;
 using Fliq.Infrastructure.Services.AuthServices;
 using Fliq.Infrastructure.Services.ImageServices;
 using Fliq.Infrastructure.Services.LocationServices;
-
-using Fliq.Application.Common.Interfaces.Persistence;
-
-using Fliq.Application.Common.Interfaces.Services.PaymentServices;
-using Fliq.Application.Common.Interfaces.Services.SubscriptionServices;
-
-using Fliq.Infrastructure.Persistence.Repositories;
-
 using Fliq.Infrastructure.Services.PaymentServices;
 using Fliq.Infrastructure.Services.SubscriptionServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -51,8 +45,8 @@ namespace Fliq.Infrastructure
             services.AddScoped<ISubscriptionService, SubscriptionService>();
             services.AddScoped<IRevenueCatServices, RevenueCatServices>();
             services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
-            services.AddDbContext<ConnectVibeDbContext>(options =>
-    options.UseSqlServer(configurationManager.GetConnectionString("ConnectVibeDbContext") ?? throw new InvalidOperationException("Connection string 'ConnectVibeDbContext' not found.")));
+            services.AddDbContext<FliqDbContext>(options =>
+    options.UseSqlServer(configurationManager.GetConnectionString("FliqDbContext") ?? throw new InvalidOperationException("Connection string 'FliqDbContext' not found.")));
             return services;
         }
 

@@ -1,12 +1,12 @@
-﻿using ConnectVibe.Application.Common.Interfaces.Persistence;
-using ConnectVibe.Application.Common.Interfaces.Services.ImageServices;
-using ConnectVibe.Application.Common.Interfaces.Services.LocationServices;
-using ConnectVibe.Application.Common.Models;
-using ConnectVibe.Application.Profile.Commands.Create;
-using ConnectVibe.Application.Profile.Common;
-using ConnectVibe.Domain.Common.Errors;
-using ConnectVibe.Domain.Entities;
-using ConnectVibe.Domain.Entities.Profile;
+﻿using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Interfaces.Services.ImageServices;
+using Fliq.Application.Common.Interfaces.Services.LocationServices;
+using Fliq.Application.Common.Models;
+using Fliq.Application.Profile.Commands.Create;
+using Fliq.Application.Profile.Common;
+using Fliq.Domain.Common.Errors;
+using Fliq.Domain.Entities;
+using Fliq.Domain.Entities.Profile;
 using MapsterMapper;
 using Microsoft.AspNetCore.Http;
 using Moq;
@@ -154,15 +154,15 @@ namespace Fliq.Test.Profile.Commands.Create
             // Mocking the Location Service Response
             var locationResponse = new LocationQueryResponse
             {
-                PlusCode = new ConnectVibe.Application.Common.Models.PlusCode { CompoundCode = "FakeCode", GlobalCode = "GlobalCode123" },
+                PlusCode = new Fliq.Application.Common.Models.PlusCode { CompoundCode = "FakeCode", GlobalCode = "GlobalCode123" },
                 Results = new List<Result>
                 {
                     new Result
                     {
                         FormattedAddress = "123 Fake Street, Faketown, Fakestate",
-                        Geometry = new ConnectVibe.Application.Common.Models.Geometry
+                        Geometry = new Fliq.Application.Common.Models.Geometry
                         {
-                            Location = new ConnectVibe.Application.Common.Models.Locationn
+                            Location = new Fliq.Application.Common.Models.Locationn
                             {
                                 Lat = 40.7128,
                                 Lng = -74.0060

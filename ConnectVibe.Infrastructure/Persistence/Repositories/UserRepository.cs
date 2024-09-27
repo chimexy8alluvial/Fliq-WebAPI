@@ -7,9 +7,9 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 {
     public class UserRepository : IUserRepository
     {
-        private readonly ConnectVibeDbContext _dbContext;
+        private readonly FliqDbContext _dbContext;
         private readonly IDbConnectionFactory _connectionFactory;
-        public UserRepository(ConnectVibeDbContext dbContext, IDbConnectionFactory connectionFactory)
+        public UserRepository(FliqDbContext dbContext, IDbConnectionFactory connectionFactory)
         {
             _dbContext = dbContext;
             _connectionFactory = connectionFactory;

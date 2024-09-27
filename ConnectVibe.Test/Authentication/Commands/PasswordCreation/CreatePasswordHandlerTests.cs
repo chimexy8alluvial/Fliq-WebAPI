@@ -1,11 +1,11 @@
-﻿using ConnectVibe.Application.Authentication.Commands.PasswordCreation;
-using ConnectVibe.Application.Common.Interfaces.Persistence;
-using ConnectVibe.Application.Common.Interfaces.Services;
+﻿using Fliq.Application.Authentication.Commands.PasswordCreation;
+using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Interfaces.Services;
 using Moq;
-using ConnectVibe.Domain.Common.Errors;
-using ConnectVibe.Domain.Entities;
+using Fliq.Domain.Common.Errors;
+using Fliq.Domain.Entities;
 
-namespace ConnectVibe.Test.Authentication.Commands.PasswordCreation
+namespace Fliq.Test.Authentication.Commands.PasswordCreation
 {
     [TestClass]
     public class CreatePasswordHandlerTests
