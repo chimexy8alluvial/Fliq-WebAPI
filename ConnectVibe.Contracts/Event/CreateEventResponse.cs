@@ -1,4 +1,5 @@
 ﻿using ConnectVibe.Contracts.Profile;
+using Fliq.Contracts.Event.Enum;
 
 namespace Fliq.Contracts.Event
 {

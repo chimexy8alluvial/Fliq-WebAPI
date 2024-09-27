@@ -1,4 +1,4 @@
-﻿namespace Fliq.Contracts.Event
+﻿namespace Fliq.Contracts.Event.Enum
 {
     public record EventCriteriaDto
     (

@@ -1,4 +1,6 @@
-﻿namespace Fliq.Contracts.Event
+﻿using Fliq.Contracts.Event.Enum;
+
+namespace Fliq.Contracts.Event
 {
     public record SponsoredEventDetailsDto
     (
