@@ -1,12 +1,10 @@
-﻿using Fliq.Contracts.Profile;
-
-namespace Fliq.Contracts.Profile
+﻿namespace Fliq.Contracts.Profile
 {
     public record CreateProfileRequest(
      DateTime DOB,
       List<string> Passions,
     List<ProfilePhotoDto> Photos,
-    List<ProfileTypeDto> profileTypes,
+    List<ProfileTypeDto> ProfileTypes,
     string ProfileDescription,
      GenderDto Gender,
      SexualOrientationDto SexualOrientation,

@@ -11,7 +11,7 @@ using Fliq.Domain.Enums;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Http;
-using Microsoft.IdentityModel.JsonWebTokens;
+using System.Security.Claims;
 
 namespace Fliq.Application.Profile.Commands.Create
 {
@@ -121,7 +121,7 @@ namespace Fliq.Application.Profile.Commands.Create
 
         private int GetUserId()
         {
-            var userIdClaim = _httpContextAccessor.HttpContext?.User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+            var userIdClaim = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             return int.TryParse(userIdClaim, out int userId) ? userId : UnauthorizedUserId;
         }
     }

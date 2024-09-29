@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -22,6 +21,11 @@ namespace Fliq.Infrastructure.Migrations
             migrationBuilder.DropForeignKey(
                 name: "FK_UserProfiles_WantKids_WantKidsId",
                 table: "UserProfiles");
+
+            migrationBuilder.RenameColumn(
+                name: "ScreeMode",
+                table: "Settings",
+                newName: "ScreenMode");
 
             migrationBuilder.AlterColumn<int>(
                 name: "WantKidsId",
@@ -102,63 +106,6 @@ namespace Fliq.Infrastructure.Migrations
                     table.PrimaryKey("PK_Occupation", x => x.Id);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "Payments",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    Provider = table.Column<int>(type: "int", nullable: false),
-                    TransactionId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ProductId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Currency = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PaymentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    Method = table.Column<int>(type: "int", nullable: false),
-                    ExpirationDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Environment = table.Column<int>(type: "int", nullable: false),
-                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Payments", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Payments_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Subscriptions",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    ProductId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ExpirationDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    Provider = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    Environment = table.Column<int>(type: "int", nullable: false),
-                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Subscriptions", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Subscriptions_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_UserProfiles_EducationStatusId",
                 table: "UserProfiles",
@@ -168,16 +115,6 @@ namespace Fliq.Infrastructure.Migrations
                 name: "IX_UserProfiles_OccupationId",
                 table: "UserProfiles",
                 column: "OccupationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Payments_UserId",
-                table: "Payments",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Subscriptions_UserId",
-                table: "Subscriptions",
-                column: "UserId");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_UserProfiles_EducationStatus_EducationStatusId",
@@ -246,12 +183,6 @@ namespace Fliq.Infrastructure.Migrations
             migrationBuilder.DropTable(
                 name: "Occupation");
 
-            migrationBuilder.DropTable(
-                name: "Payments");
-
-            migrationBuilder.DropTable(
-                name: "Subscriptions");
-
             migrationBuilder.DropIndex(
                 name: "IX_UserProfiles_EducationStatusId",
                 table: "UserProfiles");
@@ -275,6 +206,11 @@ namespace Fliq.Infrastructure.Migrations
             migrationBuilder.DropColumn(
                 name: "ProfileTypes",
                 table: "UserProfiles");
+
+            migrationBuilder.RenameColumn(
+                name: "ScreenMode",
+                table: "Settings",
+                newName: "ScreeMode");
 
             migrationBuilder.AlterColumn<int>(
                 name: "WantKidsId",

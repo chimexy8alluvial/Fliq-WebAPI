@@ -2,12 +2,12 @@
 using Fliq.Application.Common.Interfaces.Services;
 using ErrorOr;
 
-using Fliq.Application.Common.Interfaces.Persistence;
-
 using Fliq.Application.Settings.Common;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Settings;
 using MediatR;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 
 namespace Fliq.Application.Settings.Commands.Update
 {
@@ -18,8 +18,7 @@ namespace Fliq.Application.Settings.Commands.Update
          bool RelationAvailability,
         bool ShowMusicAndGameStatus,
         string Language,
-        List<NotificationPreference> NotificationPreferences,
-        int UserId
+        List<NotificationPreference> NotificationPreferences
         ) : IRequest<ErrorOr<GetSettingsResult>>;
 
     public class UpdateSettingsCommandHandler : IRequestHandler<UpdateSettingsCommand, ErrorOr<GetSettingsResult>>
@@ -27,19 +26,24 @@ namespace Fliq.Application.Settings.Commands.Update
         private readonly ISettingsRepository _settingsRepository;
         private readonly IUserRepository _userRepository;
         private readonly ILoggerManager _logger;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private const int UnauthorizedUserId = -1;
 
-        public UpdateSettingsCommandHandler(ISettingsRepository settingsRepository, IUserRepository userRepository, ILoggerManager logger)
+        public UpdateSettingsCommandHandler(ISettingsRepository settingsRepository, IUserRepository userRepository, ILoggerManager logger, IHttpContextAccessor httpContextAccessor)
         {
             _settingsRepository = settingsRepository;
             _userRepository = userRepository;
             _logger = logger;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<ErrorOr<GetSettingsResult>> Handle(UpdateSettingsCommand command, CancellationToken cancellationToken)
         {
             await Task.CompletedTask;
 
-            var user = _userRepository.GetUserById(command.UserId);
+            var userId = GetUserId();
+
+            var user = _userRepository.GetUserById(userId);
             if (user == null)
             {
                 return Errors.User.UserNotFound;
@@ -71,6 +75,12 @@ namespace Fliq.Application.Settings.Commands.Update
                 user.Email,
                 user.Id
                 );
+        }
+
+        private int GetUserId()
+        {
+            var userIdClaim = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            return int.TryParse(userIdClaim, out int userId) ? userId : UnauthorizedUserId;
         }
     }
 }

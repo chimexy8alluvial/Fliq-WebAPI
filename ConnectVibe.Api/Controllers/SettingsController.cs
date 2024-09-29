@@ -1,5 +1,6 @@
 ﻿using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Settings.Commands.Update;
+using Fliq.Application.Settings.Queries.GetSettings;
 using Fliq.Contracts.Settings;
 using MapsterMapper;
 using MediatR;
@@ -19,6 +20,19 @@ namespace Fliq.Api.Controllers
             _mediator = mediator;
             _mapper = mapper;
             _logger = logger;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Fetch()
+        {
+            _logger.LogInfo($"Fetch Settings Request Received");
+            var query = new GetSettingsQuery();
+            var settingsResult = await _mediator.Send(query);
+            _logger.LogInfo($"Fetch Settings Query Executed. Result: {settingsResult}");
+            return settingsResult.Match(
+                settingsResult => Ok(_mapper.Map<GetSettingsResponse>(settingsResult)),
+                errors => Problem(errors)
+            );
         }
 
         [HttpPut]
