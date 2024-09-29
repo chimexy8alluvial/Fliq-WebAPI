@@ -45,7 +45,10 @@ namespace Fliq.Api.Mapping
                  {
                      dest.ImageFile = await CloneFile(src.ImageFile); // Note: Avoid blocking calls in real scenarios
                  });
-            config.NewConfig<UserProfile, ProfileResponse>();
+            config.NewConfig<UserProfile, ProfileResponse>()
+                .Map(dest => dest.FirstName, src => src.User.FirstName)
+                .Map(dest => dest.LastName, src => src.User.LastName)
+                .Map(dest => dest.DisplayName, src => src.User.DisplayName);
             config.NewConfig<CreateProfileResult, ProfileResponse>()
                 .Map(dest => dest, src => src.Profile)
                 .Map(dest => dest.DOB, src => src.Profile.DOB);
