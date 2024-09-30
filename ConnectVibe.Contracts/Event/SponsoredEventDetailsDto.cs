@@ -1,4 +1,4 @@
-﻿using Fliq.Contracts.Event.Enum;
+﻿using Fliq.Contracts.Event.Enums;
 
 namespace Fliq.Contracts.Event
 {

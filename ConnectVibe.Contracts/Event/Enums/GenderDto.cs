@@ -1,4 +1,4 @@
-﻿namespace Fliq.Contracts.Event.Enum
+﻿namespace Fliq.Contracts.Event.Enums
 {
     public enum GenderDto
     {

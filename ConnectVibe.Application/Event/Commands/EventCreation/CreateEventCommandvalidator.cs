@@ -8,12 +8,12 @@ namespace Fliq.Application.Event.Commands.EventCreation
     {
         public CreateEventCommandvalidator()
         {
-            RuleFor(x => x.Docs)
+            RuleFor(x => x.MediaDocuments)
                 .NotNull().WithMessage("Document is required.");
 
-            RuleFor(x => x.EventTitle).NotEmpty().WithMessage("Event title must not be empty!.");
+            RuleFor(x => x.Title).NotEmpty().WithMessage("Event title must not be empty!.");
 
-            RuleFor(x => x.EventDescription).NotEmpty().WithMessage("Event Description must not be empty!.");
+            RuleFor(x => x.Description).NotEmpty().WithMessage("Event Description must not be empty!.");
 
             //RuleFor(x => x.Id)
             //   .GreaterThan(0).WithMessage("Id must be greater than 0.");
@@ -21,7 +21,7 @@ namespace Fliq.Application.Event.Commands.EventCreation
             RuleFor(x => x.UserId)
               .GreaterThan(0).WithMessage("UserId must be greater than 0.");
 
-            RuleFor(x => x.EventType).IsInEnum().WithMessage("Event Type is required!");
+            RuleFor(x => x.Type).IsInEnum().WithMessage("Event Type is required!");
 
             RuleFor(x => x.StartDate).NotEmpty();
 
@@ -38,11 +38,11 @@ namespace Fliq.Application.Event.Commands.EventCreation
 
             RuleFor(x => x.EndAge).NotEmpty().WithMessage("End Age must not be empty!");
 
-            RuleFor(x => x.SponsoredEventDetail)
+            RuleFor(x => x.SponsoredDetail)
                 .NotNull().WithMessage("Sponsored Event Detail is required.")
                 .SetValidator(new SponsoredEventDetailValidator());
 
-            RuleFor(x => x.EventCriteria)
+            RuleFor(x => x.Criteria)
                 .NotNull().WithMessage("Event Criteria is required.")
                 .SetValidator(new EventCriteriaValidator());
 
