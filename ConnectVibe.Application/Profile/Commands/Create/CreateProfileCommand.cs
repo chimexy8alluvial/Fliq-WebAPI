@@ -5,6 +5,7 @@ using Fliq.Application.Common.Interfaces.Services.ImageServices;
 using Fliq.Application.Common.Interfaces.Services.LocationServices;
 using Fliq.Application.Profile.Common;
 using Fliq.Domain.Common.Errors;
+using Fliq.Domain.Entities;
 using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Entities.Settings;
 using Fliq.Domain.Enums;
@@ -61,14 +62,12 @@ namespace Fliq.Application.Profile.Commands.Create
         {
             await Task.CompletedTask;
 
-            var userId = GetUserId();
-
-            var user = _userRepository.GetUserById(userId);
+            var user = GetUser();
             if (user == null)
             {
                 return Errors.Profile.ProfileNotFound;
             }
-            var existingProfile = _profileRepository.GetUserProfileByUserId(userId);
+            var existingProfile = _profileRepository.GetUserProfileByUserId(user.Id);
             if (existingProfile != null)
             {
                 return Errors.Profile.DuplicateProfile;
@@ -112,7 +111,7 @@ namespace Fliq.Application.Profile.Commands.Create
 
             Setting setting = new()
             {
-                UserId = userId
+                UserId = user.Id,
             };
             _settingsRepository.Add(setting);
 
@@ -123,6 +122,13 @@ namespace Fliq.Application.Profile.Commands.Create
         {
             var userIdClaim = _httpContextAccessor.HttpContext?.User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
             return int.TryParse(userIdClaim, out int userId) ? userId : UnauthorizedUserId;
+        }
+
+        private User? GetUser()
+        {
+            var userId = GetUserId();
+            var user = _userRepository.GetUserById(userId);
+            return user;
         }
     }
 }
