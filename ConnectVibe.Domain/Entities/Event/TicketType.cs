@@ -12,5 +12,7 @@ namespace Fliq.Domain.Entities.Event
         public string TicketTypes { get; set; } = default!;
         public string Currency { get; set; } = default!;
         public double Amount { get; set; } = default!;
+        public string MaximumLimit { get; set; } = default!;
+        public int Discount { get; set; } = default!;
     }
 }
