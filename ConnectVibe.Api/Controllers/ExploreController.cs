@@ -1,4 +1,5 @@
 ﻿using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.Explore.Common;
 using Fliq.Application.Explore.Queries;
 using Fliq.Contracts.Explore;
 using Fliq.Contracts.Payments;

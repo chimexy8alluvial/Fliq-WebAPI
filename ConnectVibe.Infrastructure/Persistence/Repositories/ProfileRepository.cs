@@ -29,7 +29,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             _dbContext.SaveChanges();
         }
 
-        public async Task<IEnumerable<UserProfile>> GetProfilesAsync(int userId, bool? filterByDating = null, bool? filterByFriendship = null)
+        public async Task<IEnumerable<UserProfile>> GetProfilesAsync(int userId, int pageNumber, int pageSize, bool? filterByDating = null, bool? filterByFriendship = null)
         {
             // Retrieve the logged-in user's own profile types
             var userProfileTypes = await _dbContext.UserProfiles
@@ -59,6 +59,9 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                     && up.UserId != userId)
                     .Include(up => up.User);
             }
+
+            //Apply pagination
+            query = query.Skip((pageNumber - 1) * pageSize).Take(pageSize);
 
             var queriedProfiles = await query.ToListAsync();
 

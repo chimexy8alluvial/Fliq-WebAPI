@@ -1,15 +1,10 @@
-﻿using Fliq.Domain.Entities.Profile;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Fliq.Application.Common.Pagination;
+using Fliq.Domain.Entities.Profile;
 
 namespace Fliq.Application.Explore.Common
 {
     public record ExploreResult(
-        IEnumerable<UserProfile> UserProfiles
-        /*,IEnumerable<UserProfile> FriendshipProfiles,
-        IEnumerable<Event>? Events = null*/);
+       PaginationResponse<UserProfile> UserProfiles
+        /*IEnumerable<Event>? Events = null*/);
     
 }

@@ -1,5 +1,6 @@
 ﻿using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Pagination;
 using Fliq.Application.Explore.Common;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities;
@@ -19,7 +20,9 @@ namespace Fliq.Application.Explore.Queries
     public record ExploreQuery(
         bool? FilterByEvent = null,
         bool? FilterByDating = null,
-        bool? FilterByFriendship = null
+        bool? FilterByFriendship = null,
+        int PageNumber = 1,
+        int PageSize = 20
         ) : IRequest<ErrorOr<ExploreResult>>;
 
     public class ExploreQueryHandler : IRequestHandler<ExploreQuery, ErrorOr<ExploreResult>>
@@ -52,8 +55,11 @@ namespace Fliq.Application.Explore.Queries
             }
 
             // Fetch user profiles based on filters
-            var profiles = await _profileRepository.GetProfilesAsync(user.Id, query.FilterByDating, query.FilterByFriendship);
+            var profiles = await _profileRepository.GetProfilesAsync(user.Id, query.PageNumber, query.PageSize, query.FilterByDating, query.FilterByFriendship);
+            var totalCount = profiles.Count();
 
+            var paginatedProfiles = new PaginationResponse<UserProfile>(profiles, totalCount, query.PageNumber, query.PageSize);
+            
             //Fetch events if the user is exploring events
             #region Fetch Events
             
@@ -67,7 +73,7 @@ namespace Fliq.Application.Explore.Queries
             }
             #endregion
 
-            return new ExploreResult(profiles);
+            return new ExploreResult(paginatedProfiles);
         }
 
         private int GetUserId()

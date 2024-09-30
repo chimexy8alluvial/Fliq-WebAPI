@@ -8,6 +8,6 @@ namespace Fliq.Application.Common.Interfaces.Persistence
 
         UserProfile? GetUserProfileByUserId(int id);
 
-        Task<IEnumerable<UserProfile>> GetProfilesAsync(int userId, bool? filterByDating = null, bool? filterByFriendship = null);
+        Task<IEnumerable<UserProfile>> GetProfilesAsync(int userId, int pageNumber, int pageSize, bool? filterByDating = null, bool? filterByFriendship = null);
     }
 }
