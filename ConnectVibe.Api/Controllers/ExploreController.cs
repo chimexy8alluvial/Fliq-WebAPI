@@ -1,17 +1,16 @@
-﻿using Fliq.Application.Common.Interfaces.Services;
-using Fliq.Application.Explore.Common;
+﻿using Fliq.Application.Explore.Common;
 using Fliq.Application.Explore.Queries;
 using Fliq.Contracts.Explore;
-using Fliq.Contracts.Payments;
 using MapsterMapper;
 using MediatR;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Fliq.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ExploreController : ControllerBase
     {
         private readonly ISender _mediator;
@@ -24,6 +23,7 @@ namespace Fliq.Api.Controllers
         }
 
         [HttpGet]
+        [Produces(typeof(ExploreResponse))]
         public async Task<IActionResult> Explore([FromQuery] ExploreRequest request)
         {
             var query = _mapper.Map<ExploreQuery>(request);

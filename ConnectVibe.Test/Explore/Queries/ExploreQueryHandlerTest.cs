@@ -6,11 +6,6 @@ using Fliq.Domain.Entities;
 using Fliq.Domain.Entities.Profile;
 using Microsoft.AspNetCore.Http;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Fliq.Test.Explore.Queries
 {
