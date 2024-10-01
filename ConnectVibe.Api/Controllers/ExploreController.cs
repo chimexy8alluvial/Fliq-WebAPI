@@ -16,13 +16,11 @@ namespace Fliq.Api.Controllers
     {
         private readonly ISender _mediator;
         private readonly IMapper _mapper;
-        private readonly ILoggerManager _logger;
 
-        public ExploreController(ISender mediator, IMapper mapper, ILoggerManager logger)
+        public ExploreController(ISender mediator, IMapper mapper)
         {
             _mediator = mediator;
             _mapper = mapper;
-            _logger = logger;
         }
 
         [HttpGet]
