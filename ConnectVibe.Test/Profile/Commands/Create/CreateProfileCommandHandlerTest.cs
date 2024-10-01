@@ -25,6 +25,7 @@ namespace Fliq.Test.Profile.Commands.Create
         private Mock<IUserRepository> _userRepositoryMock;
         private Mock<ILocationService> _locationServiceMock;
         private Mock<IHttpContextAccessor> _httpContextAccessorMock;
+        private Mock<ISettingsRepository> _settingsRepositoryMock;
         private Mock<ClaimsPrincipal> _claimsPrincipalMock;
         
 
@@ -38,6 +39,7 @@ namespace Fliq.Test.Profile.Commands.Create
             _userRepositoryMock = new Mock<IUserRepository>();
             _locationServiceMock = new Mock<ILocationService>();
             _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+            _settingsRepositoryMock = new Mock<ISettingsRepository>();
             _claimsPrincipalMock = new Mock<ClaimsPrincipal>();
 
             // Mocking HttpContext to return a valid user ID
@@ -50,7 +52,8 @@ namespace Fliq.Test.Profile.Commands.Create
                 _profileRepositoryMock.Object,
                 _userRepositoryMock.Object,
                 _locationServiceMock.Object,
-                _httpContextAccessorMock.Object);
+                _httpContextAccessorMock.Object,
+                _settingsRepositoryMock.Object);
         }
 
         [TestMethod]
