@@ -2,7 +2,6 @@
 using Fliq.Application.Explore.Queries;
 using Fliq.Domain.Entities;
 using Fliq.Domain.Entities.Profile;
-using Microsoft.EntityFrameworkCore;
 
 namespace Fliq.Application.Explore.Common.Services
 {
