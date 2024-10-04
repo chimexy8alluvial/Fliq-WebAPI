@@ -36,7 +36,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             return profile;
         }
 
-        public async Task<List<UserProfile>> GetProfilesByStoredProcedureAsync(int userId, List<ProfileType> userProfileTypes, bool? filterByDating, bool? filterByFriendship)
+        public async Task<List<UserProfile>> GetProfilesAsync(int userId, List<ProfileType> userProfileTypes, bool? filterByDating, bool? filterByFriendship)
         {
             var profileTypesString = string.Join(",", userProfileTypes.Select(pt => pt.ToString()));
 

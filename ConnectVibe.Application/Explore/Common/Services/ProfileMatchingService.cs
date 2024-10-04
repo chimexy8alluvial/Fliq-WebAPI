@@ -20,7 +20,7 @@ namespace Fliq.Application.Explore.Common.Services
             if (userProfileTypes == null) return [];
 
             // Use repository to fetch profiles based on broad filters (e.g., friendship, dating)
-            var profiles = await _profileRepository.GetProfilesByStoredProcedureAsync(
+            var profiles = await _profileRepository.GetProfilesAsync(
                 user.Id,
                 userProfileTypes,
                 query.FilterByFriendship,
