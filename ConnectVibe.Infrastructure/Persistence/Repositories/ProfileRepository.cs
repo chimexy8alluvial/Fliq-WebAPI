@@ -1,6 +1,7 @@
 ﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Enums;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
@@ -29,75 +30,26 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             _dbContext.SaveChanges();
         }
 
-        public async Task<IEnumerable<UserProfile>> GetProfilesAsync(int userId, int pageNumber, int pageSize, bool? filterByDating = null, bool? filterByFriendship = null)
-        {
-            // Retrieve the logged-in user's own profile types
-            var userProfileTypes = await _dbContext.UserProfiles
-                .Where(up => up.UserId == userId)
-                .Select(up => up.ProfileTypes)
-                .SingleOrDefaultAsync();
-
-            if(userProfileTypes == null) 
-                return []; // Return empty if no profileType is found for logged in user
-
-            var query = _dbContext.UserProfiles.AsQueryable();
-
-            //Ensure user can only explore profiles that match their own profile types
-            query = query.Where(up => up.ProfileTypes.Any(profileType => userProfileTypes.Contains(profileType)));
-
-            //Apply additional filters (if passed)
-            if (filterByDating != null && true)
-            {
-                query = query.Where(up => up.ProfileTypes.Contains(ProfileType.Dating)
-                    && up.UserId != userId)
-                    .Include(up => up.User);
-            }
-
-            if (filterByFriendship == true)
-            {
-                query = query.Where(up => up.ProfileTypes.Contains(ProfileType.Friendship)
-                    && up.UserId != userId)
-                    .Include(up => up.User);
-            }
-
-            //Apply pagination
-            query = query.Skip((pageNumber - 1) * pageSize).Take(pageSize);
-
-            var queriedProfiles = await query.ToListAsync();
-
-            return queriedProfiles;
-        }
-
-        public IQueryable<UserProfile> GetProfilesByQuery(int userId, List<ProfileType> userProfileTypes, bool? filterByDating = null, bool? filterByFriendship = null)
-        {
-            var query = _dbContext.UserProfiles
-                .Where(up => up.UserId != userId) // Exclude current user
-                .AsQueryable();
-
-            // Ensure user can only explore profiles that match their own profile types
-            query = query.Where(up => up.ProfileTypes.Any(profileType => userProfileTypes.Contains(profileType)));
-
-            // Apply filters if passed
-            if (filterByDating == true)
-            {
-                query = query.Where(up => up.ProfileTypes.Contains(ProfileType.Dating));
-            }
-
-            if (filterByFriendship == true)
-            {
-                query = query.Where(up => up.ProfileTypes.Contains(ProfileType.Friendship));
-            }
-
-            // Include related user entity
-            query = query.Include(up => up.User);
-
-            return query;
-        }
-
         public UserProfile? GetUserProfileByUserId(int id)
         {
             var profile = _dbContext.UserProfiles.SingleOrDefault(p => p.UserId == id);
             return profile;
         }
+
+        public async Task<List<UserProfile>> GetProfilesByStoredProcedureAsync(int userId, List<ProfileType> userProfileTypes, bool? filterByDating, bool? filterByFriendship)
+        {
+            var profileTypesString = string.Join(",", userProfileTypes.Select(pt => pt.ToString()));
+
+            var userIdParam = new SqlParameter("@UserId", userId);
+            var profileTypesParam = new SqlParameter("@ProfileTypes", profileTypesString);
+            var filterByDatingParam = new SqlParameter("@FilterByDating", filterByDating ?? (object)DBNull.Value);
+            var filterByFriendshipParam = new SqlParameter("@FilterByFriendship", filterByFriendship ?? (object)DBNull.Value);
+
+            return await _dbContext.UserProfiles
+                .FromSqlRaw("EXEC GetUserProfiles @UserId, @ProfileTypes, @FilterByDating, @FilterByFriendship",
+                            userIdParam, profileTypesParam, filterByDatingParam, filterByFriendshipParam)
+                .ToListAsync();
+        }
+
     }
 }

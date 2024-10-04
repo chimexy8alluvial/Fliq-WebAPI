@@ -21,12 +21,12 @@ namespace Fliq.Application.Explore.Common.Services
             if (userProfileTypes == null) return [];
 
             // Use repository to fetch profiles based on broad filters (e.g., friendship, dating)
-            var profiles = await _profileRepository.GetProfilesByQuery(
+            var profiles = await _profileRepository.GetProfilesByStoredProcedureAsync(
                 user.Id,
                 userProfileTypes,
                 query.FilterByFriendship,
                 query.FilterByDating
-            ).ToListAsync();
+            );
 
             // Retrieve user's sexual orientation preference
             var userSexPreferences = user.UserProfile?.SexualOrientation?.SexualOrientationType.ToString();
