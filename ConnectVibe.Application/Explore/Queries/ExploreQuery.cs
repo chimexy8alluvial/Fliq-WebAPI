@@ -5,15 +5,15 @@ using Fliq.Application.Common.Pagination;
 using Fliq.Application.Explore.Common;
 using Fliq.Application.Explore.Common.Services;
 using Fliq.Domain.Common.Errors;
-using Fliq.Domain.Entities;
 using Fliq.Domain.Entities.Profile;
 using MediatR;
 using Microsoft.AspNetCore.Http;
-using Microsoft.IdentityModel.JsonWebTokens;
+
 
 namespace Fliq.Application.Explore.Queries
 {
     public record ExploreQuery(
+        int UserId,
         bool? FilterByEvent = null,
         bool? FilterByDating = null,
         bool? FilterByFriendship = null,
@@ -29,7 +29,6 @@ namespace Fliq.Application.Explore.Queries
         private readonly IProfileMatchingService _profileMatchingService;
         private const int UnauthorizedUserId = -1;
         private readonly ILoggerManager _logger;
-        //private readonly IEventRepository _eventRepository;
 
         public ExploreQueryHandler(IHttpContextAccessor httpContextAccessor, IUserRepository userRepository, IProfileRepository profileRepository, ILoggerManager logger, IProfileMatchingService profileMatchingService)
         {
@@ -45,8 +44,8 @@ namespace Fliq.Application.Explore.Queries
             _logger.LogInfo("Starting ExploreQuery handling for user.");
 
             // Get logged-in user
-            var user = GetUser();
-            if(user == null)
+            var user = _userRepository.GetUserById(query.UserId);
+            if (user == null)
             {
                 _logger.LogWarn("User not found");
                 return Errors.User.UserNotFound;
@@ -66,24 +65,8 @@ namespace Fliq.Application.Explore.Queries
 
             var paginatedProfiles = new PaginationResponse<UserProfile>(profiles, totalCount, query.PageNumber, query.PageSize);
             
-
             return new ExploreResult(paginatedProfiles);
-        }
-
-        private int GetUserId()
-        {
-            var userIdClaim = _httpContextAccessor.HttpContext?.User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
-            return int.TryParse(userIdClaim, out int userId) ? userId : UnauthorizedUserId;
-        }
-
-        private User? GetUser()
-        {
-            _logger.LogInfo("Fetch logged-in user data.");
-            var userId = GetUserId();
-            var user = _userRepository.GetUserById(userId);
-            return user;
         }
     }
 
-    
 }

@@ -3,11 +3,6 @@ using Fliq.Application.Explore.Queries;
 using Fliq.Domain.Entities;
 using Fliq.Domain.Entities.Profile;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Fliq.Application.Explore.Common.Services
 {
@@ -23,10 +18,7 @@ namespace Fliq.Application.Explore.Common.Services
         {
             // Get user profile types
             var userProfileTypes = user.UserProfile?.ProfileTypes;
-            if (userProfileTypes == null) return Enumerable.Empty<UserProfile>();
-
-            // Retrieve user's sexual orientation preference
-            var userSexPreferences = user.UserProfile?.SexualOrientation?.SexualOrientationType.ToString();
+            if (userProfileTypes == null) return [];
 
             // Use repository to fetch profiles based on broad filters (e.g., friendship, dating)
             var profiles = await _profileRepository.GetProfilesByQuery(
@@ -35,6 +27,9 @@ namespace Fliq.Application.Explore.Common.Services
                 query.FilterByFriendship,
                 query.FilterByDating
             ).ToListAsync();
+
+            // Retrieve user's sexual orientation preference
+            var userSexPreferences = user.UserProfile?.SexualOrientation?.SexualOrientationType.ToString();
 
             // Apply matching logic based on user's sexual orientation preference or others
             var matchedProfiles = profiles.Where(profile =>
