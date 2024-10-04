@@ -68,6 +68,32 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             return queriedProfiles;
         }
 
+        public IQueryable<UserProfile> GetProfilesByQuery(int userId, List<ProfileType> userProfileTypes, bool? filterByDating = null, bool? filterByFriendship = null)
+        {
+            var query = _dbContext.UserProfiles
+                .Where(up => up.UserId != userId) // Exclude current user
+                .AsQueryable();
+
+            // Ensure user can only explore profiles that match their own profile types
+            query = query.Where(up => up.ProfileTypes.Any(profileType => userProfileTypes.Contains(profileType)));
+
+            // Apply filters if passed
+            if (filterByDating == true)
+            {
+                query = query.Where(up => up.ProfileTypes.Contains(ProfileType.Dating));
+            }
+
+            if (filterByFriendship == true)
+            {
+                query = query.Where(up => up.ProfileTypes.Contains(ProfileType.Friendship));
+            }
+
+            // Include related user entity
+            query = query.Include(up => up.User);
+
+            return query;
+        }
+
         public UserProfile? GetUserProfileByUserId(int id)
         {
             var profile = _dbContext.UserProfiles.SingleOrDefault(p => p.UserId == id);

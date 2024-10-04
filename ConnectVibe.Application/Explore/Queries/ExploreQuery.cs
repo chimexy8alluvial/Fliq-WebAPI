@@ -3,6 +3,7 @@ using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Pagination;
 using Fliq.Application.Explore.Common;
+using Fliq.Application.Explore.Common.Services;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities;
 using Fliq.Domain.Entities.Profile;
@@ -25,16 +26,18 @@ namespace Fliq.Application.Explore.Queries
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUserRepository _userRepository;
         private readonly IProfileRepository _profileRepository;
+        private readonly IProfileMatchingService _profileMatchingService;
         private const int UnauthorizedUserId = -1;
         private readonly ILoggerManager _logger;
         //private readonly IEventRepository _eventRepository;
 
-        public ExploreQueryHandler(IHttpContextAccessor httpContextAccessor, IUserRepository userRepository, IProfileRepository profileRepository, ILoggerManager logger)
+        public ExploreQueryHandler(IHttpContextAccessor httpContextAccessor, IUserRepository userRepository, IProfileRepository profileRepository, ILoggerManager logger, IProfileMatchingService profileMatchingService)
         {
             _httpContextAccessor = httpContextAccessor;
             _userRepository = userRepository;
             _profileRepository = profileRepository;
             _logger = logger;
+            _profileMatchingService = profileMatchingService;
         }
 
         public async Task<ErrorOr<ExploreResult>> Handle(ExploreQuery query, CancellationToken cancellationToken)
@@ -57,24 +60,12 @@ namespace Fliq.Application.Explore.Queries
 
             // Fetch user profiles based on filters
             _logger.LogInfo($"Fetching profiles for user --> {user.Id}");
-            var profiles = await _profileRepository.GetProfilesAsync(user.Id, query.PageNumber, query.PageSize, query.FilterByDating, query.FilterByFriendship);
+            var profiles = await _profileMatchingService.GetMatchedProfilesAsync(user, query);
             _logger.LogInfo($"Successfully fetched {profiles.Count()} profiles for user.");
             var totalCount = profiles.Count();
 
             var paginatedProfiles = new PaginationResponse<UserProfile>(profiles, totalCount, query.PageNumber, query.PageSize);
             
-            //Fetch events if the user is exploring events
-            #region Fetch Events
-            
-            //IEnumerable<Event> events = new();
-            //if (user.UserProfile.ProfileTypes.Contains(ProfileType.Events))
-            //{
-            //    //if(query.FilterByEvent == true)
-            //    //{
-            //    //    events = await _eventRepository.GetEventsAsync();
-            //    //}
-            //}
-            #endregion
 
             return new ExploreResult(paginatedProfiles);
         }
