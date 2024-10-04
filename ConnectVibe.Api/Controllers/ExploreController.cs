@@ -30,7 +30,7 @@ namespace Fliq.Api.Controllers
         [Produces(typeof(ExploreResponse))]
         public async Task<IActionResult> Explore([FromQuery] ExploreRequest request)
         {
-            _logger.LogInfo($"Exploring profiles request recieved: {request}");
+            _logger.LogInfo($"Exploring profiles request received: {request}");
 
             var userId = GetAuthUserId();
             _logger.LogInfo($"Authenticated user ID: {userId}");
