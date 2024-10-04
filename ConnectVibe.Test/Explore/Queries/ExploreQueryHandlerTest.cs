@@ -1,5 +1,6 @@
 ﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.Explore.Common.Services;
 using Fliq.Application.Explore.Queries;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities;
@@ -16,6 +17,7 @@ namespace Fliq.Test.Explore.Queries
         private Mock<IHttpContextAccessor> _httpContextAccessorMock;
         private Mock<IUserRepository> _userRepositoryMock;
         private Mock<IProfileRepository> _profileRepositoryMock;
+        private Mock<IProfileMatchingService> _profileMatchingServiceMock; // Added mock for profile matching service
         private Mock<ILoggerManager> _loggerMock;
 
         [TestInitialize]
@@ -24,13 +26,15 @@ namespace Fliq.Test.Explore.Queries
             _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
             _userRepositoryMock = new Mock<IUserRepository>();
             _profileRepositoryMock = new Mock<IProfileRepository>();
+            _profileMatchingServiceMock = new Mock<IProfileMatchingService>(); // Initialize the new mock
             _loggerMock = new Mock<ILoggerManager>();
 
             _handler = new ExploreQueryHandler(
                 _httpContextAccessorMock.Object,
                 _userRepositoryMock.Object,
                 _profileRepositoryMock.Object,
-                _loggerMock.Object);
+                _loggerMock.Object,
+                _profileMatchingServiceMock.Object); // Pass the mock to the handler
         }
 
         [TestMethod]
@@ -39,7 +43,7 @@ namespace Fliq.Test.Explore.Queries
             // Arrange
             _userRepositoryMock.Setup(x => x.GetUserById(It.IsAny<int>())).Returns((User?)null);
 
-            var query = new ExploreQuery();
+            var query = new ExploreQuery(UserId: 1); // Provide a UserId
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
@@ -57,7 +61,7 @@ namespace Fliq.Test.Explore.Queries
             var user = new User { Id = 1, UserProfile = null };
             _userRepositoryMock.Setup(x => x.GetUserById(It.IsAny<int>())).Returns(user);
 
-            var query = new ExploreQuery();
+            var query = new ExploreQuery(UserId: 1); // Provide a UserId
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
@@ -76,10 +80,10 @@ namespace Fliq.Test.Explore.Queries
             var profiles = new List<UserProfile> { new UserProfile(), new UserProfile() };
 
             _userRepositoryMock.Setup(x => x.GetUserById(It.IsAny<int>())).Returns(user);
-            _profileRepositoryMock.Setup(x => x.GetProfilesAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool?>(), It.IsAny<bool?>()))
-                                  .ReturnsAsync(profiles);
+            _profileMatchingServiceMock.Setup(x => x.GetMatchedProfilesAsync(user, It.IsAny<ExploreQuery>()))
+                                       .ReturnsAsync(profiles); // Call the profile matching service
 
-            var query = new ExploreQuery();
+            var query = new ExploreQuery(UserId: 1); // Provide a UserId
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
@@ -99,10 +103,10 @@ namespace Fliq.Test.Explore.Queries
             var profiles = new List<UserProfile>();
 
             _userRepositoryMock.Setup(x => x.GetUserById(It.IsAny<int>())).Returns(user);
-            _profileRepositoryMock.Setup(x => x.GetProfilesAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool?>(), It.IsAny<bool?>()))
-                                  .ReturnsAsync(profiles);
+            _profileMatchingServiceMock.Setup(x => x.GetMatchedProfilesAsync(user, It.IsAny<ExploreQuery>()))
+                                       .ReturnsAsync(profiles); // Call the profile matching service
 
-            var query = new ExploreQuery();
+            var query = new ExploreQuery(UserId: 1); // Provide a UserId
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
@@ -113,4 +117,5 @@ namespace Fliq.Test.Explore.Queries
             _loggerMock.Verify(x => x.LogInfo($"Successfully fetched 0 profiles for user."), Times.Once);
         }
     }
+
 }
