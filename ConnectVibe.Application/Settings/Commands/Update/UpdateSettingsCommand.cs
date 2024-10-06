@@ -1,12 +1,10 @@
-﻿using Fliq.Application.Common.Interfaces.Persistence;
+﻿using ErrorOr;
+using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
-using ErrorOr;
-
 using Fliq.Application.Settings.Common;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Settings;
 using MediatR;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 
 namespace Fliq.Application.Settings.Commands.Update
@@ -18,7 +16,9 @@ namespace Fliq.Application.Settings.Commands.Update
          bool RelationAvailability,
         bool ShowMusicAndGameStatus,
         string Language,
-        List<NotificationPreference> NotificationPreferences
+        List<NotificationPreference> NotificationPreferences,
+        Filter Filter,
+        int UserId
         ) : IRequest<ErrorOr<GetSettingsResult>>;
 
     public class UpdateSettingsCommandHandler : IRequestHandler<UpdateSettingsCommand, ErrorOr<GetSettingsResult>>
@@ -27,7 +27,6 @@ namespace Fliq.Application.Settings.Commands.Update
         private readonly IUserRepository _userRepository;
         private readonly ILoggerManager _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private const int UnauthorizedUserId = -1;
 
         public UpdateSettingsCommandHandler(ISettingsRepository settingsRepository, IUserRepository userRepository, ILoggerManager logger, IHttpContextAccessor httpContextAccessor)
         {
@@ -41,17 +40,17 @@ namespace Fliq.Application.Settings.Commands.Update
         {
             await Task.CompletedTask;
 
-            var userId = GetUserId();
-
-            var user = _userRepository.GetUserById(userId);
+            var user = _userRepository.GetUserById(command.UserId);
             if (user == null)
             {
+                _logger.LogError($"User with Id: {command.UserId}, not found");
                 return Errors.User.UserNotFound;
             }
 
             var settings = _settingsRepository.GetSettingById(command.Id);
             if (settings == null)
             {
+                _logger.LogError($"Setting {command.Id} not found");
                 return Errors.Settings.SettingsNotFound;
             }
 
@@ -71,16 +70,11 @@ namespace Fliq.Application.Settings.Commands.Update
                 settings.ShowMusicAndGameStatus,
                 settings.Language,
                 settings.NotificationPreferences.ToList(),
+                settings.Filter,
                 user.FirstName + " " + user.LastName,
                 user.Email,
                 user.Id
                 );
-        }
-
-        private int GetUserId()
-        {
-            var userIdClaim = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            return int.TryParse(userIdClaim, out int userId) ? userId : UnauthorizedUserId;
         }
     }
 }

@@ -70,11 +70,13 @@ namespace Fliq.Application.Profile.Commands.Update
             var user = _userRepository.GetUserById(userId);
             if (user == null)
             {
+                _loggerManager.LogError("User not found");
                 return Errors.Profile.ProfileNotFound;
             }
             var userProfile = _profileRepository.GetProfileByUserId(userId);
             if (userProfile == null)
             {
+                _loggerManager.LogError("User profile not found");
                 return Errors.Profile.ProfileNotFound;
             }
             var updatedProfile = command.Adapt(userProfile);
@@ -93,6 +95,7 @@ namespace Fliq.Application.Profile.Commands.Update
                     }
                     else
                     {
+                        _loggerManager.LogError("Failed to upload profile photo");
                         return Errors.Image.InvalidImage;
                     }
                 }

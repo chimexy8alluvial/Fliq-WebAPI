@@ -1,6 +1,4 @@
-﻿using Fliq.Domain.Entities;
-
-namespace Fliq.Domain.Entities.Settings
+﻿namespace Fliq.Domain.Entities.Settings
 {
     public class Setting
     {
@@ -10,6 +8,7 @@ namespace Fliq.Domain.Entities.Settings
         public bool ShowMusicAndGameStatus { get; set; }
         public string Language { get; set; } = "English";
         public ICollection<NotificationPreference> NotificationPreferences { get; set; } = new List<NotificationPreference>();
+        public Filter Filter { get; set; } = new Filter();
         public User User { get; set; } = default!;
         public int UserId { get; set; }
     }

@@ -2,6 +2,7 @@
 using Fliq.Api.Common.Http;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Fliq.Api.Controllers
 {
@@ -67,8 +68,8 @@ namespace Fliq.Api.Controllers
         [NonAction]
         public int GetAuthUserId()
         {
-            var userId = HttpContext.User.FindFirst(c => c.Type == "sub")?.Value;
-            return int.Parse(userId ?? "0");
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            return int.Parse(userId ?? "-1");
         }
     }
 }

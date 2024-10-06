@@ -23,10 +23,11 @@ namespace Fliq.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Fetch()
+        public async Task<IActionResult> Get()
         {
-            _logger.LogInfo($"Fetch Settings Request Received");
-            var query = new GetSettingsQuery();
+            _logger.LogInfo($"Get Settings Request Received");
+            var userId = GetAuthUserId();
+            var query = new GetSettingsQuery(userId);
             var settingsResult = await _mediator.Send(query);
             _logger.LogInfo($"Fetch Settings Query Executed. Result: {settingsResult}");
             return settingsResult.Match(
@@ -39,7 +40,9 @@ namespace Fliq.Api.Controllers
         public async Task<IActionResult> Update([FromBody] UpdateSettingsRequest request)
         {
             _logger.LogInfo($"Update Settings Request Received: {request}");
-            var command = _mapper.Map<UpdateSettingsCommand>(request);
+            var userId = GetAuthUserId();
+            var modifiedRequest = request with { UserId = userId };
+            var command = _mapper.Map<UpdateSettingsCommand>(modifiedRequest);
             var settingsResult = await _mediator.Send(command);
             _logger.LogInfo($"Update Settings Command Executed. Result: {settingsResult}");
             return settingsResult.Match(

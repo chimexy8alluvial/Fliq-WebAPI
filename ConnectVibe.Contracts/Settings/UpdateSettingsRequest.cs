@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Fliq.Contracts.Settings
+﻿namespace Fliq.Contracts.Settings
 {
     public record UpdateSettingsRequest
         (
@@ -14,6 +8,7 @@ namespace Fliq.Contracts.Settings
         bool ShowMusicAndGameStatus,
         string Language,
         List<NotificationPreferenceDto> NotificationPreferences,
+        FilterDto Filter,
         int UserId
         );
 }
