@@ -66,7 +66,7 @@ namespace Fliq.Api.Controllers
             _logger.LogInfo($"Explore Events Query Executed. Result: {result}");
 
             return result.Match(
-                    result => Ok(_mapper.Map<ExploreResponse>(result)),
+                    result => Ok(_mapper.Map<ExploreEventsResponse>(result)),
                     errors => Problem(string.Join("; ", errors.Select(e => e.Description)))
                 );
 

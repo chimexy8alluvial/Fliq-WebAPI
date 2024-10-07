@@ -1,4 +1,6 @@
 ﻿using Fliq.Application.Explore.Common;
+using Fliq.Application.Explore.Common.Services;
+using Fliq.Application.Explore.Queries;
 using Fliq.Contracts.Explore;
 using Fliq.Contracts.Profile;
 using Mapster;
@@ -16,6 +18,11 @@ namespace Fliq.Api.Mapping
                 .Map(dest => dest.PageNumber, src => src.UserProfiles.PageNumber)
                 .Map(dest => dest.PageSize, src => src.UserProfiles.PageSize);
 
+            config.NewConfig<ExploreQuery, ExploreRequest>();
+
+            config.NewConfig<ExploreEventsQuery, ExploreEventsRequest>();
+
+            config.NewConfig<ExploreEventsResult, ExploreEventsResponse>();
         }
     }
 }
