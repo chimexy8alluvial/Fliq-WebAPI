@@ -49,5 +49,28 @@ namespace Fliq.Api.Controllers
 
         }
 
+        [HttpGet]
+        [Produces(typeof(ExploreResponse))]
+        public async Task<IActionResult> Explore([FromQuery] ExploreEventsRequest request)
+        {
+            _logger.LogInfo($"Exploring Events request received: {request}");
+
+            var userId = GetAuthUserId();
+            _logger.LogInfo($"Authenticated user ID: {userId}");
+
+            // Map request to ExploreQuery and add UserId
+            var query = _mapper.Map<ExploreEventsQuery>(request);
+            query = query with { UserId = userId };
+
+            var result = await _mediator.Send(query);
+            _logger.LogInfo($"Explore Events Query Executed. Result: {result}");
+
+            return result.Match(
+                    result => Ok(_mapper.Map<ExploreResponse>(result)),
+                    errors => Problem(string.Join("; ", errors.Select(e => e.Description)))
+                );
+
+        }
+
     }
 }
