@@ -6,6 +6,10 @@ namespace Fliq.Application.Common.Interfaces.Persistence
     {
         void Add(UserProfile userProfile);
 
+        void Update(UserProfile profile);
+
         UserProfile? GetUserProfileByUserId(int id);
+
+        UserProfile? GetProfileByUserId(int id);
     }
 }

@@ -1,9 +1,4 @@
 ﻿using Fliq.Domain.Entities.Settings;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Fliq.Application.Common.Interfaces.Persistence
 {
@@ -14,5 +9,7 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         void Update(Setting setting);
 
         Setting? GetSettingById(int id);
+
+        Setting? GetSettingByUserId(int id);
     }
 }

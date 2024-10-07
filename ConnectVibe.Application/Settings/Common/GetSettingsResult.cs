@@ -1,9 +1,4 @@
 ﻿using Fliq.Domain.Entities.Settings;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Fliq.Application.Settings.Common
 {
@@ -14,6 +9,7 @@ namespace Fliq.Application.Settings.Common
     bool ShowMusicAndGameStatus,
     string Language,
     List<NotificationPreference> NotificationPreferences,
+    Filter Filter,
     string Name,
     string Email,
     int UserId

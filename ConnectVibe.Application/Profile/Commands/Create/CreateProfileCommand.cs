@@ -11,7 +11,6 @@ using Fliq.Domain.Enums;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Http;
-using Microsoft.IdentityModel.JsonWebTokens;
 
 namespace Fliq.Application.Profile.Commands.Create
 {
@@ -33,6 +32,7 @@ namespace Fliq.Application.Profile.Commands.Create
         public Location Location { get; set; } = default!;
         public LocationDetail LocationDetail { get; set; } = default!;
         public bool AllowNotifications { get; set; }
+        public int UserId { get; set; }
     }
 
     public class CreateProfileCommandHandler : IRequestHandler<CreateProfileCommand, ErrorOr<CreateProfileResult>>
@@ -61,14 +61,12 @@ namespace Fliq.Application.Profile.Commands.Create
         {
             await Task.CompletedTask;
 
-            var userId = GetUserId();
-
-            var user = _userRepository.GetUserById(userId);
+            var user = _userRepository.GetUserById(command.UserId);
             if (user == null)
             {
                 return Errors.Profile.ProfileNotFound;
             }
-            var existingProfile = _profileRepository.GetUserProfileByUserId(userId);
+            var existingProfile = _profileRepository.GetUserProfileByUserId(command.UserId);
             if (existingProfile != null)
             {
                 return Errors.Profile.DuplicateProfile;
@@ -112,17 +110,11 @@ namespace Fliq.Application.Profile.Commands.Create
 
             Setting setting = new()
             {
-                UserId = userId
+                UserId = command.UserId,
             };
             _settingsRepository.Add(setting);
 
             return new CreateProfileResult(userProfile);
-        }
-
-        private int GetUserId()
-        {
-            var userIdClaim = _httpContextAccessor.HttpContext?.User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
-            return int.TryParse(userIdClaim, out int userId) ? userId : UnauthorizedUserId;
         }
     }
 }
