@@ -26,8 +26,8 @@ namespace Fliq.Api.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
-        [Produces(typeof(ExploreResponse))]
+        [HttpGet("Explore-Profiles")]
+        [Produces(typeof(ExploreEventsResponse))]
         public async Task<IActionResult> Explore([FromQuery] ExploreRequest request)
         {
             _logger.LogInfo($"Exploring profiles request recieved: {request}");
@@ -49,7 +49,7 @@ namespace Fliq.Api.Controllers
 
         }
 
-        [HttpGet]
+        [HttpGet("Explore-Events")]
         [Produces(typeof(ExploreResponse))]
         public async Task<IActionResult> Explore([FromQuery] ExploreEventsRequest request)
         {
