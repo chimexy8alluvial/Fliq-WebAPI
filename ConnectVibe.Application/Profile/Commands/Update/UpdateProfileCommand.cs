@@ -125,7 +125,7 @@ namespace Fliq.Application.Profile.Commands.Update
             _profileRepository.Update(updatedProfile);
             _loggerManager.LogInfo($"Profile updated successfully for user with id: {userId}");
 
-            return new CreateProfileResult(userProfile);
+            return new CreateProfileResult(updatedProfile);
         }
 
         private int GetUserId()

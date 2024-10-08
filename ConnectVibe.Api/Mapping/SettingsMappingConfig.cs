@@ -11,14 +11,14 @@ namespace Fliq.Api.Mapping
     {
         public void Register(TypeAdapterConfig config)
         {
-            config.NewConfig<UpdateSettingsRequest, UpdateSettingsCommand>();
+            config.NewConfig<UpdateSettingsRequest, UpdateSettingsCommand>().IgnoreNullValues(true);
             config.NewConfig<GetSettingsResult, GetSettingsResponse>();
-            config.NewConfig<NotificationPreferenceDto, NotificationPreference>();
-            config.NewConfig<FilterDto, Filter>()
+            config.NewConfig<NotificationPreferenceDto, NotificationPreference>().IgnoreNullValues(true);
+            config.NewConfig<FilterDto, Filter>().IgnoreNullValues(true)
                 .Map(dest => dest.LookingFor, src => (LookingFor)src.LookingFor)
                 .Map(dest => dest.RacePreferences, src => src.RacePreferences.Select(e => (EthnicityType)e).ToList());
-            config.NewConfig<AgeRangeDto, AgeRange>();
-            config.NewConfig<ViceDto, Vice>();
+            config.NewConfig<AgeRangeDto, AgeRange>().IgnoreNullValues(true);
+            config.NewConfig<ViceDto, Vice>().IgnoreNullValues(true);
         }
     }
 }

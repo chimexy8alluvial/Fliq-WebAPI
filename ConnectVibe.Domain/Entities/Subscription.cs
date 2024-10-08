@@ -1,9 +1,7 @@
 ﻿namespace Fliq.Domain.Entities
 {
-    public class Subscription
+    public class Subscription : Record
     {
-        public int Id { get; set; }
-
         public int UserId { get; set; }
 
         public string ProductId { get; set; } = default!;
