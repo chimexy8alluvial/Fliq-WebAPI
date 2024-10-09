@@ -25,8 +25,7 @@ namespace Fliq.Application.Explore.Common.Services
                 userProfileTypes,
                 query.FilterByFriendship,
                 query.FilterByDating,
-                query.PaginationRequest.PageNumber,
-                query.PaginationRequest.PageSize
+                query.PaginationRequest
             );
 
             //// Retrieve user's sexual orientation preference

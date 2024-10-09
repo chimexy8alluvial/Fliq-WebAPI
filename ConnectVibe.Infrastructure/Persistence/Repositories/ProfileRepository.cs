@@ -60,7 +60,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             }
         }
 
-        public static DynamicParameters CreateDynamicParameters(int userId, List<ProfileType> userProfileTypes, bool? filterByDating, bool? filterByFriendship, PaginationRequest paginationRequest)
+        private static DynamicParameters CreateDynamicParameters(int userId, List<ProfileType> userProfileTypes, bool? filterByDating, bool? filterByFriendship, PaginationRequest paginationRequest)
         {
             var parameters = new DynamicParameters();
             parameters.Add("@userId", userId);
