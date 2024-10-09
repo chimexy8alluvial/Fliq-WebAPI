@@ -1,4 +1,5 @@
 ﻿using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.Common.Pagination;
 using Fliq.Application.Explore.Common;
 using Fliq.Application.Explore.Queries;
 using Fliq.Contracts.Explore;
@@ -37,8 +38,8 @@ namespace Fliq.Api.Controllers
 
             // Map request to ExploreQuery and add UserId
             var query = _mapper.Map<ExploreQuery>(request);
-            query = query with { UserId = userId };
-            
+            query = query with { UserId = userId, PaginationRequest = new PaginationRequest(request.PageNumber, request.PageSize) };
+
             var result = await _mediator.Send(query);
             _logger.LogInfo($"Explore Query Executed. Result: {result}");
 

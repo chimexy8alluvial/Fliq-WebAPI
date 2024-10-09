@@ -1,4 +1,5 @@
-﻿using Fliq.Domain.Entities.Profile;
+﻿using Fliq.Application.Common.Pagination;
+using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Enums;
 
 namespace Fliq.Application.Common.Interfaces.Persistence
@@ -9,6 +10,6 @@ namespace Fliq.Application.Common.Interfaces.Persistence
 
         UserProfile? GetUserProfileByUserId(int id);
 
-        IEnumerable<UserProfile> GetMatchedUserProfiles(int userId, List<ProfileType> userProfileTypes, bool? filterByDating, bool? filterByFriendship, int pageNumber,int pageSize);
+        IEnumerable<UserProfile> GetMatchedUserProfiles(int userId, List<ProfileType> userProfileTypes, bool? filterByDating, bool? filterByFriendship, PaginationRequest paginationRequest);
     }
 }

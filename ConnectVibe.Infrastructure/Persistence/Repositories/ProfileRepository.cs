@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Pagination;
 using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Enums;
 using Microsoft.Data.SqlClient;
@@ -39,28 +40,16 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         }
 
         public IEnumerable<UserProfile> GetMatchedUserProfiles(
-            int userId,
-            List<ProfileType> userProfileTypes,
-            bool? filterByDating,
-            bool? filterByFriendship,
-            int pageNumber,
-            int pageSize)
+        int userId,
+        List<ProfileType> userProfileTypes,
+        bool? filterByDating,
+        bool? filterByFriendship,
+        PaginationRequest paginationRequest)
         {
             using (var connection = _connectionFactory.CreateConnection())
             {
-                // Convert profile types to a comma-separated string
-                var profileTypesString = string.Join(",", userProfileTypes.Select(pt => pt.ToString()));
+                var parameters = CreateDynamicParameters(userId, userProfileTypes, filterByDating, filterByFriendship, paginationRequest);
 
-                // Define stored procedure parameters
-                var parameters = new DynamicParameters();
-                parameters.Add("@userId", userId);
-                parameters.Add("@profileTypes", profileTypesString);
-                parameters.Add("@filterByDating", filterByDating, DbType.Boolean);
-                parameters.Add("@filterByFriendship", filterByFriendship, DbType.Boolean);
-                parameters.Add("@pageNumber", pageNumber);
-                parameters.Add("@pageSize", pageSize);
-
-                // Call the stored procedure
                 var profiles = connection.Query<UserProfile>(
                     "sPGetMatchedUserProfiles",
                     parameters,
@@ -70,6 +59,20 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                 return profiles;
             }
         }
+
+        public static DynamicParameters CreateDynamicParameters(int userId, List<ProfileType> userProfileTypes, bool? filterByDating, bool? filterByFriendship, PaginationRequest paginationRequest)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@userId", userId);
+            parameters.Add("@profileTypes", string.Join(",", userProfileTypes.Select(pt => pt.ToString())));
+            parameters.Add("@filterByDating", filterByDating, DbType.Boolean);
+            parameters.Add("@filterByFriendship", filterByFriendship, DbType.Boolean);
+            parameters.Add("@pageNumber", paginationRequest.PageNumber);
+            parameters.Add("@pageSize", paginationRequest.PageSize);
+
+            return parameters;
+        }
+
 
 
     }

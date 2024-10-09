@@ -17,8 +17,7 @@ namespace Fliq.Application.Explore.Queries
         bool? FilterByEvent = null,
         bool? FilterByDating = null,
         bool? FilterByFriendship = null,
-        int PageNumber = 1,
-        int PageSize = 5
+        PaginationRequest PaginationRequest = default!
         ) : IRequest<ErrorOr<ExploreResult>>;
 
     public class ExploreQueryHandler : IRequestHandler<ExploreQuery, ErrorOr<ExploreResult>>
@@ -63,7 +62,7 @@ namespace Fliq.Application.Explore.Queries
             _logger.LogInfo($"Successfully fetched {profiles.Count()} profiles for user.");
             var totalCount = profiles.Count();
 
-            var paginatedProfiles = new PaginationResponse<UserProfile>(profiles, totalCount, query.PageNumber, query.PageSize);
+            var paginatedProfiles = new PaginationResponse<UserProfile>(profiles, totalCount, query.PaginationRequest.PageNumber, query.PaginationRequest.PageSize);
             
             return new ExploreResult(paginatedProfiles);
         }
