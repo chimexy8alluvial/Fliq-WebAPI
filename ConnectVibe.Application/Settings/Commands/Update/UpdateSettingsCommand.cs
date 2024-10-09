@@ -4,6 +4,7 @@ using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Settings.Common;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Settings;
+using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 
@@ -54,23 +55,19 @@ namespace Fliq.Application.Settings.Commands.Update
                 return Errors.Settings.SettingsNotFound;
             }
 
-            settings.ScreenMode = command.ScreenMode;
-            settings.RelationAvailability = command.RelationAvailability;
-            settings.ShowMusicAndGameStatus = command.ShowMusicAndGameStatus;
-            settings.Language = command.Language;
-            settings.NotificationPreferences = command.NotificationPreferences;
+            var updatedSettings = command.Adapt(settings);
 
-            _settingsRepository.Update(settings);
+            _settingsRepository.Update(updatedSettings);
             _logger.LogInfo($"Settings updated for user {user.Id}");
 
             return new GetSettingsResult(
-                settings.Id,
-                settings.ScreenMode,
-                settings.RelationAvailability,
-                settings.ShowMusicAndGameStatus,
-                settings.Language,
-                settings.NotificationPreferences.ToList(),
-                settings.Filter,
+                updatedSettings.Id,
+                updatedSettings.ScreenMode,
+                updatedSettings.RelationAvailability,
+                updatedSettings.ShowMusicAndGameStatus,
+                updatedSettings.Language,
+                updatedSettings.NotificationPreferences.ToList(),
+                updatedSettings.Filter,
                 user.FirstName + " " + user.LastName,
                 user.Email,
                 user.Id

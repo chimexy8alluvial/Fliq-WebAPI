@@ -2,9 +2,8 @@
 
 namespace Fliq.Domain.Entities.Settings
 {
-    public class Filter
+    public class Filter : Record
     {
-        public int Id { get; set; }
         public LookingFor LookingFor { get; set; }
         public AgeRange AgeRange { get; set; } = default!;
         public double Distance { get; set; }
@@ -13,6 +12,8 @@ namespace Fliq.Domain.Entities.Settings
         public List<EthnicityType> RacePreferences { get; set; } = new();
         public List<Vice> MyVices { get; set; } = new();
         public List<Vice> UnacceptableVices { get; set; } = new();
+        public Setting Setting { get; set; }
+        public int SettingId { get; set; }
     }
 
     public enum LookingFor
@@ -22,7 +23,7 @@ namespace Fliq.Domain.Entities.Settings
         Both
     }
 
-    public class AgeRange
+    public class AgeRange : Record
     {
         public int MinAge { get; set; }
         public int MaxAge { get; set; }
@@ -34,7 +35,7 @@ namespace Fliq.Domain.Entities.Settings
         }
     }
 
-    public class Vice
+    public class Vice : Record
     {
         public string Name { get; set; } = default!;
         public bool HaveVice { get; set; }

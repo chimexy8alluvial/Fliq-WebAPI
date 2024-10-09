@@ -1,4 +1,5 @@
 ﻿using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Profile.Queries.Get;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities;
@@ -14,6 +15,7 @@ namespace Fliq.Test.Profile.Queries.Get
         private Mock<IProfileRepository> _mockProfileRepository;
         private Mock<IUserRepository> _mockUserRepository;
         private Mock<IHttpContextAccessor> _mockHttpContextAccessor;
+        private Mock<ILoggerManager> _mockLoggerManager;
         private GetProfileQueryHandler _handler;
 
         [TestInitialize]
@@ -22,11 +24,13 @@ namespace Fliq.Test.Profile.Queries.Get
             _mockProfileRepository = new Mock<IProfileRepository>();
             _mockUserRepository = new Mock<IUserRepository>();
             _mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
+            _mockLoggerManager = new Mock<ILoggerManager>();
 
             _handler = new GetProfileQueryHandler(
                 _mockProfileRepository.Object,
                 _mockUserRepository.Object,
-                _mockHttpContextAccessor.Object
+                _mockHttpContextAccessor.Object,
+                _mockLoggerManager.Object
             );
         }
 

@@ -1,8 +1,7 @@
 ﻿namespace Fliq.Domain.Entities.Settings
 {
-    public class Setting
+    public class Setting : Record
     {
-        public int Id { get; set; }
         public ScreenMode ScreenMode { get; set; }
         public bool RelationAvailability { get; set; }
         public bool ShowMusicAndGameStatus { get; set; }
@@ -19,9 +18,8 @@
         Dark
     }
 
-    public class HelpCenter
+    public class HelpCenter : Record
     {
-        public int Id { get; set; }
         public int UserId { get; set; }
         public string Message { get; set; } = default!;
         public string FeedBackChannel { get; set; } = default!;
