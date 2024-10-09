@@ -1,8 +1,10 @@
-﻿using Fliq.Application.Common.Interfaces.Persistence;
+﻿using Dapper;
+using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Enums;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {
@@ -36,20 +38,39 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             return profile;
         }
 
-        public async Task<List<UserProfile>> GetProfilesByStoredProcedureAsync(int userId, List<ProfileType> userProfileTypes, bool? filterByDating, bool? filterByFriendship)
+        public IEnumerable<UserProfile> GetMatchedUserProfiles(
+            int userId,
+            List<ProfileType> userProfileTypes,
+            bool? filterByDating,
+            bool? filterByFriendship,
+            int pageNumber,
+            int pageSize)
         {
-            var profileTypesString = string.Join(",", userProfileTypes.Select(pt => pt.ToString()));
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                // Convert profile types to a comma-separated string
+                var profileTypesString = string.Join(",", userProfileTypes.Select(pt => pt.ToString()));
 
-            var userIdParam = new SqlParameter("@UserId", userId);
-            var profileTypesParam = new SqlParameter("@ProfileTypes", profileTypesString);
-            var filterByDatingParam = new SqlParameter("@FilterByDating", filterByDating ?? (object)DBNull.Value);
-            var filterByFriendshipParam = new SqlParameter("@FilterByFriendship", filterByFriendship ?? (object)DBNull.Value);
+                // Define stored procedure parameters
+                var parameters = new DynamicParameters();
+                parameters.Add("@userId", userId);
+                parameters.Add("@profileTypes", profileTypesString);
+                parameters.Add("@filterByDating", filterByDating, DbType.Boolean);
+                parameters.Add("@filterByFriendship", filterByFriendship, DbType.Boolean);
+                parameters.Add("@pageNumber", pageNumber);
+                parameters.Add("@pageSize", pageSize);
 
-            return await _dbContext.UserProfiles
-                .FromSqlRaw("EXEC GetUserProfiles @UserId, @ProfileTypes, @FilterByDating, @FilterByFriendship",
-                            userIdParam, profileTypesParam, filterByDatingParam, filterByFriendshipParam)
-                .ToListAsync();
+                // Call the stored procedure
+                var profiles = connection.Query<UserProfile>(
+                    "sPGetMatchedUserProfiles",
+                    parameters,
+                    commandType: CommandType.StoredProcedure
+                );
+
+                return profiles;
+            }
         }
+
 
     }
 }

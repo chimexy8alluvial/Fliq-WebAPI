@@ -20,25 +20,25 @@ namespace Fliq.Application.Explore.Common.Services
             if (userProfileTypes == null) return [];
 
             // Use repository to fetch profiles based on broad filters (e.g., friendship, dating)
-            var profiles = await _profileRepository.GetProfilesByStoredProcedureAsync(
+            var profiles = _profileRepository.GetMatchedUserProfiles(
                 user.Id,
                 userProfileTypes,
                 query.FilterByFriendship,
-                query.FilterByDating
+                query.FilterByDating,
+                query.PageNumber,
+                query.PageSize
             );
 
-            // Retrieve user's sexual orientation preference
-            var userSexPreferences = user.UserProfile?.SexualOrientation?.SexualOrientationType.ToString();
+            //// Retrieve user's sexual orientation preference
+            //var userSexPreferences = user.UserProfile?.SexualOrientation?.SexualOrientationType.ToString();
 
-            // Apply matching logic based on user's sexual orientation preference or others
-            var matchedProfiles = profiles.Where(profile =>
-                userSexPreferences == null || profile.SexualOrientation?.SexualOrientationType.ToString() == userSexPreferences
-            );
+            //// Apply matching logic based on user's sexual orientation preference or others
+            //var matchedProfiles = profiles.Where(profile =>
+            //    userSexPreferences == null || profile.SexualOrientation?.SexualOrientationType.ToString() == userSexPreferences
+            //);
 
             // Apply pagination
-            return matchedProfiles
-                .Skip((query.PageNumber - 1) * query.PageSize)
-                .Take(query.PageSize);
+            return profiles;
         }
 
     }

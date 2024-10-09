@@ -9,6 +9,6 @@ namespace Fliq.Application.Common.Interfaces.Persistence
 
         UserProfile? GetUserProfileByUserId(int id);
 
-        Task<List<UserProfile>> GetProfilesByStoredProcedureAsync(int userId, List<ProfileType> userProfileTypes, bool? filterByDating, bool? filterByFriendship);
+        IEnumerable<UserProfile> GetMatchedUserProfiles(int userId, List<ProfileType> userProfileTypes, bool? filterByDating, bool? filterByFriendship, int pageNumber,int pageSize);
     }
 }
