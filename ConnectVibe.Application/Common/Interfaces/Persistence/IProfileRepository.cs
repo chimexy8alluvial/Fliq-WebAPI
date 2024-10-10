@@ -8,8 +8,12 @@ namespace Fliq.Application.Common.Interfaces.Persistence
     {
         void Add(UserProfile userProfile);
 
+        void Update(UserProfile profile);
+
         UserProfile? GetUserProfileByUserId(int id);
 
         IEnumerable<UserProfile> GetMatchedUserProfiles(int userId, List<ProfileType> userProfileTypes, bool? filterByDating, bool? filterByFriendship, PaginationRequest paginationRequest);
+
+        UserProfile? GetProfileByUserId(int id);
     }
 }

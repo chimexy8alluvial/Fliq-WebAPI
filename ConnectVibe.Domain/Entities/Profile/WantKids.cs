@@ -1,8 +1,7 @@
 ﻿namespace Fliq.Domain.Entities.Profile
 {
-    public class WantKids
+    public class WantKids : Record
     {
-        public int Id { get; set; }
         public WantKidsType WantKidsType { get; set; }
         public bool IsVisible { get; set; }
     }

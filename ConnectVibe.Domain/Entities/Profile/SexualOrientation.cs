@@ -1,8 +1,7 @@
 ﻿namespace Fliq.Domain.Entities.Profile
 {
-    public class SexualOrientation
+    public class SexualOrientation : Record
     {
-        public int Id { get; set; }
         public SexualOrientationType SexualOrientationType { get; set; }
         public bool IsVisible { get; set; }
     }

@@ -22,13 +22,12 @@ namespace Fliq.Test.Profile.Commands.Create
         private Mock<IMapper> _mapperMock;
         private Mock<IImageService> _imageServiceMock;
         private Mock<IProfileRepository> _profileRepositoryMock;
+        private Mock<ISettingsRepository> _settingsRepositoryMock;
         private Mock<IUserRepository> _userRepositoryMock;
         private Mock<ILocationService> _locationServiceMock;
         private Mock<IHttpContextAccessor> _httpContextAccessorMock;
         private Mock<ISettingsRepository> _settingsRepositoryMock;
         private Mock<ClaimsPrincipal> _claimsPrincipalMock;
-        
-
 
         [TestInitialize]
         public void Setup()
@@ -36,6 +35,7 @@ namespace Fliq.Test.Profile.Commands.Create
             _mapperMock = new Mock<IMapper>();
             _imageServiceMock = new Mock<IImageService>();
             _profileRepositoryMock = new Mock<IProfileRepository>();
+            _settingsRepositoryMock = new Mock<ISettingsRepository>();
             _userRepositoryMock = new Mock<IUserRepository>();
             _locationServiceMock = new Mock<ILocationService>();
             _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
@@ -90,7 +90,7 @@ namespace Fliq.Test.Profile.Commands.Create
             // Arrange
 
             var location = new Location { Lat = 51.5074, Lng = -0.1278, IsVisible = true };
-           
+
             var command = new CreateProfileCommand
             {
                 DOB = DateTime.Now.AddYears(-25),
@@ -115,8 +115,6 @@ namespace Fliq.Test.Profile.Commands.Create
 
             _mapperMock.Setup(mapper => mapper.Map<UserProfile>(command))
                 .Returns(new UserProfile());
-
-           
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -176,7 +174,6 @@ namespace Fliq.Test.Profile.Commands.Create
                 Status = "OK"
             };
 
-
             _userRepositoryMock.Setup(repo => repo.GetUserById(It.IsAny<int>()))
                 .Returns(user);
 
@@ -233,8 +230,5 @@ namespace Fliq.Test.Profile.Commands.Create
 
             return fileMock.Object;
         }
-
     }
-
- 
 }

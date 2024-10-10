@@ -1,8 +1,7 @@
 ﻿namespace Fliq.Domain.Entities.Profile
 {
-    public class Gender
+    public class Gender : Record
     {
-        public int Id { get; set; }
         public GenderType GenderType { get; set; }
         public bool IsVisible { get; set; }
     }

@@ -2,10 +2,7 @@
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Pagination;
 using Fliq.Domain.Entities.Profile;
-using Fliq.Domain.Enums;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using System.Data;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {
@@ -30,6 +27,13 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             {
                 _dbContext.Add(userProfile);
             }
+            _dbContext.SaveChanges();
+        }
+
+        public void Update(UserProfile profile)
+        {
+            _dbContext.Update(profile);
+
             _dbContext.SaveChanges();
         }
 
@@ -75,5 +79,19 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
 
 
+
+        public UserProfile? GetProfileByUserId(int id)
+        {
+            var query = _dbContext.UserProfiles.AsQueryable();
+
+            // Use reflection to include all navigation properties
+            foreach (var property in _dbContext.Model.FindEntityType(typeof(UserProfile)).GetNavigations())
+            {
+                query = query.Include(property.Name);
+            }
+
+            var profile = query.SingleOrDefault(p => p.UserId == id);
+            return profile;
+        }
     }
 }

@@ -1,11 +1,9 @@
-﻿using Fliq.Domain.Entities.Profile;
-using Fliq.Domain.Enums;
+﻿using Fliq.Domain.Enums;
 
 namespace Fliq.Domain.Entities.Profile
 {
-    public class UserProfile
+    public class UserProfile : Record
     {
-        public int Id { get; set; }
         public DateTime DOB { get; set; }
         public Gender Gender { get; set; } = default!;
         public string? ProfileDescription { get; set; }  //Nullable

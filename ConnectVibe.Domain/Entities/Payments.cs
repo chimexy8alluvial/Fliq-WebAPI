@@ -1,9 +1,7 @@
 ﻿namespace Fliq.Domain.Entities
 {
-    public class Payment
+    public class Payment : Record
     {
-        public int Id { get; set; }
-
         public int UserId { get; set; }
 
         public PaymentProvider Provider { get; set; }

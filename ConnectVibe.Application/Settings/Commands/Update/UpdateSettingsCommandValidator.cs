@@ -1,10 +1,5 @@
 ﻿using Fliq.Domain.Entities.Settings;
 using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Fliq.Application.Settings.Commands.Update
 {
@@ -24,9 +19,6 @@ namespace Fliq.Application.Settings.Commands.Update
 
             RuleForEach(x => x.NotificationPreferences)
                 .SetValidator(new NotificationPreferenceValidator());
-
-            RuleFor(x => x.UserId)
-                .GreaterThan(0).WithMessage("UserId must be greater than 0.");
         }
     }
 

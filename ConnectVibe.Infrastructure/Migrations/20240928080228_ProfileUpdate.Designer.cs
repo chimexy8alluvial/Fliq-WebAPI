@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fliq.Infrastructure.Migrations
 {
     [DbContext(typeof(FliqDbContext))]
-    [Migration("20240923184623_ProfileUpdate")]
+    [Migration("20240928080228_ProfileUpdate")]
     partial class ProfileUpdate
     {
         /// <inheritdoc />
@@ -57,6 +57,61 @@ namespace Fliq.Infrastructure.Migrations
                     b.ToTable("OTPs");
                 });
 
+            modelBuilder.Entity("Fliq.Domain.Entities.Payment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Environment")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ExpirationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Method")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("PaymentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ProductId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Provider")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TransactionId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Payments");
+                });
+
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.AddressComponent", b =>
                 {
                     b.Property<int>("Id")
@@ -85,6 +140,25 @@ namespace Fliq.Infrastructure.Migrations
                     b.HasIndex("LocationResultId");
 
                     b.ToTable("AddressComponent");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.Profile.EducationStatus", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("EducationLevel")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsVisible")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("EducationStatus");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.Ethnicity", b =>
@@ -265,6 +339,26 @@ namespace Fliq.Infrastructure.Migrations
                     b.ToTable("Locationn");
                 });
 
+            modelBuilder.Entity("Fliq.Domain.Entities.Profile.Occupation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsVisible")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("OccupationName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Occupation");
+                });
+
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.ProfilePhoto", b =>
                 {
                     b.Property<int>("Id")
@@ -429,7 +523,7 @@ namespace Fliq.Infrastructure.Migrations
                     b.ToTable("WantKids");
                 });
 
-            modelBuilder.Entity("Fliq.Domain.Entities.User", b =>
+            modelBuilder.Entity("Fliq.Domain.Entities.Settings.NotificationPreference", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -437,39 +531,27 @@ namespace Fliq.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("DisplayName")
+                    b.Property<string>("Context")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsEmailValidated")
+                    b.Property<bool>("InAppNotification")
                         .HasColumnType("bit");
 
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("PushNotification")
+                        .HasColumnType("bit");
 
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PasswordSalt")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("SettingId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.HasIndex("SettingId");
+
+                    b.ToTable("NotificationPreference");
                 });
 
-            modelBuilder.Entity("Fliq.Domain.Entities.Payment", b =>
+            modelBuilder.Entity("Fliq.Domain.Entities.Settings.Setting", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -477,41 +559,18 @@ namespace Fliq.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Currency")
+                    b.Property<string>("Language")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime2");
+                    b.Property<bool>("RelationAvailability")
+                        .HasColumnType("bit");
 
-                    b.Property<int>("Environment")
+                    b.Property<int>("ScreenMode")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("ExpirationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Method")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("PaymentDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("ProductId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Provider")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<string>("TransactionId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("ShowMusicAndGameStatus")
+                        .HasColumnType("bit");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -520,46 +579,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Payments");
-                });
-
-            modelBuilder.Entity("Fliq.Domain.Entities.Profile.EducationStatus", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("EducationLevel")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsVisible")
-                        .HasColumnType("bit");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("EducationStatus");
-                });
-
-            modelBuilder.Entity("Fliq.Domain.Entities.Profile.Occupation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("IsVisible")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("OccupationName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Occupation");
+                    b.ToTable("Settings");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Subscription", b =>
@@ -605,6 +625,46 @@ namespace Fliq.Infrastructure.Migrations
                     b.ToTable("Subscriptions");
                 });
 
+            modelBuilder.Entity("Fliq.Domain.Entities.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsEmailValidated")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PasswordSalt")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+                });
+
             modelBuilder.Entity("Fliq.Domain.Entities.OTP", b =>
                 {
                     b.HasOne("Fliq.Domain.Entities.User", "User")
@@ -614,6 +674,15 @@ namespace Fliq.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.Payment", b =>
+                {
+                    b.HasOne("Fliq.Domain.Entities.User", null)
+                        .WithMany("Payments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.AddressComponent", b =>
@@ -744,13 +813,22 @@ namespace Fliq.Infrastructure.Migrations
                     b.Navigation("WantKids");
                 });
 
-            modelBuilder.Entity("Fliq.Domain.Entities.Payment", b =>
+            modelBuilder.Entity("Fliq.Domain.Entities.Settings.NotificationPreference", b =>
                 {
-                    b.HasOne("Fliq.Domain.Entities.User", null)
-                        .WithMany("Payments")
+                    b.HasOne("Fliq.Domain.Entities.Settings.Setting", null)
+                        .WithMany("NotificationPreferences")
+                        .HasForeignKey("SettingId");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.Settings.Setting", b =>
+                {
+                    b.HasOne("Fliq.Domain.Entities.User", "User")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Subscription", b =>
@@ -781,6 +859,11 @@ namespace Fliq.Infrastructure.Migrations
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.UserProfile", b =>
                 {
                     b.Navigation("Photos");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.Settings.Setting", b =>
+                {
+                    b.Navigation("NotificationPreferences");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.User", b =>
