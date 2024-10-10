@@ -6,6 +6,7 @@ using Moq;
 using ConnectVibe.Domain.Common.Errors;
 using ConnectVibe.Domain.Entities;
 using ConnectVibe.Application.Authentication.Common;
+using ConnectVibe.Application.Common.Interfaces.Services;
 
 namespace ConnectVibe.Test.Authentication.Queries.FacebookLogin
 {
@@ -16,6 +17,7 @@ namespace ConnectVibe.Test.Authentication.Queries.FacebookLogin
         private Mock<IJwtTokenGenerator> _jwtTokenGeneratorMock;
         private Mock<IUserRepository> _userRepositoryMock;
         private Mock<ISocialAuthService> _socialAuthServiceMock;
+        private Mock<ILoggerManager> _loggerManagerMock;
 
         [TestInitialize]
         public void Setup()
@@ -23,11 +25,13 @@ namespace ConnectVibe.Test.Authentication.Queries.FacebookLogin
             _jwtTokenGeneratorMock = new Mock<IJwtTokenGenerator>();
             _userRepositoryMock = new Mock<IUserRepository>();
             _socialAuthServiceMock = new Mock<ISocialAuthService>();
+            _loggerManagerMock = new Mock<ILoggerManager>();
 
             _handler = new FacebookLoginQueryHandler(
                 _jwtTokenGeneratorMock.Object,
                 _userRepositoryMock.Object,
-                _socialAuthServiceMock.Object);
+                _socialAuthServiceMock.Object,
+                _loggerManagerMock.Object);
         }
 
         [TestMethod]

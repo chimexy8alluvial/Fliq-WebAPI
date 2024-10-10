@@ -19,6 +19,7 @@ namespace ConnectVibe.Test.Authentication.Commands.Register
         private Mock<IEmailService> _emailServiceMock;
         private Mock<IOtpRepository> _otpRepositoryMock;
         private Mock<IOtpService> _otpServiceMock;
+        private Mock<ILoggerManager> _loggerManagerMock;
 
         [TestInitialize]
         public void Setup()
@@ -29,6 +30,7 @@ namespace ConnectVibe.Test.Authentication.Commands.Register
             _emailServiceMock = new Mock<IEmailService>();
             _otpRepositoryMock = new Mock<IOtpRepository>();
             _otpServiceMock = new Mock<IOtpService>();
+            _loggerManagerMock = new Mock<ILoggerManager>();
 
             _handler = new RegisterCommandHandler(
                 _jwtTokenGeneratorMock.Object,
@@ -36,7 +38,8 @@ namespace ConnectVibe.Test.Authentication.Commands.Register
                 _mapperMock.Object,
                 _emailServiceMock.Object,
                 _otpRepositoryMock.Object,
-                _otpServiceMock.Object);
+                _otpServiceMock.Object,
+                _loggerManagerMock.Object);
         }
 
         [TestMethod]
