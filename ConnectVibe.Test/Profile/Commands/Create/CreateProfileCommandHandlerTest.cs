@@ -26,7 +26,6 @@ namespace Fliq.Test.Profile.Commands.Create
         private Mock<IUserRepository> _userRepositoryMock;
         private Mock<ILocationService> _locationServiceMock;
         private Mock<IHttpContextAccessor> _httpContextAccessorMock;
-        private Mock<ISettingsRepository> _settingsRepositoryMock;
         private Mock<ClaimsPrincipal> _claimsPrincipalMock;
 
         [TestInitialize]

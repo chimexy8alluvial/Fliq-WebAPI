@@ -2,7 +2,9 @@
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Pagination;
 using Fliq.Domain.Entities.Profile;
+using Fliq.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {
