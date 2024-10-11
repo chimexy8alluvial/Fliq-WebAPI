@@ -1,20 +1,10 @@
 ﻿using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
-using Fliq.Application.Common.Pagination;
-using Fliq.Application.Explore.Common;
 using Fliq.Application.Explore.Common.Services;
-using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Common.Errors;
 using MediatR;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Fliq.Application.Explore.Queries
 {
@@ -58,7 +48,7 @@ namespace Fliq.Application.Explore.Queries
 
             // Fetch events for user based on filters
             _logger.LogInfo($"Fetching events for user --> {user.Id}");
-            
+
             return new ExploreEventsResult();
         }
     }
