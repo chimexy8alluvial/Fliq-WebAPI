@@ -1,4 +1,5 @@
-﻿using Fliq.Contracts.Profile;
+﻿using Fliq.Application.Common.Pagination;
+using Fliq.Contracts.Profile;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,8 +8,8 @@ using System.Threading.Tasks;
 
 namespace Fliq.Contracts.Explore
 {
-    public record ExploreResponse(IEnumerable<ProfileResponse> UserProfiles,
-        int TotalCount,
-        int PageNumber,
-        int PageSize);
+    public record ExploreResponse(PaginationResponse<ProfileResponse> UserProfiles);
+        //int TotalCount,
+        //int PageNumber,
+        //int PageSize);
 }

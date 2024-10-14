@@ -4,6 +4,7 @@ using Fliq.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fliq.Infrastructure.Migrations
 {
     [DbContext(typeof(FliqDbContext))]
-    partial class FliqDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241012110407_UpdateSPGetMatchedUserProfiles")]
+    partial class UpdateSPGetMatchedUserProfiles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -609,10 +612,9 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<string>("ProfileDescription")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ProfileTypeJson")
+                    b.Property<string>("ProfileTypes")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("ProfileTypes");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ReligionId")
                         .HasColumnType("int");

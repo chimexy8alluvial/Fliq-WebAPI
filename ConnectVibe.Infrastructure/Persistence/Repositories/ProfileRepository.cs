@@ -4,6 +4,7 @@ using Fliq.Application.Common.Pagination;
 using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Data;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
@@ -82,9 +83,17 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
         private static DynamicParameters CreateDynamicParameters(int userId, List<ProfileType> userProfileTypes, bool? filterByDating, bool? filterByFriendship, PaginationRequest paginationRequest)
         {
+            string serializedProfileTypes = JsonConvert.SerializeObject(userProfileTypes);
+            Console.WriteLine(serializedProfileTypes);
+
             var parameters = new DynamicParameters();
+
             parameters.Add("@userId", userId);
-            parameters.Add("@profileTypes", string.Join(",", userProfileTypes.Select(pt => pt.ToString())));
+
+            // Convert ProfileType enum values to integers and join them as a comma-separated string
+           // var profileTypeIds = string.Join(",", userProfileTypes.Select(pt => ((int)pt).ToString()));
+            parameters.Add("@profileTypes", serializedProfileTypes);  // Comma-separated list of integers
+
             parameters.Add("@filterByDating", filterByDating, DbType.Boolean);
             parameters.Add("@filterByFriendship", filterByFriendship, DbType.Boolean);
             parameters.Add("@pageNumber", paginationRequest.PageNumber);

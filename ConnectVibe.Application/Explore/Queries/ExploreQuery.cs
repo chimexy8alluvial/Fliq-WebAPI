@@ -50,7 +50,9 @@ namespace Fliq.Application.Explore.Queries
                 return Errors.User.UserNotFound;
             }
 
-            if(user.UserProfile == null)
+            var userProfile = _profileRepository.GetProfileByUserId(query.UserId);
+
+            if(userProfile == null)
             {
                 _logger.LogWarn($"UserProfile not found for user {user.Id}");
                 return Errors.Profile.ProfileNotFound;

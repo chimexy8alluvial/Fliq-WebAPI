@@ -14,9 +14,9 @@ namespace Fliq.Api.Mapping
             config.NewConfig<ExploreResult, ExploreResponse>()
                 .Map(dest => dest.UserProfiles, src =>
                     src.UserProfiles.Adapt<IEnumerable<ProfileResponse>>())
-                .Map(dest => dest.TotalCount, src => src.UserProfiles.TotalCount)
-                .Map(dest => dest.PageNumber, src => src.UserProfiles.PageNumber)
-                .Map(dest => dest.PageSize, src => src.UserProfiles.PageSize);
+                .Map(dest => dest.UserProfiles.TotalCount, src => src.UserProfiles.TotalCount)
+                .Map(dest => dest.UserProfiles.PageNumber, src => src.UserProfiles.PageNumber)
+                .Map(dest => dest.UserProfiles.PageSize, src => src.UserProfiles.PageSize);
 
             config.NewConfig<ExploreQuery, ExploreRequest>();
 
