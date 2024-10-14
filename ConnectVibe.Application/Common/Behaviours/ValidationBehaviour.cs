@@ -2,7 +2,7 @@
 using FluentValidation;
 using MediatR;
 
-namespace ConnectVibe.Application.Common.Behaviours
+namespace Fliq.Application.Common.Behaviours
 {
     public class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
         where TRequest : IRequest<TResponse>

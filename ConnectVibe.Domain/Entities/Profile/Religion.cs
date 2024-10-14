@@ -1,8 +1,7 @@
-﻿namespace ConnectVibe.Domain.Entities.Profile
+﻿namespace Fliq.Domain.Entities.Profile
 {
-    public class Religion
+    public class Religion : Record
     {
-        public int Id { get; set; }
         public ReligionType ReligionType { get; set; }
         public bool IsVisible { get; set; }
     }

@@ -1,11 +1,6 @@
-﻿using ConnectVibe.Application.Common.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Fliq.Application.Common.Models;
 
-namespace ConnectVibe.Application.Common.Interfaces.Services.LocationServices
+namespace Fliq.Application.Common.Interfaces.Services.LocationServices
 {
     public interface ILocationService
     {

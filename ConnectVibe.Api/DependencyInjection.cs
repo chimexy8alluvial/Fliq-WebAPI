@@ -1,8 +1,8 @@
-﻿using ConnectVibe.Api.Common.Errors;
-using ConnectVibe.Api.Mapping;
+﻿using Fliq.Api.Common.Errors;
+using Fliq.Api.Mapping;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 
-namespace ConnectVibe.Api
+namespace Fliq.Api
 {
     public static class DependencyInjection
     {
@@ -11,7 +11,7 @@ namespace ConnectVibe.Api
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
             services.AddControllers();
-            services.AddSingleton<ProblemDetailsFactory, ConnectVibeProblemDetailsFactory>();
+            services.AddSingleton<ProblemDetailsFactory, FliqProblemDetailsFactory>();
             services.AddMappings();
             return services;
         }

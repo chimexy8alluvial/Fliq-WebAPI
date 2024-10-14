@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using System.Text;
 
-namespace ConnectVibe.Application.Common.Security
+namespace Fliq.Application.Common.Security
 {
     public class PasswordHash
     {

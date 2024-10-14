@@ -1,17 +1,17 @@
-﻿using ConnectVibe.Application.Authentication.Common;
-using ConnectVibe.Application.Common.Interfaces.Authentication;
-using ConnectVibe.Application.Common.Interfaces.Persistence;
-using ConnectVibe.Application.Common.Interfaces.Services;
-using ConnectVibe.Application.Common.Security;
-//using ConnectVibe.Domain.Common.Errors;
-using ConnectVibe.Domain.Entities;
+﻿using Fliq.Application.Authentication.Common;
+using Fliq.Application.Common.Interfaces.Authentication;
+using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.Common.Security;
+using Fliq.Domain.Common.Errors;
+using Fliq.Domain.Entities;
 using ErrorOr;
 using Fliq.Domain.Common.Errors;
 using MapsterMapper;
 using MediatR;
 
 
-namespace ConnectVibe.Application.Authentication.Commands.Register
+namespace Fliq.Application.Authentication.Commands.Register
 {
     public record RegisterCommand(
     string FirstName,

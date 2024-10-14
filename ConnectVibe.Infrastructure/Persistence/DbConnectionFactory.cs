@@ -1,9 +1,9 @@
-﻿using ConnectVibe.Application.Common.Interfaces.Persistence;
+﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using System.Data;
 
-namespace ConnectVibe.Infrastructure.Persistence
+namespace Fliq.Infrastructure.Persistence
 {
     public class DbConnectionFactory : IDbConnectionFactory
     {
@@ -11,7 +11,7 @@ namespace ConnectVibe.Infrastructure.Persistence
 
         public DbConnectionFactory(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("ConnectVibeDbContext")?? throw new InvalidOperationException("Connection string 'ConnectVibeDbContext' not found.");
+            _connectionString = configuration.GetConnectionString("FliqDbContext")?? throw new InvalidOperationException("Connection string 'FliqDbContext' not found.");
         }
 
         public IDbConnection CreateConnection()

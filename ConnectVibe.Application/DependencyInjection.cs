@@ -1,9 +1,9 @@
-﻿using ConnectVibe.Application.Common.Behaviours;
+﻿using Fliq.Application.Common.Behaviours;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
-namespace ConnectVibe.Application
+namespace Fliq.Application
 {
     public static class DependencyInjection
     {

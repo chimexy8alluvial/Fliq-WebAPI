@@ -1,10 +1,9 @@
-﻿using ConnectVibe.Domain.Entities.Profile;
+﻿using Fliq.Domain.Entities.Profile;
 
-namespace ConnectVibe.Domain.Entities
+namespace Fliq.Domain.Entities
 {
-    public class User
+    public class User : Record
     {
-        public int Id { get; set; }
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public string DisplayName { get; set; } = string.Empty;
@@ -15,5 +14,7 @@ namespace ConnectVibe.Domain.Entities
         public bool IsDocumentVerified { get; set; }
 
         public UserProfile? UserProfile { get; set; }
+        public List<Payment>? Payments { get; set; }
+        public List<Subscription>? Subscriptions { get; set; }
     }
 }

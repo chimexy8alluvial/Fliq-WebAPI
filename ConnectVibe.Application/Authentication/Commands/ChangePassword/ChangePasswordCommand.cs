@@ -1,15 +1,14 @@
-﻿using ConnectVibe.Application.Common.Interfaces.Authentication;
-using ConnectVibe.Application.Common.Interfaces.Persistence;
-using ConnectVibe.Application.Common.Interfaces.Services;
-using ConnectVibe.Application.Common.Security;
-using ConnectVibe.Domain.Common.Errors;
+﻿using Fliq.Application.Common.Interfaces.Authentication;
+using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.Common.Security;
+using Fliq.Domain.Common.Errors;
 using ErrorOr;
 using MapsterMapper;
 using MediatR;
 using Newtonsoft.Json;
 
-
-namespace ConnectVibe.Application.Authentication.Commands.ChangePassword
+namespace Fliq.Application.Authentication.Commands.ChangePassword
 {
     public record ChangePasswordCommand(
         string Email,
@@ -26,6 +25,7 @@ namespace ConnectVibe.Application.Authentication.Commands.ChangePassword
         private readonly IOtpRepository _otpRepository;
         private readonly IOtpService _otpService;
         private readonly ILoggerManager _logger;
+
         public ChangePasswordQueryHandler(IJwtTokenGenerator jwtTokenGenerator, IUserRepository userRepository, IMapper mapper, IEmailService emailService, IOtpRepository otpRepository, IOtpService otpService, ILoggerManager logger)
         {
             _jwtTokenGenerator = jwtTokenGenerator;
@@ -36,6 +36,7 @@ namespace ConnectVibe.Application.Authentication.Commands.ChangePassword
             _otpService = otpService;
             _logger = logger;
         }
+
         public async Task<ErrorOr<bool>> Handle(ChangePasswordCommand command, CancellationToken cancellationToken)
         {
             await Task.CompletedTask;

@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ConnectVibe.Api\Fliq.Api.csproj" />
     <ProjectReference Include="..\ConnectVibe.Application\Fliq.Application.csproj" />
   </ItemGroup>
 

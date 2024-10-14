@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ConnectVibe.Domain.Entities;
+using Fliq.Domain.Entities;
 
-namespace ConnectVibe.Application.Authentication.Common
+namespace Fliq.Application.Authentication.Common
 {
     public record ValidatePasswordOTPResult
     (

@@ -1,12 +1,12 @@
-﻿using ConnectVibe.Application.Authentication.Queries.Login;
-using ConnectVibe.Application.Common.Interfaces.Authentication;
-using ConnectVibe.Application.Common.Interfaces.Persistence;
-using ConnectVibe.Application.Common.Security;
+﻿using Fliq.Application.Authentication.Queries.Login;
+using Fliq.Application.Common.Interfaces.Authentication;
+using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Security;
 using Moq;
-using ConnectVibe.Domain.Common.Errors;
-using ConnectVibe.Domain.Entities;
-using ConnectVibe.Application.Common.Interfaces.Services;
-namespace ConnectVibe.Test.Authentication.Queries.Login
+using Fliq.Domain.Common.Errors;
+using Fliq.Domain.Entities;
+using Fliq.Application.Common.Interfaces.Services;
+namespace Fliq.Test.Authentication.Queries.Login
 {
     [TestClass]
     public class LoginQueryHandlerTests

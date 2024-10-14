@@ -1,12 +1,12 @@
-﻿using ConnectVibe.Application.Authentication.Common;
-using ConnectVibe.Application.Common.Interfaces.Authentication;
-using ConnectVibe.Application.Common.Interfaces.Persistence;
-using ConnectVibe.Application.Common.Interfaces.Services;
-using ConnectVibe.Domain.Common.Errors;
+﻿using Fliq.Application.Authentication.Common;
+using Fliq.Application.Common.Interfaces.Authentication;
+using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Domain.Common.Errors;
 using ErrorOr;
 using MapsterMapper;
 using MediatR;
-namespace ConnectVibe.Application.Authentication.Commands.ValidatePasswordOTP
+namespace Fliq.Application.Authentication.Commands.ValidatePasswordOTP
 {
     public record ValidatePasswordOTPCommand(
        string Email,

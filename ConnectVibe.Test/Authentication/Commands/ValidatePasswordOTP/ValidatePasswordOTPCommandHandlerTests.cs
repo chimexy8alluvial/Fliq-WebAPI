@@ -1,14 +1,14 @@
-﻿using ConnectVibe.Application.Authentication.Commands.ValidatePasswordOTP;
-using ConnectVibe.Application.Common.Interfaces.Authentication;
-using ConnectVibe.Application.Common.Interfaces.Persistence;
-using ConnectVibe.Application.Common.Interfaces.Services;
-using ConnectVibe.Domain.Common.Errors;
-using ConnectVibe.Domain.Entities;
+﻿using Fliq.Application.Authentication.Commands.ValidatePasswordOTP;
+using Fliq.Application.Common.Interfaces.Authentication;
+using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Domain.Common.Errors;
+using Fliq.Domain.Entities;
 using MapsterMapper;
 using Moq;
 
 
-namespace ConnectVibe.Test.Authentication.Commands.ValidatePasswordOTP
+namespace Fliq.Test.Authentication.Commands.ValidatePasswordOTP
 {
     [TestClass]
     public class ValidatePasswordOTPCommandHandlerTests

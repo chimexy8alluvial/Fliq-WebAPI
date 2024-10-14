@@ -1,6 +1,6 @@
-@ConnectVibe.Api_HostAddress = http://localhost:5209
+@Fliq.Api_HostAddress = http://localhost:5209
 
-GET {{ConnectVibe.Api_HostAddress}}/weatherforecast/
+GET {{Fliq.Api_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###

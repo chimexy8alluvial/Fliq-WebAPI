@@ -1,20 +1,20 @@
-﻿using ConnectVibe.Application.Common.Interfaces.Authentication;
-using ConnectVibe.Application.Common.Interfaces.Persistence;
-using ConnectVibe.Application.Common.Interfaces.Services;
-using ConnectVibe.Application.Common.Interfaces.Services.AuthServices;
-using ConnectVibe.Application.Common.Interfaces.Services.ImageServices;
-using ConnectVibe.Application.Common.Interfaces.Services.LocationServices;
-using ConnectVibe.Infrastructure.Authentication;
-using ConnectVibe.Infrastructure.Persistence;
-using ConnectVibe.Infrastructure.Persistence.Repositories;
-using ConnectVibe.Infrastructure.Services;
-using ConnectVibe.Infrastructure.Services.AuthServices;
-using ConnectVibe.Infrastructure.Services.ImageServices;
-using ConnectVibe.Infrastructure.Services.LocationServices;
+﻿using Fliq.Application.Common.Interfaces.Authentication;
 using Fliq.Application.Common.Interfaces.Persistence;
-using Fliq.Application.Common.Interfaces.Services.DocumentServices;
+using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.Common.Interfaces.Services.AuthServices;
+using Fliq.Application.Common.Interfaces.Services.ImageServices;
+using Fliq.Application.Common.Interfaces.Services.LocationServices;
+using Fliq.Application.Common.Interfaces.Services.PaymentServices;
+using Fliq.Application.Common.Interfaces.Services.SubscriptionServices;
+using Fliq.Infrastructure.Authentication;
+using Fliq.Infrastructure.Persistence;
 using Fliq.Infrastructure.Persistence.Repositories;
-using Fliq.Infrastructure.Services.DocumentService;
+using Fliq.Infrastructure.Services;
+using Fliq.Infrastructure.Services.AuthServices;
+using Fliq.Infrastructure.Services.ImageServices;
+using Fliq.Infrastructure.Services.LocationServices;
+using Fliq.Infrastructure.Services.PaymentServices;
+using Fliq.Infrastructure.Services.SubscriptionServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -22,7 +22,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
-namespace ConnectVibe.Infrastructure
+namespace Fliq.Infrastructure
 {
     public static class DependencyInjection
     {
@@ -32,18 +32,21 @@ namespace ConnectVibe.Infrastructure
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IProfileRepository, ProfileRepository>();
-            services.AddScoped<IEventRepository, EventRepository>();
-            services.AddScoped<IMediaServices, MediaService>();
             services.AddScoped<ISocialAuthService, SocialAuthService>();
             services.AddScoped<IOtpRepository, OtpRepository>();
+            services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+            services.AddScoped<IPaymentRepository, PaymentRepository>();
+            services.AddScoped<ISettingsRepository, SettingsRepository>();
             services.AddScoped<IImageService, ImageService>();
             services.AddScoped<ILocationService, LocationService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddSingleton<ILoggerManager, LoggerManager>();
             services.AddScoped<IOtpService, OtpService>();
+            services.AddScoped<ISubscriptionService, SubscriptionService>();
+            services.AddScoped<IRevenueCatServices, RevenueCatServices>();
             services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
-            services.AddDbContext<ConnectVibeDbContext>(options =>
-    options.UseSqlServer(configurationManager.GetConnectionString("ConnectVibeDbContext") ?? throw new InvalidOperationException("Connection string 'ConnectVibeDbContext' not found.")));
+            services.AddDbContext<FliqDbContext>(options =>
+    options.UseSqlServer(configurationManager.GetConnectionString("FliqDbContext") ?? throw new InvalidOperationException("Connection string 'FliqDbContext' not found.")));
             return services;
         }
 

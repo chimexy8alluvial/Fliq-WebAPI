@@ -1,6 +1,6 @@
-﻿using ConnectVibe.Domain.Entities;
+﻿using Fliq.Domain.Entities;
 
-namespace ConnectVibe.Application.Common.Interfaces.Authentication
+namespace Fliq.Application.Common.Interfaces.Authentication
 {
     public interface IJwtTokenGenerator
     {

@@ -1,12 +1,12 @@
-﻿using ConnectVibe.Application.Authentication.Commands.Register;
-using ConnectVibe.Application.Authentication.Common;
-using ConnectVibe.Application.Authentication.Queries.FacebookLogin;
-using ConnectVibe.Application.Authentication.Queries.GoogleLogin;
-using ConnectVibe.Application.Authentication.Queries.Login;
-using ConnectVibe.Contracts.Authentication;
+﻿using Fliq.Application.Authentication.Commands.Register;
+using Fliq.Application.Authentication.Common;
+using Fliq.Application.Authentication.Queries.FacebookLogin;
+using Fliq.Application.Authentication.Queries.GoogleLogin;
+using Fliq.Application.Authentication.Queries.Login;
+using Fliq.Contracts.Authentication;
 using Mapster;
 
-namespace ConnectVibe.Api.Mapping
+namespace Fliq.Api.Mapping
 {
     public class AuthenticationMappingConfig : IRegister
     {

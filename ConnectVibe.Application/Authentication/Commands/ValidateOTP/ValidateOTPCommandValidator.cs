@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace ConnectVibe.Application.Authentication.Commands.ValidateOTP
+namespace Fliq.Application.Authentication.Commands.ValidateOTP
 {
     public class ValidateOTPCommandValidator : AbstractValidator<ValidateOTPCommand>
     {

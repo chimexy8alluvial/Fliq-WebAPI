@@ -1,14 +1,14 @@
-﻿using ConnectVibe.Application.Authentication.Commands.ChangePassword;
-using ConnectVibe.Application.Common.Interfaces.Authentication;
-using ConnectVibe.Application.Common.Interfaces.Persistence;
-using ConnectVibe.Application.Common.Interfaces.Services;
-using ConnectVibe.Application.Common.Security;
+﻿using Fliq.Application.Authentication.Commands.ChangePassword;
+using Fliq.Application.Common.Interfaces.Authentication;
+using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.Common.Security;
 using MapsterMapper;
 using Moq;
-using ConnectVibe.Domain.Common.Errors;
-using ConnectVibe.Domain.Entities;
+using Fliq.Domain.Common.Errors;
+using Fliq.Domain.Entities;
 
-namespace ConnectVibe.Test.Authentication.Commands.ChangePassword
+namespace Fliq.Test.Authentication.Commands.ChangePassword
 {
     [TestClass]
     public class ChangePasswordQueryHandlerTests
@@ -31,7 +31,8 @@ namespace ConnectVibe.Test.Authentication.Commands.ChangePassword
             _emailServiceMock = new Mock<IEmailService>();
             _otpRepositoryMock = new Mock<IOtpRepository>();
             _otpServiceMock = new Mock<IOtpService>();
-            _loggerManagerMock = new Mock<ILoggerManager> ();
+            _loggerManagerMock = new Mock<ILoggerManager>();
+            
 
             _handler = new ChangePasswordQueryHandler(
                 _jwtTokenGeneratorMock.Object,

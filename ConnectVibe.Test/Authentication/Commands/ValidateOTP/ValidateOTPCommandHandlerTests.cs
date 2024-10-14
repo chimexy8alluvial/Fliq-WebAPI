@@ -1,13 +1,13 @@
-﻿using ConnectVibe.Application.Authentication.Commands.ValidateOTP;
-using ConnectVibe.Application.Common.Interfaces.Authentication;
-using ConnectVibe.Application.Common.Interfaces.Persistence;
-using ConnectVibe.Application.Common.Interfaces.Services;
+﻿using Fliq.Application.Authentication.Commands.ValidateOTP;
+using Fliq.Application.Common.Interfaces.Authentication;
+using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Interfaces.Services;
 using MapsterMapper;
 using Moq;
-using ConnectVibe.Domain.Common.Errors;
-using ConnectVibe.Domain.Entities;
+using Fliq.Domain.Common.Errors;
+using Fliq.Domain.Entities;
 
-namespace ConnectVibe.Test.Authentication.Commands.ValidateOTP
+namespace Fliq.Test.Authentication.Commands.ValidateOTP
 {
     [TestClass]
     public class ValidateOTPCommandHandlerTests
@@ -29,6 +29,7 @@ namespace ConnectVibe.Test.Authentication.Commands.ValidateOTP
             _emailServiceMock = new Mock<IEmailService>();
             _otpServiceMock = new Mock<IOtpService>();
             _loggerManagerMock = new Mock<ILoggerManager>();
+            
 
             _handler = new ValidateOTPCommandHandler(
                 _jwtTokenGeneratorMock.Object,

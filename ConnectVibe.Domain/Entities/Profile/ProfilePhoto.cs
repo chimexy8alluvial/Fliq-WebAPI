@@ -1,8 +1,7 @@
-﻿namespace ConnectVibe.Domain.Entities.Profile
+﻿namespace Fliq.Domain.Entities.Profile
 {
-    public class ProfilePhoto
+    public class ProfilePhoto : Record
     {
-        public int Id { get; set; }
         public string PictureUrl { get; set; } = default!;
         public string Caption { get; set; } = default!;
     }

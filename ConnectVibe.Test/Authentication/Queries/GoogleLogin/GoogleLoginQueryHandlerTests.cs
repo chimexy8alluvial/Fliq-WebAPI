@@ -1,14 +1,13 @@
-﻿using ConnectVibe.Application.Authentication.Common;
-using ConnectVibe.Application.Authentication.Queries.GoogleLogin;
-using ConnectVibe.Application.Common.Interfaces.Authentication;
-using ConnectVibe.Application.Common.Interfaces.Persistence;
-using ConnectVibe.Application.Common.Interfaces.Services;
-using ConnectVibe.Application.Common.Interfaces.Services.AuthServices;
-using ConnectVibe.Domain.Entities;
-using FluentValidation.Resources;
+﻿using Fliq.Application.Authentication.Common;
+using Fliq.Application.Authentication.Queries.GoogleLogin;
+using Fliq.Application.Common.Interfaces.Authentication;
+using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.Common.Interfaces.Services.AuthServices;
+using Fliq.Domain.Entities;
 using Moq;
 
-namespace ConnectVibe.Test.Authentication.Queries.GoogleLogin
+namespace Fliq.Test.Authentication.Queries.GoogleLogin
 {
     [TestClass]
     public class GoogleLoginQueryHandlerTests
