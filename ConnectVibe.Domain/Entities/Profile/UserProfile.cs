@@ -18,15 +18,22 @@ namespace Fliq.Domain.Entities.Profile
         public WantKids? WantKids { get; set; }  //Nullable
         public Location Location { get; set; } = default!;
         public bool AllowNotifications { get; set; }
-        public List<string> Passions { get; set; } = new();
         public List<ProfilePhoto> Photos { get; set; } = new();
 
-        // This property will be mapped to the database as a JSON string
-        [Column("ProfileTypes")]
+        [Column("Passions")]         //JSON string of Passions in the database
+        public string PassionsJson { get; set; } = "[]"; 
+        
+        [NotMapped]   
+        public List<string> Passions
+        {
+            get => JsonConvert.DeserializeObject<List<string>>(PassionsJson) ?? new List<string>();
+            set => PassionsJson = JsonConvert.SerializeObject(value);
+        }
+
+        [Column("ProfileTypes")]        // This property will be mapped to the database as a JSON string
         public string ProfileTypeJson { get; set; } = "[]"; // Initialize with an empty JSON array
 
-        // Non-mapped property for convenience to work with enum list
-        [NotMapped] // Prevent this from being mapped to the database
+        [NotMapped]         // Prevent this from being mapped to the database
         public List<ProfileType> ProfileTypes
         {
             get => JsonConvert.DeserializeObject<List<ProfileType>>(ProfileTypeJson) ?? new List<ProfileType>();

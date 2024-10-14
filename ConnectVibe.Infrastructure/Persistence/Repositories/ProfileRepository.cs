@@ -3,6 +3,7 @@ using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Pagination;
 using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Enums;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Data;
@@ -57,13 +58,104 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             {
                 var parameters = CreateDynamicParameters(userId, userProfileTypes, filterByDating, filterByFriendship, paginationRequest);
 
-                var profiles = connection.Query<UserProfile>(
+                var profiles = connection.Query<dynamic>(
                     "sPGetMatchedUserProfiles",
                     parameters,
                     commandType: CommandType.StoredProcedure
                 );
 
-                return profiles;
+                var newProfiles = new List<UserProfile>();
+
+                foreach(var p in profiles)
+                {
+                    var profile = new UserProfile();
+
+                    profile.Id = p.Id;
+                    profile.DateCreated = p.DateCreated;
+                    profile.DateModified = p.DateModified;
+                    profile.DOB = p.DOB;
+
+                    // Setting other properties
+                    // profile.Gender = p.Gender;
+                    profile.Gender = new Gender
+                    {
+                        Id = p.GenderId,
+                        GenderType = (GenderType)p.GenderType,
+                        IsVisible = p.GenderVisible
+                    };
+
+                    profile.ProfileDescription = p.ProfileDescription;
+                    profile.SexualOrientation = p.SexualOrientation;
+                    profile.Religion = p.Religion;
+                    profile.Ethnicity = p.Ethnicity;
+                    profile.Occupation = p.Occupation;
+                    profile.EducationStatus = p.EducationStatus;
+                    profile.HaveKids = p.HaveKids;
+                    profile.WantKids = p.WantKids;
+                    profile.Location = p.Location;
+                    profile.AllowNotifications = p.AllowNotifications;
+
+                    newProfiles.Add(profile);
+                }
+                return newProfiles;
+                // Since the stored procedure already returns full objects, you don't need complex mapping
+                //return profiles.Select(profile => new UserProfile
+                //{
+                //    UserId = profile.UserId,
+                //    DOB = profile.Dob,
+                //    Id = profile.Id,
+                //    DateCreated = profile.DateCreated,
+                //    DateModified = profile.DateModified,
+                //    IsDeleted = profile.IsDeleted,
+                //    Gender = new Gender
+                //    {
+                //        Id = profile.Gender.Id,
+                //        GenderType = profile.Gender.GenderType,
+                //        IsVisible = profile.Gender.IsVisible
+                //    },
+                //    SexualOrientation = new SexualOrientation
+                //    {
+                //        Id = profile.SexualOrientation.Id,
+                //        SexualOrientationType = profile.SexualOrientation.SexualOrientationType,
+                //        IsVisible = profile.SexualOrientation.IsVisible
+                //    },
+                //    Religion = new Religion
+                //    {
+                //        Id = profile.Religion.Id,
+                //        ReligionType = profile.Religion.ReligionType,
+                //        IsVisible = profile.Religion.IsVisible
+                //    },
+                //    Ethnicity = new Ethnicity
+                //    {
+                //        Id = profile.Ethnicity.Id,
+                //        EthnicityType = profile.Ethnicity.EthnicityType,
+                //        IsVisible = profile.Ethnicity.IsVisible
+                //    },
+                //    HaveKids = new HaveKids
+                //    {
+                //        Id = profile.HaveKids.Id,
+                //        HaveKidsType = profile.HaveKids.HaveKidsType,
+                //        IsVisible = profile.HaveKids.IsVisible
+                //    },
+                //    WantKids = new WantKids
+                //    {
+                //        Id = profile.WantKids.Id,
+                //        WantKidsType = profile.WantKids.WantKidsType,
+                //        IsVisible = profile.WantKids.IsVisible
+                //    },
+                //    Location = new Location
+                //    {
+                //        Id = profile.Location.Id,
+                //        Lat = profile.Location.Lat,
+                //        Lng = profile.Location.Lng,
+                //        IsVisible = profile.Location.IsVisible
+                //    },
+                //    AllowNotifications = profile.AllowNotifications,
+                //    Passions = profile.Passions,
+                //    Photos = profile.Photos
+                //}).ToList();
+
+                // return profiles.Select(ProfileMapper.MapToUserProfile).ToList();
             }
         }
 
@@ -91,7 +183,6 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             parameters.Add("@userId", userId);
 
             // Convert ProfileType enum values to integers and join them as a comma-separated string
-           // var profileTypeIds = string.Join(",", userProfileTypes.Select(pt => ((int)pt).ToString()));
             parameters.Add("@profileTypes", serializedProfileTypes);  // Comma-separated list of integers
 
             parameters.Add("@filterByDating", filterByDating, DbType.Boolean);
@@ -101,7 +192,6 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
             return parameters;
         }
-
 
 
     }
