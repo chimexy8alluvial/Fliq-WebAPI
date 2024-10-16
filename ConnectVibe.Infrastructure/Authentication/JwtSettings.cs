@@ -1,4 +1,4 @@
-﻿namespace ConnectVibe.Infrastructure.Authentication
+﻿namespace Fliq.Infrastructure.Authentication
 {
     public class JwtSettings
     {

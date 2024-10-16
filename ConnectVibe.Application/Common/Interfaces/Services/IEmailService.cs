@@ -1,4 +1,4 @@
-﻿namespace ConnectVibe.Application.Common.Interfaces.Services
+﻿namespace Fliq.Application.Common.Interfaces.Services
 {
     public interface IEmailService
     {

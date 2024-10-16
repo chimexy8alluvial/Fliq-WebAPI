@@ -1,4 +1,4 @@
-﻿namespace ConnectVibe.Application.Common.Models
+﻿namespace Fliq.Application.Common.Models
 {
     public class FaceRectangle
     {

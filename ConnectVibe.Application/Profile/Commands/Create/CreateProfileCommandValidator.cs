@@ -1,16 +1,14 @@
-﻿using ConnectVibe.Application.Profile.Common;
-using ConnectVibe.Domain.Entities.Profile;
+﻿using Fliq.Application.Profile.Common;
+using Fliq.Domain.Entities.Profile;
+using Fliq.Domain.Enums;
 using FluentValidation;
 
-namespace ConnectVibe.Application.Profile.Commands.Create
+namespace Fliq.Application.Profile.Commands.Create
 {
     public class CreateProfileCommandValidator : AbstractValidator<CreateProfileCommand>
     {
         public CreateProfileCommandValidator()
         {
-            RuleFor(x => x.UserId)
-                .GreaterThan(0).WithMessage("UserId must be greater than 0.");
-
             RuleFor(x => x.DOB)
                 .NotEmpty().WithMessage("Date of Birth is required.");
 
@@ -19,8 +17,9 @@ namespace ConnectVibe.Application.Profile.Commands.Create
                 .SetValidator(new GenderValidator());
 
             RuleFor(x => x.SexualOrientation)
-                .NotNull().WithMessage("Sexual Orientation is required.")
-                .SetValidator(new SexualOrientationValidator());
+            .NotNull().When(x => x.ProfileTypes.Any(pt => pt == ProfileType.Dating || pt == ProfileType.Friendship))
+            .WithMessage("Sexual Orientation is required for Dating or Friendship profile types.")
+            .SetValidator(new SexualOrientationValidator());
 
             RuleFor(x => x.Religion)
                 .NotNull().WithMessage("Religion is required.")
@@ -30,20 +29,27 @@ namespace ConnectVibe.Application.Profile.Commands.Create
                 .NotNull().WithMessage("Ethnicity is required.")
                 .SetValidator(new EthnicityValidator());
 
+            RuleFor(x => x.Occupation)
+           .NotNull().WithMessage("Occupation is required.")
+           .SetValidator(new OccupationValidator());
+
+            RuleFor(x => x.EducationStatus)
+                .NotNull().WithMessage("Education Status is required.")
+                .SetValidator(new EducationStatusValidator());
+
             RuleFor(x => x.HaveKids)
-                .NotNull().WithMessage("HaveKids is required.")
-                .SetValidator(new HaveKidsValidator());
+           .NotNull().When(x => x.ProfileTypes.Any(pt => pt == ProfileType.Dating || pt == ProfileType.Friendship))
+           .WithMessage("HaveKids is required for Dating or Friendship profile types.")
+           .SetValidator(new HaveKidsValidator());
 
             RuleFor(x => x.WantKids)
-                .NotNull().WithMessage("WantKids is required.")
-                .SetValidator(new WantKidsValidator());
-
-            RuleFor(x => x.Passions)
-                .NotEmpty().WithMessage("Passions cannot be empty.");
+           .NotNull().When(x => x.ProfileTypes.Any(pt => pt == ProfileType.Dating || pt == ProfileType.Friendship))
+           .WithMessage("WantKids is required for Dating or Friendship profile types.")
+           .SetValidator(new WantKidsValidator());
 
             RuleFor(x => x.Photos)
            .NotNull().WithMessage("Photos are required.")
-           .Must(photos => photos.Count >= 1).WithMessage("Exactly 6 photos are required.")
+           .Must(photos => photos.Count == 6).WithMessage("Exactly 6 photos are required.")
            .ForEach(photo => photo.SetValidator(new ProfilePhotoDtoValidator()));
 
             RuleFor(x => x.Location)
@@ -52,6 +58,14 @@ namespace ConnectVibe.Application.Profile.Commands.Create
 
             RuleFor(x => x.AllowNotifications)
                 .NotNull().WithMessage("AllowNotifications is required.");
+
+            RuleForEach(x => x.ProfileTypes).IsInEnum()
+                .WithMessage("Invalid ProfileType value.");
+
+            // Profile Description Rule
+            RuleFor(x => x.ProfileDescription)
+                .NotEmpty().When(x => x.ProfileTypes.Any(pt => pt == ProfileType.Dating || pt == ProfileType.Friendship))
+                .WithMessage("Profile description is required for Dating or Friendship profile types.");
         }
     }
 
@@ -68,15 +82,18 @@ namespace ConnectVibe.Application.Profile.Commands.Create
         }
     }
 
-    public class SexualOrientationValidator : AbstractValidator<SexualOrientation>
+    public class SexualOrientationValidator : AbstractValidator<SexualOrientation?>
     {
         public SexualOrientationValidator()
         {
-            RuleFor(x => x.SexualOrientationType)
-                .IsInEnum().WithMessage("Invalid SexualOrientationType value.");
+            RuleFor(x => x)
+            .NotNull().WithMessage("Sexual Orientation is required.")
+            .Must(x => x != null && Enum.IsDefined(typeof(SexualOrientationType), x.SexualOrientationType))
+            .WithMessage("Invalid SexualOrientationType value.");
 
             RuleFor(x => x.IsVisible)
-                .NotNull().WithMessage("IsVisible is required.");
+                .NotNull().WithMessage("IsVisible is required.")
+                .When(x => x != null);
         }
     }
 
@@ -104,27 +121,33 @@ namespace ConnectVibe.Application.Profile.Commands.Create
         }
     }
 
-    public class HaveKidsValidator : AbstractValidator<HaveKids>
+    public class HaveKidsValidator : AbstractValidator<HaveKids?>
     {
         public HaveKidsValidator()
         {
-            RuleFor(x => x.HaveKidsType)
-                .IsInEnum().WithMessage("Invalid HaveKidsType value.");
+            RuleFor(x => x)
+             .NotNull().WithMessage("Have Kids information is required.")
+             .Must(x => x != null && Enum.IsDefined(typeof(HaveKidsType), x.HaveKidsType))
+             .WithMessage("Invalid HaveKidsType value.");
 
             RuleFor(x => x.IsVisible)
-                .NotNull().WithMessage("IsVisible is required.");
+                .NotNull().WithMessage("IsVisible is required.")
+                .When(x => x != null);
         }
     }
 
-    public class WantKidsValidator : AbstractValidator<WantKids>
+    public class WantKidsValidator : AbstractValidator<WantKids?>
     {
         public WantKidsValidator()
         {
-            RuleFor(x => x.WantKidsType)
-                .IsInEnum().WithMessage("Invalid WantKidsType value.");
+            RuleFor(x => x)
+             .NotNull().WithMessage("Want Kids information is required.")
+             .Must(x => x != null && Enum.IsDefined(typeof(WantKidsType), x.WantKidsType))
+             .WithMessage("Invalid WantKidsType value.");
 
             RuleFor(x => x.IsVisible)
-                .NotNull().WithMessage("IsVisible is required.");
+                .NotNull().WithMessage("IsVisible is required.")
+                .When(x => x != null);
         }
     }
 
@@ -158,6 +181,31 @@ namespace ConnectVibe.Application.Profile.Commands.Create
             RuleFor(location => location.IsVisible)
                 .NotNull()
                 .WithMessage("IsVisible must be specified.");
+        }
+    }
+
+    public class OccupationValidator : AbstractValidator<Occupation>
+    {
+        public OccupationValidator()
+        {
+            RuleFor(x => x.OccupationName)
+                .NotEmpty().WithMessage("Occupation name is required.")
+                .MaximumLength(100).WithMessage("Occupation name cannot be longer than 100 characters.");
+
+            RuleFor(x => x.IsVisible)
+                .NotNull().WithMessage("IsVisible is required.");
+        }
+    }
+
+    public class EducationStatusValidator : AbstractValidator<EducationStatus>
+    {
+        public EducationStatusValidator()
+        {
+            RuleFor(x => x.EducationLevel)
+                .IsInEnum().WithMessage("Invalid EducationLevel value.");
+
+            RuleFor(x => x.IsVisible)
+                .NotNull().WithMessage("IsVisible is required.");
         }
     }
 }

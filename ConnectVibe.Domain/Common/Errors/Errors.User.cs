@@ -1,17 +1,18 @@
 ﻿using ErrorOr;
 
-namespace ConnectVibe.Domain.Common.Errors
+namespace Fliq.Domain.Common.Errors
 {
     public static partial class Errors
     {
-        public static class User {
+        public static class User
+        {
+            public static Error UserNotFound => Error.NotFound(
+    code: "User.NotFound",
+    description: "User not found.");
+
             public static Error DuplicateEmail => Error.Conflict(
              code: "User.DuplicateEmail",
              description: "Email already in use");
         }
-
-     
-
-
     }
 }

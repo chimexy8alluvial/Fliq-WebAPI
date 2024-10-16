@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace ConnectVibe.Application.Authentication.Commands.ChangePassword
+namespace Fliq.Application.Authentication.Commands.ChangePassword
 {
     public class ChangePasswordValidation : AbstractValidator<ChangePasswordCommand>
     {

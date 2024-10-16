@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConnectVibe.Application.Common.Interfaces.Services
+namespace Fliq.Application.Common.Interfaces.Services
 {
     public interface ILoggerManager
     {

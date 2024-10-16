@@ -1,11 +1,12 @@
-﻿using ConnectVibe.Api;
-using ConnectVibe.Application;
-using ConnectVibe.Infrastructure;
+﻿using Fliq.Api;
+using Fliq.Application;
+using Fliq.Infrastructure;
 using Microsoft.OpenApi.Models;
 using NLog;
 
 var builder = WebApplication.CreateBuilder(args);
 {
+    builder.Services.AddHttpContextAccessor();
     builder.Services.AddApplication();
     builder.Services.AddPresentation();
     builder.Services.AddInfrastructure(builder.Configuration);

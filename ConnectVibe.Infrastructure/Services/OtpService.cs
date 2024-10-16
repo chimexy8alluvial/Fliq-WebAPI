@@ -1,7 +1,7 @@
-﻿using ConnectVibe.Application.Common.Interfaces.Persistence;
-using ConnectVibe.Application.Common.Interfaces.Services;
-using ConnectVibe.Domain.Entities;
-namespace ConnectVibe.Infrastructure.Services
+﻿using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Domain.Entities;
+namespace Fliq.Infrastructure.Services
 {
     public class OtpService : IOtpService
     {

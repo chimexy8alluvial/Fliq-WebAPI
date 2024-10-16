@@ -1,4 +1,4 @@
-﻿namespace ConnectVibe.Application.Authentication.Common
+﻿namespace Fliq.Application.Authentication.Common
 {
     public class GooglePayloadResponse
     {

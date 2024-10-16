@@ -1,10 +1,10 @@
-﻿using ConnectVibe.Application.Common.Interfaces.Services.LocationServices;
-using ConnectVibe.Application.Common.Models;
-using ConnectVibe.Infrastructure.Authentication;
+﻿using Fliq.Application.Common.Interfaces.Services.LocationServices;
+using Fliq.Application.Common.Models;
+using Fliq.Infrastructure.Authentication;
 using Microsoft.Extensions.Options;
 using System.Text.Json;
 
-namespace ConnectVibe.Infrastructure.Services.LocationServices
+namespace Fliq.Infrastructure.Services.LocationServices
 {
     public class LocationService : ILocationService
     {

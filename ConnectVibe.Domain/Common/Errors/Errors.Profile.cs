@@ -1,6 +1,6 @@
 ﻿using ErrorOr;
 
-namespace ConnectVibe.Domain.Common.Errors
+namespace Fliq.Domain.Common.Errors
 {
     public static partial class Errors
     {

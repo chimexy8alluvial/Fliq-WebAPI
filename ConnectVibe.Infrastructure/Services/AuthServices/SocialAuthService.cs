@@ -1,13 +1,13 @@
-﻿using ConnectVibe.Application.Authentication.Common;
-using ConnectVibe.Application.Common.Interfaces.Services.AuthServices;
-using ConnectVibe.Infrastructure.Authentication;
+﻿using Fliq.Application.Authentication.Common;
+using Fliq.Application.Common.Interfaces.Services.AuthServices;
+using Fliq.Infrastructure.Authentication;
 using Google.Apis.Auth;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
-namespace ConnectVibe.Infrastructure.Services.AuthServices
+namespace Fliq.Infrastructure.Services.AuthServices
 {
     public class SocialAuthService : ISocialAuthService
     {
