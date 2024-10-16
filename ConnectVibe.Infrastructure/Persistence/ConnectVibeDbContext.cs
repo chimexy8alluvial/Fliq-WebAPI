@@ -1,5 +1,6 @@
 ﻿using ConnectVibe.Domain.Entities;
 using ConnectVibe.Domain.Entities.Profile;
+using Fliq.Domain.Entities.MatchedProfile;
 using Microsoft.EntityFrameworkCore;
 
 namespace ConnectVibe.Infrastructure.Persistence
@@ -14,5 +15,6 @@ namespace ConnectVibe.Infrastructure.Persistence
         public DbSet<OTP> OTPs { get; set; } = null!;
         public DbSet<UserProfile> UserProfiles { get; set; } = null!;
         public DbSet<LocationDetail> LocationDetails { get; set; }
+        public DbSet<MatchProfile> MatchProfiles { get; set; }
     }
 }
