@@ -1,7 +1,7 @@
-﻿using ConnectVibe.Api.Controllers;
-using ConnectVibe.Application.Common.Interfaces.Persistence;
-using ConnectVibe.Application.Common.Interfaces.Services;
-using ConnectVibe.Contracts.Profile;
+﻿using Fliq.Api.Controllers;
+using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Contracts.Profile;
 using Fliq.Application.MatchedProfile.Commands.Create;
 using Fliq.Application.MatchedProfile.Commands.MatchedList;
 using Fliq.Contracts.MatchedProfile;
@@ -32,7 +32,9 @@ namespace Fliq.Api.Controllers
         [HttpPost("initiateMatch")]
         public async Task<IActionResult> Initiate_Match([FromBody] CreateMatchRequest request)
         {
-            var command = _mapper.Map<CreateMatchProfileCommand>(request);
+            var MatchInitiatoruserId = GetAuthUserId();
+            var modifiedRequest = request with { MatchInitiatorUserId = MatchInitiatoruserId };
+            var command = _mapper.Map<CreateMatchProfileCommand>(modifiedRequest);
            
             var matchedProfileResult = await _mediator.Send(command);
 
@@ -44,8 +46,9 @@ namespace Fliq.Api.Controllers
         }
 
         [HttpGet("GetMatchedList")]
-        public async Task<IActionResult> GetMatchedList(int userId)
+        public async Task<IActionResult> GetMatchedList()
         {
+            var userId = GetAuthUserId();
             var command = _mapper.Map<CreateMatchListCommand>(userId);
             
             var matchelistResult = await _mediator.Send(command);

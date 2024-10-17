@@ -1,15 +1,9 @@
-﻿using ConnectVibe.Application.Profile.Common;
-using Fliq.Domain.Entities.MatchedProfile;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Fliq.Domain.Entities.MatchedProfile;
 
 namespace Fliq.Application.MatchedProfile.Common
 {
     public record CreateMatchProfileResult
     (
-       MatchProfile matchProfile
+       MatchRequest matchRequest
     );
 }

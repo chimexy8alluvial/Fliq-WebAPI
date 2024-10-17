@@ -1,4 +1,4 @@
-﻿using ConnectVibe.Contracts.Profile;
+﻿using Fliq.Contracts.Profile;
 
 namespace Fliq.Contracts.MatchedProfile
 {

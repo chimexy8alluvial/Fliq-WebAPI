@@ -42,6 +42,7 @@ namespace Fliq.Infrastructure
             services.AddScoped<IEmailService, EmailService>();
             services.AddSingleton<ILoggerManager, LoggerManager>();
             services.AddScoped<IOtpService, OtpService>();
+            services.AddScoped<IMatchProfileRepository, MatchProfileRepository>();
             services.AddScoped<ISubscriptionService, SubscriptionService>();
             services.AddScoped<IRevenueCatServices, RevenueCatServices>();
             services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();

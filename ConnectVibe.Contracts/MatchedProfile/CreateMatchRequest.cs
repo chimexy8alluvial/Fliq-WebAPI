@@ -1,8 +1,9 @@
-﻿using ConnectVibe.Contracts.Profile;
+﻿using Fliq.Contracts.Profile;
 
 namespace Fliq.Contracts.MatchedProfile
 {
     public  record CreateMatchRequest(
-        int UserId
+        int UserId,
+        int MatchInitiatorUserId 
     );
 }
