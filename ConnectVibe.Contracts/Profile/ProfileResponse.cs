@@ -2,9 +2,9 @@
 {
     public record ProfileResponse
     (int UserId,
-     string FirstName,
-     string LastName,
-     string DisplayName,
+     //string FirstName,
+     //string LastName,
+     //string DisplayName,
      DateTime DOB,
      GenderDto Gender,
      SexualOrientationDto SexualOrientation,

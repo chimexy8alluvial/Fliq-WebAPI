@@ -1,4 +1,5 @@
-﻿using Fliq.Application.Explore.Common;
+﻿using Fliq.Application.Common.Pagination;
+using Fliq.Application.Explore.Common;
 using Fliq.Application.Explore.Common.Services;
 using Fliq.Application.Explore.Queries;
 using Fliq.Contracts.Explore;
@@ -12,11 +13,13 @@ namespace Fliq.Api.Mapping
         public void Register(TypeAdapterConfig config)
         {
             config.NewConfig<ExploreResult, ExploreResponse>()
-                .Map(dest => dest.UserProfiles, src =>
-                    src.UserProfiles.Adapt<IEnumerable<ProfileResponse>>())
-                .Map(dest => dest.UserProfiles.TotalCount, src => src.UserProfiles.TotalCount)
-                .Map(dest => dest.UserProfiles.PageNumber, src => src.UserProfiles.PageNumber)
-                .Map(dest => dest.UserProfiles.PageSize, src => src.UserProfiles.PageSize);
+            .Map(dest => dest.UserProfiles, src =>
+                new PaginationResponse<ProfileResponse>(
+                    src.UserProfiles.Data.Select(userProfile => userProfile.Adapt<ProfileResponse>()).ToList(),
+                    src.UserProfiles.TotalCount,
+                    src.UserProfiles.PageNumber,
+                    src.UserProfiles.PageSize
+                ));
 
             config.NewConfig<ExploreQuery, ExploreRequest>();
 

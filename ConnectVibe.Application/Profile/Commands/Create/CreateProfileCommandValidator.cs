@@ -47,10 +47,10 @@ namespace Fliq.Application.Profile.Commands.Create
            .WithMessage("WantKids is required for Dating or Friendship profile types.")
            .SetValidator(new WantKidsValidator());
 
-            RuleFor(x => x.Photos)
-           .NotNull().WithMessage("Photos are required.")
-           .Must(photos => photos.Count == 6).WithMessage("Exactly 6 photos are required.")
-           .ForEach(photo => photo.SetValidator(new ProfilePhotoDtoValidator()));
+           // RuleFor(x => x.Photos)
+           //.NotNull().WithMessage("Photos are required.")
+           //.Must(photos => photos.Count == 6).WithMessage("Exactly 6 photos are required.")
+           //.ForEach(photo => photo.SetValidator(new ProfilePhotoDtoValidator()));
 
             RuleFor(x => x.Location)
                 .NotNull().WithMessage("Location is required.")

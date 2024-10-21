@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Fliq.Application.Common.Interfaces.Helper;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Pagination;
 using Fliq.Domain.Entities.Profile;
@@ -14,11 +15,13 @@ namespace Fliq.Infrastructure.Persistence.Repositories
     {
         private readonly FliqDbContext _dbContext;
         private readonly IDbConnectionFactory _connectionFactory;
+        private readonly ICustomProfileMapper _customProfileMapper;
 
-        public ProfileRepository(FliqDbContext dbContext, IDbConnectionFactory connectionFactory)
+        public ProfileRepository(FliqDbContext dbContext, IDbConnectionFactory connectionFactory, ICustomProfileMapper customProfileMapper)
         {
             _dbContext = dbContext;
             _connectionFactory = connectionFactory;
+            _customProfileMapper = customProfileMapper;
         }
 
         public void Add(UserProfile userProfile)
@@ -58,104 +61,17 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             {
                 var parameters = CreateDynamicParameters(userId, userProfileTypes, filterByDating, filterByFriendship, paginationRequest);
 
-                var profiles = connection.Query<dynamic>(
-                    "sPGetMatchedUserProfiles",
-                    parameters,
-                    commandType: CommandType.StoredProcedure
-                );
+                var sql = "sPGetMatchedUserProfiles";
 
-                var newProfiles = new List<UserProfile>();
+                // Execute the query using Dapper, returning a flat result.
+                var result = connection.Query<dynamic>(sql, param: parameters, commandType: CommandType.StoredProcedure);
 
-                foreach(var p in profiles)
-                {
-                    var profile = new UserProfile();
+                // Group the result by UserProfileId to ensure that all rows belonging to the same UserProfile are processed together.
+                var profiles = result.GroupBy(row => (int)row.Id) 
+                                     .Select(group => _customProfileMapper.MapToUserProfile(group)) // Pass each group to the mapper
+                                     .ToList();
 
-                    profile.Id = p.Id;
-                    profile.DateCreated = p.DateCreated;
-                    profile.DateModified = p.DateModified;
-                    profile.DOB = p.DOB;
-
-                    // Setting other properties
-                    // profile.Gender = p.Gender;
-                    profile.Gender = new Gender
-                    {
-                        Id = p.GenderId,
-                        GenderType = (GenderType)p.GenderType,
-                        IsVisible = p.GenderVisible
-                    };
-
-                    profile.ProfileDescription = p.ProfileDescription;
-                    profile.SexualOrientation = p.SexualOrientation;
-                    profile.Religion = p.Religion;
-                    profile.Ethnicity = p.Ethnicity;
-                    profile.Occupation = p.Occupation;
-                    profile.EducationStatus = p.EducationStatus;
-                    profile.HaveKids = p.HaveKids;
-                    profile.WantKids = p.WantKids;
-                    profile.Location = p.Location;
-                    profile.AllowNotifications = p.AllowNotifications;
-
-                    newProfiles.Add(profile);
-                }
-                return newProfiles;
-                // Since the stored procedure already returns full objects, you don't need complex mapping
-                //return profiles.Select(profile => new UserProfile
-                //{
-                //    UserId = profile.UserId,
-                //    DOB = profile.Dob,
-                //    Id = profile.Id,
-                //    DateCreated = profile.DateCreated,
-                //    DateModified = profile.DateModified,
-                //    IsDeleted = profile.IsDeleted,
-                //    Gender = new Gender
-                //    {
-                //        Id = profile.Gender.Id,
-                //        GenderType = profile.Gender.GenderType,
-                //        IsVisible = profile.Gender.IsVisible
-                //    },
-                //    SexualOrientation = new SexualOrientation
-                //    {
-                //        Id = profile.SexualOrientation.Id,
-                //        SexualOrientationType = profile.SexualOrientation.SexualOrientationType,
-                //        IsVisible = profile.SexualOrientation.IsVisible
-                //    },
-                //    Religion = new Religion
-                //    {
-                //        Id = profile.Religion.Id,
-                //        ReligionType = profile.Religion.ReligionType,
-                //        IsVisible = profile.Religion.IsVisible
-                //    },
-                //    Ethnicity = new Ethnicity
-                //    {
-                //        Id = profile.Ethnicity.Id,
-                //        EthnicityType = profile.Ethnicity.EthnicityType,
-                //        IsVisible = profile.Ethnicity.IsVisible
-                //    },
-                //    HaveKids = new HaveKids
-                //    {
-                //        Id = profile.HaveKids.Id,
-                //        HaveKidsType = profile.HaveKids.HaveKidsType,
-                //        IsVisible = profile.HaveKids.IsVisible
-                //    },
-                //    WantKids = new WantKids
-                //    {
-                //        Id = profile.WantKids.Id,
-                //        WantKidsType = profile.WantKids.WantKidsType,
-                //        IsVisible = profile.WantKids.IsVisible
-                //    },
-                //    Location = new Location
-                //    {
-                //        Id = profile.Location.Id,
-                //        Lat = profile.Location.Lat,
-                //        Lng = profile.Location.Lng,
-                //        IsVisible = profile.Location.IsVisible
-                //    },
-                //    AllowNotifications = profile.AllowNotifications,
-                //    Passions = profile.Passions,
-                //    Photos = profile.Photos
-                //}).ToList();
-
-                // return profiles.Select(ProfileMapper.MapToUserProfile).ToList();
+                return profiles;
             }
         }
 
@@ -176,7 +92,6 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         private static DynamicParameters CreateDynamicParameters(int userId, List<ProfileType> userProfileTypes, bool? filterByDating, bool? filterByFriendship, PaginationRequest paginationRequest)
         {
             string serializedProfileTypes = JsonConvert.SerializeObject(userProfileTypes);
-            Console.WriteLine(serializedProfileTypes);
 
             var parameters = new DynamicParameters();
 
@@ -192,7 +107,6 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
             return parameters;
         }
-
 
     }
 }

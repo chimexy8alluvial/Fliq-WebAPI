@@ -1,5 +1,6 @@
 ﻿using Fliq.Application.Authentication.Common.Profile;
 using Fliq.Application.Common.Models;
+using Fliq.Application.Common.Pagination;
 using Fliq.Application.Profile.Commands.Create;
 using Fliq.Application.Profile.Commands.Update;
 using Fliq.Application.Profile.Common;
@@ -47,13 +48,22 @@ namespace Fliq.Api.Mapping
                  {
                      dest.ImageFile = await CloneFile(src.ImageFile);
                  });
+
             config.NewConfig<UserProfile, ProfileResponse>()
-                .Map(dest => dest.FirstName, src => src.User.FirstName)
-                .Map(dest => dest.LastName, src => src.User.LastName)
-                .Map(dest => dest.DisplayName, src => src.User.DisplayName);
+                //.Map(dest => dest.FirstName, src => src.User.FirstName)
+                //.Map(dest => dest.LastName, src => src.User.LastName)
+                //.Map(dest => dest.DisplayName, src => src.User.DisplayName)
+                .Map(dest => dest.ProfileTypes, src => src.ProfileTypes
+                    .Select(pt => new ProfileTypeDto((int)pt)).ToList());
+                  
+
+            config.NewConfig<ProfileTypeDto, ProfileType>()
+                .Map(dest => dest, src => (ProfileType)src.ProfileType);
+
             config.NewConfig<CreateProfileResult, ProfileResponse>()
                 .Map(dest => dest, src => src.Profile)
                 .Map(dest => dest.DOB, src => src.Profile.DOB);
+
             config.NewConfig<LocationQueryResponse, LocationDetail>();
 
             //Update Profile
@@ -95,10 +105,14 @@ namespace Fliq.Api.Mapping
                  {
                      dest.ImageFile = await CloneFile(src.ImageFile);
                  });
-            config.NewConfig<UserProfile, ProfileResponse>();
+            //config.NewConfig<UserProfile, ProfileResponse>();
             config.NewConfig<CreateProfileResult, UpdateProfileResponse>()
                 .Map(dest => dest, src => src.Profile)
                 .Map(dest => dest.DOB, src => src.Profile.DOB);
+
+            config.NewConfig<PaginationResponse<UserProfile>, PaginationResponse<ProfileResponse>>().IgnoreNullValues(true)
+                 .Map(dest => dest.Data, src => src.Data.Select(userProfile => userProfile.Adapt<ProfileResponse>()).ToList());
+
         }
 
         public static async Task<IFormFile> CloneFile(IFormFile file)
