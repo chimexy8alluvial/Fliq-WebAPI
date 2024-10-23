@@ -1,5 +1,6 @@
 ﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.Common.Pagination;
 using Fliq.Application.Explore.Common.Services;
 using Fliq.Application.Explore.Queries;
 using Fliq.Domain.Common.Errors;
@@ -82,8 +83,8 @@ namespace Fliq.Test.Explore.Queries
             _userRepositoryMock.Setup(x => x.GetUserById(It.IsAny<int>())).Returns(user);
             _profileMatchingServiceMock.Setup(x => x.GetMatchedProfilesAsync(user, It.IsAny<ExploreQuery>()))
                                        .ReturnsAsync(profiles); // Call the profile matching service
-
-            var query = new ExploreQuery(UserId: 1); // Provide a UserId
+            _profileRepositoryMock.Setup(x => x.GetProfileByUserId(user.Id)).Returns(profiles.First());
+            var query = new ExploreQuery(UserId: 1,PaginationRequest: new PaginationRequest()); // Provide a UserId
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
@@ -105,8 +106,8 @@ namespace Fliq.Test.Explore.Queries
             _userRepositoryMock.Setup(x => x.GetUserById(It.IsAny<int>())).Returns(user);
             _profileMatchingServiceMock.Setup(x => x.GetMatchedProfilesAsync(user, It.IsAny<ExploreQuery>()))
                                        .ReturnsAsync(profiles); // Call the profile matching service
-
-            var query = new ExploreQuery(UserId: 1); // Provide a UserId
+            _profileRepositoryMock.Setup(x => x.GetProfileByUserId(user.Id)).Returns(user.UserProfile);
+            var query = new ExploreQuery(UserId: 1, PaginationRequest: new PaginationRequest()); // Provide a UserId
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);

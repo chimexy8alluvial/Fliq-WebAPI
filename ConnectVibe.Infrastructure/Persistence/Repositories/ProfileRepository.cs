@@ -4,7 +4,6 @@ using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Pagination;
 using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Enums;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Data;
@@ -67,7 +66,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                 var result = connection.Query<dynamic>(sql, param: parameters, commandType: CommandType.StoredProcedure);
 
                 // Group the result by UserProfileId to ensure that all rows belonging to the same UserProfile are processed together.
-                var profiles = result.GroupBy(row => (int)row.Id) 
+                var profiles = result.GroupBy(row => (int)row.Id)
                                      .Select(group => _customProfileMapper.MapToUserProfile(group)) // Pass each group to the mapper
                                      .ToList();
 

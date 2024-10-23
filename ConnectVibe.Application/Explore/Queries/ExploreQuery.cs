@@ -52,7 +52,7 @@ namespace Fliq.Application.Explore.Queries
 
             var userProfile = _profileRepository.GetProfileByUserId(query.UserId);
 
-            if(userProfile == null)
+            if (userProfile == null)
             {
                 _logger.LogWarn($"UserProfile not found for user {user.Id}");
                 return Errors.Profile.ProfileNotFound;
@@ -65,7 +65,7 @@ namespace Fliq.Application.Explore.Queries
             var totalCount = profiles.Count();
 
             var paginatedProfiles = new PaginationResponse<UserProfile>(profiles, totalCount, query.PaginationRequest.PageNumber, query.PaginationRequest.PageSize);
-            
+
             return new ExploreResult(paginatedProfiles);
         }
     }
