@@ -55,6 +55,21 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             return matchProfile;
         }
 
+        public MatchRequest? GetMatchProfileById(int Id)
+        {
+            var matchProfile = _dbContext.MatchRequests.SingleOrDefault(p => p.Id == Id);
+            return matchProfile;
+        }
 
+        public void Update(MatchRequest request)
+        {
+            //var matchProfile = _dbContext.MatchRequests.SingleOrDefault(p => p.UserId == request.UserId && p.MatchInitiatorUserId == request.MatchInitiatorUserId);
+            //dbContext.MatchRequests.Remove(matchProfile);
+            _dbContext.Update(request);
+
+            //Update the matchRequest Table
+            //_dbContext.MatchRequests.Entry(matchProfile).CurrentValues.SetValues(request);
+            _dbContext.SaveChanges();
+        }
     }
 }

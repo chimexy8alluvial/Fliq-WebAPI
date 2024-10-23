@@ -4,6 +4,6 @@ namespace Fliq.Contracts.MatchedProfile
 {
     public  record CreateMatchRequest(
         int UserId,
-        int MatchInitiatorUserId 
-    );
+        int? MatchInitiatorUserId
+     );
 }

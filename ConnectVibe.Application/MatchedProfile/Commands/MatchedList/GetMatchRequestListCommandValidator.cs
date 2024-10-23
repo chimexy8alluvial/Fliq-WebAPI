@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace Fliq.Application.MatchedProfile.Commands.MatchedList
 {
-    public class CreateMatchListCommandValidator : AbstractValidator<CreateMatchListCommand>
+    public class GetMatchRequestListCommandValidator : AbstractValidator<GetMatchRequestListCommand>
     {
-        public CreateMatchListCommandValidator()
+        public GetMatchRequestListCommandValidator()
         {
             RuleFor(x => x.UserId)
                 .GreaterThan(0).WithMessage("UserId must be greater than 0.");

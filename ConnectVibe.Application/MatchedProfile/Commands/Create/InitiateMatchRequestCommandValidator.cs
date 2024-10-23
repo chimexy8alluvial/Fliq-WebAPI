@@ -2,9 +2,9 @@
 
 namespace Fliq.Application.MatchedProfile.Commands.Create
 {
-    public class CreateMatchedProfileCommandValidator : AbstractValidator<CreateMatchProfileCommand>
+    public class InitiateMatchRequestCommandValidator : AbstractValidator<InitiateMatchRequestCommand>
     {
-        public CreateMatchedProfileCommandValidator()
+        public InitiateMatchRequestCommandValidator()
         {
             RuleFor(x => x.UserId)
                 .GreaterThan(0).WithMessage("UserId must be greater than 0.");
