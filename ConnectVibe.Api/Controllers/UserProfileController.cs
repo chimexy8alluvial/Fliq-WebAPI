@@ -7,11 +7,13 @@ using Fliq.Contracts.Profile;
 using Fliq.Contracts.Profile.UpdateDtos;
 using MapsterMapper;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Fliq.Api.Controllers
 {
     [Route("api/user-profile")]
+    [Authorize]
     public class UserProfileController : ApiBaseController
     {
         private readonly ISender _mediator;
@@ -44,7 +46,13 @@ namespace Fliq.Api.Controllers
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> Create([FromForm] CreateProfileRequest request)
         {
+            _logger.LogInfo($"Create Profile Request recieved");
+
+            var userId = GetAuthUserId();
+            _logger.LogInfo($"Authenticated user ID: {userId}");
+
             var command = _mapper.Map<CreateProfileCommand>(request);
+            command.UserId = userId;
             command.Photos = request.Photos.Select(photo => new ProfilePhotoMapped
             {
                 Caption = photo.Caption,

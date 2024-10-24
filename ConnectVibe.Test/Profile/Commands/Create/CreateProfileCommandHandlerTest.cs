@@ -38,6 +38,7 @@ namespace Fliq.Test.Profile.Commands.Create
             _userRepositoryMock = new Mock<IUserRepository>();
             _locationServiceMock = new Mock<ILocationService>();
             _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
+            _settingsRepositoryMock = new Mock<ISettingsRepository>();
             _claimsPrincipalMock = new Mock<ClaimsPrincipal>();
 
             // Mocking HttpContext to return a valid user ID
