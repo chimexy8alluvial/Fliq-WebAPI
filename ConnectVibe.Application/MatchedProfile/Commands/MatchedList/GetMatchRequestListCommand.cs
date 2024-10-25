@@ -11,10 +11,10 @@ using System.Collections.Generic;
 
 namespace Fliq.Application.MatchedProfile.Commands.MatchedList
 {
-    public record GetMatchRequestListCommand(int UserId) : IRequest<ErrorOr<List<CreateMatchListResult>>>;
+    public record GetMatchRequestListCommand(int UserId) : IRequest<ErrorOr<List<MatchRequestDto>>>;
     
 
-    public class CreateMatchListCommandHandler : IRequestHandler<GetMatchRequestListCommand, ErrorOr<List<CreateMatchListResult>>>
+    public class CreateMatchListCommandHandler : IRequestHandler<GetMatchRequestListCommand, ErrorOr<List<MatchRequestDto>>>
     {
         private readonly IMapper _mapper;
         private readonly IImageService _imageService;
@@ -29,7 +29,7 @@ namespace Fliq.Application.MatchedProfile.Commands.MatchedList
             _matchProfileRepository = matchProfileRepository;
         }
 
-        public async Task<ErrorOr<List<CreateMatchListResult>>> Handle(GetMatchRequestListCommand command, CancellationToken cancellationToken)
+        public async Task<ErrorOr<List<MatchRequestDto>>> Handle(GetMatchRequestListCommand command, CancellationToken cancellationToken)
         {
             await Task.CompletedTask;
 
@@ -42,8 +42,8 @@ namespace Fliq.Application.MatchedProfile.Commands.MatchedList
             int pageSize = 1;
             int pageNumber = 11;
             var filteredValue = await _matchProfileRepository.GetMatchListById(requestId.UserId,pageNumber,pageSize);
-            
-            var result = _mapper.Map<List<CreateMatchListResult>>(filteredValue);
+
+            var result = filteredValue.ToList();
 
             return result;
         }

@@ -39,10 +39,9 @@ namespace Fliq.Api.Controllers
             _logger.LogInfo($"Initiate Match Request Command Executed.  Result: {matchedProfileResult}");
 
             return matchedProfileResult.Match(
-                profileResult => Ok(_mapper.Map<MatchedProfileResponse>(matchedProfileResult)),
+                matchedProfileResult => Ok(_mapper.Map<MatchedProfileResponse>(matchedProfileResult)),
                 errors => Problem(errors)
             );
-
         }
 
         [HttpGet("GetMatchedList")]
@@ -55,7 +54,7 @@ namespace Fliq.Api.Controllers
             var matchelistResult = await _mediator.Send(requestList);
             _logger.LogInfo($"Get Match List Request Command Executed.  Result: {matchelistResult}");
             return matchelistResult.Match(
-                profileResult => Ok(_mapper.Map<MatchedProfileResponse>(matchelistResult)),
+                profileResult => Ok(_mapper.Map<List<MatchedProfileResponse>>(matchelistResult)),
                 errors => Problem(errors)
             );
         }
@@ -72,7 +71,7 @@ namespace Fliq.Api.Controllers
             _logger.LogInfo($"Accept Match Request Command Executed.  Result: {acceptMatchResult}");
 
             return acceptMatchResult.Match(
-                profileResult => Ok(_mapper.Map<MatchedProfileResponse>(acceptMatchResult)),
+                acceptMatchResult => Ok(_mapper.Map<MatchedProfileResponse>(acceptMatchResult)),
                 errors => Problem(errors)
             );
         }

@@ -3,7 +3,6 @@ using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services.ImageServices;
 using Fliq.Application.MatchedProfile.Common;
 using Fliq.Domain.Common.Errors;
-using Fliq.Domain.Entities.MatchedProfile;
 using Fliq.Domain.Enums;
 using MapsterMapper;
 using MediatR;
@@ -37,22 +36,21 @@ namespace Fliq.Application.MatchedProfile.Commands.AcceptedMatch
             await Task.CompletedTask;
 
             var acceptorUser = _userRepository.GetUserById(command.UserId);
-            //var matchInitiatorUser = _userRepository.GetUserById(command.MatchInitiatorUserId);
-
-            //command.UserId = acceptorUser.Id;
-            
             if (acceptorUser == null)
             {
-                return Errors.Profile.ProfileNotFound;
+                return Errors.User.UserNotFound;
             }
             var matchProfile = _matchProfileRepository.GetMatchProfileById(command.Id);
+            if (matchProfile == null)
+            {
+                return Errors.User.UserNotFound;
+            }
+
             matchProfile.matchRequestStatus = MatchRequestStatus.Accepted;
-
-            //matchAcceptorProfile.PictureUrl = matchAcceptorProfile.PictureUrl == null ? "" : matchInitiatorUser.UserProfile.Photos.First().PictureUrl;
-            //matchAcceptorProfile.Name = matchInitiatorUser.FirstName;
-
             _matchProfileRepository.Update(matchProfile);
-            return new CreateAcceptMatchResult(matchProfile);
+
+           return new CreateAcceptMatchResult(matchProfile.MatchInitiatorUserId,
+                matchProfile.matchRequestStatus);
 
         }
     }

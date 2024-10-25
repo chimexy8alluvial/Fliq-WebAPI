@@ -30,10 +30,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
         public async Task<IEnumerable<MatchRequestDto>> GetMatchListById(int userId, int pageNumber, int pageSize)
         {
-            //Initializing values for page number and size.
-            pageNumber = 1;
-            pageSize = 10;
-
+            
             var filteredItems = await _dbContext.MatchRequests
                 .Where(p => p.UserId == userId && p.matchRequestStatus == Domain.Enums.MatchRequestStatus.Pending)
                 .Select(p => new MatchRequestDto
@@ -63,12 +60,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
         public void Update(MatchRequest request)
         {
-            //var matchProfile = _dbContext.MatchRequests.SingleOrDefault(p => p.UserId == request.UserId && p.MatchInitiatorUserId == request.MatchInitiatorUserId);
-            //dbContext.MatchRequests.Remove(matchProfile);
             _dbContext.Update(request);
-
-            //Update the matchRequest Table
-            //_dbContext.MatchRequests.Entry(matchProfile).CurrentValues.SetValues(request);
             _dbContext.SaveChanges();
         }
     }

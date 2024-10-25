@@ -21,8 +21,4 @@
     <PackageReference Include="NLog.Extensions.Logging" Version="5.3.11" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\ConnectVibe.Application\Fliq.Application.csproj" />
-  </ItemGroup>
-
 </Project>

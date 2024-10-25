@@ -36,21 +36,30 @@ namespace Fliq.Application.MatchedProfile.Commands.Create
         {
             await Task.CompletedTask;
             var requestedUser = _userRepository.GetUserById(command.UserId);
-            var matchInitiatorUser = _userRepository.GetUserById(command.MatchInitiatorUserId);
-            
-            command.UserId = requestedUser.Id;
-            var matchProfile = _mapper.Map<MatchRequest>(command);
             if (requestedUser == null)
             {
-                return Errors.Profile.ProfileNotFound;
+                return Errors.User.UserNotFound;
             }
+            var matchInitiatorUser = _userRepository.GetUserById(command.MatchInitiatorUserId);
+            if (matchInitiatorUser == null)
+            {
+                return Errors.User.UserNotFound;
+            }
+
+            command.UserId = requestedUser.Id;
+            var matchProfile = _mapper.Map<MatchRequest>(command);
+           
             matchProfile.matchRequestStatus = MatchRequestStatus.Pending;
             //matchProfile.PictureUrl = matchInitiatorUser.UserProfile.Photos.First().PictureUrl;
             matchProfile.PictureUrl = matchProfile.PictureUrl == null ? "" : matchInitiatorUser.UserProfile.Photos.First().PictureUrl;
             matchProfile.Name = matchInitiatorUser.FirstName;
+            
 
             _matchProfileRepository.Add(matchProfile);
-            return new CreateMatchProfileResult(matchProfile);
+
+            return new CreateMatchProfileResult(matchProfile.MatchInitiatorUserId,
+                matchProfile.Name,
+                matchProfile.PictureUrl);
         }
     }
 }

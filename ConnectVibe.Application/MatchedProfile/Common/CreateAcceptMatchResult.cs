@@ -1,4 +1,5 @@
 ﻿using Fliq.Domain.Entities.MatchedProfile;
+using Fliq.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,7 @@ namespace Fliq.Application.MatchedProfile.Common
 {
     public record CreateAcceptMatchResult
     (
-        MatchRequest matchRequest
+        int MatchInitiatorUserId,
+        MatchRequestStatus matchRequestStatus
     );
 }

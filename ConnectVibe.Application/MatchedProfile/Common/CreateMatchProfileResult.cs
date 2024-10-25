@@ -1,9 +1,9 @@
-﻿using Fliq.Domain.Entities.MatchedProfile;
-
-namespace Fliq.Application.MatchedProfile.Common
+﻿namespace Fliq.Application.MatchedProfile.Common
 {
     public record CreateMatchProfileResult
     (
-       MatchRequest matchRequest
+        int MatchInitiatorUserId,
+        string Name,
+        string PictureUrl
     );
 }

@@ -4,14 +4,12 @@ namespace Fliq.Contracts.MatchedProfile
 {
     public record MatchedProfileResponse
     (
+        int Id,
         int UserId,
-        GenderDto GenderType,
-        string FirstName, 
-        string LastName,
-        string UserName,
-        int Age,
-        string MatchStatus,
-        int RequestingUserId,
-        ProfilePhotoDto Photos
+        int MatchInitiatorUserId,
+        string PictureUrl,
+        string Name,
+        int? Age,
+        int matchRequestStatus
     );
 }
