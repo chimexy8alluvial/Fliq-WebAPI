@@ -1,4 +1,5 @@
-﻿using Fliq.Contracts.MatchedProfile;
+﻿using Fliq.Application.Common.Pagination;
+using Fliq.Contracts.MatchedProfile;
 using Fliq.Domain.Entities.MatchedProfile;
 using Fliq.Domain.Entities.Profile;
 namespace Fliq.Application.Common.Interfaces.Persistence
@@ -9,6 +10,6 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         void Update(MatchRequest matchRequest);
         MatchRequest? GetMatchProfileByUserId(int id);
         MatchRequest? GetMatchProfileById(int id);
-        Task <IEnumerable<MatchRequestDto>> GetMatchListById(int userId, int pageNumber, int pageSize);
+        Task <IEnumerable<MatchRequestDto>> GetMatchListById(int userId, MatchListPagination matchListPagination);
     }
 }

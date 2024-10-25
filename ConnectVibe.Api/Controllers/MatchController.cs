@@ -54,7 +54,7 @@ namespace Fliq.Api.Controllers
             var matchelistResult = await _mediator.Send(requestList);
             _logger.LogInfo($"Get Match List Request Command Executed.  Result: {matchelistResult}");
             return matchelistResult.Match(
-                profileResult => Ok(_mapper.Map<List<MatchedProfileResponse>>(matchelistResult)),
+                matchelistResult => Ok(_mapper.Map<List<MatchedProfileResponse>>(matchelistResult)),
                 errors => Problem(errors)
             );
         }

@@ -1,5 +1,4 @@
-﻿using Fliq.Domain.Entities.Profile;
-using Fliq.Domain.Enums;
+﻿using Fliq.Domain.Enums;
 
 namespace Fliq.Domain.Entities.MatchedProfile
 {

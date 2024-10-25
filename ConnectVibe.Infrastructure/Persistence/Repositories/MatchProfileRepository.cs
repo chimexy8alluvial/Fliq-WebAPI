@@ -1,7 +1,9 @@
-﻿using Fliq.Application.Common.Interfaces.Persistence;
+﻿using Dapper;
+using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Pagination;
 using Fliq.Contracts.MatchedProfile;
 using Fliq.Domain.Entities.MatchedProfile;
-using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {
@@ -28,22 +30,24 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             _dbContext.SaveChanges();
         }
 
-        public async Task<IEnumerable<MatchRequestDto>> GetMatchListById(int userId, int pageNumber, int pageSize)
+        public async Task<IEnumerable<MatchRequestDto>> GetMatchListById(int userId, MatchListPagination matchListPagination)
         {
-            
-            var filteredItems = await _dbContext.MatchRequests
-                .Where(p => p.UserId == userId && p.matchRequestStatus == Domain.Enums.MatchRequestStatus.Pending)
-                .Select(p => new MatchRequestDto
+
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var parameters = FilterListDynamicParams(userId, matchListPagination);
+
+                var sql = "sPGetMatchedList";
+
+                var result = connection.Query<dynamic>(sql, param: parameters, commandType: CommandType.StoredProcedure);
+                var filteredItems = result.Select(p => new MatchRequestDto
                 {
                     MatchInitiatorUserId = p.MatchInitiatorUserId,
                     Name = p.Name,
                     PictureUrl = p.PictureUrl
-                })
-                .Skip((pageNumber - 1) * pageSize) // Skip items for previous pages
-                .Take(pageSize) // Take only the pageSize number of items
-                .ToListAsync();
-
-            return filteredItems;
+                }).ToList();
+                return filteredItems;
+            }
         }
 
         public MatchRequest? GetMatchProfileByUserId(int Id)
@@ -62,6 +66,17 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         {
             _dbContext.Update(request);
             _dbContext.SaveChanges();
+        }
+
+        private static DynamicParameters FilterListDynamicParams(int userId, MatchListPagination paginationRequest)
+        {
+            var parameters = new DynamicParameters();
+
+            parameters.Add("@userId", userId);
+            parameters.Add("@pageNumber", paginationRequest.PageNumber);
+            parameters.Add("@pageSize", paginationRequest.PageSize);
+
+            return parameters;
         }
     }
 }

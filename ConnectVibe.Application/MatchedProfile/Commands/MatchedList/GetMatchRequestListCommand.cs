@@ -1,18 +1,17 @@
 ﻿using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services.ImageServices;
-using Fliq.Application.MatchedProfile.Common;
+using Fliq.Application.Common.Pagination;
 using Fliq.Contracts.MatchedProfile;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.MatchedProfile;
 using MapsterMapper;
 using MediatR;
-using System.Collections.Generic;
 
 namespace Fliq.Application.MatchedProfile.Commands.MatchedList
 {
     public record GetMatchRequestListCommand(int UserId) : IRequest<ErrorOr<List<MatchRequestDto>>>;
-    
+
 
     public class CreateMatchListCommandHandler : IRequestHandler<GetMatchRequestListCommand, ErrorOr<List<MatchRequestDto>>>
     {
@@ -36,12 +35,11 @@ namespace Fliq.Application.MatchedProfile.Commands.MatchedList
             var user = _userRepository.GetUserById(command.UserId);
             if (user == null)
             {
-                return Errors.Profile.ProfileNotFound;
+                return Errors.User.UserNotFound;
             }
             var requestId = _mapper.Map<MatchRequest>(command);
-            int pageSize = 1;
-            int pageNumber = 11;
-            var filteredValue = await _matchProfileRepository.GetMatchListById(requestId.UserId,pageNumber,pageSize);
+            var pagination = new MatchListPagination();
+            var filteredValue = await _matchProfileRepository.GetMatchListById(requestId.UserId, pagination);
 
             var result = filteredValue.ToList();
 
