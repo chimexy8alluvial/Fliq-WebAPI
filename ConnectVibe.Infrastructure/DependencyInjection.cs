@@ -1,4 +1,5 @@
 ﻿using Fliq.Application.Common.Interfaces.Authentication;
+using Fliq.Application.Common.Interfaces.Helper;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Interfaces.Services.AuthServices;
@@ -7,8 +8,10 @@ using Fliq.Application.Common.Interfaces.Services.ImageServices;
 using Fliq.Application.Common.Interfaces.Services.LocationServices;
 using Fliq.Application.Common.Interfaces.Services.PaymentServices;
 using Fliq.Application.Common.Interfaces.Services.SubscriptionServices;
+using Fliq.Application.Explore.Common.Services;
 using Fliq.Infrastructure.Authentication;
 using Fliq.Infrastructure.Persistence;
+using Fliq.Infrastructure.Persistence.Helper;
 using Fliq.Infrastructure.Persistence.Repositories;
 using Fliq.Infrastructure.Services;
 using Fliq.Infrastructure.Services.AuthServices;
@@ -43,11 +46,13 @@ namespace Fliq.Infrastructure
             services.AddScoped<IImageService, ImageService>();
             services.AddScoped<IMediaServices, MediaService>();
             services.AddScoped<ILocationService, LocationService>();
+            services.AddScoped<IProfileMatchingService, ProfileMatchingService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddSingleton<ILoggerManager, LoggerManager>();
             services.AddScoped<IOtpService, OtpService>();
             services.AddScoped<ISubscriptionService, SubscriptionService>();
             services.AddScoped<IRevenueCatServices, RevenueCatServices>();
+            services.AddSingleton<ICustomProfileMapper, CustomProfileMapper>();
             services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
             services.AddDbContext<FliqDbContext>(options =>
     options.UseSqlServer(configurationManager.GetConnectionString("FliqDbContext") ?? throw new InvalidOperationException("Connection string 'FliqDbContext' not found.")));

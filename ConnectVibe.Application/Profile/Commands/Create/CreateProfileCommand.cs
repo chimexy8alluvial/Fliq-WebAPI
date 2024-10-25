@@ -5,6 +5,7 @@ using Fliq.Application.Common.Interfaces.Services.ImageServices;
 using Fliq.Application.Common.Interfaces.Services.LocationServices;
 using Fliq.Application.Profile.Common;
 using Fliq.Domain.Common.Errors;
+using Fliq.Domain.Entities;
 using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Entities.Settings;
 using Fliq.Domain.Enums;
@@ -76,19 +77,19 @@ namespace Fliq.Application.Profile.Commands.Create
             userProfile.UserId = 0;
             userProfile.Photos = new();
             userProfile.User = user;
-            foreach (var photo in command.Photos)
-            {
-                var profileUrl = await _imageService.UploadMediaAsync(photo.ImageFile);
-                if (profileUrl != null)
-                {
-                    ProfilePhoto profilePhoto = new() { PictureUrl = profileUrl, Caption = photo.Caption };
-                    userProfile.Photos.Add(profilePhoto);
-                }
-                else
-                {
-                    return Errors.Image.InvalidImage;
-                }
-            }
+            //foreach (var photo in command.Photos)
+            //{
+            //    var profileUrl = await _imageService.UploadMediaAsync(photo.ImageFile);
+            //    if (profileUrl != null)
+            //    {
+            //        ProfilePhoto profilePhoto = new() { PictureUrl = profileUrl, Caption = photo.Caption };
+            //        userProfile.Photos.Add(profilePhoto);
+            //    }
+            //    else
+            //    {
+            //        return Errors.Image.InvalidImage;
+            //    }
+            //}
 
             var locationResponse = await _locationService.GetAddressFromCoordinatesAsync(command.Location.Lat, command.Location.Lng);
 
