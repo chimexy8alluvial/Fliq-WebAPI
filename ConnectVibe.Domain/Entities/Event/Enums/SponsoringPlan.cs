@@ -1,6 +1,6 @@
 ﻿namespace Fliq.Domain.Entities.Event.Enums
 {
-    public enum SponsoringBudget
+    public enum SponsoringPlan
     {
         Gold,
         Silver,

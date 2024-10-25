@@ -1,4 +1,5 @@
-﻿using ConnectVibe.Domain.Entities.Profile;
+﻿using Fliq.Domain.Entities.Profile;
+
 namespace Fliq.Application.Event.Common
 {
     public class TicketTypesMapped

@@ -1,4 +1,5 @@
 ﻿using Fliq.Domain.Entities;
+using Fliq.Domain.Entities.Event;
 using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Entities.Settings;
 using Microsoft.EntityFrameworkCore;
@@ -16,10 +17,10 @@ namespace Fliq.Infrastructure.Persistence
         public DbSet<UserProfile> UserProfiles { get; set; } = null!;
 
         public DbSet<Events> Events { get; set; }
-        public DbSet<EventMediaa> EventMedias { get; set; }
+        public DbSet<EventMedia> EventMedias { get; set; }
         public DbSet<EventCriteria> EventCriterias { get; set; }
         public DbSet<SponsoredEventDetail> SponsoredEventDetails { get; set; }
-        public DbSet<TicketType> TicketTypes { get; set; }
+        public DbSet<Ticket> Ticket { get; set; }
 
         public DbSet<LocationDetail> LocationDetails { get; set; } = null!;
 

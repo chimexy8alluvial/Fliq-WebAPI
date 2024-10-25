@@ -1,19 +1,16 @@
-﻿using ConnectVibe.Application.Common.Interfaces.Persistence;
-using ConnectVibe.Domain.Entities;
-using ConnectVibe.Infrastructure.Persistence;
+﻿using Dapper;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Domain.Entities.Event;
-using Dapper;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {
     public class EventRepository : IEventRepository
     {
-        private readonly ConnectVibeDbContext _dbContext;
+        private readonly FliqDbContext _dbContext;
         private readonly IDbConnectionFactory _connectionFactory;
         private readonly IUserRepository _userRepository;
 
-        public EventRepository(ConnectVibeDbContext dbContext, IDbConnectionFactory connectionFactory, IUserRepository userRepository)
+        public EventRepository(FliqDbContext dbContext, IDbConnectionFactory connectionFactory, IUserRepository userRepository)
         {
             _dbContext = dbContext;
             _connectionFactory = connectionFactory;
@@ -29,10 +26,16 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             _dbContext.SaveChanges();
         }
 
-        public User? GetUserById(int id)
+        public void Update(Events request)
         {
-            var user = _dbContext.Users.SingleOrDefault(p => p.Id == id);
-            return user;
+            _dbContext.Update(request);
+            _dbContext.SaveChanges();
+        }
+
+        public Events? GetEventById(int id)
+        {
+            var result = _dbContext.Events.SingleOrDefault(p => p.Id == id);
+            return result;
         }
 
         public List<Events> GetAllEvents()
@@ -46,7 +49,6 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
                 return results.ToList();
             }
-          
         }
     }
 }

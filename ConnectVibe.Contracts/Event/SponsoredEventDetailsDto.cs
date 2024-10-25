@@ -1,6 +1,4 @@
-﻿using Fliq.Contracts.Event.Enums;
-
-namespace Fliq.Contracts.Event
+﻿namespace Fliq.Contracts.Event
 {
     public record SponsoredEventDetailsDto
     (
@@ -8,7 +6,7 @@ namespace Fliq.Contracts.Event
         string BusinessAddress,
         string BusinessType,
         string ContactInfromation,
-        SponsoringBudgetDto SponsoringBudget,
+        int SponsoringBudget,
         string TargetAudienceType,
         int NumberOfInvitees,
         double Budget,

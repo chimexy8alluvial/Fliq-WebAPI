@@ -1,23 +1,26 @@
-﻿using ConnectVibe.Contracts.Profile;
-using Fliq.Contracts.Event.Enums;
+﻿using Fliq.Contracts.Profile;
 
 namespace Fliq.Contracts.Event
 {
     public record CreateEventRequest
     (
-        EventTypeDtoEnum Type,
-        string Title,
-        string Description,
-        DateTime StartDate,
-        DateTime EndDate,
-        string Location,
-        double Capacity,
-        int UserId,
-        List<EventMediaDto> MediaDocuments,
-        string StartAge,
-        string EndAge,
-        string Category,
-        bool IsSponsored,
-        List<TicketTypeDto> TicketType
+        int EventType,
+    string EventTitle,
+    string EventDescription,
+    int EventCategory,
+    DateTime StartDate,
+    DateTime EndDate,
+    LocationDto Location,
+    int Capacity,
+   int MinAge,
+  int Maxge,
+    bool SponsoredEvent,
+    EventCriteriaDto EventCriteria,
+    List<TicketDto>? Tickets,
+    int UserId,
+    EventPaymentDetailDto? EventPaymentDetail,
+    bool InviteesException,
+    List<EventMediaDto> MediaDocuments,
+    SponsoredEventDetailsDto? SponsoredEventDetail
     );
 }

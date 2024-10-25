@@ -2,6 +2,7 @@
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Interfaces.Services.AuthServices;
+using Fliq.Application.Common.Interfaces.Services.DocumentServices;
 using Fliq.Application.Common.Interfaces.Services.ImageServices;
 using Fliq.Application.Common.Interfaces.Services.LocationServices;
 using Fliq.Application.Common.Interfaces.Services.PaymentServices;
@@ -11,6 +12,7 @@ using Fliq.Infrastructure.Persistence;
 using Fliq.Infrastructure.Persistence.Repositories;
 using Fliq.Infrastructure.Services;
 using Fliq.Infrastructure.Services.AuthServices;
+using Fliq.Infrastructure.Services.DocumentService;
 using Fliq.Infrastructure.Services.ImageServices;
 using Fliq.Infrastructure.Services.LocationServices;
 using Fliq.Infrastructure.Services.PaymentServices;
@@ -37,7 +39,9 @@ namespace Fliq.Infrastructure
             services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
             services.AddScoped<IPaymentRepository, PaymentRepository>();
             services.AddScoped<ISettingsRepository, SettingsRepository>();
+            services.AddScoped<IEventRepository, EventRepository>();
             services.AddScoped<IImageService, ImageService>();
+            services.AddScoped<IMediaServices, MediaService>();
             services.AddScoped<ILocationService, LocationService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddSingleton<ILoggerManager, LoggerManager>();
