@@ -32,7 +32,6 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
         public async Task<IEnumerable<MatchRequestDto>> GetMatchListById(int userId, MatchListPagination matchListPagination)
         {
-
             using (var connection = _connectionFactory.CreateConnection())
             {
                 var parameters = FilterListDynamicParams(userId, matchListPagination);
@@ -75,7 +74,6 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             parameters.Add("@userId", userId);
             parameters.Add("@pageNumber", paginationRequest.PageNumber);
             parameters.Add("@pageSize", paginationRequest.PageSize);
-
             return parameters;
         }
     }
