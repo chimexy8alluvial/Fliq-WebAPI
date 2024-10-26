@@ -1,5 +1,6 @@
 ﻿using Fliq.Domain.Entities;
 using Fliq.Domain.Entities.Profile;
+using Fliq.Domain.Entities.Prompts;
 using Fliq.Domain.Entities.Settings;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,6 +20,10 @@ namespace Fliq.Infrastructure.Persistence
         public DbSet<Subscription> Subscriptions { get; set; } = null!;
         public DbSet<Payment> Payments { get; set; } = null!;
         public DbSet<Setting> Settings { get; set; } = null!;
+
+        public DbSet<PromptCategory> PromptCategories { get; set; }
+        public DbSet<PromptQuestion> PromptQuestions { get; set; }
+        public DbSet<PromptAnswer> PromptAnswers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

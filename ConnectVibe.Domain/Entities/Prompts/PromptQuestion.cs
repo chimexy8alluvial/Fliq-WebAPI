@@ -1,18 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿    
 namespace Fliq.Domain.Entities.Prompts
 {
     public class PromptQuestion : Record
     {
         public string QuestionText { get; set; } = default!;
-        public bool IsSystemGenerated { get; set; }
+        public bool IsSystemGenerated { get; set; }  // Indicates if the prompt question is predefined by the system or user-created
+        
+        // Category this question belongs to
         public int PromptCategoryId { get; set; }
         public PromptCategory PromptCategory { get; set; } = default!;
-        public ICollection<PromptAnswer> PromptAnswers { get; set; } = new List<PromptAnswer>();
 
+        // One-to-one relationship: each question can have only one answer from a user
+        public PromptAnswer? PromptAnswer { get; set; }
     }
 }
