@@ -43,6 +43,7 @@ namespace Fliq.Infrastructure
             services.AddScoped<IPaymentRepository, PaymentRepository>();
             services.AddScoped<ISettingsRepository, SettingsRepository>();
             services.AddScoped<IEventRepository, EventRepository>();
+            services.AddScoped<ITicketRepository, TicketRepository>();
             services.AddScoped<IImageService, ImageService>();
             services.AddScoped<IMediaServices, MediaService>();
             services.AddScoped<ILocationService, LocationService>();

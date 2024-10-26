@@ -74,7 +74,7 @@ namespace Fliq.Application.Event.Commands.UpdateEvent
             if (eventFromDb == null)
             {
                 _logger.LogError($"Event with Id: {command.EventId} was not found.");
-                return Errors.User.UserNotFound;
+                return Errors.Event.EventNotFound;
             }
 
             var user = _userRepository.GetUserById(command.UserId);

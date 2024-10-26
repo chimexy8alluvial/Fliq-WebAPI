@@ -20,7 +20,7 @@ namespace Fliq.Infrastructure.Persistence
         public DbSet<EventMedia> EventMedias { get; set; }
         public DbSet<EventCriteria> EventCriterias { get; set; }
         public DbSet<SponsoredEventDetail> SponsoredEventDetails { get; set; }
-        public DbSet<Ticket> Ticket { get; set; }
+        public DbSet<Ticket> Tickets { get; set; }
 
         public DbSet<LocationDetail> LocationDetails { get; set; } = null!;
 
