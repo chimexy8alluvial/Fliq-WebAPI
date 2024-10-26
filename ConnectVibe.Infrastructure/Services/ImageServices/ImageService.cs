@@ -74,7 +74,7 @@ namespace Fliq.Infrastructure.Services.ImageServices
             return cloudBlockBlob.Uri.ToString();
         }
 
-        public async Task<string?> UploadMediaAsync(IFormFile mediaToUpload)
+        public async Task<string?> UploadMediaAsync(IFormFile mediaToUpload, string containerName)
         {
             if (mediaToUpload == null || mediaToUpload.Length == 0)
             {
@@ -82,7 +82,7 @@ namespace Fliq.Infrastructure.Services.ImageServices
             }
 
             // Validate Media Extension
-            var validExtensions = new[] { ".jpg", ".jpeg", ".png", "gif", ".mp4", ".mov", ".avi", ".mkv" };
+            var validExtensions = new[] { ".jpg", ".jpeg", ".png", "gif", ".mp4", ".mov", ".avi", ".mkv", ".mp3", ".wav" };
             var extension = Path.GetExtension(mediaToUpload.FileName).ToLowerInvariant();
             if (!validExtensions.Contains(extension))
             {
@@ -93,7 +93,7 @@ namespace Fliq.Infrastructure.Services.ImageServices
             CloudStorageAccount cloudStorageAccount = AzureConnectionString.GetConnectionString();
 
             var cloudBlobClient = cloudStorageAccount.CreateCloudBlobClient();
-            var cloudBlobContainer = cloudBlobClient.GetContainerReference("media");
+            var cloudBlobContainer = cloudBlobClient.GetContainerReference(containerName);
 
             string mediaName = Guid.NewGuid().ToString() + extension;
 

@@ -7,7 +7,7 @@ namespace Fliq.Application.Common.Interfaces.Services.ImageServices
     {
         Task<string?> UploadImageAsync(IFormFile imageToUpload);
 
-        Task<string?> UploadMediaAsync(IFormFile mediaToUpload);
+        Task<string?> UploadMediaAsync(IFormFile mediaToUpload, string containerName);
 
         Task<(bool IsVerified, double ConfidenceLevel, LivenessWithVerifySession? LivenessWithVerifySession)> GetFaceLivelinessResult(string sessionId);
     }
