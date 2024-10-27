@@ -18,6 +18,10 @@ namespace Fliq.Domain.Common.Errors
             public static Error CategoryNotFound => Error.NotFound(
             code: "PromptCategory.NotFound",
             description: "Prompt Category not found");
+
+            public static Error DuplicateCategory => Error.Conflict(
+            code: "PromptCategory.AlreadyExist",
+            description: "Prompt Category already exists");
         }
     }
 }

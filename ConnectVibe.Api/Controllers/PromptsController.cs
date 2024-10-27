@@ -69,5 +69,39 @@ namespace Fliq.Api.Controllers
                 );
 
         }
+
+        [HttpPost("AddCategory")]
+        [Produces(typeof(AddPromptCategoryResponse))]
+        //[Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AddCategory([FromBody] AddPromptCategoryRequest request)
+        {
+            _logger.LogInfo($"Add Prompt Category  request received: {request}");
+            var command = new AddPromptCategoryCommand(request.CategoryName);
+
+            var result = await _mediator.Send(command);
+            _logger.LogInfo($"Add Prompt Category Command Executed. Result: {result}");
+
+            return result.Match(
+                result => Ok(_mapper.Map<AddPromptCategoryResponse>(result)),
+                errors => Problem(string.Join("; ", errors.Select(e => e.Description)))
+            );
+        }
+
+        [HttpPost("AddSystemPrompt")]
+        [Produces(typeof(AddSystemPromptResponse))]
+        //[Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AddSystemPrompt([FromBody] AddSystemPromptRequest request)
+        {
+            _logger.LogInfo($"Add System Prompt request received: {request}");
+            var command = new AddSystemPromptCommand(request.QuestionText, request.CategoryId);
+
+            var result = await _mediator.Send(command);
+            _logger.LogInfo($"Add System Prompt Command Executed. Result: {result}");
+
+            return result.Match(
+                result => Ok(_mapper.Map<AddSystemPromptResponse>(result)),
+                errors => Problem(string.Join("; ", errors.Select(e => e.Description)))
+            );
+        }
     }
 }

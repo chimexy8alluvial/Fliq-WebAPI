@@ -32,5 +32,10 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         {
             throw new NotImplementedException();
         }
+
+        Task<PromptCategory> IPromptCategoryRepository.GetCategoryByName(string categoryName)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

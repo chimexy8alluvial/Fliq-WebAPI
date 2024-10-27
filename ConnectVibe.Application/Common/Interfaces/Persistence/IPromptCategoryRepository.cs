@@ -6,5 +6,6 @@ namespace Fliq.Application.Common.Interfaces.Persistence
     {
         void AddCategory(PromptCategory category);
         Task<PromptCategory> GetCategoryByIdAsync(int category);
+        Task<PromptCategory> GetCategoryByName(string categoryName);
     }
 }
