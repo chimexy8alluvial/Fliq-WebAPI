@@ -28,14 +28,14 @@ namespace Fliq.Application.Prompts.Commands
         private readonly IPromptQuestionRepository _promptQuestionRepository;
         private readonly IImageService _mediaService;
         private readonly IPromptCategoryRepository _promptCategoryRepository;
-        private readonly PromptAnswerCommandHandler _promptAnswerCommandHandler;
+        private readonly ISender _mediator;
 
-        public CreateCustomPromptCommandHandler(IPromptQuestionRepository promptQuestionRepository, IImageService mediaService, IPromptCategoryRepository promptCategoryRepository, PromptAnswerCommandHandler promptAnswerCommandHandler)
+        public CreateCustomPromptCommandHandler(IPromptQuestionRepository promptQuestionRepository, IImageService mediaService, IPromptCategoryRepository promptCategoryRepository, ISender mediator)
         {
             _promptQuestionRepository = promptQuestionRepository;
             _mediaService = mediaService;
             _promptCategoryRepository = promptCategoryRepository;
-            _promptAnswerCommandHandler = promptAnswerCommandHandler;
+            _mediator = mediator;
         }
 
         public async Task<ErrorOr<CreatePromptAnswerResult>> Handle(CreateCustomPromptCommand request, CancellationToken cancellationToken)
@@ -75,7 +75,7 @@ namespace Fliq.Application.Prompts.Commands
                 );
 
                 // Handle the answer creation
-               return await _promptAnswerCommandHandler.Handle(answerCommand, cancellationToken);
+               return await _mediator.Send(answerCommand, cancellationToken);
         }
     }
 }

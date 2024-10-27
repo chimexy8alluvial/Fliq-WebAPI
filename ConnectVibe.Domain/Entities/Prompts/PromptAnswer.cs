@@ -8,7 +8,7 @@ namespace Fliq.Domain.Entities.Prompts
         public int PromptQuestionId { get; set; }
 
         // Answer options: only one should be populated
-        public string? AnswerText { get; set; }
+        public string? TextAnswer { get; set; }
         public string? VoiceNoteUrl { get; set; }
         public string? VideoClipUrl { get; set; }
 
