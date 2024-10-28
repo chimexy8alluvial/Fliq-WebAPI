@@ -1,5 +1,6 @@
 ﻿using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Interfaces.Services.ImageServices;
 using Fliq.Application.Prompts.Common;
 using Fliq.Domain.Common.Errors;
@@ -27,33 +28,42 @@ namespace Fliq.Application.Prompts.Commands
         private readonly IPromptAnswerRepository _promptAnswerRepository;
         private readonly IPromptQuestionRepository _promptQuestionRepository;
         private readonly IMapper _mapper;
+        private readonly ILoggerManager _loggerManager;
 
-        public PromptAnswerCommandHandler(IImageService mediaService, IPromptAnswerRepository promptAnswerRepository, IPromptQuestionRepository promptQuestionRepository, IMapper mapper)
+        public PromptAnswerCommandHandler(IImageService mediaService, IPromptAnswerRepository promptAnswerRepository, IPromptQuestionRepository promptQuestionRepository, IMapper mapper, ILoggerManager loggerManager)
         {
             _mediaService = mediaService;
             _promptAnswerRepository = promptAnswerRepository;
             _promptQuestionRepository = promptQuestionRepository;
             _mapper = mapper;
+            _loggerManager = loggerManager;
         }
 
         public async Task<ErrorOr<CreatePromptAnswerResult>> Handle(PromptAnswerCommand request, CancellationToken cancellationToken)
         {
-            if(string.IsNullOrWhiteSpace(request.TextAnswer) && request.VoiceNote == null && request.VideoClip == null)
+            _loggerManager.LogInfo($"Starting answer creation process for Prompt Question ID: {request.PromptQuestionId} by User ID: {request.UserId}");
+
+            if (string.IsNullOrWhiteSpace(request.TextAnswer) && request.VoiceNote == null && request.VideoClip == null)
             {
+                _loggerManager.LogWarn("No answer format provided. At least one format (Text, Voice, or Video) must be supplied. Aborting answer creation.");
                 return Errors.Prompts.AnswerNotProvided;
             }
 
             var promptQuestion = await _promptQuestionRepository.GetQuestionByIdAsync(request.PromptQuestionId);
             if(promptQuestion is null)
             {
+                _loggerManager.LogWarn($"Prompt Question not found for ID: {request.PromptQuestionId}. Aborting answer creation.");
                 return Errors.Prompts.QuestionNotFound;
             }
 
+            _loggerManager.LogDebug("Mapping request data to PromptAnswer model.");
             var promptAnswer = _mapper.Map<PromptAnswer>(request);
 
             if (request.VoiceNote != null)
             {
+                _loggerManager.LogInfo("Uploading voice note for Prompt Answer.");
                 promptAnswer.VoiceNoteUrl = await UploadPromptAnswerAsync(request.VoiceNote, PromptAnswerMediaType.VoiceNote);
+                _loggerManager.LogDebug($"Video clip uploaded successfully. URL: {promptAnswer.VideoClipUrl}");
             }
 
             if (request.VideoClip != null)
@@ -62,6 +72,7 @@ namespace Fliq.Application.Prompts.Commands
             }
 
              _promptAnswerRepository.Add(promptAnswer);
+            _loggerManager.LogInfo($"Prompt Answer added successfully for Prompt Question ID: {request.PromptQuestionId} with Answer ID: {promptAnswer.Id}");
 
             return new CreatePromptAnswerResult(request.PromptQuestionId, promptAnswer.Id, true);
         }
@@ -75,7 +86,11 @@ namespace Fliq.Application.Prompts.Commands
                 _ => null
             } ?? throw new ArgumentException("Invalid prompt answer type provided.");
 
-            return await _mediaService.UploadMediaAsync(file, containerName);
+            _loggerManager.LogDebug($"Uploading file to container: {containerName}");
+            var uploadResult = await _mediaService.UploadMediaAsync(file, containerName);
+            _loggerManager.LogDebug($"File uploaded to {containerName} with result URL: {uploadResult}");
+
+            return uploadResult;
         }
 
     }

@@ -1,5 +1,6 @@
 ﻿using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Prompts.Common;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Prompts;
@@ -14,15 +15,19 @@ namespace Fliq.Application.Prompts.Commands
     public class AddPromptCategoryCommandHandler : IRequestHandler<AddPromptCategoryCommand, ErrorOr<AddPromptCategoryResult>>
     {
         private readonly IPromptCategoryRepository _categoryRepository;
+        private readonly ILoggerManager _loggerManager;
 
-        public AddPromptCategoryCommandHandler(IPromptCategoryRepository categoryRepository)
+        public AddPromptCategoryCommandHandler(IPromptCategoryRepository categoryRepository, ILoggerManager loggerManager)
         {
             _categoryRepository = categoryRepository;
+            _loggerManager = loggerManager;
         }
 
         public async Task<ErrorOr<AddPromptCategoryResult>> Handle(AddPromptCategoryCommand request, CancellationToken cancellationToken)
         {
             await Task.CompletedTask;
+
+            _loggerManager.LogInfo($"Starting category creation process for category name: {request.CategoryName}");
 
             var category = new PromptCategory
             {
@@ -33,10 +38,12 @@ namespace Fliq.Application.Prompts.Commands
             var existingCategory = _categoryRepository.GetCategoryByName(category.CategoryName);
             if (existingCategory != null)
             {
+                _loggerManager.LogWarn($"Duplicate category detected: {category.CategoryName}. Aborting creation.");
                 return Errors.Prompts.DuplicateCategory;
             }
 
             _categoryRepository.AddCategory(category);
+            _loggerManager.LogInfo($"Successfully added new category: {category.CategoryName} with ID: {category.Id}");
 
             return new AddPromptCategoryResult(category.Id, category.CategoryName);
         }

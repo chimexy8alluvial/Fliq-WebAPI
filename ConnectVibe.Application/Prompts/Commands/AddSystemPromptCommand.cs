@@ -1,5 +1,6 @@
 ﻿using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Prompts.Common;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Prompts;
@@ -14,19 +15,26 @@ namespace Fliq.Application.Prompts.Commands
     {
         private readonly IPromptQuestionRepository _questionRepository;
         private readonly IPromptCategoryRepository _categoryRepository;
+        private readonly ILoggerManager _loggerManager;
 
-        public AddSystemPromptCommandHandler(IPromptQuestionRepository questionRepository, IPromptCategoryRepository categoryRepository)
+        public AddSystemPromptCommandHandler(IPromptQuestionRepository questionRepository, IPromptCategoryRepository categoryRepository, ILoggerManager loggerManager)
         {
             _questionRepository = questionRepository;
             _categoryRepository = categoryRepository;
+            _loggerManager = loggerManager;
         }
 
         public async Task<ErrorOr<AddSystemPromptResult>> Handle(AddSystemPromptCommand request, CancellationToken cancellationToken)
         {
+            _loggerManager.LogInfo($"Starting prompt question creation process for Category ID: {request.CategoryId}");
+
             var category = await _categoryRepository.GetCategoryByIdAsync(request.CategoryId);
 
-            if (category is null) return Errors.Prompts.CategoryNotFound;
-
+            if (category is null)
+            {
+                _loggerManager.LogWarn($"Category not found for Category ID: {request.CategoryId}. Aborting prompt question creation.");
+                return Errors.Prompts.CategoryNotFound;
+            }
             var promptQuestion = new PromptQuestion
             {
                 QuestionText = request.QuestionText,
@@ -35,6 +43,7 @@ namespace Fliq.Application.Prompts.Commands
             };
 
             _questionRepository.AddQuestion(promptQuestion);
+            _loggerManager.LogInfo($"Successfully added prompt question: '{promptQuestion.QuestionText}' with ID: {promptQuestion.Id} to Category ID: {request.CategoryId}");
 
             return new AddSystemPromptResult(promptQuestion.Id, promptQuestion.QuestionText);
         }
