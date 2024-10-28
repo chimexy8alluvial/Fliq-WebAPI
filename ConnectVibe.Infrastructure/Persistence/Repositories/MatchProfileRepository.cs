@@ -35,9 +35,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             using (var connection = _connectionFactory.CreateConnection())
             {
                 var parameters = FilterListDynamicParams(userId, matchListPagination);
-
                 var sql = "sPGetMatchedList";
-
                 var result = connection.Query<dynamic>(sql, param: parameters, commandType: CommandType.StoredProcedure);
                 var filteredItems = result.Select(p => new MatchRequestDto
                 {
