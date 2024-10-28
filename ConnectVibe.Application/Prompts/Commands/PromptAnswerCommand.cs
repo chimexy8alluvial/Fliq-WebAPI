@@ -49,7 +49,7 @@ namespace Fliq.Application.Prompts.Commands
                 return Errors.Prompts.AnswerNotProvided;
             }
 
-            var promptQuestion = await _promptQuestionRepository.GetQuestionByIdAsync(request.PromptQuestionId);
+            var promptQuestion = _promptQuestionRepository.GetQuestionByIdAsync(request.PromptQuestionId);
             if(promptQuestion is null)
             {
                 _loggerManager.LogWarn($"Prompt Question not found for ID: {request.PromptQuestionId}. Aborting answer creation.");

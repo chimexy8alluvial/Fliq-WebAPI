@@ -1,5 +1,7 @@
-﻿using Fliq.Application.Common.Interfaces.Persistence;
+﻿using Dapper;
+using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Domain.Entities.Prompts;
+using System.Data;
 
 
 namespace Fliq.Infrastructure.Persistence.Repositories
@@ -28,14 +30,27 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             _dbContext.SaveChanges();
         }
 
-        public Task<PromptCategory> GetCategoryByIdAsync(int category)
+        public PromptCategory? GetCategoryById(int categoryId)
         {
-            throw new NotImplementedException();
+            var category = _dbContext.PromptCategories.SingleOrDefault(c => c.Id == categoryId);
+            return category;
         }
 
-        Task<PromptCategory> IPromptCategoryRepository.GetCategoryByName(string categoryName)
+        public PromptCategory? GetCategoryByName(string categoryName)
         {
-            throw new NotImplementedException();
+            var category = _dbContext.PromptCategories.SingleOrDefault(c => c.CategoryName == categoryName);
+            return category;
         }
+
+        public IEnumerable<PromptCategory> GetAllPromptCategories()
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+               var categories = connection.Query<PromptCategory>("sp_GetAllPromptCategories", commandType: CommandType.StoredProcedure);
+
+               return categories;
+            }
+        }
+
     }
 }

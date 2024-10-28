@@ -2,7 +2,6 @@
 
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Domain.Entities.Prompts;
-using Microsoft.EntityFrameworkCore;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {

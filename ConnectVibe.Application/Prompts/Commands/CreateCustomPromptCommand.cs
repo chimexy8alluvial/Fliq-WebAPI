@@ -52,7 +52,7 @@ namespace Fliq.Application.Prompts.Commands
                 return Errors.Prompts.AnswerNotProvided;
             }
 
-            var category = await _promptCategoryRepository.GetCategoryByIdAsync(request.PromptCategoryId);
+            var category = _promptCategoryRepository.GetCategoryById(request.PromptCategoryId);
             if (category == null)
             {
                 _loggerManager.LogWarn($"Category not found for Category ID: {request.PromptCategoryId}. Aborting custom prompt creation.");

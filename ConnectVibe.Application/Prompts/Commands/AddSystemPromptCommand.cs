@@ -26,9 +26,11 @@ namespace Fliq.Application.Prompts.Commands
 
         public async Task<ErrorOr<AddSystemPromptResult>> Handle(AddSystemPromptCommand request, CancellationToken cancellationToken)
         {
+            await Task.CompletedTask;
+
             _loggerManager.LogInfo($"Starting prompt question creation process for Category ID: {request.CategoryId}");
 
-            var category = await _categoryRepository.GetCategoryByIdAsync(request.CategoryId);
+            var category = _categoryRepository.GetCategoryById(request.CategoryId);
 
             if (category is null)
             {
