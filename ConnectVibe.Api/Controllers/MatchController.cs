@@ -27,7 +27,7 @@ namespace Fliq.Api.Controllers
             _logger = logger;
         }
 
-        [HttpPost("initiateMatch")]
+        [HttpPost("initiatematch")]
         public async Task<IActionResult> Initiate_Match([FromForm] CreateMatchRequest request)
         {
             _logger.LogInfo($"Initiate Match Request Received: {request}");
@@ -44,7 +44,7 @@ namespace Fliq.Api.Controllers
             );
         }
 
-        [HttpGet("GetMatchedList")]
+        [HttpGet("getmatchedlist")]
         public async Task<IActionResult> GetMatchedList()
         {
             var userId = GetAuthUserId();
@@ -59,8 +59,26 @@ namespace Fliq.Api.Controllers
             );
         }
 
-        [HttpPost("AcceptMatch")]
+        [HttpPost("acceptmatch")]
+        //just accept match request
         public async Task<IActionResult> Accept([FromBody] CreateAcceptMatchRequest request)
+        {
+            _logger.LogInfo($"Accept Match Request Received: {request}");
+            var userId = GetAuthUserId();
+            var modifiedRequest = request with { UserId = userId };
+            var command = _mapper.Map<AcceptMatchRequestCommand>(modifiedRequest);
+
+            var acceptMatchResult = await _mediator.Send(command);
+            _logger.LogInfo($"Accept Match Request Command Executed.  Result: {acceptMatchResult}");
+
+            return acceptMatchResult.Match(
+                acceptMatchResult => Ok(_mapper.Map<MatchedProfileResponse>(acceptMatchResult)),
+                errors => Problem(errors)
+            );
+        }
+
+        [HttpPost("rejectmatch")]
+        public async Task<IActionResult> Reject([FromBody] CreateAcceptMatchRequest request)
         {
             _logger.LogInfo($"Accept Match Request Received: {request}");
             var userId = GetAuthUserId();

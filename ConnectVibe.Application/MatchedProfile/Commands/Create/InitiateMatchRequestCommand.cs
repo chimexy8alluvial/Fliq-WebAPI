@@ -1,8 +1,8 @@
 ﻿using ErrorOr;
+using Fliq.Application.Common.Helpers;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services.ImageServices;
 using Fliq.Application.MatchedProfile.Common;
-using Fliq.Application.Profile.Common;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.MatchedProfile;
 using Fliq.Domain.Enums;
@@ -40,21 +40,13 @@ namespace Fliq.Application.MatchedProfile.Commands.Create
             {
                 return Errors.User.UserNotFound;
             }
-            var matchInitiatorUser = _userRepository.GetUserById(command.MatchInitiatorUserId);
-            if (matchInitiatorUser == null)
-            {
-                return Errors.User.UserNotFound;
-            }
-
-            command.UserId = requestedUser.Id;
+            var matchInitiator = _userRepository.GetUserByIdIncludingProfile(command.MatchInitiatorUserId);
             var matchProfile = _mapper.Map<MatchRequest>(command);
-           
-            matchProfile.matchRequestStatus = MatchRequestStatus.Pending;
-            //matchProfile.PictureUrl = matchInitiatorUser.UserProfile.Photos.First().PictureUrl;
-            matchProfile.PictureUrl = matchProfile.PictureUrl == null ? "" : matchInitiatorUser.UserProfile.Photos.First().PictureUrl;
-            matchProfile.Name = matchInitiatorUser.FirstName;
-            
 
+            matchProfile.matchRequestStatus = MatchRequestStatus.Pending;
+            matchProfile.PictureUrl = matchInitiator?.UserProfile?.Photos?.FirstOrDefault()?.PictureUrl;
+            matchProfile.Name = matchInitiator.FirstName;
+            matchProfile.Age = matchInitiator.UserProfile.DOB.CalculateAge();
             _matchProfileRepository.Add(matchProfile);
 
             return new CreateMatchProfileResult(matchProfile.MatchInitiatorUserId,

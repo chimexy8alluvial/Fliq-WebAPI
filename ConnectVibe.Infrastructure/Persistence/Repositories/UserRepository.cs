@@ -2,6 +2,7 @@
 using Fliq.Domain.Entities;
 using Dapper;
 using System.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {
@@ -55,6 +56,11 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             var user = _dbContext.Users.SingleOrDefault(p => p.Id == id);
             return user;
         }
-
-}
+        //To be changed to stored procedure
+        public User? GetUserByIdIncludingProfile(int id)
+        {
+            var user = _dbContext.Users.Include(p=>p.UserProfile).ThenInclude(p=>p.Photos).SingleOrDefault(p => p.Id == id);
+            return user;
+        }
+    }
 }

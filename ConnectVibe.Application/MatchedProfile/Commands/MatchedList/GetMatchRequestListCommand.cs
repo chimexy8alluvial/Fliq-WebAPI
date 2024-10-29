@@ -32,15 +32,8 @@ namespace Fliq.Application.MatchedProfile.Commands.MatchedList
         {
             await Task.CompletedTask;
 
-            var user = _userRepository.GetUserById(command.UserId);
-            if (user == null)
-            {
-                return Errors.User.UserNotFound;
-            }
-            var requestId = _mapper.Map<MatchRequest>(command);
             var pagination = new MatchListPagination();
-            var filteredValue = await _matchProfileRepository.GetMatchListById(requestId.UserId, pagination);
-
+            var filteredValue = await _matchProfileRepository.GetMatchListById(command.UserId, pagination);
             var result = filteredValue.ToList();
 
             return result;

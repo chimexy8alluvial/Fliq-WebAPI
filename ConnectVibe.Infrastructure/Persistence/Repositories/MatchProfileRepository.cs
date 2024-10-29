@@ -35,14 +35,13 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             using (var connection = _connectionFactory.CreateConnection())
             {
                 var parameters = FilterListDynamicParams(userId, matchListPagination);
-                var sql = "sPGetMatchedList";
-                var result = connection.Query<dynamic>(sql, param: parameters, commandType: CommandType.StoredProcedure);
+                var result = connection.Query<dynamic>("sPGetMatchedList", param: parameters, commandType: CommandType.StoredProcedure);
                 var filteredItems = result.Select(p => new MatchRequestDto
                 {
                     MatchInitiatorUserId = p.MatchInitiatorUserId,
                     Name = p.Name,
                     PictureUrl = p.PictureUrl
-                }).ToList();
+                });
                 return filteredItems;
             }
         }

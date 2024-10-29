@@ -35,14 +35,10 @@ namespace Fliq.Application.MatchedProfile.Commands.AcceptedMatch
         {
             await Task.CompletedTask;
 
-            var acceptorUser = _userRepository.GetUserById(command.UserId);
-            if (acceptorUser == null)
-            {
-                return Errors.User.UserNotFound;
-            }
             var matchProfile = _matchProfileRepository.GetMatchProfileById(command.Id);
             if (matchProfile == null)
             {
+                //match profile not found should be returned
                 return Errors.User.UserNotFound;
             }
 
