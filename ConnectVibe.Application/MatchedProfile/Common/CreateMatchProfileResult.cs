@@ -4,6 +4,7 @@
     (
         int MatchInitiatorUserId,
         string Name,
-        string PictureUrl
+        string PictureUrl,
+        int? Age
     );
 }

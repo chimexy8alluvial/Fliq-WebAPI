@@ -51,7 +51,7 @@ namespace Fliq.Application.MatchedProfile.Commands.Create
 
             return new CreateMatchProfileResult(matchProfile.MatchInitiatorUserId,
                 matchProfile.Name,
-                matchProfile.PictureUrl);
+                matchProfile.PictureUrl,matchProfile.Age);
         }
     }
 }

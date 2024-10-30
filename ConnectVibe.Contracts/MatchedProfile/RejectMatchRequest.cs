@@ -1,6 +1,6 @@
 ﻿namespace Fliq.Contracts.MatchedProfile
 {
-    public record AcceptMatchRequest
+    public record RejectMatchRequest
     (
         int? Id,
         int UserId

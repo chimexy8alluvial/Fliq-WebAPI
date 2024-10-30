@@ -3,6 +3,7 @@ using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.MatchedProfile.Commands.AcceptedMatch;
 using Fliq.Application.MatchedProfile.Commands.Create;
 using Fliq.Application.MatchedProfile.Commands.MatchedList;
+using Fliq.Application.MatchedProfile.Commands.RejectMatch;
 using Fliq.Contracts.MatchedProfile;
 using MapsterMapper;
 using MediatR;
@@ -78,18 +79,18 @@ namespace Fliq.Api.Controllers
         }
 
         [HttpPost("rejectmatch")]
-        public async Task<IActionResult> Reject([FromBody] AcceptMatchRequest request)
+        public async Task<IActionResult> Reject([FromBody] RejectMatchRequest request)
         {
             _logger.LogInfo($"Accept Match Request Received: {request}");
             var userId = GetAuthUserId();
             var modifiedRequest = request with { UserId = userId };
-            var command = _mapper.Map<AcceptMatchRequestCommand>(modifiedRequest);
+            var command = _mapper.Map<RejectMatchRequestCommand>(modifiedRequest);
 
-            var acceptMatchResult = await _mediator.Send(command);
-            _logger.LogInfo($"Accept Match Request Command Executed.  Result: {acceptMatchResult}");
+            var rejectMatchResult = await _mediator.Send(command);
+            _logger.LogInfo($"Accept Match Request Command Executed.  Result: {rejectMatchResult}");
 
-            return acceptMatchResult.Match(
-                acceptMatchResult => Ok(_mapper.Map<MatchedProfileResponse>(acceptMatchResult)),
+            return rejectMatchResult.Match(
+                rejectMatchResult => Ok(_mapper.Map<MatchedProfileResponse>(rejectMatchResult)),
                 errors => Problem(errors)
             );
         }

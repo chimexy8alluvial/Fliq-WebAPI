@@ -40,7 +40,8 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                 {
                     MatchInitiatorUserId = p.MatchInitiatorUserId,
                     Name = p.Name,
-                    PictureUrl = p.PictureUrl
+                    PictureUrl = p.PictureUrl,
+                    Age = p.Age
                 });
                 return filteredItems;
             }
