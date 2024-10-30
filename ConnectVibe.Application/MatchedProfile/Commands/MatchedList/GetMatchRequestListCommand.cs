@@ -3,8 +3,6 @@ using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services.ImageServices;
 using Fliq.Application.Common.Pagination;
 using Fliq.Contracts.MatchedProfile;
-using Fliq.Domain.Common.Errors;
-using Fliq.Domain.Entities.MatchedProfile;
 using MapsterMapper;
 using MediatR;
 

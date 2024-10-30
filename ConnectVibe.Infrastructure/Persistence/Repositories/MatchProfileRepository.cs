@@ -17,7 +17,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             _connectionFactory = connectionFactory;
             _dbContext = dbContext;
         }
-        public void Add(MatchRequest matchProfile)
+        public void Add(Domain.Entities.MatchedProfile.MatchRequest matchProfile)
         {
             if (matchProfile.Id > 0)
             {
@@ -46,19 +46,19 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             }
         }
 
-        public MatchRequest? GetMatchProfileByUserId(int Id)
+        public Domain.Entities.MatchedProfile.MatchRequest? GetMatchProfileByUserId(int Id)
         {
             var matchProfile = _dbContext.MatchRequests.SingleOrDefault(p => p.UserId == Id);
             return matchProfile;
         }
 
-        public MatchRequest? GetMatchProfileById(int Id)
+        public Domain.Entities.MatchedProfile.MatchRequest? GetMatchProfileById(int Id)
         {
             var matchProfile = _dbContext.MatchRequests.SingleOrDefault(p => p.Id == Id);
             return matchProfile;
         }
 
-        public void Update(MatchRequest request)
+        public void Update(Domain.Entities.MatchedProfile.MatchRequest request)
         {
             _dbContext.Update(request);
             _dbContext.SaveChanges();
@@ -69,8 +69,8 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             var parameters = new DynamicParameters();
 
             parameters.Add("@userId", userId);
-            parameters.Add("@pageNumber", paginationRequest.PageNumber);
-            parameters.Add("@pageSize", paginationRequest.PageSize);
+            parameters.Add("@pageNumber", 1);
+            parameters.Add("@pageSize", 10);
             return parameters;
         }
     }

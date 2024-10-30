@@ -28,7 +28,7 @@ namespace Fliq.Api.Controllers
         }
 
         [HttpPost("initiatematch")]
-        public async Task<IActionResult> Initiate_Match([FromForm] CreateMatchRequest request)
+        public async Task<IActionResult> Initiate_Match([FromForm] MatchRequest request)
         {
             _logger.LogInfo($"Initiate Match Request Received: {request}");
             var MatchInitiatoruserId = GetAuthUserId();
@@ -61,7 +61,7 @@ namespace Fliq.Api.Controllers
 
         [HttpPost("acceptmatch")]
         //just accept match request
-        public async Task<IActionResult> Accept([FromBody] CreateAcceptMatchRequest request)
+        public async Task<IActionResult> Accept([FromBody] AcceptMatchRequest request)
         {
             _logger.LogInfo($"Accept Match Request Received: {request}");
             var userId = GetAuthUserId();
@@ -78,7 +78,7 @@ namespace Fliq.Api.Controllers
         }
 
         [HttpPost("rejectmatch")]
-        public async Task<IActionResult> Reject([FromBody] CreateAcceptMatchRequest request)
+        public async Task<IActionResult> Reject([FromBody] AcceptMatchRequest request)
         {
             _logger.LogInfo($"Accept Match Request Received: {request}");
             var userId = GetAuthUserId();

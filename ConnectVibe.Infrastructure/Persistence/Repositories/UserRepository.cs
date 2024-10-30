@@ -59,7 +59,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         //To be changed to stored procedure
         public User? GetUserByIdIncludingProfile(int id)
         {
-            var user = _dbContext.Users.Include(p=>p.UserProfile).ThenInclude(p=>p.Photos).SingleOrDefault(p => p.Id == id);
+            var user = _dbContext.Users.Include(p=>p.UserProfile).ThenInclude(p => p.Photos).SingleOrDefault(p => p.Id == id);
             return user;
         }
     }
