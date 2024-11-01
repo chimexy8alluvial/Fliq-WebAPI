@@ -2,7 +2,7 @@
 
 namespace Fliq.Contracts.Profile
 {
-    public record CreatePromptResponseDto(int PromptQuestionId,
+    public record CreatePromptResponseDto(int? PromptQuestionId,
         int CategoryId,
         string? CustomPromptQuestionText,
         string? TextResponse,

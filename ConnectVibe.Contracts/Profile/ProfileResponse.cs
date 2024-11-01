@@ -1,4 +1,6 @@
-﻿namespace Fliq.Contracts.Profile
+﻿using Fliq.Application.Prompts.Common;
+
+namespace Fliq.Contracts.Profile
 {
     public record ProfileResponse
     (int UserId,
@@ -15,5 +17,6 @@
      LocationDto Location,
      bool AllowNotifications = false,
      List<string> Passions = default!,
-    List<ProfilePhotoResponse> Photos = default!);
+    List<ProfilePhotoResponse> Photos = default!,
+        List<PromptResponseDto> PromptResponses = default!);
 }
