@@ -2,6 +2,7 @@
 using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Entities.Settings;
 using Microsoft.EntityFrameworkCore;
+using Fliq.Domain.Entities.MatchedProfile;
 
 namespace Fliq.Infrastructure.Persistence
 {
@@ -14,7 +15,10 @@ namespace Fliq.Infrastructure.Persistence
         public DbSet<User> Users { get; set; } = null!;
         public DbSet<OTP> OTPs { get; set; } = null!;
         public DbSet<UserProfile> UserProfiles { get; set; } = null!;
-        public DbSet<LocationDetail> LocationDetails { get; set; } = null!;
+        public DbSet<MatchRequest> MatchRequests { get; set; }
+
+        public DbSet<LocationDetail> LocationDetails { get; set; }
+       
 
         public DbSet<Subscription> Subscriptions { get; set; } = null!;
         public DbSet<Payment> Payments { get; set; } = null!;
