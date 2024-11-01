@@ -6,7 +6,7 @@
        int TicketType,
        string TicketDescription,
        DateTime EventDate,
-       string Currency,
+       int CurrencyId,
        decimal Amount,
        string MaximumLimit,
        bool SoldOut,

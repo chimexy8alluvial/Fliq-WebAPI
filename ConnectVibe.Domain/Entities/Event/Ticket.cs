@@ -6,7 +6,8 @@
         public TicketType TicketType { get; set; } = default!;
         public string TicketDescription { get; set; } = default!;
         public DateTime EventDate { get; set; }
-        public string Currency { get; set; } = default!;
+        public Currency Currency { get; set; } = default!;
+        public int CurrencyId { get; set; }
         public decimal Amount { get; set; } = default!;
         public string MaximumLimit { get; set; } = default!;
         public bool SoldOut { get; set; } = default!;

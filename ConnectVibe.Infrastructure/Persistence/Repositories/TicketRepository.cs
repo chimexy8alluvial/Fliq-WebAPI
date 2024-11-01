@@ -34,5 +34,11 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             var result = _dbContext.Tickets.SingleOrDefault(p => p.Id == id);
             return result;
         }
+
+        public List<Currency> GetCurrenciees()
+        {
+            var result = _dbContext.Currencies.ToList();
+            return result;
+        }
     }
 }

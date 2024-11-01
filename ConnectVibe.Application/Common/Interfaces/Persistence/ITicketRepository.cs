@@ -9,5 +9,7 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         void Update(Ticket request);
 
         Ticket? GetTicketById(int id);
+
+        List<Currency> GetCurrenciees();
     }
 }

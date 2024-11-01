@@ -4,6 +4,7 @@ using Fliq.Application.Event.Commands.EventCreation;
 using Fliq.Application.Event.Commands.Tickets;
 using Fliq.Application.Event.Commands.UpdateEvent;
 using Fliq.Application.Event.Commands.UpdateTicket;
+using Fliq.Application.Event.Queries.GetCurrency;
 using Fliq.Application.Event.Queries.GetEvent;
 using Fliq.Application.Event.Queries.GetTicket;
 using Fliq.Contracts.Event;
@@ -11,16 +12,11 @@ using Fliq.Contracts.Event.ResponseDtos;
 using Fliq.Contracts.Event.UpdateDtos;
 using MapsterMapper;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Fliq.Api.Controllers
 {
-    //[Authorize]
-    //[Route("api/event")]
-    //[ApiController]
     [Route("api/event")]
-    [AllowAnonymous]
     public class EventController : ApiBaseController
     {
         private readonly ISender _mediator;
@@ -116,6 +112,20 @@ namespace Fliq.Api.Controllers
 
             return ticketResult.Match(
                 ticket => Ok(_mapper.Map<GetTicketResponse>(ticket)),
+                errors => Problem(errors)
+            );
+        }
+
+        [HttpGet("currencies")]
+        public async Task<IActionResult> GetCurrencies()
+        {
+            _logger.LogInfo($"Get Currency Request Received");
+            var query = new GetCurrenciesQuery();
+            var currenciesResult = await _mediator.Send(query);
+            _logger.LogInfo($"Get Ticket query executed. Result: {currenciesResult}");
+
+            return currenciesResult.Match(
+                ticket => Ok(_mapper.Map<List<GetCurrencyResponse>>(ticket)),
                 errors => Problem(errors)
             );
         }

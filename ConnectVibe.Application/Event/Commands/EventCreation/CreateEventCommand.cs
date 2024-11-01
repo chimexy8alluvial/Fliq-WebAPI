@@ -66,11 +66,6 @@ namespace Fliq.Application.Event.Commands.EventCreation
             await Task.CompletedTask;
 
             var user = _userRepository.GetUserById(command.UserId);
-            if (user == null)
-            {
-                _logger.LogError($"User with id: {command.UserId} was not found.");
-                return Errors.User.DuplicateEmail;
-            }
 
             if (user.IsDocumentVerified == false && command.EventType == EventType.Physical)
             {

@@ -18,7 +18,7 @@ namespace Fliq.Application.Event.Commands.UpdateTicket
         public TicketType? TicketType { get; set; }
         public string? TicketDescription { get; set; }
         public DateTime? EventDate { get; set; }
-        public string? Currency { get; set; }
+        public int? CurrencyId { get; set; }
         public decimal? Amount { get; set; }
         public string? MaximumLimit { get; set; }
         public bool? SoldOut { get; set; }
