@@ -47,6 +47,7 @@ namespace Fliq.Api.Controllers
 
         }
 
+        [Obsolete]
         [HttpPost("Add-custom")]
         [Produces(typeof(CreateCustomPromptResponse))]
         public async Task<IActionResult> CreateCustomPrompt([FromForm] CreateCustomPromptRequest request)
