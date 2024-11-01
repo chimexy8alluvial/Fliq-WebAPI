@@ -1,4 +1,5 @@
 ﻿using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Interfaces.Services.ImageServices;
 using Fliq.Application.Common.Interfaces.Services.LocationServices;
 using Fliq.Application.Common.Models;
@@ -27,6 +28,9 @@ namespace Fliq.Test.Profile.Commands.Create
         private Mock<ILocationService> _locationServiceMock;
         private Mock<IHttpContextAccessor> _httpContextAccessorMock;
         private Mock<ClaimsPrincipal> _claimsPrincipalMock;
+        private Mock<IPromptQuestionRepository> _promptQuestionRepositoryMock;
+        private Mock<IPromptCategoryRepository> _promptCategoryRepositoryMock;
+        private Mock<ILoggerManager> _loggerManagerMock;
 
         [TestInitialize]
         public void Setup()
@@ -40,6 +44,9 @@ namespace Fliq.Test.Profile.Commands.Create
             _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
             _settingsRepositoryMock = new Mock<ISettingsRepository>();
             _claimsPrincipalMock = new Mock<ClaimsPrincipal>();
+            _promptQuestionRepositoryMock = new Mock<IPromptQuestionRepository>();
+            _promptCategoryRepositoryMock = new Mock<IPromptCategoryRepository>();
+            _loggerManagerMock = new Mock<ILoggerManager>();
 
             // Mocking HttpContext to return a valid user ID
             _httpContextAccessorMock.Setup(x => x.HttpContext.User)
@@ -52,7 +59,10 @@ namespace Fliq.Test.Profile.Commands.Create
                 _userRepositoryMock.Object,
                 _locationServiceMock.Object,
                 _httpContextAccessorMock.Object,
-                _settingsRepositoryMock.Object);
+                _settingsRepositoryMock.Object,
+                _loggerManagerMock.Object,
+                _promptQuestionRepositoryMock.Object,
+                _promptCategoryRepositoryMock.Object);
         }
 
         [TestMethod]
@@ -182,7 +192,7 @@ namespace Fliq.Test.Profile.Commands.Create
             _locationServiceMock.Setup(service => service.GetAddressFromCoordinatesAsync(It.IsAny<double>(), It.IsAny<double>()))
                 .ReturnsAsync(locationResponse);
 
-            _imageServiceMock.Setup(service => service.UploadMediaAsync(It.IsAny<IFormFile>()))
+            _imageServiceMock.Setup(service => service.UploadImageAsync(It.IsAny<IFormFile>()))
               .ReturnsAsync("image.jpeg");
 
             _mapperMock.Setup(mapper => mapper.Map<LocationDetail>(new LocationQueryResponse()));

@@ -11,7 +11,7 @@ namespace Fliq.Domain.Entities.Prompts
         public PromptCategory PromptCategory { get; set; } = default!;
 
         // One-to-one relationship: each question can have only one answer from a user
-        public PromptAnswer? PromptAnswer { get; set; }
+        public PromptResponse? PromptResponse { get; set; }
 
         // This can be used to track if this prompt is a custom prompt or not
         public string? CustomPromptId { get; set; } // Nullable if it's a standard prompt

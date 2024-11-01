@@ -23,7 +23,7 @@ namespace Fliq.Infrastructure.Persistence
 
         public DbSet<PromptCategory> PromptCategories { get; set; }
         public DbSet<PromptQuestion> PromptQuestions { get; set; }
-        public DbSet<PromptAnswer> PromptAnswers { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

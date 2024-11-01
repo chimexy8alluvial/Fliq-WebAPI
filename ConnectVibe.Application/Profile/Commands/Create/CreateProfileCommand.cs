@@ -51,8 +51,9 @@ namespace Fliq.Application.Profile.Commands.Create
         private readonly ISettingsRepository _settingsRepository;
         private readonly IPromptQuestionRepository _promptQuestionRepository;
         private readonly IPromptCategoryRepository _promptCategoryRepository;
+        private readonly ILoggerManager _loggerManager;
         private const int UnauthorizedUserId = -1;
-        private ILoggerManager _loggerManager;
+      
 
         public CreateProfileCommandHandler(IMapper mapper, IImageService imageService, IProfileRepository profileRepository, IUserRepository userRepository, ILocationService locationService, IHttpContextAccessor httpContextAccessor, ISettingsRepository settingsRepository, ILoggerManager loggerManager, IPromptQuestionRepository promptQuestionRepository, IPromptCategoryRepository promptCategoryRepository)
         {

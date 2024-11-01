@@ -24,6 +24,7 @@ namespace Fliq.Api.Controllers
             _logger = logger;
         }
 
+        [Obsolete]
         [HttpPost("Prompt-Answer")]
         [Produces(typeof(CreatePromptAnswerResponse))]
         public async Task<IActionResult> CreatePromptAnswer([FromForm] CreatePromptAnswerRequest request)
@@ -73,6 +74,7 @@ namespace Fliq.Api.Controllers
 
         [HttpPost("AddCategory")]
         [Produces(typeof(AddPromptCategoryResponse))]
+        [AllowAnonymous]
         //[Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddCategory([FromBody] AddPromptCategoryRequest request)
         {
@@ -90,6 +92,7 @@ namespace Fliq.Api.Controllers
 
         [HttpPost("AddSystemPrompt")]
         [Produces(typeof(AddSystemPromptResponse))]
+        [AllowAnonymous]
         //[Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddSystemPrompt([FromBody] AddSystemPromptRequest request)
         {
