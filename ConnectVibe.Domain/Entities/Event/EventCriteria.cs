@@ -4,7 +4,7 @@ namespace Fliq.Domain.Entities.Event
 {
     public class EventCriteria : Record
     {
-        public EventCategory EventType { get; set; }
+        public Event_Type EventType { get; set; }
         public Gender? Gender { get; set; }
     }
 }

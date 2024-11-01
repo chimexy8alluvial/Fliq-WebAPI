@@ -2,9 +2,9 @@
 {
     public enum Event_Type
     {
-        Paid,
-        Free,
-        FreeRequiresApproval,
-        RequiresApproval
+        Music,
+        Movies,
+        Comedy,
+        Entertainment
     }
 }
