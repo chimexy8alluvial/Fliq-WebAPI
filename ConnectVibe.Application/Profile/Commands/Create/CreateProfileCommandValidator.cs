@@ -1,5 +1,8 @@
-﻿using Fliq.Application.Profile.Common;
+﻿using Azure;
+using Fliq.Application.Profile.Common;
+using Fliq.Application.Prompts.Common;
 using Fliq.Domain.Entities.Profile;
+using Fliq.Domain.Entities.Prompts;
 using Fliq.Domain.Enums;
 using FluentValidation;
 
@@ -66,6 +69,13 @@ namespace Fliq.Application.Profile.Commands.Create
             RuleFor(x => x.ProfileDescription)
                 .NotEmpty().When(x => x.ProfileTypes.Any(pt => pt == ProfileType.Dating || pt == ProfileType.Friendship))
                 .WithMessage("Profile description is required for Dating or Friendship profile types.");
+
+            RuleFor(x => x.PromptResponses)
+                .Cascade(CascadeMode.Stop)
+                .NotEmpty().When(x => x.ProfileTypes.Any(pt => pt == ProfileType.Dating || pt == ProfileType.Friendship))
+                .WithMessage("Prompts should be provided for Dating or Friendship profile types")
+                .ForEach(response => response.SetValidator(new PromptResponseValidator()))
+                .When(x => x.PromptResponses != null);
         }
     }
 
@@ -208,4 +218,43 @@ namespace Fliq.Application.Profile.Commands.Create
                 .NotNull().WithMessage("IsVisible is required.");
         }
     }
+
+    public class PromptResponseValidator : AbstractValidator<PromptResponseDto>
+    {
+        public PromptResponseValidator()
+        {
+            RuleFor(x => x.PromptQuestionId)
+                .NotEmpty().WithMessage("QuestionId is required.");
+
+            RuleFor(x => x)
+                .Must(x => OnlyOneAnswerProvided(x))
+                .WithMessage("Only one answer type (Text, Audio, or Video) can be provided per prompt.");
+
+            RuleFor(x => x.TextResponse)
+                .NotEmpty().When(x => !string.IsNullOrEmpty(x.TextResponse))
+                .WithMessage("AnswerText cannot be empty if provided.")
+                .MaximumLength(500).WithMessage("AnswerText cannot exceed 500 characters.");
+
+            RuleFor(x => x.VoiceNote)
+                .NotEmpty().When(x => x.VoiceNote != null)
+                .WithMessage("Voice note file cannot be empty if provided.");
+
+            RuleFor(x => x.VideoClip)
+                .NotEmpty().When(x => x.VideoClip != null)
+                .WithMessage("Video clip file cannot be empty if provided.");
+        }
+
+        private bool OnlyOneAnswerProvided(PromptResponseDto response)
+        {
+            int answerCount = 0;
+
+            if (!string.IsNullOrEmpty(response.TextResponse)) answerCount++;
+            if (response.VoiceNote != null) answerCount++;
+            if (response.VideoClip != null) answerCount++;
+
+            // Ensure only one answer is provided
+            return answerCount == 1;
+        }
+    }
+
 }

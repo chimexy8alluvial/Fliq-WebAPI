@@ -1,4 +1,5 @@
-﻿using Fliq.Domain.Enums;
+﻿using Fliq.Domain.Entities.Prompts;
+using Fliq.Domain.Enums;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -41,5 +42,6 @@ namespace Fliq.Domain.Entities.Profile
         }
         public int UserId { get; set; }
         public User User { get; set; } = default!;
+        public List<PromptResponse> PromptResponses { get; set; } = new();
     }
 }

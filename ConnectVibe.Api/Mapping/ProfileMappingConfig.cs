@@ -4,6 +4,7 @@ using Fliq.Application.Common.Pagination;
 using Fliq.Application.Profile.Commands.Create;
 using Fliq.Application.Profile.Commands.Update;
 using Fliq.Application.Profile.Common;
+using Fliq.Application.Prompts.Common;
 using Fliq.Contracts.Profile;
 using Fliq.Contracts.Profile.UpdateDtos;
 using Fliq.Domain.Entities.Profile;
@@ -41,6 +42,7 @@ namespace Fliq.Api.Mapping
                 .Map(dest => dest.EducationLevel, src => (EducationLevel)src.EducationLevel);
             config.NewConfig<Occupation, OccupationDto>()
                 .Map(dest => dest.OccupationName, src => src.OccupationName);
+            config.NewConfig<CreatePromptResponseDto, PromptResponseDto>(); //Add prompt response mapping
             config.NewConfig<ProfilePhoto, ProfilePhotoResponse>();
             config.NewConfig<ProfilePhotoDto, ProfilePhotoMapped>()
                 .Map(dest => dest.ImageFile, src => src.ImageFile)
@@ -50,12 +52,8 @@ namespace Fliq.Api.Mapping
                  });
 
             config.NewConfig<UserProfile, ProfileResponse>()
-                //.Map(dest => dest.FirstName, src => src.User.FirstName)
-                //.Map(dest => dest.LastName, src => src.User.LastName)
-                //.Map(dest => dest.DisplayName, src => src.User.DisplayName)
                 .Map(dest => dest.ProfileTypes, src => src.ProfileTypes
                     .Select(pt => new ProfileTypeDto((int)pt)).ToList());
-                  
 
             config.NewConfig<ProfileTypeDto, ProfileType>()
                 .Map(dest => dest, src => (ProfileType)src.ProfileType);

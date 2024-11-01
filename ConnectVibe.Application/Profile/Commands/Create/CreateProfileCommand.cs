@@ -1,12 +1,15 @@
 ﻿using ErrorOr;
 using Fliq.Application.Authentication.Common.Profile;
 using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Interfaces.Services.ImageServices;
 using Fliq.Application.Common.Interfaces.Services.LocationServices;
 using Fliq.Application.Profile.Common;
+using Fliq.Application.Prompts.Common;
+using Fliq.Application.Prompts.Common.Helpers;
 using Fliq.Domain.Common.Errors;
-using Fliq.Domain.Entities;
 using Fliq.Domain.Entities.Profile;
+using Fliq.Domain.Entities.Prompts;
 using Fliq.Domain.Entities.Settings;
 using Fliq.Domain.Enums;
 using MapsterMapper;
@@ -32,6 +35,7 @@ namespace Fliq.Application.Profile.Commands.Create
         public WantKids? WantKids { get; set; }
         public Location Location { get; set; } = default!;
         public LocationDetail LocationDetail { get; set; } = default!;
+        public List<PromptResponseDto> PromptResponses { get; set; } = new(); // for default prompt responses
         public bool AllowNotifications { get; set; }
         public int UserId { get; set; }
     }
@@ -45,9 +49,12 @@ namespace Fliq.Application.Profile.Commands.Create
         private readonly ILocationService _locationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ISettingsRepository _settingsRepository;
+        private readonly IPromptQuestionRepository _promptQuestionRepository;
+        private readonly IPromptCategoryRepository _promptCategoryRepository;
         private const int UnauthorizedUserId = -1;
+        private ILoggerManager _loggerManager;
 
-        public CreateProfileCommandHandler(IMapper mapper, IImageService imageService, IProfileRepository profileRepository, IUserRepository userRepository, ILocationService locationService, IHttpContextAccessor httpContextAccessor, ISettingsRepository settingsRepository)
+        public CreateProfileCommandHandler(IMapper mapper, IImageService imageService, IProfileRepository profileRepository, IUserRepository userRepository, ILocationService locationService, IHttpContextAccessor httpContextAccessor, ISettingsRepository settingsRepository, ILoggerManager loggerManager, IPromptQuestionRepository promptQuestionRepository, IPromptCategoryRepository promptCategoryRepository)
         {
             _mapper = mapper;
             _imageService = imageService;
@@ -56,6 +63,9 @@ namespace Fliq.Application.Profile.Commands.Create
             _locationService = locationService;
             _httpContextAccessor = httpContextAccessor;
             _settingsRepository = settingsRepository;
+            _loggerManager = loggerManager;
+            _promptQuestionRepository = promptQuestionRepository;
+            _promptCategoryRepository = promptCategoryRepository;
         }
 
         public async Task<ErrorOr<CreateProfileResult>> Handle(CreateProfileCommand command, CancellationToken cancellationToken)
@@ -77,19 +87,19 @@ namespace Fliq.Application.Profile.Commands.Create
             userProfile.UserId = 0;
             userProfile.Photos = new();
             userProfile.User = user;
-            //foreach (var photo in command.Photos)
-            //{
-            //    var profileUrl = await _imageService.UploadMediaAsync(photo.ImageFile);
-            //    if (profileUrl != null)
-            //    {
-            //        ProfilePhoto profilePhoto = new() { PictureUrl = profileUrl, Caption = photo.Caption };
-            //        userProfile.Photos.Add(profilePhoto);
-            //    }
-            //    else
-            //    {
-            //        return Errors.Image.InvalidImage;
-            //    }
-            //}
+            foreach (var photo in command.Photos)
+            {
+                var profileUrl = await _imageService.UploadImageAsync(photo.ImageFile);
+                if (profileUrl != null)
+                {
+                    ProfilePhoto profilePhoto = new() { PictureUrl = profileUrl, Caption = photo.Caption };
+                    userProfile.Photos.Add(profilePhoto);
+                }
+                else
+                {
+                    return Errors.Image.InvalidImage;
+                }
+            }
 
             var locationResponse = await _locationService.GetAddressFromCoordinatesAsync(command.Location.Lat, command.Location.Lng);
 
@@ -107,6 +117,17 @@ namespace Fliq.Application.Profile.Commands.Create
                 userProfile.Location = location;
             }
 
+            // Process default prompt response
+            var promptResponses = new List<PromptResponse>();
+            foreach (var promptDto in command.PromptResponses)
+            {
+                var promptResponse = await ProcessPromptResponseAsync(promptDto, userProfile);
+                if (promptResponse.IsError)
+                    return promptResponse.Errors;
+                promptResponses.Add(promptResponse.Value);
+            }
+
+
             _profileRepository.Add(userProfile);
 
             Setting setting = new()
@@ -117,5 +138,86 @@ namespace Fliq.Application.Profile.Commands.Create
 
             return new CreateProfileResult(userProfile);
         }
+
+        #region Private Helpers
+        private async Task<ErrorOr<PromptResponse>> ProcessPromptResponseAsync(PromptResponseDto promptDto, UserProfile userProfile)
+        {
+            //Validate answer was provided
+            if (string.IsNullOrWhiteSpace(promptDto.TextResponse) && promptDto.VoiceNote == null && promptDto.VideoClip == null)
+            {
+                _loggerManager.LogWarn("No answer format provided. At least one format (Text, Voice, or Video) must be supplied. Aborting answer creation.");
+                return Errors.Prompts.AnswerNotProvided;
+            }
+            // Validate the CategoryId
+            var category = _promptCategoryRepository.GetCategoryById(promptDto.CategoryId);
+            if (category == null)
+            {
+                return Errors.Prompts.CategoryNotFound; // Return null or handle as appropriate if the category is invalid
+            }
+
+            PromptQuestion? promptQuestion;
+
+            if (promptDto.IsCustomPrompt)
+            {
+                if (string.IsNullOrWhiteSpace(promptDto.CustomPromptQuestionText)) return Errors.Prompts.QuestionNotFound;
+                // Create a new custom prompt question if it doesn't exist
+                promptQuestion = new PromptQuestion
+                {
+                    QuestionText = promptDto.CustomPromptQuestionText,
+                    IsSystemGenerated = false,
+                    PromptCategoryId = promptDto.CategoryId,
+                    CustomPromptId = PromptIdHelper.GenerateCustomPromptId(userProfile.UserId, category.CategoryName)
+                };
+                _promptQuestionRepository.AddQuestion(promptQuestion);
+            }
+            else
+            {
+                // Retrieve an existing system prompt question
+                promptQuestion = _promptQuestionRepository.GetQuestionByIdAsync(promptDto.PromptQuestionId);
+                if (promptQuestion == null)
+                {
+                    return Errors.Prompts.QuestionNotFound; // Return null or handle as appropriate if the question is invalid
+                }
+            }
+
+            // Set up the prompt response entity
+            var promptResponse = new PromptResponse
+            {
+                PromptQuestion = promptQuestion,
+                UserProfile = userProfile,
+                ResponseType = promptDto.TextResponse != null ? nameof(PromptAnswerMediaType.Text) :
+                               promptDto.VideoClip != null ? nameof(PromptAnswerMediaType.VideoClip) :
+                               nameof(PromptAnswerMediaType.VoiceNote)
+            };
+
+            // Process responses and set the appropriate URLs
+            if (promptDto.TextResponse is not null)
+                promptResponse.TextResponse = promptDto.TextResponse;
+
+            if (promptDto.VoiceNote is not null)
+                promptResponse.VoiceNoteUrl = await UploadPromptAnswerAsync(promptDto.VoiceNote, PromptAnswerMediaType.VoiceNote);
+
+            if (promptDto.VideoClip is not null)
+                promptResponse.VideoClipUrl = await UploadPromptAnswerAsync(promptDto.VideoClip, PromptAnswerMediaType.VideoClip);
+
+            return promptResponse;
+        }
+        private async Task<string?> UploadPromptAnswerAsync(IFormFile file, PromptAnswerMediaType type)
+        {
+            string? containerName = type switch
+            {
+                PromptAnswerMediaType.VoiceNote => "audio-prompts",
+                PromptAnswerMediaType.VideoClip => "video-prompts",
+                _ => null
+            } ?? throw new ArgumentException("Invalid prompt answer type provided.");
+
+            _loggerManager.LogDebug($"Uploading file to container: {containerName}");
+            var uploadResult = await _imageService.UploadMediaAsync(file, containerName);
+            _loggerManager.LogDebug($"File uploaded to {containerName} with result URL: {uploadResult}");
+
+            return uploadResult;
+        }
+
+        #endregion
     }
 }

@@ -63,7 +63,7 @@ namespace Fliq.Application.Prompts.Commands
             {
                 _loggerManager.LogInfo("Uploading voice note for Prompt Answer.");
                 promptAnswer.VoiceNoteUrl = await UploadPromptAnswerAsync(request.VoiceNote, PromptAnswerMediaType.VoiceNote);
-                _loggerManager.LogDebug($"Video clip uploaded successfully. URL: {promptAnswer.VideoClipUrl}");
+                _loggerManager.LogDebug($"Voice note uploaded successfully. URL: {promptAnswer.VideoClipUrl}");
             }
 
             if (request.VideoClip != null)
