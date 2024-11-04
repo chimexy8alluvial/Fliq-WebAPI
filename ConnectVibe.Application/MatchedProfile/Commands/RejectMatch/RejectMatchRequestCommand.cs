@@ -2,11 +2,10 @@
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services.ImageServices;
 using Fliq.Application.MatchedProfile.Common;
-using Fliq.Domain.Enums;
 using Fliq.Domain.Common.Errors;
+using Fliq.Domain.Enums;
 using MapsterMapper;
 using MediatR;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Fliq.Application.MatchedProfile.Commands.RejectMatch
 {

@@ -1,6 +1,7 @@
 ﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.MatchedProfile.Commands.AcceptedMatch;
+using Fliq.Application.MatchedProfile.Commands.ApprovedMatchedList;
 using Fliq.Application.MatchedProfile.Commands.Create;
 using Fliq.Application.MatchedProfile.Commands.MatchedList;
 using Fliq.Application.MatchedProfile.Commands.RejectMatch;
@@ -51,6 +52,21 @@ namespace Fliq.Api.Controllers
             var userId = GetAuthUserId();
             _logger.LogInfo($"Get Match List Request Received: {userId}");
             var requestList = new GetMatchRequestListCommand(userId);
+
+            var matchelistResult = await _mediator.Send(requestList);
+            _logger.LogInfo($"Get Match List Request Command Executed.  Result: {matchelistResult}");
+            return matchelistResult.Match(
+                matchelistResult => Ok(_mapper.Map<List<MatchedProfileResponse>>(matchelistResult)),
+                errors => Problem(errors)
+            );
+        }
+
+        [HttpGet("getapprovedmatchedlist")]
+        public async Task<IActionResult> GetApprovedMatchedList()
+        {
+            var userId = GetAuthUserId();
+            _logger.LogInfo($"Get Match List Request Received: {userId}");
+            var requestList = new GetApprovedMatchListCommand(userId);
 
             var matchelistResult = await _mediator.Send(requestList);
             _logger.LogInfo($"Get Match List Request Command Executed.  Result: {matchelistResult}");
