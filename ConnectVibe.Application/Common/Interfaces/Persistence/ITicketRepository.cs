@@ -11,5 +11,11 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         Ticket? GetTicketById(int id);
 
         List<Currency> GetCurrenciees();
+
+        void AddEventTicket(EventTicket eventTicket);
+
+        void UpdateEventTicket(EventTicket request);
+
+        EventTicket? GetEventTicketById(int id);
     }
 }

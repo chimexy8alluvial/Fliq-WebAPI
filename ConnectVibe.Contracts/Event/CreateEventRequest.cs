@@ -17,7 +17,6 @@ namespace Fliq.Contracts.Event
     bool SponsoredEvent,
     EventCriteriaDto EventCriteria,
     List<TicketDto>? Tickets,
-    int UserId,
     EventPaymentDetailDto? EventPaymentDetail,
     bool InviteesException,
     List<EventMediaDto> MediaDocuments,

@@ -40,5 +40,26 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             var result = _dbContext.Currencies.ToList();
             return result;
         }
+
+        public void AddEventTicket(EventTicket eventTicket)
+        {
+            if (eventTicket != null)
+            {
+                _dbContext.Add(eventTicket);
+            }
+            _dbContext.SaveChanges();
+        }
+
+        public void UpdateEventTicket(EventTicket request)
+        {
+            _dbContext.Update(request);
+            _dbContext.SaveChanges();
+        }
+
+        public EventTicket? GetEventTicketById(int id)
+        {
+            var result = _dbContext.EventTickets.SingleOrDefault(p => p.Id == id);
+            return result;
+        }
     }
 }

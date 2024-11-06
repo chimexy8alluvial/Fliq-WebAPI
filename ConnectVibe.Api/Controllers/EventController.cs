@@ -1,5 +1,6 @@
 ﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.Event.Commands.AddEventTicket;
 using Fliq.Application.Event.Commands.EventCreation;
 using Fliq.Application.Event.Commands.Tickets;
 using Fliq.Application.Event.Commands.UpdateEvent;
@@ -37,6 +38,7 @@ namespace Fliq.Api.Controllers
         {
             _logger.LogInfo($"Create Request Received: {request}");
             var command = _mapper.Map<CreateEventCommand>(request);
+            command.UserId = GetAuthUserId();
             var EventCreatedResult = await _mediator.Send(command);
             _logger.LogInfo($"EventCreatedResult command Executed. Result: {EventCreatedResult}");
 
@@ -74,6 +76,21 @@ namespace Fliq.Api.Controllers
             );
         }
 
+        [HttpPost("purchase-ticket")]
+        public async Task<IActionResult> PurchaseTicket([FromForm] PurchaseTicketDto request)
+        {
+            _logger.LogInfo($"Purchase Request Received: {request}");
+            var command = _mapper.Map<AddEventTicketCommand>(request);
+            command.UserId = GetAuthUserId();
+            var ticketResult = await _mediator.Send(command);
+            _logger.LogInfo($" command Executed. Result: {ticketResult}");
+
+            return ticketResult.Match(
+                ticketResult => Ok(_mapper.Map<GetEventTicketResponse>(ticketResult)),
+                errors => Problem(errors)
+            );
+        }
+
         [HttpPut("update-ticket")]
         public async Task<IActionResult> UpdateTicket([FromForm] UpdateTicketDto request)
         {
@@ -99,7 +116,7 @@ namespace Fliq.Api.Controllers
             return eventResult.Match(
                 ev => Ok(_mapper.Map<GetEventResponse>(ev)),
                 errors => Problem(errors)
-            );
+            ); 4
         }
 
         [HttpGet("ticket/{ticketId}")]
