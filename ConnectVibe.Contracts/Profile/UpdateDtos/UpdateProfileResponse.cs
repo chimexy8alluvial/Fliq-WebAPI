@@ -1,4 +1,6 @@
-﻿namespace Fliq.Contracts.Profile.UpdateDtos
+﻿using Fliq.Application.Prompts.Common;
+
+namespace Fliq.Contracts.Profile.UpdateDtos
 {
     public record UpdateProfileResponse
     (int UserId,
@@ -12,5 +14,6 @@
      UpdateLocationDto Location,
      bool AllowNotifications = false,
      List<string> Passions = default!,
-    List<UpdateProfilePhotoResponse> Photos = default!);
+    List<UpdateProfilePhotoResponse> Photos = default!,
+        List<PromptResponseDto> PromptResponses = default!);
 }
