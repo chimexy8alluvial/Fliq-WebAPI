@@ -36,6 +36,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Notifications\Common\" />
+    <Folder Include="Notifications\Queries\" />
     <Folder Include="Payments\Queries\" />
   </ItemGroup>
 
