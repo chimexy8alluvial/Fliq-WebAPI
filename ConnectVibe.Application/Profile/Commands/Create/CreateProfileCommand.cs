@@ -79,7 +79,7 @@ namespace Fliq.Application.Profile.Commands.Create
             userProfile.User = user;
             //foreach (var photo in command.Photos)
             //{
-            //    var profileUrl = await _imageService.UploadMediaAsync(photo.ImageFile);
+             //   var profileUrl = await _imageService.UploadMediaAsync(photo.ImageFile);
             //    if (profileUrl != null)
             //    {
             //        ProfilePhoto profilePhoto = new() { PictureUrl = profileUrl, Caption = photo.Caption };
