@@ -15,8 +15,8 @@ namespace Fliq.Domain.Entities.Prompts
 
         public string ResponseType { get; set; } = nameof(PromptAnswerMediaType.Text);
 
-        public string? TextResponse { get; set; }
-        public string? VoiceNoteUrl { get; set; }
-        public string? VideoClipUrl { get; set; }
+        public string? Response { get; set; }
+        //public string? VoiceNoteUrl { get; set; }
+        //public string? VideoClipUrl { get; set; }
     }
 }

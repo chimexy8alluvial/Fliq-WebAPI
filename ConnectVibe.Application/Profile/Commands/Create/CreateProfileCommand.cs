@@ -193,18 +193,20 @@ namespace Fliq.Application.Profile.Commands.Create
 
             // Process responses and set the appropriate URLs
             if (promptDto.TextResponse is not null)
-                promptResponse.TextResponse = promptDto.TextResponse;
+                promptResponse.Response = promptDto.TextResponse;
 
             if (promptDto.VoiceNote is not null)
-                promptResponse.VoiceNoteUrl = await UploadPromptAnswerAsync(promptDto.VoiceNote, PromptAnswerMediaType.VoiceNote);
+                promptResponse.Response = await UploadPromptAnswerAsync(promptDto.VoiceNote, PromptAnswerMediaType.VoiceNote);
 
             if (promptDto.VideoClip is not null)
-                promptResponse.VideoClipUrl = await UploadPromptAnswerAsync(promptDto.VideoClip, PromptAnswerMediaType.VideoClip);
+                promptResponse.Response = await UploadPromptAnswerAsync(promptDto.VideoClip, PromptAnswerMediaType.VideoClip);
 
             return promptResponse;
         }
+
         private async Task<string?> UploadPromptAnswerAsync(IFormFile file, PromptAnswerMediaType type)
         {
+            // Determine the container name or local folder path based on media type
             string? containerName = type switch
             {
                 PromptAnswerMediaType.VoiceNote => "audio-prompts",
@@ -212,11 +214,25 @@ namespace Fliq.Application.Profile.Commands.Create
                 _ => null
             } ?? throw new ArgumentException("Invalid prompt answer type provided.");
 
+            // Check if the application is in Debug mode
+            #if DEBUG
+            // In Debug mode, save the file to a local directory instead of uploading to the server
+            var localFolderPath = Path.Combine("wwwroot", containerName);
+            Directory.CreateDirectory(localFolderPath);
+            var localFilePath = Path.Combine(localFolderPath, file.FileName);
+
+            // Save the file locally
+            await using var fileStream = new FileStream(localFilePath, FileMode.Create);
+            await file.CopyToAsync(fileStream);
+
+            _loggerManager.LogDebug($"File saved locally to: {localFilePath}");
+            return localFilePath; // Return the local file path
+            #else
+            //In Release mode, upload the file to the server
             _loggerManager.LogDebug($"Uploading file to container: {containerName}");
             var uploadResult = await _imageService.UploadMediaAsync(file, containerName);
-            _loggerManager.LogDebug($"File uploaded to {containerName} with result URL: {uploadResult}");
-
-            return uploadResult;
+            return uploadResult; // Return the URL or path from server upload
+            #endif
         }
 
         #endregion
