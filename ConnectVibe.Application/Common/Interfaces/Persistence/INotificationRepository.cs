@@ -8,5 +8,6 @@ namespace Fliq.Application.Common.Interfaces.Persistence
     {
         void Add(Notification notification);
         void RegisterDeviceToken(UserDeviceToken userDeviceToken);
+        Task<List<string>> GetDeviceTokensByUserIdAsync(int userId);
     }
 }

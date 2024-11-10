@@ -1,5 +1,6 @@
 ﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Domain.Entities.Notifications;
+using Microsoft.EntityFrameworkCore;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {
@@ -40,5 +41,14 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             }
             _dbContext.SaveChanges();
         }
+
+        public async Task<List<string>> GetDeviceTokensByUserIdAsync(int userId)
+        {
+            return await _dbContext.UserDeviceTokens
+                .Where(udt => udt.UserId == userId)
+                .Select(udt => udt.DeviceToken)
+                .ToListAsync();
+        }
+
     }
 }
