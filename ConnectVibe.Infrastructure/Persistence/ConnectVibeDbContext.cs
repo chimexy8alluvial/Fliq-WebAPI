@@ -18,6 +18,7 @@ namespace Fliq.Infrastructure.Persistence
         public DbSet<UserProfile> UserProfiles { get; set; } = null!;
         public DbSet<MatchRequest> MatchRequests { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<UserDeviceToken> UserDeviceTokens { get; set; }
 
 
         public DbSet<LocationDetail> LocationDetails { get; set; }

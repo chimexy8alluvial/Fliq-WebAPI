@@ -27,5 +27,18 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             }
             _dbContext.SaveChanges();
         }
+
+        public void RegisterDeviceToken(UserDeviceToken userDeviceToken)
+        {
+            if(userDeviceToken.Id > 0)
+            {
+                _dbContext.Update(userDeviceToken);
+            }
+            else
+            {
+                _dbContext.Add(userDeviceToken);
+            }
+            _dbContext.SaveChanges();
+        }
     }
 }
