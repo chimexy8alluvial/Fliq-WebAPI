@@ -2,6 +2,7 @@
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services.ImageServices;
 using Fliq.Application.MatchedProfile.Common;
+using Fliq.Application.Notifications.Common.MatchEvents;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Enums;
 using MapsterMapper;
@@ -22,13 +23,15 @@ namespace Fliq.Application.MatchedProfile.Commands.AcceptedMatch
         private readonly IImageService _imageService;
         private readonly IUserRepository _userRepository;
         private readonly IMatchProfileRepository _matchProfileRepository;
+        private readonly IMediator _mediator;
 
-        public AcceptMatchRequestCommandHandler(IMapper mapper, IImageService imageService, IUserRepository userRepository, IMatchProfileRepository matchProfileRepository)
+        public AcceptMatchRequestCommandHandler(IMapper mapper, IImageService imageService, IUserRepository userRepository, IMatchProfileRepository matchProfileRepository, IMediator mediator)
         {
             _mapper = mapper;
             _imageService = imageService;
             _userRepository = userRepository;
             _matchProfileRepository = matchProfileRepository;
+            _mediator = mediator;
         }
 
         public async Task<ErrorOr<CreateAcceptMatchResult>> Handle(AcceptMatchRequestCommand command, CancellationToken cancellationToken)
@@ -43,6 +46,9 @@ namespace Fliq.Application.MatchedProfile.Commands.AcceptedMatch
 
             matchProfile.matchRequestStatus = MatchRequestStatus.Accepted;
             _matchProfileRepository.Update(matchProfile);
+            
+            //trigger Accepted match event notification
+            await _mediator.Publish(new MatchAcceptedEvent(command.UserId, matchProfile.MatchInitiatorUserId));
 
            return new CreateAcceptMatchResult(matchProfile.MatchInitiatorUserId,
                 matchProfile.matchRequestStatus);
