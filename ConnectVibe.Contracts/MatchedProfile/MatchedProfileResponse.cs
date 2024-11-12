@@ -1,6 +1,4 @@
-﻿using Fliq.Contracts.Profile;
-
-namespace Fliq.Contracts.MatchedProfile
+﻿namespace Fliq.Contracts.MatchedProfile
 {
     public record MatchedProfileResponse
     (

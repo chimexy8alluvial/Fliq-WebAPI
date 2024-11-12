@@ -30,12 +30,29 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             _dbContext.SaveChanges();
         }
 
-        public async Task<IEnumerable<MatchRequestDto>> GetMatchListById(int userId, MatchListPagination matchListPagination)
+        public async Task<IEnumerable<MatchRequestDto>> GetMatchListById(int userId)
         {
             using (var connection = _connectionFactory.CreateConnection())
             {
-                var parameters = FilterListDynamicParams(userId, matchListPagination);
+                var parameters = FilterListDynamicParams(userId);
                 var result = connection.Query<dynamic>("sPGetMatchedList", param: parameters, commandType: CommandType.StoredProcedure);
+                var filteredItems = result.Select(p => new MatchRequestDto
+                {
+                    MatchInitiatorUserId = p.MatchInitiatorUserId,
+                    Name = p.Name,
+                    PictureUrl = p.PictureUrl,
+                    Age = p.Age
+                });
+                return filteredItems;
+            }
+        }
+
+        public async Task<IEnumerable<MatchRequestDto>> GetApproveMatchListById(int userId)
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var parameters = FilterListDynamicParams(userId);
+                var result = connection.Query<dynamic>("sPGetApproveMatchedList", param: parameters, commandType: CommandType.StoredProcedure);
                 var filteredItems = result.Select(p => new MatchRequestDto
                 {
                     MatchInitiatorUserId = p.MatchInitiatorUserId,
@@ -65,7 +82,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             _dbContext.SaveChanges();
         }
 
-        private static DynamicParameters FilterListDynamicParams(int userId, MatchListPagination paginationRequest)
+        private static DynamicParameters FilterListDynamicParams(int userId)
         {
             var parameters = new DynamicParameters();
 
