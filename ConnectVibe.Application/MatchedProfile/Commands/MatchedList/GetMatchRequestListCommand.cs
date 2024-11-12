@@ -8,7 +8,7 @@ using MediatR;
 
 namespace Fliq.Application.MatchedProfile.Commands.MatchedList
 {
-    public record GetMatchRequestListCommand(int UserId) : IRequest<ErrorOr<List<MatchRequestDto>>>;
+    public record GetMatchRequestListCommand(int UserId, PaginationRequest PaginationRequest = default!) : IRequest<ErrorOr<List<MatchRequestDto>>>;
 
 
     public class CreateMatchListCommandHandler : IRequestHandler<GetMatchRequestListCommand, ErrorOr<List<MatchRequestDto>>>
@@ -30,7 +30,7 @@ namespace Fliq.Application.MatchedProfile.Commands.MatchedList
         {
             await Task.CompletedTask;
 
-           var filteredValue = await _matchProfileRepository.GetMatchListById(command.UserId);
+            var filteredValue = await _matchProfileRepository.GetMatchListById(command);
             var result = filteredValue.ToList();
 
             return result;

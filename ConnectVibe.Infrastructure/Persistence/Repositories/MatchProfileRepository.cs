@@ -1,8 +1,8 @@
 ﻿using Dapper;
 using Fliq.Application.Common.Interfaces.Persistence;
-using Fliq.Application.Common.Pagination;
+using Fliq.Application.MatchedProfile.Commands.ApprovedMatchedList;
+using Fliq.Application.MatchedProfile.Commands.MatchedList;
 using Fliq.Contracts.MatchedProfile;
-using Fliq.Domain.Entities.MatchedProfile;
 using System.Data;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
@@ -30,11 +30,11 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             _dbContext.SaveChanges();
         }
 
-        public async Task<IEnumerable<MatchRequestDto>> GetMatchListById(int userId)
+        public async Task<IEnumerable<MatchRequestDto>> GetMatchListById(GetMatchRequestListCommand query)
         {
             using (var connection = _connectionFactory.CreateConnection())
             {
-                var parameters = FilterListDynamicParams(userId);
+                var parameters = FilterListDynamicParams(query);
                 var result = connection.Query<dynamic>("sPGetMatchedList", param: parameters, commandType: CommandType.StoredProcedure);
                 var filteredItems = result.Select(p => new MatchRequestDto
                 {
@@ -47,11 +47,11 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             }
         }
 
-        public async Task<IEnumerable<MatchRequestDto>> GetApproveMatchListById(int userId)
+        public async Task<IEnumerable<MatchRequestDto>> GetApproveMatchListById(GetApprovedMatchListCommand query)
         {
             using (var connection = _connectionFactory.CreateConnection())
             {
-                var parameters = FilterListDynamicParams(userId);
+                var parameters = FilterListDynamicParamsforApprovedList(query);
                 var result = connection.Query<dynamic>("sPGetApproveMatchedList", param: parameters, commandType: CommandType.StoredProcedure);
                 var filteredItems = result.Select(p => new MatchRequestDto
                 {
@@ -82,13 +82,23 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             _dbContext.SaveChanges();
         }
 
-        private static DynamicParameters FilterListDynamicParams(int userId)
+        private static DynamicParameters FilterListDynamicParams(GetMatchRequestListCommand query)
         {
             var parameters = new DynamicParameters();
 
-            parameters.Add("@userId", userId);
-            parameters.Add("@pageNumber", 1);
-            parameters.Add("@pageSize", 10);
+            parameters.Add("@userId", query.UserId);
+            parameters.Add("@pageNumber", query.PaginationRequest.PageNumber);
+            parameters.Add("@pageSize", query.PaginationRequest.PageSize);
+            return parameters;
+        }
+
+        private static DynamicParameters FilterListDynamicParamsforApprovedList(GetApprovedMatchListCommand query)
+        {
+            var parameters = new DynamicParameters();
+
+            parameters.Add("@userId", query.UserId);
+            parameters.Add("@pageNumber", query.PaginationRequest.PageNumber);
+            parameters.Add("@pageSize", query.PaginationRequest.PageSize);
             return parameters;
         }
     }

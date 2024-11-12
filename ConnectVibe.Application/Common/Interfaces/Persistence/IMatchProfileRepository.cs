@@ -1,7 +1,6 @@
-﻿using Fliq.Application.Common.Pagination;
+﻿using Fliq.Application.MatchedProfile.Commands.ApprovedMatchedList;
+using Fliq.Application.MatchedProfile.Commands.MatchedList;
 using Fliq.Contracts.MatchedProfile;
-using Fliq.Domain.Entities.MatchedProfile;
-using Fliq.Domain.Entities.Profile;
 namespace Fliq.Application.Common.Interfaces.Persistence
 {
     public interface IMatchProfileRepository
@@ -10,6 +9,7 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         void Update(Domain.Entities.MatchedProfile.MatchRequest matchRequest);
         Domain.Entities.MatchedProfile.MatchRequest? GetMatchProfileByUserId(int id);
         Domain.Entities.MatchedProfile.MatchRequest? GetMatchProfileById(int id);
-        Task <IEnumerable<MatchRequestDto>> GetMatchListById(int userId);
+        Task<IEnumerable<MatchRequestDto>> GetMatchListById(GetMatchRequestListCommand query);
+        Task<IEnumerable<MatchRequestDto>> GetApproveMatchListById(GetApprovedMatchListCommand query);
     }
 }
