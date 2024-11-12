@@ -13,7 +13,6 @@ namespace Fliq.Application.MatchedProfile.Commands.AcceptedMatch
     {
         public int Id { get; set; }
         public int UserId { get; set; }
-        //public int MatchInitiatorUserId { get; set; }
     }
 
     public class AcceptMatchRequestCommandHandler : IRequestHandler<AcceptMatchRequestCommand, ErrorOr<CreateAcceptMatchResult>>
@@ -46,7 +45,6 @@ namespace Fliq.Application.MatchedProfile.Commands.AcceptedMatch
 
            return new CreateAcceptMatchResult(matchProfile.MatchInitiatorUserId,
                 matchProfile.matchRequestStatus);
-
         }
     }
 }
