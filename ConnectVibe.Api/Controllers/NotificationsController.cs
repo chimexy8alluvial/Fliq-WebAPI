@@ -1,7 +1,6 @@
 ﻿using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Notifications.Commands.DeviceRegistration;
 using Fliq.Contracts.Notifications.DeviceRegistration;
-using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,12 +11,10 @@ namespace Fliq.Api.Controllers
     public class NotificationsController : ApiBaseController
     {
         private readonly ISender _mediator;
-        private readonly IMapper _mapper;
         private readonly ILoggerManager _logger;
-        public NotificationsController(ISender mediator, IMapper mapper, ILoggerManager logger)
+        public NotificationsController(ISender mediator, ILoggerManager logger)
         {
             _mediator = mediator;
-            _mapper = mapper;
             _logger = logger;
         }
 

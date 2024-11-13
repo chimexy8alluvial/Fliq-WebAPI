@@ -55,6 +55,7 @@ namespace Fliq.Infrastructure.Services.NotificationServices
             };
 
             // Send notification via Firebase
+            // should test what happens when it fails
             var response = await FirebaseMessaging.DefaultInstance.SendEachForMulticastAsync(messagePayload);
 
             _logger.LogInfo($"Sent {response.SuccessCount} notifications; {response.FailureCount} failed.");
