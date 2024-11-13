@@ -2,6 +2,7 @@
 {
     public record PurchaseTicketDto(
         int PaymentId,
-        int TicketId
+        int TicketId,
+        int NumberOfTickets
         );
 }

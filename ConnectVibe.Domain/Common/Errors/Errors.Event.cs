@@ -9,6 +9,14 @@ namespace Fliq.Domain.Common.Errors
             public static Error EventNotFound => Error.Failure(
              code: "Event.EventNotFound",
              description: "Event with given id was not found.");
+
+            public static Error InsufficientCapacity => Error.Failure(
+                code: "Event.InsufficientCapacity",
+                description: "The event does not have enough capacity for the requested number of tickets.");
+
+            public static Error NoAvailableSeats => Error.Failure(
+                code: "Event.NoAvailableSeats",
+                description: "No available seats left for the event.");
         }
     }
 }

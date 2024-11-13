@@ -11,5 +11,6 @@
 
         public int PaymentId { get; set; }
         public Payment Payment { get; set; } = default!;
+        public int SeatNumber { get; set; }
     }
 }

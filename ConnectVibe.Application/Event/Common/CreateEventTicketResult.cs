@@ -3,6 +3,6 @@
 namespace Fliq.Application.Event.Common
 {
     public record CreateEventTicketResult(
-        EventTicket EventTicket
+        List<EventTicket> EventTickets
         );
 }

@@ -116,7 +116,7 @@ namespace Fliq.Api.Controllers
             return eventResult.Match(
                 ev => Ok(_mapper.Map<GetEventResponse>(ev)),
                 errors => Problem(errors)
-            ); 4
+            );
         }
 
         [HttpGet("ticket/{ticketId}")]
