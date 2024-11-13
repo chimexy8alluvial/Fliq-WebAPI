@@ -35,7 +35,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             using (var connection = _connectionFactory.CreateConnection())
             {
                 var parameters = FilterListDynamicParams(query);
-                var result = connection.Query<dynamic>("sPGetMatchedList", param: parameters, commandType: CommandType.StoredProcedure);
+                var result = await connection.QueryAsync<dynamic>("sPGetMatchedList", param: parameters, commandType: CommandType.StoredProcedure);
                 var filteredItems = result.Select(p => new MatchRequestDto
                 {
                     MatchInitiatorUserId = p.MatchInitiatorUserId,
@@ -52,7 +52,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             using (var connection = _connectionFactory.CreateConnection())
             {
                 var parameters = FilterListDynamicParamsforApprovedList(query);
-                var result = connection.Query<dynamic>("sPGetApproveMatchedList", param: parameters, commandType: CommandType.StoredProcedure);
+                var result = await connection.QueryAsync<dynamic>("sPGetApproveMatchedList", param: parameters, commandType: CommandType.StoredProcedure);
                 var filteredItems = result.Select(p => new MatchRequestDto
                 {
                     MatchInitiatorUserId = p.MatchInitiatorUserId,
