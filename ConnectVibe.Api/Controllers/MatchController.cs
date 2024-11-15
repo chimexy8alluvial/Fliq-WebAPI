@@ -84,7 +84,6 @@ namespace Fliq.Api.Controllers
         }
 
         [HttpPost("acceptmatch")]
-        //just accept match request
         public async Task<IActionResult> Accept([FromBody] AcceptMatchRequest request)
         {
             _logger.LogInfo($"Accept Match Request Received: {request}");
