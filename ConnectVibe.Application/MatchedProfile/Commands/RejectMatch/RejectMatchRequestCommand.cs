@@ -7,6 +7,7 @@ using Fliq.Domain.Common.Errors;
 using MapsterMapper;
 using MediatR;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using Fliq.Application.Notifications.Common.MatchEvents;
 
 namespace Fliq.Application.MatchedProfile.Commands.RejectMatch
 {
@@ -22,13 +23,15 @@ namespace Fliq.Application.MatchedProfile.Commands.RejectMatch
         private readonly IImageService _imageService;
         private readonly IUserRepository _userRepository;
         private readonly IMatchProfileRepository _matchProfileRepository;
+        private readonly IMediator _mediator;
 
-        public RejectMatchRequestComandHandler(IMapper mapper, IImageService imageService, IUserRepository userRepository, IMatchProfileRepository matchProfileRepository)
+        public RejectMatchRequestComandHandler(IMapper mapper, IImageService imageService, IUserRepository userRepository, IMatchProfileRepository matchProfileRepository, IMediator mediator)
         {
             _mapper = mapper;
             _imageService = imageService;
             _userRepository = userRepository;
             _matchProfileRepository = matchProfileRepository;
+            _mediator = mediator;
         }
         public async Task<ErrorOr<RejectMatchResult>> Handle(RejectMatchRequestCommand command, CancellationToken cancellationToken)
         {
@@ -42,6 +45,9 @@ namespace Fliq.Application.MatchedProfile.Commands.RejectMatch
 
             matchProfile.matchRequestStatus = MatchRequestStatus.Rejected;
             _matchProfileRepository.Update(matchProfile);
+
+            // Trigger MatchRejectedEvent notification
+            await _mediator.Publish(new MatchRejectedEvent(command.UserId));
 
             return new RejectMatchResult(matchProfile.MatchInitiatorUserId,
                  matchProfile.matchRequestStatus);

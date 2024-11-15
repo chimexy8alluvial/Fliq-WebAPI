@@ -48,7 +48,7 @@ namespace Fliq.Application.MatchedProfile.Commands.AcceptedMatch
             _matchProfileRepository.Update(matchProfile);
             
             //trigger Accepted match event notification
-            await _mediator.Publish(new MatchAcceptedEvent(command.UserId, matchProfile.MatchInitiatorUserId));
+            await _mediator.Publish(new MatchAcceptedEvent(command.UserId, matchProfile.MatchInitiatorUserId, command.UserId));
 
            return new CreateAcceptMatchResult(matchProfile.MatchInitiatorUserId,
                 matchProfile.matchRequestStatus);

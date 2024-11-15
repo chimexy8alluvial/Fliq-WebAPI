@@ -1,5 +1,4 @@
 ﻿
-
 using MediatR;
 
 namespace Fliq.Application.Notifications.Common
@@ -10,6 +9,9 @@ namespace Fliq.Application.Notifications.Common
         public int UserId { get; init; }
         public string Title { get; init; } = default!;
         public string Message { get; init; } = default!;
+        public string? ImageUrl { get; init; }        // Optional image URL
+        public string? ActionUrl { get; init; }       // Optional action URL
+        public string? ButtonText { get; init; }      // Optional button text
 
         protected NotificationEvent(int userId, string title, string message)
         {

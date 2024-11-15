@@ -26,7 +26,15 @@ namespace Fliq.Infrastructure.Services.NotificationServices
             }
         }
 
-        public async Task SendNotificationAsync(string title, string message, List<string> deviceTokens, int userId)
+
+        public async Task SendNotificationAsync(
+            string title,
+            string message,
+            List<string> deviceTokens,
+            int userId,
+            string? imageUrl = null,
+            string? actionUrl = null,
+            string? buttonText = null)
         {
             // Create a new notification record
             var notificationRecord = new Domain.Entities.Notifications.Notification
@@ -34,30 +42,47 @@ namespace Fliq.Infrastructure.Services.NotificationServices
                 UserId = userId,
                 Title = title,
                 Message = message,
+                ActionUrl = actionUrl,
+                ButtonText = buttonText,
                 IsRead = false,
                 DateCreated = DateTime.Now
             };
 
-            // Use the notification repository to save the notification
+            // Save the notification record
             _notificationRepository.Add(notificationRecord);
 
             // Build the Firebase notification payload
             var notification = new FirebaseAdmin.Messaging.Notification
             {
                 Title = title,
-                Body = message
+                Body = message,
+                ImageUrl = imageUrl
             };
 
             var messagePayload = new MulticastMessage
             {
                 Tokens = deviceTokens,
-                Notification = notification
+                Notification = notification,
+                Data = new Dictionary<string, string>  // Additional data for action URL and button text
+                {
+                    { "actionUrl", actionUrl ?? "" },
+                    { "buttonText", buttonText ?? "" }
+                }
             };
 
             // Send notification via Firebase
-            var response = await FirebaseMessaging.DefaultInstance.SendEachForMulticastAsync(messagePayload);
 
-            _logger.LogInfo($"Sent {response.SuccessCount} notifications; {response.FailureCount} failed.");
+            try
+            {
+                var response = await FirebaseMessaging.DefaultInstance.SendEachForMulticastAsync(messagePayload);
+                _logger.LogInfo($"Sent {response.SuccessCount} notifications; {response.FailureCount} failed.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error sending notification to UserId {userId}: {ex.Message}");
+            }
+
         }
+
     }
 }
