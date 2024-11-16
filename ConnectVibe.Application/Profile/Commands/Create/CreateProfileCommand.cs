@@ -214,7 +214,7 @@ namespace Fliq.Application.Profile.Commands.Create
                 _ => null
             } ?? throw new ArgumentException("Invalid prompt answer type provided.");
 
-            // Check if the application is in Debug mode
+            // Check if the app is in Debug Mode
             #if DEBUG
             // In Debug mode, save the file to a local directory instead of uploading to the server
             var localFolderPath = Path.Combine("wwwroot", containerName);
