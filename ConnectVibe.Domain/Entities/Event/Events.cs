@@ -24,5 +24,6 @@ namespace Fliq.Domain.Entities.Event
         public int UserId { get; set; } = default!;
         public EventPaymentDetail? EventPaymentDetail { get; set; } = default!;
         public bool InviteesException { get; set; } = default!;
+        public List<EventReview> Reviews { get; set; } = new List<EventReview>();
     }
 }

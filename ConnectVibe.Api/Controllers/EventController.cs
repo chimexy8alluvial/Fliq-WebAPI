@@ -1,5 +1,6 @@
 ﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.Event.Commands.AddEventReview;
 using Fliq.Application.Event.Commands.AddEventTicket;
 using Fliq.Application.Event.Commands.EventCreation;
 using Fliq.Application.Event.Commands.Tickets;
@@ -72,6 +73,20 @@ namespace Fliq.Api.Controllers
 
             return ticketResult.Match(
                 ticketResult => Ok(_mapper.Map<UpdateTicketResponse>(ticketResult)),
+                errors => Problem(errors)
+            );
+        }
+
+        [HttpPost("add-review")]
+        public async Task<IActionResult> AddReview([FromForm] AddEventReviewDto request)
+        {
+            _logger.LogInfo($"Add Review Request Received: {request}");
+            var command = _mapper.Map<AddEventReviewCommand>(request);
+            var reviewResult = await _mediator.Send(command);
+            _logger.LogInfo($" command Executed. Result: {reviewResult}");
+
+            return reviewResult.Match(
+                reviewResult => Ok(_mapper.Map<GetEventResponse>(reviewResult)),
                 errors => Problem(errors)
             );
         }

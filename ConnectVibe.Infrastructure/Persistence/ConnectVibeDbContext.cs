@@ -22,6 +22,7 @@ namespace Fliq.Infrastructure.Persistence
         public DbSet<SponsoredEventDetail> SponsoredEventDetails { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<EventTicket> EventTickets { get; set; }
+        public DbSet<EventReview> EventReviews { get; set; }
         public DbSet<Currency> Currencies { get; set; }
 
         public DbSet<LocationDetail> LocationDetails { get; set; } = null!;

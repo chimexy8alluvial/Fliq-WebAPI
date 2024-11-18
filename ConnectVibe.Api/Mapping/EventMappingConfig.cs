@@ -1,4 +1,5 @@
-﻿using Fliq.Application.Event.Commands.AddEventTicket;
+﻿using Fliq.Application.Event.Commands.AddEventReview;
+using Fliq.Application.Event.Commands.AddEventTicket;
 using Fliq.Application.Event.Commands.EventCreation;
 using Fliq.Application.Event.Commands.Tickets;
 using Fliq.Application.Event.Commands.UpdateEvent;
@@ -24,6 +25,8 @@ namespace Fliq.Api.Mapping
             config.NewConfig<UpdateTicketDto, UpdateTicketCommand>().IgnoreNullValues(true);
             config.NewConfig<AddTicketDto, AddTicketCommand>();
             config.NewConfig<PurchaseTicketDto, AddEventTicketCommand>();
+            config.NewConfig<AddEventReviewDto, AddEventReviewCommand>();
+            config.NewConfig<AddReviewResult, GetEventResponse>();
         }
     }
 }
