@@ -18,6 +18,7 @@ namespace Fliq.Application.Notifications.Common.MatchEvents
             string? initiatorName = null)
             : base(initiatorUserId, "Match Request Sent", "You have initiated a match request.")
         {
+            InitiatorUserId = initiatorUserId;
             AccepterUserId = accepterUserId;
             InitiatorImageUrl = initiatorImageUrl;
             AccepterImageUrl = accepterImageUrl;

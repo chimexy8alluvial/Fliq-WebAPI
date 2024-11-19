@@ -7,7 +7,8 @@ using MediatR;
 
 namespace Fliq.Application.Notifications.Common
 {
-    public class NotificationEventHandler : INotificationHandler<MatchAcceptedEvent>
+    public class NotificationEventHandler : INotificationHandler<MatchAcceptedEvent>,INotificationHandler<MatchRejectedEvent>,
+                                            INotificationHandler<MatchRequestEvent>
     {
         private readonly INotificationRepository _notificationRepository;
         private readonly INotificationService _firebaseNotificationService;
@@ -78,7 +79,7 @@ namespace Fliq.Application.Notifications.Common
                 notification.InitiatorUserId,
                 "Match Request Sent",
                 "You have initiated a match request.",
-                notification.InitiatorImageUrl,
+                null,
                 notification.ActionUrl,
                     notification.ButtonText,
                 cancellationToken
