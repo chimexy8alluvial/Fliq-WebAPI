@@ -3,6 +3,7 @@ using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Entities.Settings;
 using Microsoft.EntityFrameworkCore;
 using Fliq.Domain.Entities.MatchedProfile;
+using Fliq.Domain.Entities.VotingPoll;
 
 namespace Fliq.Infrastructure.Persistence
 {
@@ -16,6 +17,7 @@ namespace Fliq.Infrastructure.Persistence
         public DbSet<OTP> OTPs { get; set; } = null!;
         public DbSet<UserProfile> UserProfiles { get; set; } = null!;
         public DbSet<MatchRequest> MatchRequests { get; set; }
+        public DbSet<VotePoll> VotePolls { get; set; } = null!;
 
         public DbSet<LocationDetail> LocationDetails { get; set; }
        

@@ -60,8 +60,7 @@ namespace Fliq.Api.Controllers
             );
         }
 
-        [HttpPost("acceptmatch")]
-        //just accept match request
+        [HttpPost("accept")]
         public async Task<IActionResult> Accept([FromBody] AcceptMatchRequest request)
         {
             _logger.LogInfo($"Accept Match Request Received: {request}");
@@ -78,7 +77,7 @@ namespace Fliq.Api.Controllers
             );
         }
 
-        [HttpPost("rejectmatch")]
+        [HttpPost("reject")]
         public async Task<IActionResult> Reject([FromBody] RejectMatchRequest request)
         {
             _logger.LogInfo($"Accept Match Request Received: {request}");
