@@ -2,7 +2,6 @@
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Pagination;
 using Fliq.Contracts.MatchedProfile;
-using Fliq.Domain.Entities.MatchedProfile;
 using System.Data;
 
 namespace Fliq.Infrastructure.Persistence.Repositories

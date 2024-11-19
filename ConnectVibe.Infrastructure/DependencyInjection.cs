@@ -47,6 +47,7 @@ namespace Fliq.Infrastructure
             services.AddSingleton<ILoggerManager, LoggerManager>();
             services.AddScoped<IOtpService, OtpService>();
             services.AddScoped<IMatchProfileRepository, MatchProfileRepository>();
+            services.AddScoped<IPollRepository, PollRepository>();
             services.AddScoped<ISubscriptionService, SubscriptionService>();
             services.AddScoped<IRevenueCatServices, RevenueCatServices>();
             services.AddSingleton<ICustomProfileMapper, CustomProfileMapper>();

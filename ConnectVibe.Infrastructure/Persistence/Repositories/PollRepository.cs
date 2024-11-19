@@ -1,34 +1,74 @@
-﻿using Fliq.Application.Common.Interfaces.Persistence;
+﻿using Dapper;
+using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Contracts.Polls;
 using Fliq.Domain.Entities.VotingPoll;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {
     public class PollRepository : IPollRepository
     {
+        private readonly FliqDbContext _dbContext;
+        private readonly IDbConnectionFactory _connectionFactory;
+
+        public PollRepository(FliqDbContext dbContext, IDbConnectionFactory connectionFactory)
+        {
+            _connectionFactory = connectionFactory;
+            _dbContext = dbContext;
+        }
+
         public void CreateVote(VotePoll votePoll)
         {
-            throw new NotImplementedException();
+            if (votePoll.Id > 0)
+            {
+                _dbContext.Update(votePoll);
+            }
+            else
+            {
+                _dbContext.Add(votePoll);
+            }
+            _dbContext.SaveChanges();
         }
 
-        public VotePoll GetById(int id)
+        public VotePoll? GetById(int id)
         {
-            throw new NotImplementedException();
+            var user = _dbContext.VotePolls.SingleOrDefault(p => p.UserId == id);
+            return user;
         }
 
-        public Task<IEnumerable<VotingListDto>> GetVotingList(int userId)
+        public async Task<IEnumerable<VotingListDto>> GetVotingList(int pollId)
         {
-            throw new NotImplementedException();
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var parameters = DynamicParams(pollId);
+                var result = connection.Query<dynamic>("spGetVotingPoll", param: parameters, commandType: CommandType.StoredProcedure);
+                var filteredResult = result.Select(z => new VotingListDto
+                {
+
+                });
+                return filteredResult;
+            }
         }
 
         public void Vote(VotePoll votePoll)
         {
-            throw new NotImplementedException();
+            if (votePoll.Id > 0)
+            {
+                _dbContext.Update(votePoll);
+            }
+            else
+            {
+                _dbContext.Add(votePoll);
+            }
+            _dbContext.SaveChanges();
+        }
+
+        private static DynamicParameters DynamicParams(int pollId)
+        {
+            var parameters = new DynamicParameters();
+
+            parameters.Add("@userId", pollId);
+            return parameters;
         }
     }
 }
