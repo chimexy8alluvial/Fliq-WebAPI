@@ -5,25 +5,28 @@ using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Interfaces.Services.NotificationServices;
 
 
-namespace Fliq.Infrastructure.Services.NotificationServices
+namespace Fliq.Infrastructure.Services.NotificationServices.Firebase
 {
     public class FireBaseNotificationService : INotificationService
     {
         private readonly ILoggerManager _logger;
         private readonly INotificationRepository _notificationRepository;
-        public FireBaseNotificationService(ILoggerManager logger, INotificationRepository notificationRepository)
+        private readonly IFirebaseMessagingWrapper _firebaseWrapper;
+        public FireBaseNotificationService(ILoggerManager logger, INotificationRepository notificationRepository, IFirebaseMessagingWrapper firebaseWrapper)
         {
             _logger = logger;
             _notificationRepository = notificationRepository;
+            _firebaseWrapper = firebaseWrapper;
 
             // Initialize Firebase if not already initialized
             if (FirebaseApp.DefaultInstance == null)
             {
                 FirebaseApp.Create(new AppOptions
                 {                                                                 // update this path to correct directory where the private keys file will be stored
-                    Credential = Google.Apis.Auth.OAuth2.GoogleCredential.FromFile("path/to/your/firebase/credentials.json") 
+                    Credential = Google.Apis.Auth.OAuth2.GoogleCredential.FromFile("path/to/your/firebase/credentials.json")
                 });
             }
+
         }
 
 
@@ -52,7 +55,7 @@ namespace Fliq.Infrastructure.Services.NotificationServices
             _notificationRepository.Add(notificationRecord);
 
             // Build the Firebase notification payload
-            var notification = new FirebaseAdmin.Messaging.Notification
+            var notification = new Notification
             {
                 Title = title,
                 Body = message,
@@ -75,7 +78,7 @@ namespace Fliq.Infrastructure.Services.NotificationServices
             try
             {
                 // should test what happens when it fails
-                var response = await FirebaseMessaging.DefaultInstance.SendEachForMulticastAsync(messagePayload);
+                var response = await _firebaseWrapper.SendEachForMulticastAsync(messagePayload);
                 _logger.LogInfo($"Sent {response.SuccessCount} notifications; {response.FailureCount} failed.");
             }
             catch (Exception ex)

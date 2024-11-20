@@ -17,7 +17,7 @@ using Fliq.Infrastructure.Services;
 using Fliq.Infrastructure.Services.AuthServices;
 using Fliq.Infrastructure.Services.ImageServices;
 using Fliq.Infrastructure.Services.LocationServices;
-using Fliq.Infrastructure.Services.NotificationServices;
+using Fliq.Infrastructure.Services.NotificationServices.Firebase;
 using Fliq.Infrastructure.Services.PaymentServices;
 using Fliq.Infrastructure.Services.SubscriptionServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -53,6 +53,7 @@ namespace Fliq.Infrastructure
             services.AddScoped<IRevenueCatServices, RevenueCatServices>();
             services.AddScoped<INotificationRepository, NotificationRepository>();
             services.AddScoped<INotificationService, FireBaseNotificationService>();
+            services.AddScoped<IFirebaseMessagingWrapper, FirebaseMessagingWrapper>();
             services.AddSingleton<ICustomProfileMapper, CustomProfileMapper>();
             services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
             services.AddDbContext<FliqDbContext>(options =>
