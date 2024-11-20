@@ -43,8 +43,13 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                 var parameters = DynamicParams(pollId);
                 var result = connection.Query<dynamic>("spGetVotingPoll", param: parameters, commandType: CommandType.StoredProcedure);
                 var filteredResult = result.Select(z => new VotingListDto
-                {
-
+                {   EventId = z.EventId,
+                    Count = z.Count,
+                    multipleOptionSelect = z.multipleOptionSelect,
+                    Options = z.options,
+                    Picture = z.picture,
+                    UserId = z.userId,
+                    Question = z.question
                 });
                 return filteredResult;
             }

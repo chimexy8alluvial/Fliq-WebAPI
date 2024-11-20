@@ -1,10 +1,11 @@
 ﻿namespace Fliq.Contracts.Polls
 {
-    public record VoteRequest
+    public record PollRequest
     (
         int UserId,
         int EventId,
         string Question,
-        List<string> Options
+        List<string> Options,
+        bool multipleOptionSelect
     );
 }

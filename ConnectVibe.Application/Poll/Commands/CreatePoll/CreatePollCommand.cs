@@ -1,16 +1,10 @@
 ﻿using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
-using Fliq.Application.Common.Interfaces.Services.PaymentServices;
-using Fliq.Application.Common.Interfaces.Services.SubscriptionServices;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Poll.Common;
+using Fliq.Domain.Entities.VotingPoll;
 using MapsterMapper;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Fliq.Application.Poll.Commands.CreatePoll
 {
@@ -25,20 +19,30 @@ namespace Fliq.Application.Poll.Commands.CreatePoll
 
     public class CreatePollCommandHandler : IRequestHandler<CreatePollCommand, ErrorOr<CreatePollResult>>
     {
-        private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
         private readonly ILoggerManager _logger;
+        private readonly IPollRepository _pollRepository;
 
-        public CreatePollCommandHandler(IUserRepository userRepository, IMapper mapper, ILoggerManager logger)
+        public CreatePollCommandHandler(IMapper mapper, ILoggerManager logger, IPollRepository pollRepository)
         {
-            _userRepository = userRepository;
+            
             _mapper = mapper;
             _logger = logger;
+            _pollRepository = pollRepository;
         }
 
-        public async Task<ErrorOr<CreatePollResult>> Handle(CreatePollCommand request, CancellationToken cancellationToken)
+        public async Task<ErrorOr<CreatePollResult>> Handle(CreatePollCommand command, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var initiatePoll= _mapper.Map<VotePoll>(command);
+            initiatePoll.DateCreated = DateTime.Now;
+            _pollRepository.CreateVote(initiatePoll);
+
+            return new CreatePollResult
+            {
+                SuccessStatus = true,
+                Message = $"Poll creation was successful for User: {command.UserId}"
+            };
+
         }
     }
 }
