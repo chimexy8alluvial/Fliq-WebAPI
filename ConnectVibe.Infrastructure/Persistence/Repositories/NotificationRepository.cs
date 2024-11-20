@@ -8,12 +8,10 @@ namespace Fliq.Infrastructure.Persistence.Repositories
     {
         private readonly FliqDbContext _dbContext;
 
-        private readonly IDbConnectionFactory _connectionFactory;
 
-        public NotificationRepository(FliqDbContext dbContext, IDbConnectionFactory connectionFactory)
+        public NotificationRepository(FliqDbContext dbContext)
         {
             _dbContext = dbContext;
-            _connectionFactory = connectionFactory;
         }
 
         public void Add(Notification notification)
@@ -31,7 +29,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
         public void RegisterDeviceToken(UserDeviceToken userDeviceToken)
         {
-            if(userDeviceToken.Id > 0)
+            if (userDeviceToken.Id > 0)
             {
                 _dbContext.Update(userDeviceToken);
             }

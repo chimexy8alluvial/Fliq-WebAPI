@@ -81,6 +81,8 @@ namespace Fliq.Infrastructure.Services.NotificationServices
             {
                 _logger.LogError($"Error sending notification to UserId {userId}: {ex.Message}");
             }
+            // should test what happens when it fails
+            var response = await FirebaseMessaging.DefaultInstance.SendEachForMulticastAsync(messagePayload);
 
         }
 
