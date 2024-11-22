@@ -15,6 +15,7 @@ using Fliq.Domain.Enums;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using System.Diagnostics;
 
 namespace Fliq.Application.Profile.Commands.Create
 {
@@ -47,22 +48,19 @@ namespace Fliq.Application.Profile.Commands.Create
         private readonly IProfileRepository _profileRepository;
         private readonly IUserRepository _userRepository;
         private readonly ILocationService _locationService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ISettingsRepository _settingsRepository;
         private readonly IPromptQuestionRepository _promptQuestionRepository;
         private readonly IPromptCategoryRepository _promptCategoryRepository;
         private readonly ILoggerManager _loggerManager;
-        private const int UnauthorizedUserId = -1;
       
 
-        public CreateProfileCommandHandler(IMapper mapper, IImageService imageService, IProfileRepository profileRepository, IUserRepository userRepository, ILocationService locationService, IHttpContextAccessor httpContextAccessor, ISettingsRepository settingsRepository, ILoggerManager loggerManager, IPromptQuestionRepository promptQuestionRepository, IPromptCategoryRepository promptCategoryRepository)
+        public CreateProfileCommandHandler(IMapper mapper, IImageService imageService, IProfileRepository profileRepository, IUserRepository userRepository, ILocationService locationService,ISettingsRepository settingsRepository, ILoggerManager loggerManager, IPromptQuestionRepository promptQuestionRepository, IPromptCategoryRepository promptCategoryRepository)
         {
             _mapper = mapper;
             _imageService = imageService;
             _profileRepository = profileRepository;
             _userRepository = userRepository;
             _locationService = locationService;
-            _httpContextAccessor = httpContextAccessor;
             _settingsRepository = settingsRepository;
             _loggerManager = loggerManager;
             _promptQuestionRepository = promptQuestionRepository;
@@ -140,7 +138,7 @@ namespace Fliq.Application.Profile.Commands.Create
             return new CreateProfileResult(userProfile);
         }
 
-        #region Private Helpers
+
         private async Task<ErrorOr<PromptResponse>> ProcessPromptResponseAsync(PromptResponseDto promptDto, UserProfile userProfile)
         {
             //Validate answer was provided
@@ -215,26 +213,28 @@ namespace Fliq.Application.Profile.Commands.Create
             } ?? throw new ArgumentException("Invalid prompt answer type provided.");
 
             // Check if the app is in Debug Mode
-            #if DEBUG
-            // In Debug mode, save the file to a local directory instead of uploading to the server
-            var localFolderPath = Path.Combine("wwwroot", containerName);
-            Directory.CreateDirectory(localFolderPath);
-            var localFilePath = Path.Combine(localFolderPath, file.FileName);
+            if (Debugger.IsAttached){
+                // In Debug mode, save the file to a local directory instead of uploading to the server
+                var localFolderPath = Path.Combine("wwwroot", containerName);
+                Directory.CreateDirectory(localFolderPath);
+                var localFilePath = Path.Combine(localFolderPath, file.FileName);
 
-            // Save the file locally
-            await using var fileStream = new FileStream(localFilePath, FileMode.Create);
-            await file.CopyToAsync(fileStream);
+                // Save the file locally
+                await using var fileStream = new FileStream(localFilePath, FileMode.Create);
+                await file.CopyToAsync(fileStream);
 
-            _loggerManager.LogDebug($"File saved locally to: {localFilePath}");
-            return localFilePath; // Return the local file path
-            #else
-            //In Release mode, upload the file to the server
-            _loggerManager.LogDebug($"Uploading file to container: {containerName}");
-            var uploadResult = await _imageService.UploadMediaAsync(file, containerName);
-            return uploadResult; // Return the URL or path from server upload
-            #endif
+                _loggerManager.LogDebug($"File saved locally to: {localFilePath}");
+                return localFilePath; // Return the local file path
+            }
+            else
+            {
+                //In Release mode, upload the file to the server
+                _loggerManager.LogDebug($"Uploading file to container: {containerName}");
+                var uploadResult = await _imageService.UploadMediaAsync(file, containerName);
+                return uploadResult; // Return the URL or path from server upload
+            }
+   
         }
 
-        #endregion
     }
 }
