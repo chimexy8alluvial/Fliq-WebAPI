@@ -3,6 +3,7 @@ using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Entities.Settings;
 using Microsoft.EntityFrameworkCore;
 using Fliq.Domain.Entities.MatchedProfile;
+using Fliq.Domain.Entities.Notifications;
 
 namespace Fliq.Infrastructure.Persistence
 {
@@ -16,6 +17,9 @@ namespace Fliq.Infrastructure.Persistence
         public DbSet<OTP> OTPs { get; set; } = null!;
         public DbSet<UserProfile> UserProfiles { get; set; } = null!;
         public DbSet<MatchRequest> MatchRequests { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
+        public DbSet<UserDeviceToken> UserDeviceTokens { get; set; }
+
 
         public DbSet<LocationDetail> LocationDetails { get; set; }
        

@@ -1,4 +1,5 @@
 ﻿using Fliq.Domain.Entities.MatchedProfile;
+using Fliq.Domain.Entities.Notifications;
 using Fliq.Domain.Entities.Profile;
 
 namespace Fliq.Domain.Entities
@@ -17,5 +18,6 @@ namespace Fliq.Domain.Entities
         public List<Payment>? Payments { get; set; }
         public List<Subscription>? Subscriptions { get; set; }
         public List<MatchRequest>? MatchRequests { get; set; }
+        public ICollection<UserDeviceToken>? DeviceTokens { get; set; }
     }
 }
