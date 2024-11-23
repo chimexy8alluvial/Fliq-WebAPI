@@ -31,10 +31,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ConnectVibe.Contracts\Fliq.Contracts.csproj" />
     <ProjectReference Include="..\ConnectVibe.Domain\Fliq.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Notifications\Queries\" />
     <Folder Include="Payments\Queries\" />
     <Folder Include="Prompts\Queries\" />
   </ItemGroup>
