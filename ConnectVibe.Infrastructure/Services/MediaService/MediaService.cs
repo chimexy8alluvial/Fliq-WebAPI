@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Fliq.Application.Common.Interfaces.Services.MeidaServices;
+using Microsoft.AspNetCore.Http;
 
 
 namespace Fliq.Infrastructure.Services.MediaService
 {
-    public class MediaService
+    public class MediaService : IMediaServices
     {
         private readonly string _uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
         private readonly string _containerName = "documents";
