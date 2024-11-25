@@ -22,17 +22,17 @@ namespace Fliq.Test.Event.Commands
     [TestClass]
     public class CreateEventCommandHandlerTests
     {
-        private Mock<IMapper> _mapperMock;
-        private Mock<ILoggerManager> _loggerMock;
-        private Mock<IUserRepository> _userRepositoryMock;
-        private Mock<IMediaServices> _documentServicesMock;
-        private Mock<IEventRepository> _eventRepositoryMock;
-        private Mock<IImageService> _imageServiceMock;
-        private Mock<ILocationService> _locationServiceMock;
-        private Mock<IEventService> _eventServiceMock;
-        private Mock<IEmailService> _emailServiceMock;
+        private Mock<IMapper>? _mapperMock;
+        private Mock<ILoggerManager>? _loggerMock;
+        private Mock<IUserRepository>? _userRepositoryMock;
+        private Mock<IMediaServices>? _documentServicesMock;
+        private Mock<IEventRepository>? _eventRepositoryMock;
+        private Mock<IImageService>? _imageServiceMock;
+        private Mock<ILocationService>? _locationServiceMock;
+        private Mock<IEventService>? _eventServiceMock;
+        private Mock<IEmailService>? _emailServiceMock;
 
-        private CreateEventCommandHandler _handler;
+        private CreateEventCommandHandler? _handler;
 
         [TestInitialize]
         public void Setup()
@@ -71,7 +71,7 @@ namespace Fliq.Test.Event.Commands
             };
 
             var user = new User { IsDocumentVerified = false };
-            _userRepositoryMock.Setup(repo => repo.GetUserById(It.IsAny<int>())).Returns(user);
+            _userRepositoryMock?.Setup(repo => repo.GetUserById(It.IsAny<int>())).Returns(user);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -96,7 +96,7 @@ namespace Fliq.Test.Event.Commands
             var user = new User { IsDocumentVerified = true };
             var newEvent = new Events { EventTitle = "Test Event" };
 
-            _userRepositoryMock.Setup(repo => repo.GetUserById(It.IsAny<int>())).Returns(user);
+            _userRepositoryMock?.Setup(repo => repo.GetUserById(It.IsAny<int>())).Returns(user);
             _mapperMock.Setup(mapper => mapper.Map<Events>(command)).Returns(newEvent);
 
             // Act
@@ -123,8 +123,8 @@ namespace Fliq.Test.Event.Commands
 
             var image = CreateMockFormFile();
             var user = new User { IsDocumentVerified = true };
-            _userRepositoryMock.Setup(repo => repo.GetUserById(It.IsAny<int>())).Returns(user);
-            _imageServiceMock.Setup(service => service.UploadMediaAsync(image)).ReturnsAsync((string)null);
+            _userRepositoryMock?.Setup(repo => repo.GetUserById(It.IsAny<int>())).Returns(user);
+            _imageServiceMock?.Setup(service => service.UploadMediaAsync(image)).ReturnsAsync((string)null);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -169,9 +169,9 @@ namespace Fliq.Test.Event.Commands
                 Status = "OK"
             };
 
-            _userRepositoryMock.Setup(repo => repo.GetUserById(It.IsAny<int>())).Returns(user);
-            _mapperMock.Setup(mapper => mapper.Map<Events>(command)).Returns(newEvent);
-            _locationServiceMock.Setup(service => service.GetAddressFromCoordinatesAsync(It.IsAny<double>(), It.IsAny<double>()))
+            _userRepositoryMock?.Setup(repo => repo.GetUserById(It.IsAny<int>())).Returns(user);
+            _mapperMock?.Setup(mapper => mapper.Map<Events>(command)).Returns(newEvent);
+            _locationServiceMock?.Setup(service => service.GetAddressFromCoordinatesAsync(It.IsAny<double>(), It.IsAny<double>()))
                .ReturnsAsync(locationResponse);
 
             // Act
@@ -198,15 +198,15 @@ namespace Fliq.Test.Event.Commands
 
             var user = new User { IsDocumentVerified = true };
 
-            _userRepositoryMock.Setup(repo => repo.GetUserById(It.IsAny<int>())).Returns(user);
-            _userRepositoryMock.Setup(repo => repo.GetUserByEmail(It.IsAny<string>())).Returns((User)null);
+            _userRepositoryMock?.Setup(repo => repo.GetUserById(It.IsAny<int>())).Returns(user);
+            _userRepositoryMock?.Setup(repo => repo.GetUserByEmail(It.IsAny<string>())).Returns((User)null);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.IsFalse(result.IsError);
-            _emailServiceMock.Verify(service => service.SendEmailAsync(
+            _emailServiceMock?.Verify(service => service.SendEmailAsync(
                 "test@example.com",
                 It.IsAny<string>(),
                 It.IsAny<string>()),
