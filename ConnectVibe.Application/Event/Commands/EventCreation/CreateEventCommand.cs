@@ -2,6 +2,7 @@
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Interfaces.Services.DocumentServices;
+using Fliq.Application.Common.Interfaces.Services.EventServices;
 using Fliq.Application.Common.Interfaces.Services.ImageServices;
 using Fliq.Application.Common.Interfaces.Services.LocationServices;
 using Fliq.Application.Event.Common;
@@ -34,6 +35,7 @@ namespace Fliq.Application.Event.Commands.EventCreation
         public int UserId { get; set; } = default!;
         public EventPaymentDetail EventPaymentDetail { get; set; } = default!;
         public bool InviteesException { get; set; } = default!;
+        public List<EventInvitee> EventInvitees { get; set; } = default!;
 
         public List<EventMediaMapped> MediaDocuments { get; set; } = default!;
     }
@@ -47,9 +49,11 @@ namespace Fliq.Application.Event.Commands.EventCreation
         private readonly IEventRepository _eventRepository;
         private readonly IImageService _imageService;
         private readonly ILocationService _locationService;
+        private readonly IEventService _eventService;
+        private readonly IEmailService _emailService;
 
         public CreateEventCommandHandler(IMapper mapper, ILoggerManager logger, IUserRepository userRepository,
-            IMediaServices documentServices, IEventRepository eventRepository, IImageService imageService, ILocationService locationService)
+            IMediaServices documentServices, IEventRepository eventRepository, IImageService imageService, ILocationService locationService, IEventService eventService, IEmailService emailService)
         {
             _mapper = mapper;
             _logger = logger;
@@ -58,6 +62,8 @@ namespace Fliq.Application.Event.Commands.EventCreation
             _eventRepository = eventRepository;
             _imageService = imageService;
             _locationService = locationService;
+            _eventService = eventService;
+            _emailService = emailService;
         }
 
         public async Task<ErrorOr<CreateEventResult>> Handle(CreateEventCommand command, CancellationToken cancellationToken)
@@ -119,6 +125,29 @@ namespace Fliq.Application.Event.Commands.EventCreation
             _eventRepository.Add(newEvent);
 
             return new CreateEventResult(newEvent);
+        }
+
+        private async Task SendInvitations(int eventId, List<EventInvitee> invitees)
+        {
+            foreach (var invitee in invitees)
+            {
+                // Check if the user exists in the app
+                var user = _userRepository.GetUserByEmail(invitee.Email);
+
+                // Notify based on user type
+                if (user != null)
+                {
+                    // Existing user: Send push notification and email
+                    //Notification Implementation
+
+                    await _emailService.SendEmailAsync(invitee.Email, "Event Invitation", _eventService.GenerateEventCreationEmailContent(eventId, user.FirstName));
+                }
+                else
+                {
+                    // External user: Send email with optional registration link
+                    await _emailService.SendEmailAsync(invitee.Email, "Event Invitation", _eventService.GenerateEventCreationEmailContent(eventId, "", true));
+                }
+            }
         }
     }
 }
