@@ -4,6 +4,7 @@ using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Interfaces.Services.ImageServices;
 using Fliq.Application.Common.Interfaces.Services.LocationServices;
+using Fliq.Application.Common.Interfaces.Services.MeidaServices;
 using Fliq.Application.Profile.Common;
 using Fliq.Application.Prompts.Common.Helpers;
 using Fliq.Contracts.Enums;
@@ -53,9 +54,10 @@ namespace Fliq.Application.Profile.Commands.Create
         private readonly IPromptQuestionRepository _promptQuestionRepository;
         private readonly IPromptCategoryRepository _promptCategoryRepository;
         private readonly ILoggerManager _loggerManager;
-      
+        private readonly IMediaServices _mediaServices;
 
-        public CreateProfileCommandHandler(IMapper mapper, IImageService imageService, IProfileRepository profileRepository, IUserRepository userRepository, ILocationService locationService,ISettingsRepository settingsRepository, ILoggerManager loggerManager, IPromptQuestionRepository promptQuestionRepository, IPromptCategoryRepository promptCategoryRepository)
+
+        public CreateProfileCommandHandler(IMapper mapper, IImageService imageService, IProfileRepository profileRepository, IUserRepository userRepository, ILocationService locationService, ISettingsRepository settingsRepository, ILoggerManager loggerManager, IPromptQuestionRepository promptQuestionRepository, IPromptCategoryRepository promptCategoryRepository, IMediaServices mediaServices)
         {
             _mapper = mapper;
             _imageService = imageService;
@@ -66,6 +68,7 @@ namespace Fliq.Application.Profile.Commands.Create
             _loggerManager = loggerManager;
             _promptQuestionRepository = promptQuestionRepository;
             _promptCategoryRepository = promptCategoryRepository;
+            _mediaServices = mediaServices;
         }
 
         public async Task<ErrorOr<CreateProfileResult>> Handle(CreateProfileCommand command, CancellationToken cancellationToken)
