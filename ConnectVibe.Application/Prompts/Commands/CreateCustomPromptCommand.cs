@@ -4,6 +4,7 @@ using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Interfaces.Services.ImageServices;
 using Fliq.Application.Prompts.Common;
 using Fliq.Application.Prompts.Common.Helpers;
+using Fliq.Contracts.Enums;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Prompts;
 using Fliq.Domain.Enums;

@@ -1,4 +1,4 @@
-﻿using Fliq.Application.Prompts.Common;
+﻿using Fliq.Contracts.Prompts;
 
 namespace Fliq.Contracts.Profile.UpdateDtos
 {

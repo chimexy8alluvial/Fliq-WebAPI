@@ -58,7 +58,6 @@ namespace Fliq.Test.Profile.Commands.Create
                 _profileRepositoryMock.Object,
                 _userRepositoryMock.Object,
                 _locationServiceMock.Object,
-                _httpContextAccessorMock.Object,
                 _settingsRepositoryMock.Object,
                 _loggerManagerMock.Object,
                 _promptQuestionRepositoryMock.Object,

@@ -4,9 +4,9 @@ using Fliq.Application.Common.Pagination;
 using Fliq.Application.Profile.Commands.Create;
 using Fliq.Application.Profile.Commands.Update;
 using Fliq.Application.Profile.Common;
-using Fliq.Application.Prompts.Common;
 using Fliq.Contracts.Profile;
 using Fliq.Contracts.Profile.UpdateDtos;
+using Fliq.Contracts.Prompts;
 using Fliq.Domain.Entities.Profile;
 
 using Fliq.Domain.Enums;

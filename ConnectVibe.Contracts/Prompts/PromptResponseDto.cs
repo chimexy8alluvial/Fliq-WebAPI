@@ -1,8 +1,6 @@
-﻿
-using Microsoft.AspNetCore.Http;
-using System.ComponentModel;
+﻿using Microsoft.AspNetCore.Http;
 
-namespace Fliq.Application.Prompts.Common
+namespace Fliq.Contracts.Prompts
 {
     public record PromptResponseDto(int PromptQuestionId,
         int CategoryId,

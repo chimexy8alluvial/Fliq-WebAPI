@@ -1,6 +1,6 @@
 ﻿using Azure;
 using Fliq.Application.Profile.Common;
-using Fliq.Application.Prompts.Common;
+using Fliq.Contracts.Prompts;
 using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Entities.Prompts;
 using Fliq.Domain.Enums;
