@@ -92,7 +92,17 @@ namespace Fliq.Application.Profile.Commands.Create
             userProfile.User = user;
             foreach (var photo in command.Photos)
             {
-                var profileUrl = await _imageService.UploadImageAsync(photo.ImageFile);
+                string? profileUrl = string.Empty;
+
+                if (Debugger.IsAttached)
+                {
+                    profileUrl = await _mediaServices.UploadEventMediaAsync(photo.ImageFile);
+                }
+                else
+                {
+                    profileUrl = await _imageService.UploadImageAsync(photo.ImageFile);
+                }
+               
                 if (profileUrl != null)
                 {
                     ProfilePhoto profilePhoto = new() { PictureUrl = profileUrl, Caption = photo.Caption };
@@ -219,16 +229,7 @@ namespace Fliq.Application.Profile.Commands.Create
             // Check if the app is in Debug Mode
             if (Debugger.IsAttached){
                 // In Debug mode, save the file to a local directory instead of uploading to the server
-                var localFolderPath = Path.Combine("wwwroot", containerName);
-                Directory.CreateDirectory(localFolderPath);
-                var localFilePath = Path.Combine(localFolderPath, file.FileName);
-
-                // Save the file locally
-                await using var fileStream = new FileStream(localFilePath, FileMode.Create);
-                await file.CopyToAsync(fileStream);
-
-                _loggerManager.LogDebug($"File saved locally to: {localFilePath}");
-                return localFilePath; // Return the local file path
+                return await _mediaServices.UploadEventMediaAsync(file);
             }
             else
             {

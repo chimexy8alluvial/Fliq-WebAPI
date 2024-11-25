@@ -2,6 +2,7 @@
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Interfaces.Services.ImageServices;
 using Fliq.Application.Common.Interfaces.Services.LocationServices;
+using Fliq.Application.Common.Interfaces.Services.MeidaServices;
 using Fliq.Application.Common.Models;
 using Fliq.Application.Profile.Commands.Create;
 using Fliq.Application.Profile.Common;
@@ -31,6 +32,7 @@ namespace Fliq.Test.Profile.Commands.Create
         private Mock<IPromptQuestionRepository> _promptQuestionRepositoryMock;
         private Mock<IPromptCategoryRepository> _promptCategoryRepositoryMock;
         private Mock<ILoggerManager> _loggerManagerMock;
+        private Mock<IMediaServices> _mediaServicesMock;
 
         [TestInitialize]
         public void Setup()
@@ -47,6 +49,7 @@ namespace Fliq.Test.Profile.Commands.Create
             _promptQuestionRepositoryMock = new Mock<IPromptQuestionRepository>();
             _promptCategoryRepositoryMock = new Mock<IPromptCategoryRepository>();
             _loggerManagerMock = new Mock<ILoggerManager>();
+            _mediaServicesMock = new Mock<IMediaServices>();
 
             // Mocking HttpContext to return a valid user ID
             _httpContextAccessorMock.Setup(x => x.HttpContext.User)
@@ -61,7 +64,8 @@ namespace Fliq.Test.Profile.Commands.Create
                 _settingsRepositoryMock.Object,
                 _loggerManagerMock.Object,
                 _promptQuestionRepositoryMock.Object,
-                _promptCategoryRepositoryMock.Object);
+                _promptCategoryRepositoryMock.Object,
+                _mediaServicesMock.Object);
         }
 
         [TestMethod]
