@@ -24,4 +24,8 @@
     <PackageReference Include="NLog.Extensions.Logging" Version="5.3.14" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Entities\Notifications\DeviceRegistration\" />
+  </ItemGroup>
+
 </Project>

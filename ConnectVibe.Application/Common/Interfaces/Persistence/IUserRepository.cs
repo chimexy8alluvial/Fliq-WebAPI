@@ -9,5 +9,6 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         User? GetUserByEmail(string email);
         IEnumerable<User> GetAllUsers();
         User? GetUserById(int Id);
+        User? GetUserByIdIncludingProfile(int Id);
     }
 }

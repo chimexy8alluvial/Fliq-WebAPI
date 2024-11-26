@@ -3,6 +3,8 @@ using Fliq.Domain.Entities.Event;
 using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Entities.Settings;
 using Microsoft.EntityFrameworkCore;
+using Fliq.Domain.Entities.MatchedProfile;
+using Fliq.Domain.Entities.Notifications;
 
 namespace Fliq.Infrastructure.Persistence
 {
@@ -26,6 +28,13 @@ namespace Fliq.Infrastructure.Persistence
         public DbSet<Currency> Currencies { get; set; }
 
         public DbSet<LocationDetail> LocationDetails { get; set; } = null!;
+        public DbSet<MatchRequest> MatchRequests { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
+        public DbSet<UserDeviceToken> UserDeviceTokens { get; set; }
+
+
+        public DbSet<LocationDetail> LocationDetails { get; set; }
+       
 
         public DbSet<Subscription> Subscriptions { get; set; } = null!;
         public DbSet<Payment> Payments { get; set; } = null!;
