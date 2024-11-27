@@ -1,6 +1,7 @@
 ﻿using Fliq.Application.Settings.Commands.Update;
 using Fliq.Application.Settings.Common;
 using Fliq.Contracts.Settings;
+using Fliq.Domain.Entities;
 using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Entities.Settings;
 using Mapster;

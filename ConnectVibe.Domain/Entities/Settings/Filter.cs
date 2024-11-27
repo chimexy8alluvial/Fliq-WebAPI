@@ -12,7 +12,7 @@ namespace Fliq.Domain.Entities.Settings
         public List<EthnicityType> RacePreferences { get; set; } = new();
         public List<Vice> MyVices { get; set; } = new();
         public List<Vice> UnacceptableVices { get; set; } = new();
-        public Setting Setting { get; set; }
+        public Setting Setting { get; set; } = default!;
         public int SettingId { get; set; }
     }
 
@@ -21,18 +21,6 @@ namespace Fliq.Domain.Entities.Settings
         Friendship,
         Relationship,
         Both
-    }
-
-    public class AgeRange : Record
-    {
-        public int MinAge { get; set; }
-        public int MaxAge { get; set; }
-
-        public AgeRange(int minAge, int maxAge)
-        {
-            MinAge = minAge;
-            MaxAge = maxAge;
-        }
     }
 
     public class Vice : Record

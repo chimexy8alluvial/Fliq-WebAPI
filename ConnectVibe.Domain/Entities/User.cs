@@ -13,6 +13,7 @@ namespace Fliq.Domain.Entities
         public string PasswordHash { get; set; } = string.Empty;
         public string PasswordSalt { get; set; } = string.Empty;
         public bool IsEmailValidated { get; set; }
+        public bool IsDocumentVerified { get; set; }
 
         public UserProfile? UserProfile { get; set; }
         public List<Payment>? Payments { get; set; }
