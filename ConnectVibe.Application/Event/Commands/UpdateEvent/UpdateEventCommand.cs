@@ -1,9 +1,8 @@
 ﻿using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
-using Fliq.Application.Common.Interfaces.Services.DocumentServices;
-using Fliq.Application.Common.Interfaces.Services.ImageServices;
 using Fliq.Application.Common.Interfaces.Services.LocationServices;
+using Fliq.Application.Common.Interfaces.Services.MeidaServices;
 using Fliq.Application.Event.Common;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Event;
@@ -44,26 +43,24 @@ namespace Fliq.Application.Event.Commands.UpdateEvent
         private readonly IMapper _mapper;
         private readonly ILoggerManager _logger;
         private readonly IUserRepository _userRepository;
-        private readonly IMediaServices _documentServices;
+        private readonly IMediaServices _mediaServices;
         private readonly IEventRepository _eventRepository;
-        private readonly IImageService _imageService;
         private readonly ILocationService _locationService;
+        private const string _eventDocument = "Event Documents";
 
         public UpdateEventCommandHandler(
             IMapper mapper,
             ILoggerManager logger,
             IUserRepository userRepository,
-            IMediaServices documentServices,
+            IMediaServices mediaServices,
             IEventRepository eventRepository,
-            IImageService imageService,
             ILocationService locationService)
         {
             _mapper = mapper;
             _logger = logger;
             _userRepository = userRepository;
-            _documentServices = documentServices;
+            _mediaServices = mediaServices;
             _eventRepository = eventRepository;
-            _imageService = imageService;
             _locationService = locationService;
         }
 
@@ -91,28 +88,18 @@ namespace Fliq.Application.Event.Commands.UpdateEvent
                 eventToUpdate.Media.Clear();
                 foreach (var photo in command.MediaDocuments)
                 {
-                    if (Debugger.IsAttached)
+ 
+                    var mediaUrl = await _mediaServices.UploadMediaAsync(photo.DocFile, _eventDocument);
+                    if (mediaUrl != null)
                     {
-                        var eventMediaUrl = await _documentServices.UploadEventMediaAsync(photo.DocFile);
-                        if (eventMediaUrl != null)
-                        {
-                            EventMedia eventMedia = new() { MediaUrl = eventMediaUrl, Title = photo.Title };
-                            eventToUpdate.Media.Add(eventMedia);
-                        }
+                        EventMedia eventMedia = new() { MediaUrl = mediaUrl, Title = photo.Title };
+                        eventToUpdate.Media.Add(eventMedia);
                     }
                     else
                     {
-                        var mediaUrl = await _imageService.UploadMediaAsync(photo.DocFile);
-                        if (mediaUrl != null)
-                        {
-                            EventMedia eventMedia = new() { MediaUrl = mediaUrl, Title = photo.Title };
-                            eventToUpdate.Media.Add(eventMedia);
-                        }
-                        else
-                        {
-                            return Errors.Document.InvalidDocument;
-                        }
+                        return Errors.Document.InvalidDocument;
                     }
+
                 }
             }
             if (command.Location is not null)
