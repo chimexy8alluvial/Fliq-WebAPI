@@ -2,12 +2,10 @@
 using Fliq.Application.Authentication.Common.Profile;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
-using Fliq.Application.Common.Interfaces.Services.ImageServices;
 using Fliq.Application.Common.Interfaces.Services.LocationServices;
 using Fliq.Application.Common.Interfaces.Services.MeidaServices;
 using Fliq.Application.Profile.Common;
 using Fliq.Application.Prompts.Common.Helpers;
-using Fliq.Contracts.Enums;
 using Fliq.Contracts.Prompts;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Profile;
@@ -17,7 +15,7 @@ using Fliq.Domain.Enums;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Http;
-using System.Diagnostics;
+
 
 namespace Fliq.Application.Profile.Commands.Create
 {
@@ -46,7 +44,6 @@ namespace Fliq.Application.Profile.Commands.Create
     public class CreateProfileCommandHandler : IRequestHandler<CreateProfileCommand, ErrorOr<CreateProfileResult>>
     {
         private readonly IMapper _mapper;
-        private readonly IImageService _imageService;
         private readonly IProfileRepository _profileRepository;
         private readonly IUserRepository _userRepository;
         private readonly ILocationService _locationService;
@@ -57,10 +54,9 @@ namespace Fliq.Application.Profile.Commands.Create
         private readonly IMediaServices _mediaServices;
 
 
-        public CreateProfileCommandHandler(IMapper mapper, IImageService imageService, IProfileRepository profileRepository, IUserRepository userRepository, ILocationService locationService, ISettingsRepository settingsRepository, ILoggerManager loggerManager, IPromptQuestionRepository promptQuestionRepository, IPromptCategoryRepository promptCategoryRepository, IMediaServices mediaServices)
+        public CreateProfileCommandHandler(IMapper mapper, IProfileRepository profileRepository, IUserRepository userRepository, ILocationService locationService, ISettingsRepository settingsRepository, ILoggerManager loggerManager, IPromptQuestionRepository promptQuestionRepository, IPromptCategoryRepository promptCategoryRepository, IMediaServices mediaServices)
         {
             _mapper = mapper;
-            _imageService = imageService;
             _profileRepository = profileRepository;
             _userRepository = userRepository;
             _locationService = locationService;
@@ -92,17 +88,8 @@ namespace Fliq.Application.Profile.Commands.Create
             userProfile.User = user;
             foreach (var photo in command.Photos)
             {
-                string? profileUrl = string.Empty;
+                var profileUrl = await _mediaServices.UploadImageAsync(photo.ImageFile);
 
-                if (Debugger.IsAttached)
-                {
-                    profileUrl = await _mediaServices.UploadEventMediaAsync(photo.ImageFile);
-                }
-                else
-                {
-                    profileUrl = await _imageService.UploadImageAsync(photo.ImageFile);
-                }
-               
                 if (profileUrl != null)
                 {
                     ProfilePhoto profilePhoto = new() { PictureUrl = profileUrl, Caption = photo.Caption };
@@ -226,19 +213,12 @@ namespace Fliq.Application.Profile.Commands.Create
                 _ => null
             } ?? throw new ArgumentException("Invalid prompt answer type provided.");
 
-            // Check if the app is in Debug Mode
-            if (Debugger.IsAttached){
-                // In Debug mode, save the file to a local directory instead of uploading to the server
-                return await _mediaServices.UploadEventMediaAsync(file);
-            }
-            else
-            {
-                //In Release mode, upload the file to the server
-                _loggerManager.LogDebug($"Uploading file to container: {containerName}");
-                var uploadResult = await _imageService.UploadMediaAsync(file, containerName);
-                return uploadResult; // Return the URL or path from server upload
-            }
-   
+            //upload the file to the server
+            _loggerManager.LogDebug($"Uploading file to container: {containerName}");
+            var uploadResult = await _mediaServices.UploadMediaAsync(file, containerName);
+            return uploadResult; // Return the URL or path from server upload
+
+
         }
 
     }

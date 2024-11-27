@@ -1,7 +1,7 @@
 ﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
-using Fliq.Application.Common.Interfaces.Services.ImageServices;
 using Fliq.Application.Common.Interfaces.Services.LocationServices;
+using Fliq.Application.Common.Interfaces.Services.MeidaServices;
 using Fliq.Application.Common.Models;
 using Fliq.Application.Profile.Commands.Update;
 using Fliq.Application.Profile.Common;
@@ -20,7 +20,7 @@ namespace Fliq.Test.Profile.Commands.Update
     public class UpdateProfileCommandHandlerTests
     {
         private Mock<IMapper> _mapperMock;
-        private Mock<IImageService> _imageServiceMock;
+        private Mock<IMediaServices> _mediaServiceMock;
         private Mock<IProfileRepository> _profileRepositoryMock;
         private Mock<IUserRepository> _userRepositoryMock;
         private Mock<ILocationService> _locationServiceMock;
@@ -33,7 +33,7 @@ namespace Fliq.Test.Profile.Commands.Update
         public void Setup()
         {
             _mapperMock = new Mock<IMapper>();
-            _imageServiceMock = new Mock<IImageService>();
+            _mediaServiceMock = new Mock<IMediaServices>();
             _profileRepositoryMock = new Mock<IProfileRepository>();
             _userRepositoryMock = new Mock<IUserRepository>();
             _locationServiceMock = new Mock<ILocationService>();
@@ -43,7 +43,7 @@ namespace Fliq.Test.Profile.Commands.Update
 
             _handler = new UpdateProfileCommandHandler(
                 _mapperMock.Object,
-                _imageServiceMock.Object,
+                _mediaServiceMock.Object,
                 _profileRepositoryMock.Object,
                 _userRepositoryMock.Object,
                 _locationServiceMock.Object,
@@ -128,7 +128,7 @@ namespace Fliq.Test.Profile.Commands.Update
             _userRepositoryMock.Setup(x => x.GetUserById(It.IsAny<int>())).Returns(new User());
             _profileRepositoryMock.Setup(x => x.GetProfileByUserId(It.IsAny<int>())).Returns(userProfile);
 
-            _imageServiceMock.Setup(x => x.UploadImageAsync(It.IsAny<IFormFile>()))
+            _mediaServiceMock.Setup(x => x.UploadImageAsync(It.IsAny<IFormFile>()))
                 .ReturnsAsync("https://someurl.com/image.jpg");
 
             _mapperMock.Setup(x => x.Map<UserProfile>(It.IsAny<UpdateProfileCommand>()))
@@ -139,7 +139,7 @@ namespace Fliq.Test.Profile.Commands.Update
 
             // Assert
             _profileRepositoryMock.Verify(x => x.Update(It.IsAny<UserProfile>()), Times.Once);
-            _imageServiceMock.Verify(x => x.UploadImageAsync(It.IsAny<IFormFile>()), Times.Exactly(2));
+            _mediaServiceMock.Verify(x => x.UploadImageAsync(It.IsAny<IFormFile>()), Times.Exactly(2));
             _loggerManagerMock.Verify(x => x.LogInfo(It.IsAny<string>()), Times.Exactly(2));
         }
 
@@ -162,7 +162,7 @@ namespace Fliq.Test.Profile.Commands.Update
             _userRepositoryMock.Setup(x => x.GetUserById(It.IsAny<int>())).Returns(new User());
             _profileRepositoryMock.Setup(x => x.GetProfileByUserId(It.IsAny<int>())).Returns(userProfile);
 
-            _imageServiceMock.Setup(x => x.UploadImageAsync(It.IsAny<IFormFile>()))
+            _mediaServiceMock.Setup(x => x.UploadImageAsync(It.IsAny<IFormFile>()))
                 .ReturnsAsync((string)null);
 
             // Act

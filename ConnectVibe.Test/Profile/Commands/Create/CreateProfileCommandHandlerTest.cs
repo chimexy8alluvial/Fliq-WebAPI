@@ -1,6 +1,5 @@
 ﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
-using Fliq.Application.Common.Interfaces.Services.ImageServices;
 using Fliq.Application.Common.Interfaces.Services.LocationServices;
 using Fliq.Application.Common.Interfaces.Services.MeidaServices;
 using Fliq.Application.Common.Models;
@@ -22,7 +21,6 @@ namespace Fliq.Test.Profile.Commands.Create
     {
         private CreateProfileCommandHandler _handler;
         private Mock<IMapper> _mapperMock;
-        private Mock<IImageService> _imageServiceMock;
         private Mock<IProfileRepository> _profileRepositoryMock;
         private Mock<ISettingsRepository> _settingsRepositoryMock;
         private Mock<IUserRepository> _userRepositoryMock;
@@ -38,7 +36,6 @@ namespace Fliq.Test.Profile.Commands.Create
         public void Setup()
         {
             _mapperMock = new Mock<IMapper>();
-            _imageServiceMock = new Mock<IImageService>();
             _profileRepositoryMock = new Mock<IProfileRepository>();
             _settingsRepositoryMock = new Mock<ISettingsRepository>();
             _userRepositoryMock = new Mock<IUserRepository>();
@@ -57,7 +54,6 @@ namespace Fliq.Test.Profile.Commands.Create
 
             _handler = new CreateProfileCommandHandler(
                 _mapperMock.Object,
-                _imageServiceMock.Object,
                 _profileRepositoryMock.Object,
                 _userRepositoryMock.Object,
                 _locationServiceMock.Object,
@@ -195,7 +191,7 @@ namespace Fliq.Test.Profile.Commands.Create
             _locationServiceMock.Setup(service => service.GetAddressFromCoordinatesAsync(It.IsAny<double>(), It.IsAny<double>()))
                 .ReturnsAsync(locationResponse);
 
-            _imageServiceMock.Setup(service => service.UploadImageAsync(It.IsAny<IFormFile>()))
+            _mediaServicesMock.Setup(service => service.UploadImageAsync(It.IsAny<IFormFile>()))
               .ReturnsAsync("image.jpeg");
 
             _mapperMock.Setup(mapper => mapper.Map<LocationDetail>(new LocationQueryResponse()));

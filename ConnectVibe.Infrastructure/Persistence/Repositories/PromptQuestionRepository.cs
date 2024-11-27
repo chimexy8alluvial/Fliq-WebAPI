@@ -1,7 +1,6 @@
 ﻿using Dapper;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Domain.Entities.Prompts;
-using Microsoft.AspNetCore.Connections;
 using System.Data;
 
 namespace Fliq.Infrastructure.Persistence.Repositories

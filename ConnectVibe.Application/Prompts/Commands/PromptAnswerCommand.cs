@@ -1,9 +1,8 @@
 ﻿using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
-using Fliq.Application.Common.Interfaces.Services.ImageServices;
+using Fliq.Application.Common.Interfaces.Services.MeidaServices;
 using Fliq.Application.Prompts.Common;
-using Fliq.Contracts.Enums;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Prompts;
 using Fliq.Domain.Enums;
@@ -25,13 +24,13 @@ namespace Fliq.Application.Prompts.Commands
 
     public class PromptAnswerCommandHandler : IRequestHandler<PromptAnswerCommand, ErrorOr<CreatePromptAnswerResult>>
     {
-        private readonly IImageService _mediaService;
+        private readonly IMediaServices _mediaService;
         private readonly IPromptAnswerRepository _promptAnswerRepository;
         private readonly IPromptQuestionRepository _promptQuestionRepository;
         private readonly IMapper _mapper;
         private readonly ILoggerManager _loggerManager;
 
-        public PromptAnswerCommandHandler(IImageService mediaService, IPromptAnswerRepository promptAnswerRepository, IPromptQuestionRepository promptQuestionRepository, IMapper mapper, ILoggerManager loggerManager)
+        public PromptAnswerCommandHandler(IMediaServices mediaService, IPromptAnswerRepository promptAnswerRepository, IPromptQuestionRepository promptQuestionRepository, IMapper mapper, ILoggerManager loggerManager)
         {
             _mediaService = mediaService;
             _promptAnswerRepository = promptAnswerRepository;

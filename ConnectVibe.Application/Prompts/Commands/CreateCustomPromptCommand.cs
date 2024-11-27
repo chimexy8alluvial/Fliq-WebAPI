@@ -1,10 +1,8 @@
 ﻿using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
-using Fliq.Application.Common.Interfaces.Services.ImageServices;
 using Fliq.Application.Prompts.Common;
 using Fliq.Application.Prompts.Common.Helpers;
-using Fliq.Contracts.Enums;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Prompts;
 using Fliq.Domain.Enums;
@@ -28,15 +26,13 @@ namespace Fliq.Application.Prompts.Commands
     public class CreateCustomPromptCommandHandler : IRequestHandler<CreateCustomPromptCommand, ErrorOr<CreatePromptAnswerResult>>
     {
         private readonly IPromptQuestionRepository _promptQuestionRepository;
-        private readonly IImageService _mediaService;
         private readonly IPromptCategoryRepository _promptCategoryRepository;
         private readonly ISender _mediator;
         private readonly ILoggerManager _loggerManager;
 
-        public CreateCustomPromptCommandHandler(IPromptQuestionRepository promptQuestionRepository, IImageService mediaService, IPromptCategoryRepository promptCategoryRepository, ISender mediator, ILoggerManager loggerManager)
+        public CreateCustomPromptCommandHandler(IPromptQuestionRepository promptQuestionRepository, IPromptCategoryRepository promptCategoryRepository, ISender mediator, ILoggerManager loggerManager)
         {
             _promptQuestionRepository = promptQuestionRepository;
-            _mediaService = mediaService;
             _promptCategoryRepository = promptCategoryRepository;
             _mediator = mediator;
             _loggerManager = loggerManager;
