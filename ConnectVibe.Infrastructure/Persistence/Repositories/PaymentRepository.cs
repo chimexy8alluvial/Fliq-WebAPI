@@ -34,5 +34,12 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
             _dbContext.SaveChanges();
         }
+
+        public Payment? GetPaymentById(int id)
+        {
+            return _dbContext.Payments
+                .Where(x => x.Id == id)
+                .FirstOrDefault();
+        }
     }
 }

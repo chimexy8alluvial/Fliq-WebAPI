@@ -6,9 +6,9 @@ using Fliq.Application.Common.Security;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities;
 using ErrorOr;
+using Fliq.Domain.Common.Errors;
 using MapsterMapper;
 using MediatR;
-using Newtonsoft.Json;
 
 
 namespace Fliq.Application.Authentication.Commands.Register

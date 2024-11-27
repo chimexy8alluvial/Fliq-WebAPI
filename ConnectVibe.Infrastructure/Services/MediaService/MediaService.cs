@@ -39,9 +39,9 @@ namespace Fliq.Infrastructure.Services.MediaService
                 var validExtensions = new[] { ".jpg", ".jpeg", ".png" };
                 var extension = Path.GetExtension(imageToUpload.FileName).ToLowerInvariant();
                 if (!validExtensions.Contains(extension))
-                {
+            {
                     return null;
-                }
+            }
 
                 // Attempt to create a CloudStorageAccount
                 CloudStorageAccount cloudStorageAccount = AzureConnectionString.GetConnectionString();
@@ -102,7 +102,7 @@ namespace Fliq.Infrastructure.Services.MediaService
             }
             else
             {
-                // Validate Media Extension
+            // Validate Media Extension
                 var validExtensions = new[] { ".jpg", ".jpeg", ".png", "gif", ".mp4", ".mov", ".avi", ".mkv", ".mp3", ".wav" };
                 var extension = Path.GetExtension(mediaToUpload.FileName).ToLowerInvariant();
                 if (!validExtensions.Contains(extension))
