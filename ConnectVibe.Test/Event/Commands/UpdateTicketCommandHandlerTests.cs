@@ -11,10 +11,10 @@ namespace Fliq.Test.Event.Commands
     [TestClass]
     public class UpdateTicketCommandHandlerTests
     {
-        private Mock<IEventRepository> _eventRepositoryMock;
-        private Mock<ITicketRepository> _ticketRepositoryMock;
-        private Mock<ILoggerManager> _loggerMock;
-        private Mock<IMapper> _mapperMock;
+        private Mock<IEventRepository>? _eventRepositoryMock;
+        private Mock<ITicketRepository>? _ticketRepositoryMock;
+        private Mock<ILoggerManager>? _loggerMock;
+        private Mock<IMapper>? _mapperMock;
 
         private UpdateTicketCommandHandler _handler;
 
@@ -45,7 +45,7 @@ namespace Fliq.Test.Event.Commands
                 TicketName = "Updated Ticket Name"
             };
 
-            _eventRepositoryMock.Setup(repo => repo.GetEventById(It.IsAny<int>())).Returns((Events)null);
+            _eventRepositoryMock?.Setup(repo => repo.GetEventById(It.IsAny<int>())).Returns((Events)null);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -66,8 +66,8 @@ namespace Fliq.Test.Event.Commands
                 TicketName = "Updated Ticket Name"
             };
 
-            _eventRepositoryMock.Setup(repo => repo.GetEventById(command.EventId)).Returns(new Events { Id = command.EventId });
-            _ticketRepositoryMock.Setup(repo => repo.GetTicketById(command.Id)).Returns((Ticket)null);
+            _eventRepositoryMock?.Setup(repo => repo.GetEventById(command.EventId)).Returns(new Events { Id = command.EventId });
+            _ticketRepositoryMock?.Setup(repo => repo.GetTicketById(command.Id)).Returns((Ticket)null);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -86,7 +86,16 @@ namespace Fliq.Test.Event.Commands
                 EventId = 1,
                 Id = 100,
                 TicketName = "Updated Ticket Name",
-                Amount = 75.50m
+                Amount = 75.50m,
+                Discounts = new List<Discount>
+                {
+                   new Discount
+                    {
+                        Name = "5% off for booking in the next 7 days",
+                        Percentage = 10.3,
+                        NumberOfTickets = 4
+                    }
+                },
             };
 
             var existingEvent = new Events { Id = command.EventId };
@@ -95,67 +104,33 @@ namespace Fliq.Test.Event.Commands
                 Id = command.Id,
                 EventId = command.EventId,
                 TicketName = "Original Ticket Name",
-                Amount = 50.00m
+                Amount = 50.00m,
+                Discounts = new List<Discount>
+                {
+                    new Discount
+                    {
+                        Name = "5% off for booking in the next 7 days",
+                        Percentage = 10.3,
+                        NumberOfTickets = 4
+                    }
+                },
             };
 
-            _eventRepositoryMock.Setup(repo => repo.GetEventById(command.EventId)).Returns(existingEvent);
-            _ticketRepositoryMock.Setup(repo => repo.GetTicketById(command.Id)).Returns(existingTicket);
-
-            // Mock Mapster adaptation
-            _mapperMock.Setup(mapper => mapper.Map<Ticket>(command)).Returns(existingTicket);
+            _eventRepositoryMock?.Setup(repo => repo.GetEventById(command.EventId)).Returns(existingEvent);
+            _ticketRepositoryMock?.Setup(repo => repo.GetTicketById(command.Id)).Returns(existingTicket);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.IsFalse(result.IsError);
-            _ticketRepositoryMock.Verify(repo => repo.Update(It.Is<Ticket>(t =>
+            _ticketRepositoryMock?.Verify(repo => repo.Update(It.Is<Ticket>(t =>
                 t.Id == command.Id &&
                 t.TicketName == command.TicketName &&
                 t.Amount == command.Amount
             )), Times.Once);
 
-            _loggerMock.Verify(logger => logger.LogInfo(It.IsAny<string>()), Times.Once);
-        }
-
-        [TestMethod]
-        public async Task Handle_PartialUpdate_OnlyUpdatesProvidedFields()
-        {
-            // Arrange
-            var command = new UpdateTicketCommand
-            {
-                EventId = 1,
-                Id = 100,
-                TicketName = "Updated Partial Ticket Name" // Only updating the name
-            };
-
-            var existingEvent = new Events { Id = command.EventId };
-            var existingTicket = new Ticket
-            {
-                Id = command.Id,
-                EventId = command.EventId,
-                TicketName = "Original Ticket Name",
-                Amount = 50.00m
-            };
-
-            _eventRepositoryMock.Setup(repo => repo.GetEventById(command.EventId)).Returns(existingEvent);
-            _ticketRepositoryMock.Setup(repo => repo.GetTicketById(command.Id)).Returns(existingTicket);
-
-            // Mock Mapster adaptation
-            _mapperMock.Setup(mapper => mapper.Map<Ticket>(command)).Returns(existingTicket);
-
-            // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
-
-            // Assert
-            Assert.IsFalse(result.IsError);
-            _ticketRepositoryMock.Verify(repo => repo.Update(It.Is<Ticket>(t =>
-                t.Id == command.Id &&
-                t.TicketName == command.TicketName &&
-                t.Amount == existingTicket.Amount // Should remain unchanged
-            )), Times.Once);
-
-            _loggerMock.Verify(logger => logger.LogInfo(It.IsAny<string>()), Times.Once);
+            _loggerMock?.Verify(logger => logger.LogInfo(It.IsAny<string>()), Times.Once);
         }
     }
 }

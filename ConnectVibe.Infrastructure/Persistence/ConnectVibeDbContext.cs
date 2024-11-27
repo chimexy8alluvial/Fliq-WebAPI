@@ -32,10 +32,6 @@ namespace Fliq.Infrastructure.Persistence
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<UserDeviceToken> UserDeviceTokens { get; set; }
 
-
-        public DbSet<LocationDetail> LocationDetails { get; set; }
-       
-
         public DbSet<Subscription> Subscriptions { get; set; } = null!;
         public DbSet<Payment> Payments { get; set; } = null!;
         public DbSet<Setting> Settings { get; set; } = null!;

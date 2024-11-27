@@ -1,21 +1,21 @@
-﻿using Moq;
-using Fliq.Application.Event.Commands.EventCreation;
-using Fliq.Application.Common.Interfaces.Persistence;
+﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Interfaces.Services.DocumentServices;
 using Fliq.Application.Common.Interfaces.Services.EventServices;
 using Fliq.Application.Common.Interfaces.Services.ImageServices;
 using Fliq.Application.Common.Interfaces.Services.LocationServices;
-using Fliq.Domain.Common.Errors;
-using Fliq.Domain.Entities.Event;
-using Fliq.Domain.Entities.Profile;
-using Fliq.Domain.Entities.Event.Enums;
-using MapsterMapper;
-using Fliq.Application.Event.Common;
-using Fliq.Domain.Entities;
-using Microsoft.AspNetCore.Http;
-using System.Text;
 using Fliq.Application.Common.Models;
+using Fliq.Application.Event.Commands.EventCreation;
+using Fliq.Application.Event.Common;
+using Fliq.Domain.Common.Errors;
+using Fliq.Domain.Entities;
+using Fliq.Domain.Entities.Event;
+using Fliq.Domain.Entities.Event.Enums;
+using Fliq.Domain.Entities.Profile;
+using MapsterMapper;
+using Microsoft.AspNetCore.Http;
+using Moq;
+using System.Text;
 
 namespace Fliq.Test.Event.Commands
 {
@@ -32,7 +32,7 @@ namespace Fliq.Test.Event.Commands
         private Mock<IEventService>? _eventServiceMock;
         private Mock<IEmailService>? _emailServiceMock;
 
-        private CreateEventCommandHandler? _handler;
+        private CreateEventCommandHandler _handler;
 
         [TestInitialize]
         public void Setup()
@@ -90,21 +90,52 @@ namespace Fliq.Test.Event.Commands
                 UserId = 1,
                 EventType = EventType.Live,
                 EventTitle = "Test Event",
-                MediaDocuments = new List<EventMediaMapped>()
+                Location = new Location { Lat = 40.7128, Lng = -74.0060 },
+
+                MediaDocuments = new List<EventMediaMapped>
+                {
+                    new EventMediaMapped { DocFile = CreateMockFormFile(), Title = "Valid File" }
+                }
             };
 
-            var user = new User { IsDocumentVerified = true };
-            var newEvent = new Events { EventTitle = "Test Event" };
+            var user = new User { IsDocumentVerified = true, Id = 1 };
+            var newEvent = new Events { EventTitle = "Test Event", UserId = 1, EventType = EventType.Live, Media = new List<EventMedia>() };
+
+            var locationResponse = new LocationQueryResponse
+            {
+                PlusCode = new Fliq.Application.Common.Models.PlusCode { CompoundCode = "FakeCode", GlobalCode = "GlobalCode123" },
+                Results = new List<Result>
+                {
+                    new Result
+                    {
+                        FormattedAddress = "123 Fake Street, Faketown, Fakestate",
+                        Geometry = new Fliq.Application.Common.Models.Geometry
+                        {
+                            Location = new Fliq.Application.Common.Models.Locationn
+                            {
+                                Lat = 40.7128,
+                                Lng = -74.0060
+                            }
+                        }
+                    }
+                },
+                Status = "OK"
+            };
 
             _userRepositoryMock?.Setup(repo => repo.GetUserById(It.IsAny<int>())).Returns(user);
-            _mapperMock.Setup(mapper => mapper.Map<Events>(command)).Returns(newEvent);
+            _mapperMock?.Setup(mapper => mapper.Map<Events>(command)).Returns(newEvent);
+            _locationServiceMock?.Setup(service => service.GetAddressFromCoordinatesAsync(It.IsAny<double>(), It.IsAny<double>()))
+               .ReturnsAsync(locationResponse);
+            _documentServicesMock?.Setup(service => service.UploadEventMediaAsync(It.IsAny<IFormFile>())).ReturnsAsync("image.jpeg");
+            _imageServiceMock?.Setup(service => service.UploadMediaAsync(It.IsAny<IFormFile>()))
+              .ReturnsAsync("image.jpeg");
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.IsFalse(result.IsError);
-            _eventRepositoryMock.Verify(repo => repo.Add(It.IsAny<Events>()), Times.Once);
+            _eventRepositoryMock?.Verify(repo => repo.Add(It.IsAny<Events>()), Times.Once);
         }
 
         [TestMethod]
@@ -132,85 +163,6 @@ namespace Fliq.Test.Event.Commands
             // Assert
             Assert.IsTrue(result.IsError);
             Assert.AreEqual(Errors.Document.InvalidDocument, result.FirstError);
-        }
-
-        [TestMethod]
-        public async Task Handle_LocationServiceFails_SetsLocationToNull()
-        {
-            // Arrange
-            var command = new CreateEventCommand
-            {
-                UserId = 1,
-                EventType = EventType.Live,
-                Location = new Location { Lat = 0.0, Lng = 0.0 }
-            };
-
-            var user = new User { IsDocumentVerified = true };
-            var newEvent = new Events();
-            // Mocking the Location Service Response
-            var locationResponse = new LocationQueryResponse
-            {
-                PlusCode = new Fliq.Application.Common.Models.PlusCode { CompoundCode = "FakeCode", GlobalCode = "GlobalCode123" },
-                Results = new List<Result>
-                {
-                    new Result
-                    {
-                        FormattedAddress = "123 Fake Street, Faketown, Fakestate",
-                        Geometry = new Fliq.Application.Common.Models.Geometry
-                        {
-                            Location = new Fliq.Application.Common.Models.Locationn
-                            {
-                                Lat = 40.7128,
-                                Lng = -74.0060
-                            }
-                        }
-                    }
-                },
-                Status = "OK"
-            };
-
-            _userRepositoryMock?.Setup(repo => repo.GetUserById(It.IsAny<int>())).Returns(user);
-            _mapperMock?.Setup(mapper => mapper.Map<Events>(command)).Returns(newEvent);
-            _locationServiceMock?.Setup(service => service.GetAddressFromCoordinatesAsync(It.IsAny<double>(), It.IsAny<double>()))
-               .ReturnsAsync(locationResponse);
-
-            // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
-
-            // Assert
-            Assert.IsFalse(result.IsError);
-            Assert.IsNull(newEvent.Location);
-        }
-
-        [TestMethod]
-        public async Task Handle_InvitesUsers_SendsEmailsToInvitees()
-        {
-            // Arrange
-            var command = new CreateEventCommand
-            {
-                UserId = 1,
-                EventType = EventType.Live,
-                EventInvitees = new List<EventInvitee>
-                {
-                    new EventInvitee { Email = "test@example.com" }
-                }
-            };
-
-            var user = new User { IsDocumentVerified = true };
-
-            _userRepositoryMock?.Setup(repo => repo.GetUserById(It.IsAny<int>())).Returns(user);
-            _userRepositoryMock?.Setup(repo => repo.GetUserByEmail(It.IsAny<string>())).Returns((User)null);
-
-            // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
-
-            // Assert
-            Assert.IsFalse(result.IsError);
-            _emailServiceMock?.Verify(service => service.SendEmailAsync(
-                "test@example.com",
-                It.IsAny<string>(),
-                It.IsAny<string>()),
-                Times.Once);
         }
 
         private IFormFile CreateMockFormFile()

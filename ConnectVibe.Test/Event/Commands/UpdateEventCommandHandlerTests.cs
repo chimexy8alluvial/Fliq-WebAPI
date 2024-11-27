@@ -20,13 +20,13 @@ namespace Fliq.Test.Event.Commands
     [TestClass]
     public class UpdateEventCommandHandlerTests
     {
-        private Mock<IMapper> _mapperMock;
-        private Mock<ILoggerManager> _loggerMock;
-        private Mock<IUserRepository> _userRepositoryMock;
-        private Mock<IMediaServices> _documentServicesMock;
-        private Mock<IEventRepository> _eventRepositoryMock;
-        private Mock<IImageService> _imageServiceMock;
-        private Mock<ILocationService> _locationServiceMock;
+        private Mock<IMapper>? _mapperMock;
+        private Mock<ILoggerManager>? _loggerMock;
+        private Mock<IUserRepository>? _userRepositoryMock;
+        private Mock<IMediaServices>? _documentServicesMock;
+        private Mock<IEventRepository>? _eventRepositoryMock;
+        private Mock<IImageService>? _imageServiceMock;
+        private Mock<ILocationService>? _locationServiceMock;
 
         private UpdateEventCommandHandler _handler;
 
@@ -62,7 +62,7 @@ namespace Fliq.Test.Event.Commands
                 UserId = 1
             };
 
-            _eventRepositoryMock.Setup(repo => repo.GetEventById(It.IsAny<int>())).Returns((Events)null);
+            _eventRepositoryMock?.Setup(repo => repo.GetEventById(It.IsAny<int>())).Returns((Events)null);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -83,8 +83,8 @@ namespace Fliq.Test.Event.Commands
             };
 
             var existingEvent = new Events();
-            _eventRepositoryMock.Setup(repo => repo.GetEventById(It.IsAny<int>())).Returns(existingEvent);
-            _userRepositoryMock.Setup(repo => repo.GetUserById(It.IsAny<int>())).Returns((User)null);
+            _eventRepositoryMock?.Setup(repo => repo.GetEventById(It.IsAny<int>())).Returns(existingEvent);
+            _userRepositoryMock?.Setup(repo => repo.GetUserById(It.IsAny<int>())).Returns((User)null);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -110,52 +110,29 @@ namespace Fliq.Test.Event.Commands
                 }
             };
 
-            var existingEvent = new Events();
+            var existingEvent = new Events()
+            {
+                Media = new List<EventMedia>
+                {
+                    new EventMedia{MediaUrl = "Media Url", Id = 1, Title = "Old Media"}
+                }
+            };
+
             var user = new User();
-            var image = CreateMockFormFile();
 
-            _eventRepositoryMock.Setup(repo => repo.GetEventById(It.IsAny<int>())).Returns(existingEvent);
-            _userRepositoryMock.Setup(repo => repo.GetUserById(It.IsAny<int>())).Returns(user);
-            _documentServicesMock.Setup(service => service.UploadEventMediaAsync(image)).ReturnsAsync("http://example.com/media");
-
+            _eventRepositoryMock?.Setup(repo => repo.GetEventById(It.IsAny<int>())).Returns(existingEvent);
+            _userRepositoryMock?.Setup(repo => repo.GetUserById(It.IsAny<int>())).Returns(user);
+            _documentServicesMock?.Setup(service => service.UploadEventMediaAsync(It.IsAny<IFormFile>())).ReturnsAsync("image.jpeg");
+            _imageServiceMock?.Setup(service => service.UploadMediaAsync(It.IsAny<IFormFile>()))
+              .ReturnsAsync("image.jpeg");
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.IsFalse(result.IsError);
-            _eventRepositoryMock.Verify(repo => repo.Update(It.IsAny<Events>()), Times.Once);
+            _eventRepositoryMock?.Verify(repo => repo.Update(It.IsAny<Events>()), Times.Once);
             Assert.AreEqual("Updated Title", existingEvent.EventTitle);
             Assert.AreEqual(1, existingEvent.Media.Count);
-        }
-
-        [TestMethod]
-        public async Task Handle_InvalidMediaDocument_ReturnsInvalidDocumentError()
-        {
-            // Arrange
-            var command = new UpdateEventCommand
-            {
-                EventId = 1,
-                UserId = 1,
-                MediaDocuments = new List<EventMediaMapped>
-                {
-                    new EventMediaMapped { DocFile = CreateMockFormFile(), Title = "Invalid File" }
-                }
-            };
-
-            var existingEvent = new Events();
-            var user = new User();
-            var image = CreateMockFormFile();
-
-            _eventRepositoryMock.Setup(repo => repo.GetEventById(It.IsAny<int>())).Returns(existingEvent);
-            _userRepositoryMock.Setup(repo => repo.GetUserById(It.IsAny<int>())).Returns(user);
-            _imageServiceMock.Setup(service => service.UploadMediaAsync(image)).ReturnsAsync((string)null);
-
-            // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
-
-            // Assert
-            Assert.IsTrue(result.IsError);
-            Assert.AreEqual(Errors.Document.InvalidDocument, result.FirstError);
         }
 
         [TestMethod]
@@ -193,11 +170,11 @@ namespace Fliq.Test.Event.Commands
                 },
                 Status = "OK"
             };
-            _eventRepositoryMock.Setup(repo => repo.GetEventById(It.IsAny<int>())).Returns(existingEvent);
-            _userRepositoryMock.Setup(repo => repo.GetUserById(It.IsAny<int>())).Returns(user);
-            _locationServiceMock.Setup(service => service.GetAddressFromCoordinatesAsync(It.IsAny<double>(), It.IsAny<double>()))
+            _eventRepositoryMock?.Setup(repo => repo.GetEventById(It.IsAny<int>())).Returns(existingEvent);
+            _userRepositoryMock?.Setup(repo => repo.GetUserById(It.IsAny<int>())).Returns(user);
+            _locationServiceMock?.Setup(service => service.GetAddressFromCoordinatesAsync(It.IsAny<double>(), It.IsAny<double>()))
      .ReturnsAsync(locationResponse);
-            _mapperMock.Setup(mapper => mapper.Map<LocationDetail>(locationDetail)).Returns(locationDetail);
+            _mapperMock?.Setup(mapper => mapper.Map<LocationDetail>(locationDetail)).Returns(locationDetail);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);

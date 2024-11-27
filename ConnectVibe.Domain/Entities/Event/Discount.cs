@@ -10,23 +10,5 @@ namespace Fliq.Domain.Entities.Event
 
         // Specific to Number of Tickets discount type
         public int? NumberOfTickets { get; set; }
-
-        // Constructor for Number of Tickets Discount
-        public Discount(string name, double percentage, int numberOfTickets)
-        {
-            Name = name;
-            Type = DiscountType.NumberOfTickets;
-            Percentage = percentage;
-            NumberOfTickets = numberOfTickets;
-        }
-
-        // Constructor for Voucher Discount
-        public Discount(string name, double percentage)
-        {
-            Name = name;
-            Type = DiscountType.Voucher;
-            Percentage = percentage;
-            NumberOfTickets = null; // No tickets for voucher type
-        }
     }
 }

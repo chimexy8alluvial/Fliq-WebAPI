@@ -1,22 +1,22 @@
-﻿using Moq;
-using Fliq.Application.Event.Commands.Tickets;
-using Fliq.Application.Common.Interfaces.Persistence;
+﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.Event.Commands.Tickets;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Event;
 using MapsterMapper;
+using Moq;
 
 namespace Fliq.Test.Event.Commands
 {
     [TestClass]
     public class AddTicketCommandHandlerTests
     {
-        private Mock<IEventRepository> _eventRepositoryMock;
-        private Mock<ITicketRepository> _ticketRepositoryMock;
-        private Mock<ILoggerManager> _loggerMock;
-        private Mock<IMapper> _mapperMock;
+        private Mock<IEventRepository>? _eventRepositoryMock;
+        private Mock<ITicketRepository>? _ticketRepositoryMock;
+        private Mock<ILoggerManager>? _loggerMock;
+        private Mock<IMapper>? _mapperMock;
 
-        private AddTicketCommandHandler _handler;
+        private AddTicketCommandHandler? _handler;
 
         [TestInitialize]
         public void Setup()
@@ -46,7 +46,7 @@ namespace Fliq.Test.Event.Commands
                 Amount = 100.0m
             };
 
-            _eventRepositoryMock.Setup(repo => repo.GetEventById(It.IsAny<int>())).Returns((Events)null);
+            _eventRepositoryMock?.Setup(repo => repo.GetEventById(It.IsAny<int>())).Returns((Events)null);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -86,16 +86,16 @@ namespace Fliq.Test.Event.Commands
                 Amount = command.Amount
             };
 
-            _eventRepositoryMock.Setup(repo => repo.GetEventById(It.IsAny<int>())).Returns(eventEntity);
-            _mapperMock.Setup(mapper => mapper.Map<Ticket>(command)).Returns(ticket);
+            _eventRepositoryMock?.Setup(repo => repo.GetEventById(It.IsAny<int>())).Returns(eventEntity);
+            _mapperMock?.Setup(mapper => mapper.Map<Ticket>(command)).Returns(ticket);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.IsFalse(result.IsError);
-            _ticketRepositoryMock.Verify(repo => repo.Add(It.IsAny<Ticket>()), Times.Once);
-            _loggerMock.Verify(logger => logger.LogInfo(It.IsAny<string>()), Times.Once);
+            _ticketRepositoryMock?.Verify(repo => repo.Add(It.IsAny<Ticket>()), Times.Once);
+            _loggerMock?.Verify(logger => logger.LogInfo(It.IsAny<string>()), Times.Once);
         }
 
         [TestMethod]
@@ -113,7 +113,12 @@ namespace Fliq.Test.Event.Commands
                 Amount = 30.0m,
                 Discounts = new List<Discount>
                 {
-                    new Discount("10% off for early booking", 10.3, 4)
+                    new Discount
+                    {
+                        Name = "5% off for booking in the next 7 days",
+                        Percentage = 10.3,
+                        NumberOfTickets = 4
+                    }
                 }
             };
 
@@ -126,8 +131,8 @@ namespace Fliq.Test.Event.Commands
                 Discounts = command.Discounts
             };
 
-            _eventRepositoryMock.Setup(repo => repo.GetEventById(It.IsAny<int>())).Returns(eventEntity);
-            _mapperMock.Setup(mapper => mapper.Map<Ticket>(command)).Returns(ticket);
+            _eventRepositoryMock?.Setup(repo => repo.GetEventById(It.IsAny<int>())).Returns(eventEntity);
+            _mapperMock?.Setup(mapper => mapper.Map<Ticket>(command)).Returns(ticket);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -135,7 +140,7 @@ namespace Fliq.Test.Event.Commands
             // Assert
             Assert.IsFalse(result.IsError);
             Assert.AreEqual(command.Discounts.Count, ticket.Discounts?.Count);
-            _ticketRepositoryMock.Verify(repo => repo.Add(It.IsAny<Ticket>()), Times.Once);
+            _ticketRepositoryMock?.Verify(repo => repo.Add(It.IsAny<Ticket>()), Times.Once);
         }
     }
 }
