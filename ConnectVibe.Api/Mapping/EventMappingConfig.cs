@@ -32,6 +32,7 @@ namespace Fliq.Api.Mapping
             config.NewConfig<PurchaseTicketDto, AddEventTicketCommand>();
             config.NewConfig<AddEventReviewDto, AddEventReviewCommand>();
             config.NewConfig<AddReviewResult, GetEventResponse>();
+            config.NewConfig<EventInviteeDto, EventInvitee>();
         }
     }
 }

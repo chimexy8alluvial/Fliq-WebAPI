@@ -35,7 +35,7 @@ namespace Fliq.Application.Event.Commands.EventCreation
         public int UserId { get; set; } = default!;
         public EventPaymentDetail EventPaymentDetail { get; set; } = default!;
         public bool InviteesException { get; set; } = default!;
-        public List<EventInvitee> EventInvitees { get; set; } = default!;
+        public List<EventInvitee>? EventInvitees { get; set; } = default!;
 
         public List<EventMediaMapped> MediaDocuments { get; set; } = default!;
     }
@@ -123,7 +123,10 @@ namespace Fliq.Application.Event.Commands.EventCreation
                 newEvent.Location = location;
             }
             _eventRepository.Add(newEvent);
-
+            if (command.EventInvitees is not null)
+            {
+                await SendInvitations(newEvent.Id, command.EventInvitees);
+            }
             return new CreateEventResult(newEvent);
         }
 

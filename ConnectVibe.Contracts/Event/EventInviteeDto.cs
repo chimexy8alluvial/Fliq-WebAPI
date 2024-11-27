@@ -1,6 +1,4 @@
 ﻿namespace Fliq.Contracts.Event
 {
-    internal class EventInviteeDto
-    {
-    }
+    public record EventInviteeDto(string Email, int UserId);
 }

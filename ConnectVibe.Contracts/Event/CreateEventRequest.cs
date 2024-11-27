@@ -20,6 +20,7 @@ namespace Fliq.Contracts.Event
     EventPaymentDetailDto? EventPaymentDetail,
     bool InviteesException,
     List<EventMediaDto> MediaDocuments,
+    List<EventInviteeDto>? EventInvitees,
     SponsoredEventDetailsDto? SponsoredEventDetail
     );
 }
