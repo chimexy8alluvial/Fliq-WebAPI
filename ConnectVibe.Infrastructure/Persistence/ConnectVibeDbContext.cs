@@ -1,10 +1,11 @@
 ﻿using Fliq.Domain.Entities;
 using Fliq.Domain.Entities.Event;
+using Fliq.Domain.Entities.Games;
+using Fliq.Domain.Entities.MatchedProfile;
+using Fliq.Domain.Entities.Notifications;
 using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Entities.Settings;
 using Microsoft.EntityFrameworkCore;
-using Fliq.Domain.Entities.MatchedProfile;
-using Fliq.Domain.Entities.Notifications;
 
 namespace Fliq.Infrastructure.Persistence
 {
@@ -35,6 +36,10 @@ namespace Fliq.Infrastructure.Persistence
         public DbSet<Subscription> Subscriptions { get; set; } = null!;
         public DbSet<Payment> Payments { get; set; } = null!;
         public DbSet<Setting> Settings { get; set; } = null!;
+        public DbSet<Game> Games { get; set; } = null!;
+        public DbSet<GameQuestion> GameQuestions { get; set; } = null!;
+        public DbSet<GameSession> GameSessions { get; set; } = null!;
+        public DbSet<GameRequest> GameRequests { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
