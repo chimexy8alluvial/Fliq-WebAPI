@@ -11,9 +11,11 @@
   <ItemGroup>
     <PackageReference Include="Azure.Identity" Version="1.12.0" />
     <PackageReference Include="Azure.Storage.Blobs" Version="12.22.0" />
+    <PackageReference Include="Azure.Storage.Common" Version="12.22.0" />
     <PackageReference Include="Mapster" Version="7.4.0" />
     <PackageReference Include="Mapster.DependencyInjection" Version="1.0.1" />
     <PackageReference Include="MediatR" Version="12.4.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.1.34" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8">
       <PrivateAssets>all</PrivateAssets>
@@ -24,6 +26,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.3" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
