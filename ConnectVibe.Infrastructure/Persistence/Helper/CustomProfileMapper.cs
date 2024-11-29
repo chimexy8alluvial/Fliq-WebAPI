@@ -1,5 +1,7 @@
 ﻿using Fliq.Application.Common.Interfaces.Helper;
 using Fliq.Domain.Entities.Profile;
+using Fliq.Domain.Entities.Prompts;
+using Newtonsoft.Json;
 
 
 namespace Fliq.Infrastructure.Persistence.Helper
@@ -78,6 +80,11 @@ namespace Fliq.Infrastructure.Persistence.Helper
                     Lng = firstRow.Lng,
                     IsVisible = firstRow.LocationVisible
                 },
+
+                // Deserialize PromptResponses from JSON
+                PromptResponses = !string.IsNullOrEmpty(firstRow.PromptResponses)
+                ? JsonConvert.DeserializeObject<List<PromptResponse>>(firstRow.PromptResponses)
+                : new List<PromptResponse>()
             };
         }
     }
