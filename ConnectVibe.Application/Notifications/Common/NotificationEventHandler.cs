@@ -144,7 +144,7 @@ namespace Fliq.Application.Notifications.Common
         {
             // Notify the organizer
             await HandleNotificationAsync(
-                notification.UserId,
+                notification.OrganizerId,
                 notification.Title,
                 notification.Message,
                 notification.ImageUrl,
@@ -188,20 +188,18 @@ namespace Fliq.Application.Notifications.Common
     
             // Retrieve device tokens for the user
             var deviceTokens = await _notificationRepository.GetDeviceTokensByUserIdAsync(userId);
-            _logger.LogInfo($"Device tokens retrieved for UserId: {userId}: {string.Join(", ", deviceTokens)}");
 
-
-            // Send notification to Firebase if there are tokens available
-            if (deviceTokens.Count > 0)
-            {
-                await _firebaseNotificationService.SendNotificationAsync(title, message, deviceTokens, userId, imageUrl, actionUrl, buttonText);
-                _logger.LogInfo($"Notification sent for event to UserId: {userId}");
-            }
-
-            else
+            if (deviceTokens == null || !deviceTokens.Any())
             {
                 _logger.LogInfo($"No registered device tokens for UserId: {userId}");
+                return; // Exit if there are no tokens
             }
+
+            _logger.LogInfo($"Device tokens retrieved for UserId: {userId}: {string.Join(", ", deviceTokens)}");
+
+            // Send notification to Firebase if there are tokens available
+            await _firebaseNotificationService.SendNotificationAsync(title, message, deviceTokens, userId, imageUrl, actionUrl, buttonText);
+            _logger.LogInfo($"Notification sent for event to UserId: {userId}");
         }
     }
 }
