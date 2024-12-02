@@ -162,7 +162,8 @@ namespace Fliq.Application.Notifications.Common
             await HandleNotificationAsync(
                 notification.BuyerId,
                 "Ticket Purchase Successful!",
-                $"You have successfully purchased {notification.NumberOfTickets} ticket(s) for the event '{notification.EventTitle}' on {notification.EventDate}.",
+                $"You have successfully purchased {notification.NumberOfTickets} " +
+                $"ticket(s) for the event '{notification.EventTitle}' on {notification.EventDate}.",
                 notification.ImageUrl,
                 notification.ActionUrl,
                 notification.ButtonText,
