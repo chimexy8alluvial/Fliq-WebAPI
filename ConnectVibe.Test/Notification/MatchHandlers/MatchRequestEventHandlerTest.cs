@@ -1,15 +1,13 @@
-﻿
-
-using Fliq.Application.Common.Interfaces.Persistence;
+﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Interfaces.Services.NotificationServices;
 using Fliq.Application.Notifications.Common;
 using Fliq.Application.Notifications.Common.MatchEvents;
 using Moq;
 
-namespace Fliq.Test.Notification
+namespace Fliq.Test.Notification.MatchHandlers
 {
-    [TestClass]  
+    [TestClass]
     public class MatchRequestEventHandlerTest
     {
         private NotificationEventHandler _handler;
