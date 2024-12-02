@@ -9,7 +9,7 @@ using MediatR;
 namespace Fliq.Application.Notifications.Common
 {
     public class NotificationEventHandler : INotificationHandler<MatchAcceptedEvent>,INotificationHandler<MatchRejectedEvent>,
-                                            INotificationHandler<MatchRequestEvent>, INotificationHandler<EventCreatedEvent>
+                                            INotificationHandler<MatchRequestEvent>, INotificationHandler<EventCreatedEvent>, INotificationHandler<EventReviewSubmittedEvent>
     {
         private readonly INotificationRepository _notificationRepository;
         private readonly INotificationService _firebaseNotificationService;
@@ -140,8 +140,21 @@ namespace Fliq.Application.Notifications.Common
             }
         }
 
+        public async Task Handle(EventReviewSubmittedEvent notification, CancellationToken cancellationToken)
+        {
+            // Notify the organizer
+            await HandleNotificationAsync(
+                notification.UserId,
+                notification.Title,
+                notification.Message,
+                notification.ImageUrl,
+                notification.ActionUrl,
+                notification.ButtonText,
+                cancellationToken
+            );
+            _logger.LogInfo($"Notification sent to Event Organizer: {notification.OrganizerId} for EventId: {notification.EventId}");
 
-
+        }
 
         private async Task HandleNotificationAsync(int userId, string title, string message, string? imageUrl, string? actionUrl, string? buttonText, CancellationToken cancellationToken)
         {
