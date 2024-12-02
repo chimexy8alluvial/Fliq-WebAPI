@@ -125,11 +125,13 @@ namespace Fliq.Application.Notifications.Common
 
                     await HandleNotificationAsync(
                         inviteeId,
-                        "You're Invited!",
-                        $"{notification.OrganizerName} has invited you to the event '{notification.Title}'.",
+                        notification.IsUpdated ? "Event Updated!" : "You're Invited!",
+                        notification.IsUpdated
+                            ? $"{notification.OrganizerName} has updated the event '{notification.Title}'."
+                            : $"{notification.OrganizerName} has invited you to the event '{notification.Title}'.",
                         notification.OrganizerImageUrl,
                         notification.ActionUrl,
-                        "View Invitation",
+                        notification.IsUpdated ? "View Updated Event" : "View Invitation",
                         cancellationToken
                     );
 

@@ -124,7 +124,8 @@ namespace Fliq.Application.Event.Commands.EventCreation
                 organizerName,
                 Enumerable.Empty<int>(), // Organizer-only notification
                 "Event Created",
-                $"Your event '{command.EventTitle}' has been successfully created!"
+                $"Your event '{command.EventTitle}' has been successfully created!",
+                false
             ), cancellationToken);
 
             // Handle Invitees
@@ -157,7 +158,8 @@ namespace Fliq.Application.Event.Commands.EventCreation
                         title: "You're Invited!",
                         message: $"{organizerName} has invited you to '{eventTitle}'.",
                         actionUrl: null,
-                        buttonText: "View Invitation"
+                        buttonText: "View Invitation",
+                        isUpdated: false
                     ));
 
                     //Send Email
