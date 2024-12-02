@@ -2,6 +2,7 @@
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Event.Common;
+using Fliq.Application.Notifications.Common.EventCreatedEvents;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Event;
 using MapsterMapper;
@@ -24,28 +25,42 @@ namespace Fliq.Application.Event.Commands.AddEventTicket
         private readonly IMapper _mapper;
         private readonly ITicketRepository _ticketRepository;
         private readonly IPaymentRepository _paymentRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IMediator _mediator;
 
         public AddEventTicketCommandHandler(
             IEventRepository eventRepository,
             ILoggerManager logger,
             IMapper mapper,
             ITicketRepository ticketRepository,
-            IPaymentRepository paymentRepository)
+            IPaymentRepository paymentRepository,
+            IUserRepository userRepository,
+            IMediator mediator)
         {
             _eventRepository = eventRepository;
             _logger = logger;
             _mapper = mapper;
             _ticketRepository = ticketRepository;
             _paymentRepository = paymentRepository;
+            _userRepository = userRepository;
+            _mediator = mediator;
         }
 
         public async Task<ErrorOr<CreateEventTicketResult>> Handle(AddEventTicketCommand command, CancellationToken cancellationToken)
         {
-            var eventDetails = _eventRepository.GetEventById(command.TicketId);
+            var eventDetails = _eventRepository.GetEventById(command.TicketId); //this method expects eventId not ticketId
             if (eventDetails == null)
             {
                 _logger.LogError($"Event with ID {command.TicketId} not found.");
                 return Errors.Event.EventNotFound;
+            }
+
+            //Fetch Buyer Details
+            var buyer = _userRepository.GetUserById(command.UserId);
+            if(buyer == null)
+            {
+                _logger.LogError($"Buyer with ID {command.UserId} not found.");
+                return Errors.User.UserNotFound;
             }
 
             if (eventDetails.Capacity < command.NumberOfTickets)
@@ -91,6 +106,22 @@ namespace Fliq.Application.Event.Commands.AddEventTicket
             eventDetails.Capacity -= command.NumberOfTickets;
             _eventRepository.Update(eventDetails);
             _logger.LogInfo($"Added {newTickets.Count} tickets for event ID {command.TicketId}.");
+
+            // Prepare notification details
+            var notificationTitle = "New Tickets Purchased";
+            var notificationMessage = $"You have successfully purchased {newTickets.Count} ticket(s) for the event '{eventDetails.EventTitle}' on {eventDetails.StartDate}.";
+
+            await _mediator.Publish(new TicketPurchasedEvent(
+                        command.UserId,
+                        eventDetails.UserId,  // Organizer ID
+                        eventDetails.Id,
+                        command.NumberOfTickets,
+                        eventDetails.EventTitle,
+                        notificationTitle,
+                        notificationMessage,
+                        eventDetails.StartDate.ToString("MMMM dd, yyyy"), // Format the event date
+                        buyer.DisplayName
+                         ), cancellationToken);
 
             return new CreateEventTicketResult(newTickets);
         }

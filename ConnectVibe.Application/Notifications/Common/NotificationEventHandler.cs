@@ -156,6 +156,33 @@ namespace Fliq.Application.Notifications.Common
 
         }
 
+        public async Task Handle(TicketPurchasedEvent notification, CancellationToken cancellationToken)
+        {
+            // Notify Buyer
+            await HandleNotificationAsync(
+                notification.BuyerId,
+                "Ticket Purchase Successful!",
+                $"You have successfully purchased {notification.NumberOfTickets} ticket(s) for the event '{notification.EventTitle}' on {notification.EventDate}.",
+                notification.ImageUrl,
+                notification.ActionUrl,
+                notification.ButtonText,
+                cancellationToken
+            );
+
+            // Notify Organizer
+            await HandleNotificationAsync(
+                notification.OrganizerId,
+                "New Ticket Purchased",
+                $"{notification.BuyerName} purchased {notification.NumberOfTickets} ticket(s) for your event '{notification.EventTitle}'.",
+               notification.ImageUrl,
+                notification.ActionUrl,
+                notification.ButtonText,
+                cancellationToken
+            );
+
+            _logger.LogInfo($"Notifications sent for ticket purchase: BuyerId {notification.BuyerId}, OrganizerId {notification.OrganizerId}.");
+        }
+
         private async Task HandleNotificationAsync(int userId, string title, string message, string? imageUrl, string? actionUrl, string? buttonText, CancellationToken cancellationToken)
         {
     
