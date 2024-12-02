@@ -1,6 +1,7 @@
 ﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Interfaces.Services.NotificationServices;
+using Fliq.Application.Notifications.Common.EventCreatedEvents;
 using Fliq.Application.Notifications.Common.MatchEvents;
 using MediatR;
 
@@ -8,7 +9,7 @@ using MediatR;
 namespace Fliq.Application.Notifications.Common
 {
     public class NotificationEventHandler : INotificationHandler<MatchAcceptedEvent>,INotificationHandler<MatchRejectedEvent>,
-                                            INotificationHandler<MatchRequestEvent>
+                                            INotificationHandler<MatchRequestEvent>, INotificationHandler<EventCreatedEvent>
     {
         private readonly INotificationRepository _notificationRepository;
         private readonly INotificationService _firebaseNotificationService;
@@ -97,20 +98,68 @@ namespace Fliq.Application.Notifications.Common
             );
         }
 
+        public async Task Handle(EventCreatedEvent notification, CancellationToken cancellationToken)
+        {
+            // Notify the organizer
+            await HandleNotificationAsync(
+                notification.OrganizerId,
+                notification.Title,
+                notification.Message,
+                notification.OrganizerImageUrl,
+                notification.ActionUrl,
+                notification.ButtonText,
+                cancellationToken
+            );
+            _logger.LogInfo($"Notification sent to Event Organizer: {notification.OrganizerId} for EventId: {notification.EventId}");
+
+            // Notify each invitee
+            if (notification.InviteeIds != null && notification.InviteeIds.Any())
+            {
+                foreach (var inviteeId in notification.InviteeIds)
+                {
+                    if (inviteeId == notification.OrganizerId)
+                    {
+                        _logger.LogInfo($"Skipping notification for invitee {inviteeId} as they are the organizer.");
+                        continue;
+                    }
+
+                    await HandleNotificationAsync(
+                        inviteeId,
+                        "You're Invited!",
+                        $"{notification.OrganizerName} has invited you to the event '{notification.Title}'.",
+                        notification.OrganizerImageUrl,
+                        notification.ActionUrl,
+                        "View Invitation",
+                        cancellationToken
+                    );
+
+                    _logger.LogInfo($"Notification sent to Invitee: {inviteeId} for EventId: {notification.EventId}");
+                }
+            }
+        }
+
+
+
 
         private async Task HandleNotificationAsync(int userId, string title, string message, string? imageUrl, string? actionUrl, string? buttonText, CancellationToken cancellationToken)
         {
     
             // Retrieve device tokens for the user
             var deviceTokens = await _notificationRepository.GetDeviceTokensByUserIdAsync(userId);
+            _logger.LogInfo($"Device tokens retrieved for UserId: {userId}: {string.Join(", ", deviceTokens)}");
+
 
             // Send notification to Firebase if there are tokens available
-            if (deviceTokens.Any())
+            if (deviceTokens.Count > 0)
             {
                 await _firebaseNotificationService.SendNotificationAsync(title, message, deviceTokens, userId, imageUrl, actionUrl, buttonText);
+                _logger.LogInfo($"Notification sent for event to UserId: {userId}");
             }
 
-            _logger.LogInfo($"Notification sent for event to UserId: {userId}");
+            else
+            {
+                _logger.LogInfo($"No registered device tokens for UserId: {userId}");
+            }
         }
     }
 }
