@@ -1,5 +1,6 @@
 ﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.Common.Interfaces.Services.EventServices;
 using Fliq.Application.Common.Interfaces.Services.LocationServices;
 using Fliq.Application.Common.Interfaces.Services.MeidaServices;
 using Fliq.Application.Common.Models;
@@ -10,6 +11,7 @@ using Fliq.Domain.Entities;
 using Fliq.Domain.Entities.Event;
 using Fliq.Domain.Entities.Profile;
 using MapsterMapper;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using System.Text;
@@ -25,6 +27,12 @@ namespace Fliq.Test.Event.Commands
         private Mock<IMediaServices>? _mediaServicesMock;
         private Mock<IEventRepository>? _eventRepositoryMock;
         private Mock<ILocationService>? _locationServiceMock;
+        private Mock<IEventService>? _eventServiceMock;
+        private Mock<IMediator>? _mediatorMock;
+        private Mock<IEmailService>? _emailServiceMock;
+
+        
+       
 
         private UpdateEventCommandHandler _handler;
 
@@ -37,6 +45,10 @@ namespace Fliq.Test.Event.Commands
             _mediaServicesMock = new Mock<IMediaServices>();
             _eventRepositoryMock = new Mock<IEventRepository>();
             _locationServiceMock = new Mock<ILocationService>();
+            _userRepositoryMock = new Mock<IUserRepository>();
+            _eventServiceMock = new Mock<IEventService>();
+            _mediatorMock = new Mock<IMediator>();
+            _emailServiceMock = new Mock<IEmailService>();
 
             _handler = new UpdateEventCommandHandler(
                 _mapperMock.Object,
@@ -44,7 +56,11 @@ namespace Fliq.Test.Event.Commands
                 _userRepositoryMock.Object,
                 _mediaServicesMock.Object,
                 _eventRepositoryMock.Object,
-                _locationServiceMock.Object
+                _locationServiceMock.Object,
+                _mediatorMock.Object,
+                  _emailServiceMock.Object,
+                _eventServiceMock.Object
+              
             );
         }
 

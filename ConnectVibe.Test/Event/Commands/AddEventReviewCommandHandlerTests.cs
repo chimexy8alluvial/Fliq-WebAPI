@@ -4,6 +4,7 @@ using Fliq.Application.Event.Commands.AddEventReview;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Event;
 using MapsterMapper;
+using MediatR;
 using Moq;
 
 namespace Fliq.Test.Event.Commands
@@ -15,6 +16,8 @@ namespace Fliq.Test.Event.Commands
         private Mock<IEventReviewRepository>? _eventReviewRepositoryMock;
         private Mock<ILoggerManager>? _loggerMock;
         private Mock<IMapper>? _mapperMock;
+        private Mock<IUserRepository>? _userRepositoryMock;
+        private Mock<IMediator>? _mediatorMock;
 
         private AddEventReviewCommandHandler? _handler;
 
@@ -25,12 +28,16 @@ namespace Fliq.Test.Event.Commands
             _eventReviewRepositoryMock = new Mock<IEventReviewRepository>();
             _loggerMock = new Mock<ILoggerManager>();
             _mapperMock = new Mock<IMapper>();
+            _userRepositoryMock = new Mock<IUserRepository>();
+            _mediatorMock = new Mock<IMediator>();
 
             _handler = new AddEventReviewCommandHandler(
                 _eventReviewRepositoryMock.Object,
                 _loggerMock.Object,
                 _mapperMock.Object,
-                _eventRepositoryMock.Object
+                _eventRepositoryMock.Object,
+                _userRepositoryMock.Object,
+                _mediatorMock.Object
             );
         }
 
