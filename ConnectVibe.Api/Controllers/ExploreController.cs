@@ -27,7 +27,7 @@ namespace Fliq.Api.Controllers
         }
 
         [HttpGet("Explore-Profiles")]
-        [Produces(typeof(ExploreEventsResponse))]
+        [Produces(typeof(ExploreResponse))]
         public async Task<IActionResult> Explore([FromQuery] ExploreRequest request)
         {
             _logger.LogInfo($"Exploring profiles request recieved: {request}");

@@ -1,5 +1,7 @@
 ﻿using Fliq.Domain.Entities;
+using Fliq.Domain.Entities.Event;
 using Fliq.Domain.Entities.Profile;
+using Fliq.Domain.Entities.Prompts;
 using Fliq.Domain.Entities.Settings;
 using Microsoft.EntityFrameworkCore;
 using Fliq.Domain.Entities.MatchedProfile;
@@ -16,17 +18,28 @@ namespace Fliq.Infrastructure.Persistence
         public DbSet<User> Users { get; set; } = null!;
         public DbSet<OTP> OTPs { get; set; } = null!;
         public DbSet<UserProfile> UserProfiles { get; set; } = null!;
+
+        public DbSet<Events> Events { get; set; }
+        public DbSet<EventMedia> EventMedias { get; set; }
+        public DbSet<EventCriteria> EventCriterias { get; set; }
+        public DbSet<SponsoredEventDetail> SponsoredEventDetails { get; set; }
+        public DbSet<Ticket> Tickets { get; set; }
+        public DbSet<EventTicket> EventTickets { get; set; }
+        public DbSet<EventReview> EventReviews { get; set; }
+        public DbSet<Currency> Currencies { get; set; }
+
+        public DbSet<LocationDetail> LocationDetails { get; set; } = null!;
         public DbSet<MatchRequest> MatchRequests { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<UserDeviceToken> UserDeviceTokens { get; set; }
 
-
-        public DbSet<LocationDetail> LocationDetails { get; set; }
-       
-
         public DbSet<Subscription> Subscriptions { get; set; } = null!;
         public DbSet<Payment> Payments { get; set; } = null!;
         public DbSet<Setting> Settings { get; set; } = null!;
+
+        public DbSet<PromptCategory> PromptCategories { get; set; }
+        public DbSet<PromptQuestion> PromptQuestions { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

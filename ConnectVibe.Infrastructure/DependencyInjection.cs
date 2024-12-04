@@ -3,20 +3,23 @@ using Fliq.Application.Common.Interfaces.Helper;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Interfaces.Services.AuthServices;
-using Fliq.Application.Common.Interfaces.Services.ImageServices;
+using Fliq.Application.Common.Interfaces.Services.EventServices;
 using Fliq.Application.Common.Interfaces.Services.LocationServices;
+using Fliq.Application.Common.Interfaces.Services.MeidaServices;
 using Fliq.Application.Common.Interfaces.Services.NotificationServices;
 using Fliq.Application.Common.Interfaces.Services.PaymentServices;
 using Fliq.Application.Common.Interfaces.Services.SubscriptionServices;
 using Fliq.Application.Explore.Common.Services;
 using Fliq.Infrastructure.Authentication;
+using Fliq.Infrastructure.Event;
 using Fliq.Infrastructure.Persistence;
 using Fliq.Infrastructure.Persistence.Helper;
 using Fliq.Infrastructure.Persistence.Repositories;
 using Fliq.Infrastructure.Services;
 using Fliq.Infrastructure.Services.AuthServices;
-using Fliq.Infrastructure.Services.ImageServices;
+using Fliq.Infrastructure.Services.EventServices;
 using Fliq.Infrastructure.Services.LocationServices;
+using Fliq.Infrastructure.Services.MediaService;
 using Fliq.Infrastructure.Services.NotificationServices.Firebase;
 using Fliq.Infrastructure.Services.PaymentServices;
 using Fliq.Infrastructure.Services.SubscriptionServices;
@@ -37,12 +40,17 @@ namespace Fliq.Infrastructure
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IProfileRepository, ProfileRepository>();
+            services.AddScoped<IPromptAnswerRepository, PromptAnswerRepository>();
+            services.AddScoped<IPromptCategoryRepository, PromptCategoryRepository>();
+            services.AddScoped<IPromptQuestionRepository, PromptQuestionRepository>();
             services.AddScoped<ISocialAuthService, SocialAuthService>();
             services.AddScoped<IOtpRepository, OtpRepository>();
             services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
             services.AddScoped<IPaymentRepository, PaymentRepository>();
             services.AddScoped<ISettingsRepository, SettingsRepository>();
-            services.AddScoped<IImageService, ImageService>();
+            services.AddScoped<IEventRepository, EventRepository>();
+            services.AddScoped<ITicketRepository, TicketRepository>();
+            services.AddScoped<IMediaServices, MediaService>();
             services.AddScoped<ILocationService, LocationService>();
             services.AddScoped<IProfileMatchingService, ProfileMatchingService>();
             services.AddScoped<IEmailService, EmailService>();
@@ -51,6 +59,8 @@ namespace Fliq.Infrastructure
             services.AddScoped<IMatchProfileRepository, MatchProfileRepository>();
             services.AddScoped<ISubscriptionService, SubscriptionService>();
             services.AddScoped<IRevenueCatServices, RevenueCatServices>();
+            services.AddScoped<IEventService, EventService>();
+            services.AddScoped<IEventReviewRepository, EventReviewRepository>();
             services.AddScoped<INotificationRepository, NotificationRepository>();
             services.AddScoped<INotificationService, FireBaseNotificationService>();
             services.AddScoped<IFirebaseMessagingWrapper, FirebaseMessagingWrapper>();
@@ -67,16 +77,19 @@ namespace Fliq.Infrastructure
             services.Configure<GoogleAuthSettings>(configurationManager.GetSection(GoogleAuthSettings.SectionName));
             services.Configure<FacebookAuthSettings>(configurationManager.GetSection(FacebookAuthSettings.SectionName));
             services.Configure<FaceApi>(configurationManager.GetSection(FaceApi.SectionName));
+            services.Configure<EventSettings>(configurationManager.GetSection(EventSettings.SectionName));
             services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
 
             var jwtSettings = new JwtSettings();
             var googleAuthSettings = new GoogleAuthSettings();
             var facebookAuthSettings = new FacebookAuthSettings();
             var faceApi = new FaceApi();
+            var eventSettings = new EventSettings();
             configurationManager.GetSection(JwtSettings.SectionName).Bind(jwtSettings);
             configurationManager.GetSection(GoogleAuthSettings.SectionName).Bind(googleAuthSettings);
             configurationManager.GetSection(FacebookAuthSettings.SectionName).Bind(facebookAuthSettings);
             configurationManager.GetSection(FaceApi.SectionName).Bind(faceApi);
+            configurationManager.GetSection(EventSettings.SectionName).Bind(eventSettings);
             services.AddAuthentication(defaultScheme: JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
                 options => options.TokenValidationParameters = new TokenValidationParameters
                 {

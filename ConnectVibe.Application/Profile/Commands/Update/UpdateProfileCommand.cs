@@ -2,8 +2,8 @@
 using Fliq.Application.Authentication.Common.Profile;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
-using Fliq.Application.Common.Interfaces.Services.ImageServices;
 using Fliq.Application.Common.Interfaces.Services.LocationServices;
+using Fliq.Application.Common.Interfaces.Services.MeidaServices;
 using Fliq.Application.Profile.Common;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Profile;
@@ -39,7 +39,7 @@ namespace Fliq.Application.Profile.Commands.Update
     public class UpdateProfileCommandHandler : IRequestHandler<UpdateProfileCommand, ErrorOr<CreateProfileResult>>
     {
         private readonly IMapper _mapper;
-        private readonly IImageService _imageService;
+        private readonly IMediaServices _mediaService;
         private readonly IProfileRepository _profileRepository;
         private readonly IUserRepository _userRepository;
         private readonly ILocationService _locationService;
@@ -48,10 +48,10 @@ namespace Fliq.Application.Profile.Commands.Update
         private readonly ILoggerManager _loggerManager;
         private const int UnauthorizedUserId = -1;
 
-        public UpdateProfileCommandHandler(IMapper mapper, IImageService imageService, IProfileRepository profileRepository, IUserRepository userRepository, ILocationService locationService, IHttpContextAccessor httpContextAccessor, ISettingsRepository settingsRepository, ILoggerManager loggerManager)
+        public UpdateProfileCommandHandler(IMapper mapper, IMediaServices mediaService, IProfileRepository profileRepository, IUserRepository userRepository, ILocationService locationService, IHttpContextAccessor httpContextAccessor, ISettingsRepository settingsRepository, ILoggerManager loggerManager)
         {
             _mapper = mapper;
-            _imageService = imageService;
+            _mediaService = mediaService;
             _profileRepository = profileRepository;
             _userRepository = userRepository;
             _locationService = locationService;
@@ -87,7 +87,7 @@ namespace Fliq.Application.Profile.Commands.Update
                 userProfile.Photos.Clear();
                 foreach (var photo in command.Photos)
                 {
-                    var profileUrl = await _imageService.UploadMediaAsync(photo.ImageFile);
+                    var profileUrl = await _mediaService.UploadImageAsync(photo.ImageFile);
                     if (profileUrl != null)
                     {
                         ProfilePhoto profilePhoto = new() { PictureUrl = profileUrl, Caption = photo.Caption };
