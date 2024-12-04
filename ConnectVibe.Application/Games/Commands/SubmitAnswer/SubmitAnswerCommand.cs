@@ -2,9 +2,9 @@
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Games.Common;
+using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Enums;
 using MediatR;
-using Fliq.Domain.Common.Errors;
 
 namespace Fliq.Application.Games.Commands.SubmitAnswer
 {
@@ -39,10 +39,13 @@ namespace Fliq.Application.Games.Commands.SubmitAnswer
                 return Errors.Games.NotYourTurn;
             }
 
-            var currentQuestion = session.Questions.FirstOrDefault(q => q.CorrectAnswer == null);
+            var questions = _gamesRepository.GetQuestionsByGameId(session.GameId, int.MaxValue, int.MaxValue);
+
+            var currentQuestion = questions[session.CurrentQuestionIndex];
             if (currentQuestion == null)
             {
                 _loggerManager.LogError($"No active question in session {request.SessionId}");
+                session.Status = GameStatus.Done;
                 return Errors.Games.NoActiveQuestion;
             }
 
@@ -56,7 +59,7 @@ namespace Fliq.Application.Games.Commands.SubmitAnswer
             session.CurrentTurnPlayerId = session.CurrentTurnPlayerId == session.Player1Id
                 ? session.Player2Id
                 : session.Player1Id;
-
+            session.CurrentQuestionIndex++;
             _gamesRepository.UpdateGameSession(session);
 
             return new SubmitAnswerResult(isCorrect, session.Player1Score, session.Player2Score);

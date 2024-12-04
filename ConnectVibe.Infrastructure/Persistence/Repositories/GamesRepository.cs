@@ -1,5 +1,6 @@
 ﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Domain.Entities.Games;
+using Microsoft.EntityFrameworkCore;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {
@@ -92,6 +93,27 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         {
             var request = _dbContext.GameRequests.SingleOrDefault(p => p.Id == id);
             return request;
+        }
+
+        public void AddQuestion(GameQuestion question)
+        {
+            _dbContext.GameQuestions.Add(question);
+            _dbContext.SaveChanges();
+        }
+
+        public GameQuestion? GetQuestionById(int id)
+        {
+            return _dbContext.GameQuestions.SingleOrDefault(q => q.Id == id);
+        }
+
+        public List<GameQuestion> GetQuestionsByGameId(int gameId, int pageNumber, int pageSize)
+        {
+            // Call stored procedure with pagination parameters
+            return _dbContext.GameQuestions
+                .FromSqlRaw(
+                    "EXEC GetQuestionsByGameIdPaginated @GameId = {0}, @PageNumber = {1}, @PageSize = {2}",
+                    gameId, pageNumber, pageSize)
+                .ToList();
         }
     }
 }

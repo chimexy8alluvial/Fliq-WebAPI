@@ -33,6 +33,14 @@ namespace Fliq.Application.Games.Queries.GetSession
                 return Errors.Games.GameNotFound;
             }
 
+            var questions = _sessionsRepository.GetQuestionsByGameId(session.GameId, int.MaxValue, int.MaxValue);
+
+            if (questions is null)
+            {
+                _logger.LogError($"Questions for game with id: {session.GameId} not found");
+                return Errors.Games.GameNotFound;
+            }
+            session.Questions = questions;
             _logger.LogInfo($"Game session with id: {request.SessionId} found");
             return new GetGameSessionResult(session);
         }

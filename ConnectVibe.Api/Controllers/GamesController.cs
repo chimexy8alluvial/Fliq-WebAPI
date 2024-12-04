@@ -1,5 +1,6 @@
 ﻿using Fliq.Application.Games.Commands.AcceptGameRequest;
 using Fliq.Application.Games.Commands.CreateGame;
+using Fliq.Application.Games.Commands.CreateQuestion;
 using Fliq.Application.Games.Commands.SendGameRequest;
 using Fliq.Application.Games.Commands.SubmitAnswer;
 using Fliq.Application.Games.Queries.GetGame;
@@ -125,6 +126,20 @@ namespace Fliq.Api.Controllers
             return result.Match(
                 success => Ok("Answer submitted successfully."),
                 errors => Problem(errors)
+            );
+        }
+
+        [HttpPost("questions/create")]
+        public async Task<IActionResult> CreateQuestion([FromForm] CreateQuestionDto request)
+        {
+            _logger.LogInformation($"Create Question Request Received: {request}");
+            var command = _mapper.Map<CreateQuestionCommand>(request);
+            var result = await _mediator.Send(command);
+            _logger.LogInformation($"Create Question Command Executed. Result: {result}");
+
+            return result.Match(
+                questionResult => Ok(_mapper.Map<GetQuestionResponse>(questionResult)),
+                errors => Problem(detail: string.Join(", ", errors.Select(e => e.Description)), statusCode: 400)
             );
         }
     }
