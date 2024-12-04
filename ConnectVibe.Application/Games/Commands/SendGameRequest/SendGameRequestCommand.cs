@@ -4,6 +4,7 @@ using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Games.Common;
 using Fliq.Domain.Entities.Games;
 using MediatR;
+using Fliq.Domain.Common.Errors;
 
 namespace Fliq.Application.Games.Commands.SendGameRequest
 {
@@ -14,11 +15,13 @@ namespace Fliq.Application.Games.Commands.SendGameRequest
     {
         private readonly IGamesRepository _gameRequestRepository;
         private readonly ILoggerManager _logger;
+        private readonly IUserRepository _userRepository;
 
-        public SendGameRequestCommandHandler(IGamesRepository gameRequestRepository, ILoggerManager logger)
+        public SendGameRequestCommandHandler(IGamesRepository gameRequestRepository, ILoggerManager logger, IUserRepository userRepository)
         {
             _gameRequestRepository = gameRequestRepository;
             _logger = logger;
+            _userRepository = userRepository;
         }
 
         public async Task<ErrorOr<GetGameRequestResult>> Handle(SendGameRequestCommand request, CancellationToken cancellationToken)
@@ -32,6 +35,13 @@ namespace Fliq.Application.Games.Commands.SendGameRequest
                 RequesterId = request.RequesterId,
                 RecipientId = request.RecipientId
             };
+
+            var reciever = _userRepository.GetUserById(request.RecipientId);
+            if (reciever is null)
+            {
+                return Errors.User.UserNotFound;
+            }
+            // Notification
 
             _gameRequestRepository.AddGameRequest(gameRequest);
             _logger.LogInfo($"Game request sent: {request.GameId}");
