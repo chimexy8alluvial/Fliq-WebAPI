@@ -2,7 +2,6 @@
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Domain.Entities.Event;
-using MapsterMapper;
 using MediatR;
 using Fliq.Domain.Common.Errors;
 using Fliq.Application.Event.Common;

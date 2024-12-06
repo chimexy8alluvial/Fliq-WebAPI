@@ -12,7 +12,6 @@ using Fliq.Domain.Entities.Event.Enums;
 using Fliq.Domain.Entities.Profile;
 using MapsterMapper;
 using MediatR;
-using System.Diagnostics;
 
 namespace Fliq.Application.Event.Commands.EventCreation
 {
