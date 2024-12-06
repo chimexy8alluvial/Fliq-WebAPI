@@ -2,6 +2,7 @@
 using Fliq.Application.Common.Helpers;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.MatchedProfile.Common;
+using Fliq.Application.Notifications.Common.MatchEvents;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.MatchedProfile;
 using Fliq.Domain.Enums;
@@ -21,12 +22,14 @@ namespace Fliq.Application.MatchedProfile.Commands.Create
         private readonly IMapper _mapper;
         private readonly IUserRepository _userRepository;
         private readonly IMatchProfileRepository _matchProfileRepository;
+        private readonly IMediator _mediator;
 
-        public InitiateMatchRequestCommandHandler(IMapper mapper, IUserRepository userRepository, IMatchProfileRepository matchProfileRepository)
+        public InitiateMatchRequestCommandHandler(IMapper mapper, IUserRepository userRepository, IMatchProfileRepository matchProfileRepository, IMediator mediator)
         {
             _mapper = mapper;
             _userRepository = userRepository;
             _matchProfileRepository = matchProfileRepository;
+            _mediator = mediator;
         }
 
         public async Task<ErrorOr<CreateMatchProfileResult>> Handle(InitiateMatchRequestCommand command, CancellationToken cancellationToken)
@@ -46,6 +49,15 @@ namespace Fliq.Application.MatchedProfile.Commands.Create
 
             var pictureUrl = matchInitiator?.UserProfile?.Photos?.FirstOrDefault()?.PictureUrl;
             var initiatorAge = matchInitiator.UserProfile.DOB.CalculateAge();
+            // Trigger MatchRequestEvent notification
+            await _mediator.Publish(new MatchRequestEvent(
+                command.MatchInitiatorUserId,
+                command.UserId,
+                accepterImageUrl: requestedUser?.UserProfile?.Photos?.FirstOrDefault()?.PictureUrl,
+                initiatorImageUrl: matchProfile.PictureUrl,
+                initiatorName: matchProfile.Name
+            ));
+
             return new CreateMatchProfileResult(matchProfile.MatchInitiatorUserId,
                 matchInitiator.FirstName,
                 pictureUrl,

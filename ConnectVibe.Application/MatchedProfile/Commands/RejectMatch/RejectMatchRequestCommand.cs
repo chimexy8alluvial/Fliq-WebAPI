@@ -4,6 +4,8 @@ using Fliq.Application.MatchedProfile.Common;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Enums;
 using MediatR;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using Fliq.Application.Notifications.Common.MatchEvents;
 
 namespace Fliq.Application.MatchedProfile.Commands.RejectMatch
 {
@@ -16,10 +18,12 @@ namespace Fliq.Application.MatchedProfile.Commands.RejectMatch
     public class RejectMatchRequestComandHandler : IRequestHandler<RejectMatchRequestCommand, ErrorOr<RejectMatchResult>>
     {
         private readonly IMatchProfileRepository _matchProfileRepository;
+        private readonly IMediator _mediator;
 
-        public RejectMatchRequestComandHandler(IMatchProfileRepository matchProfileRepository)
+        public RejectMatchRequestComandHandler(IMatchProfileRepository matchProfileRepository, IMediator mediator)
         {
             _matchProfileRepository = matchProfileRepository;
+            _mediator = mediator;
         }
 
         public async Task<ErrorOr<RejectMatchResult>> Handle(RejectMatchRequestCommand command, CancellationToken cancellationToken)
@@ -34,6 +38,9 @@ namespace Fliq.Application.MatchedProfile.Commands.RejectMatch
 
             matchProfile.MatchRequestStatus = MatchRequestStatus.Rejected;
             _matchProfileRepository.Update(matchProfile);
+
+            // Trigger MatchRejectedEvent notification
+            await _mediator.Publish(new MatchRejectedEvent(command.UserId));
 
             return new RejectMatchResult(matchProfile.MatchInitiatorUserId,
                  matchProfile.MatchRequestStatus);

@@ -1,13 +1,14 @@
 ﻿using Azure.AI.Vision.Face;
 using Microsoft.AspNetCore.Http;
 
-namespace Fliq.Application.Common.Interfaces.Services.ImageServices
+
+namespace Fliq.Application.Common.Interfaces.Services.MeidaServices
 {
-    public interface IImageService
+    public interface IMediaServices
     {
         Task<string?> UploadImageAsync(IFormFile imageToUpload);
 
-        Task<string?> UploadMediaAsync(IFormFile mediaToUpload);
+        Task<string?> UploadMediaAsync(IFormFile mediaToUpload, string containerName);
 
         Task<(bool IsVerified, double ConfidenceLevel, LivenessWithVerifySession? LivenessWithVerifySession)> GetFaceLivelinessResult(string sessionId);
     }

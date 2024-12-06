@@ -15,6 +15,7 @@
      HaveKidsDto HaveKids,
      WantKidsDto WantKids,
      LocationDto Location,
+     List<CreatePromptResponseDto> PromptResponses,
      bool AllowNotifications = false
 
  );
