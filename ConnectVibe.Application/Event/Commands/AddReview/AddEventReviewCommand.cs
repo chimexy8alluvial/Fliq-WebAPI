@@ -22,19 +22,16 @@ namespace Fliq.Application.Event.Commands.AddEventReview
     {
         private readonly IEventReviewRepository _eventReviewRepository;
         private readonly ILoggerManager _logger;
-        private readonly IMapper _mapper;
         private readonly IEventRepository _eventRepository;
         private readonly IUserRepository _userRepository;
         private readonly IMediator _mediator;
 
         public AddEventReviewCommandHandler(
             IEventReviewRepository eventReviewRepository,
-            ILoggerManager logger,
-            IMapper mapper, IEventRepository eventRepository, IUserRepository userRepository, IMediator mediator)
+            ILoggerManager logger,IEventRepository eventRepository, IUserRepository userRepository, IMediator mediator)
         {
             _eventReviewRepository = eventReviewRepository;
             _logger = logger;
-            _mapper = mapper;
             _eventRepository = eventRepository;
             _userRepository = userRepository;
             _mediator = mediator;

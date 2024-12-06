@@ -5,7 +5,6 @@ using Fliq.Application.Event.Common;
 using Fliq.Application.Notifications.Common.EventCreatedEvents;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Event;
-using MapsterMapper;
 using MediatR;
 
 namespace Fliq.Application.Event.Commands.AddEventTicket
@@ -15,14 +14,13 @@ namespace Fliq.Application.Event.Commands.AddEventTicket
         public int TicketId { get; set; }
         public int UserId { get; set; }
         public int PaymentId { get; set; }
-        public int NumberOfTickets { get; set; }  // New property for multiple tickets
+        public int NumberOfTickets { get; set; }
     }
 
     public class AddEventTicketCommandHandler : IRequestHandler<AddEventTicketCommand, ErrorOr<CreateEventTicketResult>>
     {
         private readonly IEventRepository _eventRepository;
         private readonly ILoggerManager _logger;
-        private readonly IMapper _mapper;
         private readonly ITicketRepository _ticketRepository;
         private readonly IPaymentRepository _paymentRepository;
         private readonly IUserRepository _userRepository;
@@ -31,7 +29,6 @@ namespace Fliq.Application.Event.Commands.AddEventTicket
         public AddEventTicketCommandHandler(
             IEventRepository eventRepository,
             ILoggerManager logger,
-            IMapper mapper,
             ITicketRepository ticketRepository,
             IPaymentRepository paymentRepository,
             IUserRepository userRepository,
@@ -39,7 +36,6 @@ namespace Fliq.Application.Event.Commands.AddEventTicket
         {
             _eventRepository = eventRepository;
             _logger = logger;
-            _mapper = mapper;
             _ticketRepository = ticketRepository;
             _paymentRepository = paymentRepository;
             _userRepository = userRepository;
