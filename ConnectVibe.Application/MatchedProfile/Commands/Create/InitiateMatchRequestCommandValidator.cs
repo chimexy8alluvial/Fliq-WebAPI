@@ -6,7 +6,7 @@ namespace Fliq.Application.MatchedProfile.Commands.Create
     {
         public InitiateMatchRequestCommandValidator()
         {
-            RuleFor(x => x.UserId)
+            RuleFor(x => x.MatchReceiverUserId)
                 .GreaterThan(0).WithMessage("UserId must be greater than 0.");
 
             RuleFor(x => x.MatchInitiatorUserId)

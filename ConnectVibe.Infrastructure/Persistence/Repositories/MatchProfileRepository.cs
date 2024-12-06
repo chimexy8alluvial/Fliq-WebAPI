@@ -17,6 +17,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             _connectionFactory = connectionFactory;
             _dbContext = dbContext;
         }
+
         public void Add(Domain.Entities.MatchedProfile.MatchRequest matchProfile)
         {
             if (matchProfile.Id > 0)
@@ -66,7 +67,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
         public Domain.Entities.MatchedProfile.MatchRequest? GetMatchProfileByUserId(int Id)
         {
-            var matchProfile = _dbContext.MatchRequests.SingleOrDefault(p => p.UserId == Id);
+            var matchProfile = _dbContext.MatchRequests.SingleOrDefault(p => p.MatchReceiverUserId == Id);
             return matchProfile;
         }
 
@@ -89,6 +90,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             parameters.Add("@userId", query.UserId);
             parameters.Add("@pageNumber", query.PaginationRequest.PageNumber);
             parameters.Add("@pageSize", query.PaginationRequest.PageSize);
+            parameters.Add("@MatchRequestStatus ", query.MatchRequestStatus);
             return parameters;
         }
 
@@ -99,6 +101,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             parameters.Add("@userId", query.UserId);
             parameters.Add("@pageNumber", query.PaginationRequest.PageNumber);
             parameters.Add("@pageSize", query.PaginationRequest.PageSize);
+            parameters.Add("@MatchRequestStatus ", query.MatchRequestStatus);
             return parameters;
         }
     }

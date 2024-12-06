@@ -2,12 +2,12 @@
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Pagination;
 using Fliq.Contracts.MatchedProfile;
+using Fliq.Domain.Enums;
 using MediatR;
 
 namespace Fliq.Application.MatchedProfile.Commands.MatchedList
 {
-    public record GetMatchRequestListCommand(int UserId, PaginationRequest PaginationRequest = default!) : IRequest<ErrorOr<List<MatchRequestDto>>>;
-
+    public record GetMatchRequestListCommand(int UserId, PaginationRequest PaginationRequest = default!, MatchRequestStatus? MatchRequestStatus = null) : IRequest<ErrorOr<List<MatchRequestDto>>>;
 
     public class CreateMatchListCommandHandler : IRequestHandler<GetMatchRequestListCommand, ErrorOr<List<MatchRequestDto>>>
     {

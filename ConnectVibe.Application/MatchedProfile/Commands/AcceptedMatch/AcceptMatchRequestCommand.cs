@@ -32,11 +32,11 @@ namespace Fliq.Application.MatchedProfile.Commands.AcceptedMatch
                 return Errors.Profile.ProfileNotFound;
             }
 
-            matchProfile.matchRequestStatus = MatchRequestStatus.Accepted;
+            matchProfile.MatchRequestStatus = MatchRequestStatus.Accepted;
             _matchProfileRepository.Update(matchProfile);
 
             return new CreateAcceptMatchResult(matchProfile.MatchInitiatorUserId,
-                 matchProfile.matchRequestStatus);
+                 matchProfile.MatchRequestStatus);
         }
     }
 }

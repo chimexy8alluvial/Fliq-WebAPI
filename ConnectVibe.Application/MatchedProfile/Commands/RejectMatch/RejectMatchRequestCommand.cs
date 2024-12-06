@@ -21,6 +21,7 @@ namespace Fliq.Application.MatchedProfile.Commands.RejectMatch
         {
             _matchProfileRepository = matchProfileRepository;
         }
+
         public async Task<ErrorOr<RejectMatchResult>> Handle(RejectMatchRequestCommand command, CancellationToken cancellationToken)
         {
             await Task.CompletedTask;
@@ -31,11 +32,11 @@ namespace Fliq.Application.MatchedProfile.Commands.RejectMatch
                 return Errors.Profile.ProfileNotFound;
             }
 
-            matchProfile.matchRequestStatus = MatchRequestStatus.Rejected;
+            matchProfile.MatchRequestStatus = MatchRequestStatus.Rejected;
             _matchProfileRepository.Update(matchProfile);
 
             return new RejectMatchResult(matchProfile.MatchInitiatorUserId,
-                 matchProfile.matchRequestStatus);
+                 matchProfile.MatchRequestStatus);
         }
     }
 }
