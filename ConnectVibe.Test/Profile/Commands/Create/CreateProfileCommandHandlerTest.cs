@@ -29,6 +29,7 @@ namespace Fliq.Test.Profile.Commands.Create
         private Mock<ClaimsPrincipal> _claimsPrincipalMock;
         private Mock<IPromptQuestionRepository> _promptQuestionRepositoryMock;
         private Mock<IPromptCategoryRepository> _promptCategoryRepositoryMock;
+        private Mock<IPromptResponseRepository> _promptResponseRepositoryMock;
         private Mock<ILoggerManager> _loggerManagerMock;
         private Mock<IMediaServices> _mediaServicesMock;
 
@@ -47,6 +48,7 @@ namespace Fliq.Test.Profile.Commands.Create
             _promptCategoryRepositoryMock = new Mock<IPromptCategoryRepository>();
             _loggerManagerMock = new Mock<ILoggerManager>();
             _mediaServicesMock = new Mock<IMediaServices>();
+            _promptResponseRepositoryMock = new Mock<IPromptResponseRepository>();
 
             // Mocking HttpContext to return a valid user ID
             _httpContextAccessorMock.Setup(x => x.HttpContext.User)
@@ -61,7 +63,8 @@ namespace Fliq.Test.Profile.Commands.Create
                 _loggerManagerMock.Object,
                 _promptQuestionRepositoryMock.Object,
                 _promptCategoryRepositoryMock.Object,
-                _mediaServicesMock.Object);
+                _mediaServicesMock.Object,
+                _promptResponseRepositoryMock.Object);
         }
 
         [TestMethod]

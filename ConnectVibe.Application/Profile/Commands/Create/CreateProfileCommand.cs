@@ -208,7 +208,7 @@ namespace Fliq.Application.Profile.Commands.Create
             return promptResponse;
         }
 
-        private async Task<string?> UploadPromptAnswerAsync(IFormFile file, PromptAnswerMediaType type)
+        private async Task<string> UploadPromptAnswerAsync(IFormFile file, PromptAnswerMediaType type)
         {
             // Determine the container name or local folder path based on media type
             string? containerName = type switch
@@ -220,7 +220,7 @@ namespace Fliq.Application.Profile.Commands.Create
 
             //upload the file to the server
             _loggerManager.LogDebug($"Uploading file to container: {containerName}");
-            var uploadResult = await _mediaServices.UploadMediaAsync(file, containerName);
+            var uploadResult = await _mediaServices.UploadMediaAsync(file, containerName) ?? throw new ArgumentException("Failed to get response url.");
             return uploadResult; // Return the URL or path from server upload
 
 
