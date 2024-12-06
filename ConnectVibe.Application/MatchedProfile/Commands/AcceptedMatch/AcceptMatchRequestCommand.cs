@@ -4,6 +4,7 @@ using Fliq.Application.MatchedProfile.Common;
 using Fliq.Application.Notifications.Common.MatchEvents;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Enums;
+using MapsterMapper;
 using MediatR;
 
 namespace Fliq.Application.MatchedProfile.Commands.AcceptedMatch
@@ -41,7 +42,7 @@ namespace Fliq.Application.MatchedProfile.Commands.AcceptedMatch
 
             matchProfile.MatchRequestStatus = MatchRequestStatus.Accepted;
             _matchProfileRepository.Update(matchProfile);
-            
+
             //trigger Accepted match event notification
             await _mediator.Publish(new MatchAcceptedEvent(command.UserId, matchProfile.MatchInitiatorUserId, command.UserId));
 

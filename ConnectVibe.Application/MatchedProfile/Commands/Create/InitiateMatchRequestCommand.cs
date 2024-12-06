@@ -52,10 +52,10 @@ namespace Fliq.Application.MatchedProfile.Commands.Create
             // Trigger MatchRequestEvent notification
             await _mediator.Publish(new MatchRequestEvent(
                 command.MatchInitiatorUserId,
-                command.UserId,
+                command.MatchReceiverUserId,
                 accepterImageUrl: requestedUser?.UserProfile?.Photos?.FirstOrDefault()?.PictureUrl,
-                initiatorImageUrl: matchProfile.PictureUrl,
-                initiatorName: matchProfile.Name
+                initiatorImageUrl: pictureUrl,
+                initiatorName: matchInitiator.FirstName
             ));
 
             return new CreateMatchProfileResult(matchProfile.MatchInitiatorUserId,
