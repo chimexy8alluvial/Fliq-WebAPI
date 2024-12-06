@@ -1,10 +1,11 @@
-﻿using Azure.AI.Vision.Face;
-using Azure;
+﻿using Azure;
+using Azure.AI.Vision.Face;
+using Azure.Storage.Blobs;
 using Fliq.Application.Common.Helpers;
+using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Interfaces.Services.MeidaServices;
 using Fliq.Infrastructure.Authentication;
 using Microsoft.AspNetCore.Http;
-using Microsoft.WindowsAzure.Storage;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
 
@@ -14,77 +15,17 @@ namespace Fliq.Infrastructure.Services.MediaService
     public class MediaService : IMediaServices
     {
         private readonly string _uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
-        private readonly string _containerName = "documents";
         private readonly FaceApi _faceApi;
-
-        public MediaService(IOptions<FaceApi> faceApiOptions)
+        private readonly ILoggerManager _logger;
+        public MediaService(IOptions<FaceApi> faceApiOptions, ILoggerManager logger)
         {
             _faceApi = faceApiOptions.Value;
+            _logger = logger;
         }
 
         public async Task<string?> UploadImageAsync(IFormFile imageToUpload)
         {
-            if (imageToUpload == null || imageToUpload.Length == 0)
-            {
-                return null;
-            }
-            if (Debugger.IsAttached)
-            {
-                return await UploadMediaToLocal(imageToUpload);
-            }
-            else
-            {
-
-                // Validate Image Extension
-                var validExtensions = new[] { ".jpg", ".jpeg", ".png" };
-                var extension = Path.GetExtension(imageToUpload.FileName).ToLowerInvariant();
-                if (!validExtensions.Contains(extension))
-            {
-                    return null;
-            }
-
-                // Attempt to create a CloudStorageAccount
-                CloudStorageAccount cloudStorageAccount = AzureConnectionString.GetConnectionString();
-
-                var cloudBlobClient = cloudStorageAccount.CreateCloudBlobClient();
-                var cloudBlobContainer = cloudBlobClient.GetContainerReference("profile-photos");
-
-                string imageName = Guid.NewGuid().ToString() + extension;
-
-                // Validate Image Integrity
-                using (var memoryStream = new MemoryStream())
-                {
-                    await imageToUpload.CopyToAsync(memoryStream);
-                    try
-                    {
-                        memoryStream.Position = 0;
-                        memoryStream.Seek(0, SeekOrigin.Begin);
-                    }
-                    catch (Exception)
-                    {
-                        return null;
-                    }
-                }
-
-                var cloudBlockBlob = cloudBlobContainer.GetBlockBlobReference(imageName);
-                cloudBlockBlob.Properties.ContentType = imageToUpload.ContentType;
-
-                try
-                {
-                    // Upload the image to Azure Blob Storage
-                    using var imageStream = imageToUpload.OpenReadStream();
-                    await cloudBlockBlob.UploadFromStreamAsync(imageStream);
-                }
-                catch (Exception)
-                {
-                    return null;
-                }
-
-                // Return the full path of the uploaded image
-                return cloudBlockBlob.Uri.ToString();
-            }
-
-
+           return await UploadMediaAsync(imageToUpload, _uploadPath);
         }
 
         public async Task<string?> UploadMediaAsync(IFormFile mediaToUpload, string containerName)
@@ -93,7 +34,6 @@ namespace Fliq.Infrastructure.Services.MediaService
             {
                 return null;
             }
-
             // Check if the app is in Debug Mode
             if (Debugger.IsAttached)
             {
@@ -102,55 +42,45 @@ namespace Fliq.Infrastructure.Services.MediaService
             }
             else
             {
-            // Validate Media Extension
+                // Validate Media Extension
                 var validExtensions = new[] { ".jpg", ".jpeg", ".png", "gif", ".mp4", ".mov", ".avi", ".mkv", ".mp3", ".wav" };
                 var extension = Path.GetExtension(mediaToUpload.FileName).ToLowerInvariant();
                 if (!validExtensions.Contains(extension))
                 {
                     return null;
                 }
-
                 // Attempt to create a CloudStorageAccount
-                CloudStorageAccount cloudStorageAccount = AzureConnectionString.GetConnectionString();
-
-                var cloudBlobClient = cloudStorageAccount.CreateCloudBlobClient();
-                var cloudBlobContainer = cloudBlobClient.GetContainerReference(containerName);
-
-                string mediaName = Guid.NewGuid().ToString() + extension;
-
-                // Validate Media Integrity
-                using (var memoryStream = new MemoryStream())
-                {
-                    await mediaToUpload.CopyToAsync(memoryStream);
-                    try
-                    {
-                        memoryStream.Position = 0;
-                        memoryStream.Seek(0, SeekOrigin.Begin);
-                    }
-                    catch (Exception)
-                    {
-                        return null;
-                    }
-                }
-
-                var cloudBlockBlob = cloudBlobContainer.GetBlockBlobReference(mediaName);
-                cloudBlockBlob.Properties.ContentType = mediaToUpload.ContentType;
-
                 try
                 {
+                    // Create BlobServiceClient using the connection string
+                    BlobServiceClient blobServiceClient = AzureConnectionString.GetConnectionString();
+
+                    // Get or create the BlobContainerClient
+                    BlobContainerClient blobContainerClient = blobServiceClient.GetBlobContainerClient(containerName);
+                    await blobContainerClient.CreateIfNotExistsAsync();
+
+                    // Generate a unique media name
+                    string mediaName = Guid.NewGuid().ToString() + extension;
+
+                    // Get a BlobClient for the media
+                    BlobClient blobClient = blobContainerClient.GetBlobClient(mediaName);
+
                     // Upload the media to Azure Blob Storage
-                    using var mediaStream = mediaToUpload.OpenReadStream();
-                    await cloudBlockBlob.UploadFromStreamAsync(mediaStream);
+                    using (var mediaStream = mediaToUpload.OpenReadStream())
+                    {
+                        await blobClient.UploadAsync(mediaStream, true);
+                    }
+
+                    // Return the full URL of the uploaded media
+                    return blobClient.Uri.ToString();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    _logger.LogError($"An error occurred: {ex.Message}");
                     return null;
                 }
-
-                // Return the full path of the uploaded media
-                return cloudBlockBlob.Uri.ToString();
             }
-         
+
         }
 
         public async Task<string> StartFaceLivelinessSession()
