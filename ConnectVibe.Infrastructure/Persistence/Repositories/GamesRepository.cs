@@ -1,16 +1,21 @@
-﻿using Fliq.Application.Common.Interfaces.Persistence;
+﻿using Dapper;
+using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Games.Queries.GetGameHistory;
 using Fliq.Domain.Entities.Games;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {
     public class GamesRepository : IGamesRepository
     {
         private readonly FliqDbContext _dbContext;
+        private readonly IDbConnectionFactory _connectionFactory;
 
-        public GamesRepository(FliqDbContext dbContext)
+        public GamesRepository(FliqDbContext dbContext, IDbConnectionFactory connectionFactory)
         {
             _dbContext = dbContext;
+            _connectionFactory = connectionFactory;
         }
 
         public Game? GetGameById(int id)
@@ -68,6 +73,21 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         {
             var session = _dbContext.GameSessions.SingleOrDefault(p => p.Id == id);
             return session;
+        }
+
+        public List<GetGameHistoryResult> GetGameHistoryByTwoPlayers(int player1Id, int player2Id)
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                const string storedProcedure = "GetGameHistoryByTwoPlayers";
+
+                var result = connection.Query<GetGameHistoryResult>(
+                    storedProcedure,
+                    new { Player1Id = player1Id, Player2Id = player2Id },
+                    commandType: CommandType.StoredProcedure
+                ).ToList();
+                return result;
+            }
         }
 
         public void AddGameRequest(GameRequest gameRequest)

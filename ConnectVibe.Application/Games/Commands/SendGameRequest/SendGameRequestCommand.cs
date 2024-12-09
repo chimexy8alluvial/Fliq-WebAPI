@@ -39,6 +39,7 @@ namespace Fliq.Application.Games.Commands.SendGameRequest
             var reciever = _userRepository.GetUserById(request.RecipientId);
             if (reciever is null)
             {
+                _logger.LogError("User not found");
                 return Errors.User.UserNotFound;
             }
             // Notification

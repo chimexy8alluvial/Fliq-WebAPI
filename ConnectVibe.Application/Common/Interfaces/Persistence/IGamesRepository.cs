@@ -1,4 +1,5 @@
-﻿using Fliq.Domain.Entities.Games;
+﻿using Fliq.Application.Games.Queries.GetGameHistory;
+using Fliq.Domain.Entities.Games;
 
 namespace Fliq.Application.Common.Interfaces.Persistence
 {
@@ -29,5 +30,7 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         GameQuestion? GetQuestionById(int id);
 
         List<GameQuestion> GetQuestionsByGameId(int gameId, int pageNumber, int pageSize);
+
+        List<GetGameHistoryResult> GetGameHistoryByTwoPlayers(int player1Id, int player2Id);
     }
 }

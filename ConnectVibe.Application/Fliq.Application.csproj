@@ -37,7 +37,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Games\Queries\GetQuestions\" />
     <Folder Include="Notifications\Queries\" />
     <Folder Include="Payments\Queries\" />
   </ItemGroup>
