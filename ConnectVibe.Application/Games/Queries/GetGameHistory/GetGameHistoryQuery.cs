@@ -1,21 +1,14 @@
-﻿using MediatR;
-using ErrorOr;
+﻿using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.Games.Common;
+using Fliq.Domain.Common.Errors;
+using MediatR;
 
 namespace Fliq.Application.Games.Queries.GetGameHistory
 {
     public record GetGameHistoryQuery(int Player1Id, int Player2Id)
         : IRequest<ErrorOr<List<GetGameHistoryResult>>>;
-
-    public record GetGameHistoryResult(
-        int HistoryId,
-        string GameName,
-        DateTime StartTime,
-        DateTime? EndTime,
-        int Player1Score,
-        int Player2Score
-    );
 
     public class GetGameHistoryQueryHandler
         : IRequestHandler<GetGameHistoryQuery, ErrorOr<List<GetGameHistoryResult>>>
@@ -44,16 +37,20 @@ namespace Fliq.Application.Games.Queries.GetGameHistory
             if (results == null || !results.Any())
             {
                 _logger.LogError("No game history found for the given players.");
-                return Error.NotFound("GameHistory.NotFound", "No game history found for the given players.");
+                return Errors.Games.GameSessionNotFound;
             }
 
             return results.Select(history => new GetGameHistoryResult(
                 history.HistoryId,
                 history.GameName,
+                history.GameId,
                 history.StartTime,
                 history.EndTime,
                 history.Player1Score,
-                history.Player2Score
+                history.Player2Score,
+                history.Player1Id,
+                history.Player2Id
+
             )).ToList();
         }
     }

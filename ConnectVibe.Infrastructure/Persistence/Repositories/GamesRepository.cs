@@ -1,6 +1,6 @@
 ﻿using Dapper;
 using Fliq.Application.Common.Interfaces.Persistence;
-using Fliq.Application.Games.Queries.GetGameHistory;
+using Fliq.Application.Games.Common;
 using Fliq.Domain.Entities.Games;
 using Microsoft.EntityFrameworkCore;
 using System.Data;

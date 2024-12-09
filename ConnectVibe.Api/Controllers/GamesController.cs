@@ -4,6 +4,7 @@ using Fliq.Application.Games.Commands.CreateQuestion;
 using Fliq.Application.Games.Commands.SendGameRequest;
 using Fliq.Application.Games.Commands.SubmitAnswer;
 using Fliq.Application.Games.Queries.GetGame;
+using Fliq.Application.Games.Queries.GetGameHistory;
 using Fliq.Application.Games.Queries.GetGames;
 using Fliq.Application.Games.Queries.GetSession;
 using Fliq.Contracts.Games;
@@ -141,6 +142,19 @@ namespace Fliq.Api.Controllers
                 questionResult => Ok(_mapper.Map<GetQuestionResponse>(questionResult)),
                 errors => Problem(detail: string.Join(", ", errors.Select(e => e.Description)), statusCode: 400)
             );
+        }
+
+        [HttpGet("GetGameHistory")]
+        public async Task<IActionResult> GetGameHistory(int player1Id, int player2Id)
+        {
+            var query = new GetGameHistoryQuery(player1Id, player2Id);
+
+            var result = await _mediator.Send(query);
+
+            return result.Match(
+              session => Ok(_mapper.Map<List<GameSessionResponse>>(session)),
+              errors => Problem(errors)
+          );
         }
     }
 }
