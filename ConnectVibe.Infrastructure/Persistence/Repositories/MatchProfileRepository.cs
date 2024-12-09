@@ -1,7 +1,6 @@
 ﻿using Dapper;
 using Fliq.Application.Common.Interfaces.Persistence;
-using Fliq.Application.MatchedProfile.Commands.ApprovedMatchedList;
-using Fliq.Application.MatchedProfile.Commands.MatchedList;
+using Fliq.Application.MatchedProfile.Common;
 using Fliq.Contracts.MatchedProfile;
 using System.Data;
 
@@ -31,29 +30,12 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             _dbContext.SaveChanges();
         }
 
-        public async Task<IEnumerable<MatchRequestDto>> GetMatchListById(GetMatchRequestListCommand query)
+        public async Task<IEnumerable<MatchRequestDto>> GetMatchListById(GetMatchListRequest query)
         {
             using (var connection = _connectionFactory.CreateConnection())
             {
                 var parameters = FilterListDynamicParams(query);
                 var result = await connection.QueryAsync<dynamic>("sPGetMatchedList", param: parameters, commandType: CommandType.StoredProcedure);
-                var filteredItems = result.Select(p => new MatchRequestDto
-                {
-                    MatchInitiatorUserId = p.MatchInitiatorUserId,
-                    Name = p.Name,
-                    PictureUrl = p.PictureUrl,
-                    Age = p.Age
-                });
-                return filteredItems;
-            }
-        }
-
-        public async Task<IEnumerable<MatchRequestDto>> GetApproveMatchListById(GetApprovedMatchListCommand query)
-        {
-            using (var connection = _connectionFactory.CreateConnection())
-            {
-                var parameters = FilterListDynamicParamsforApprovedList(query);
-                var result = await connection.QueryAsync<dynamic>("sPGetApproveMatchedList", param: parameters, commandType: CommandType.StoredProcedure);
                 var filteredItems = result.Select(p => new MatchRequestDto
                 {
                     MatchInitiatorUserId = p.MatchInitiatorUserId,
@@ -83,18 +65,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             _dbContext.SaveChanges();
         }
 
-        private static DynamicParameters FilterListDynamicParams(GetMatchRequestListCommand query)
-        {
-            var parameters = new DynamicParameters();
-
-            parameters.Add("@userId", query.UserId);
-            parameters.Add("@pageNumber", query.PaginationRequest.PageNumber);
-            parameters.Add("@pageSize", query.PaginationRequest.PageSize);
-            parameters.Add("@MatchRequestStatus ", query.MatchRequestStatus);
-            return parameters;
-        }
-
-        private static DynamicParameters FilterListDynamicParamsforApprovedList(GetApprovedMatchListCommand query)
+        private static DynamicParameters FilterListDynamicParams(GetMatchListRequest query)
         {
             var parameters = new DynamicParameters();
 

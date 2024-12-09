@@ -1,7 +1,6 @@
 ﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.MatchedProfile.Commands.AcceptedMatch;
-using Fliq.Application.MatchedProfile.Commands.ApprovedMatchedList;
 using Fliq.Application.MatchedProfile.Commands.Create;
 using Fliq.Application.MatchedProfile.Commands.MatchedList;
 using Fliq.Application.MatchedProfile.Commands.RejectMatch;
@@ -56,23 +55,6 @@ namespace Fliq.Api.Controllers
 
             //Map the request to GetMatchRequestListCommand and add UserId
             var query = _mapper.Map<GetMatchRequestListCommand>(request);
-            query = query with { UserId = userId, PaginationRequest = new PaginationRequest(request.PageNumber, request.PageSize) };
-            
-            var matchelistResult = await _mediator.Send(query);
-            _logger.LogInfo($"Get Match List Request Command Executed.  Result: {matchelistResult}");
-            return matchelistResult.Match(
-                matchelistResult => Ok(_mapper.Map<List<MatchedProfileResponse>>(matchelistResult)),
-                errors => Problem(errors)
-            );
-        }
-
-        [HttpGet("getapprovedmatchedlist")]
-        public async Task<IActionResult> GetApprovedMatchedList([FromQuery] MatchListRequest request)
-        {
-            var userId = GetAuthUserId();
-            _logger.LogInfo($"Get Match List Request Received: {userId}");
-            //Map the request to GetApprovedMatchRequestListCommand and add UserId
-            var query = _mapper.Map<GetApprovedMatchListCommand>(request);
             query = query with { UserId = userId, PaginationRequest = new PaginationRequest(request.PageNumber, request.PageSize) };
 
             var matchelistResult = await _mediator.Send(query);

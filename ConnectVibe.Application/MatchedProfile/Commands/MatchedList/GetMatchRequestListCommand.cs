@@ -1,6 +1,7 @@
 ﻿using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Pagination;
+using Fliq.Application.MatchedProfile.Common;
 using Fliq.Contracts.MatchedProfile;
 using Fliq.Domain.Enums;
 using MediatR;
@@ -22,7 +23,14 @@ namespace Fliq.Application.MatchedProfile.Commands.MatchedList
         {
             await Task.CompletedTask;
 
-            var filteredValue = await _matchProfileRepository.GetMatchListById(command);
+            var request = new GetMatchListRequest
+            {
+                UserId = command.UserId,
+                PaginationRequest = command.PaginationRequest,
+                MatchRequestStatus = command.MatchRequestStatus,
+            };
+
+            var filteredValue = await _matchProfileRepository.GetMatchListById(request);
             var result = filteredValue.ToList();
 
             return result;
