@@ -11,13 +11,6 @@ namespace Fliq.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<bool>(
-                name: "IsDocumentVerified",
-                table: "Users",
-                type: "bit",
-                nullable: false,
-                defaultValue: false);
-
             migrationBuilder.CreateTable(
                 name: "Currencies",
                 columns: table => new
@@ -34,22 +27,28 @@ namespace Fliq.Infrastructure.Migrations
                     table.PrimaryKey("PK_Currencies", x => x.Id);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "EventCriterias",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    EventType = table.Column<int>(type: "int", nullable: false),
-                    Gender = table.Column<int>(type: "int", nullable: true),
-                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_EventCriterias", x => x.Id);
-                });
+            // Remove the Race column if it exists
+            migrationBuilder.DropColumn(
+                name: "Race",
+                table: "EventCriterias");
+
+            // Add the missing columns
+            migrationBuilder.AddColumn<DateTime>(
+                name: "DateCreated",
+                table: "EventCriterias",
+                nullable: false,
+                defaultValueSql: "GETDATE()"); // Sets default value to current date/time
+
+            migrationBuilder.AddColumn<DateTime>(
+                name: "DateModified",
+                table: "EventCriterias",
+                nullable: true);
+
+            migrationBuilder.AddColumn<bool>(
+                name: "IsDeleted",
+                table: "EventCriterias",
+                nullable: false,
+                defaultValue: false); // Sets default value to false
 
             migrationBuilder.CreateTable(
                 name: "EventPaymentDetail",
@@ -70,107 +69,118 @@ namespace Fliq.Infrastructure.Migrations
                     table.PrimaryKey("PK_EventPaymentDetail", x => x.Id);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "SponsoredEventDetails",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    BusinessName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BusinessAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BusinessType = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ContactInfromation = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SponsoringPlan = table.Column<int>(type: "int", nullable: false),
-                    TargetAudienceType = table.Column<int>(type: "int", nullable: false),
-                    Budget = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    PreferedLevelOfInvolvement = table.Column<int>(type: "int", nullable: false),
-                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SponsoredEventDetails", x => x.Id);
-                });
+            // Add the missing SponsoredEvent columns
+            migrationBuilder.AddColumn<DateTime>(
+                name: "DateCreated",
+                table: "SponsoredEventDetails",
+                type: "datetime2",
+                nullable: false,
+                defaultValueSql: "GETDATE()"); // Sets default value to current date/time
 
-            migrationBuilder.CreateTable(
-                name: "Events",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    EventType = table.Column<int>(type: "int", nullable: false),
-                    EventTitle = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    EventDescription = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    EventCategory = table.Column<int>(type: "int", nullable: false),
-                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LocationId = table.Column<int>(type: "int", nullable: false),
-                    Capacity = table.Column<int>(type: "int", nullable: false),
-                    OccupiedSeats = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    MinAge = table.Column<int>(type: "int", nullable: false),
-                    MaxAge = table.Column<int>(type: "int", nullable: false),
-                    SponsoredEvent = table.Column<bool>(type: "bit", nullable: false),
-                    SponsoredEventDetailId = table.Column<int>(type: "int", nullable: true),
-                    EventCriteriaId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    EventPaymentDetailId = table.Column<int>(type: "int", nullable: true),
-                    InviteesException = table.Column<bool>(type: "bit", nullable: false),
-                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Events", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Events_EventCriterias_EventCriteriaId",
-                        column: x => x.EventCriteriaId,
-                        principalTable: "EventCriterias",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Events_EventPaymentDetail_EventPaymentDetailId",
-                        column: x => x.EventPaymentDetailId,
-                        principalTable: "EventPaymentDetail",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Events_Location_LocationId",
-                        column: x => x.LocationId,
-                        principalTable: "Location",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Events_SponsoredEventDetails_SponsoredEventDetailId",
-                        column: x => x.SponsoredEventDetailId,
-                        principalTable: "SponsoredEventDetails",
-                        principalColumn: "Id");
-                });
+            migrationBuilder.AddColumn<DateTime>(
+                name: "DateModified",
+                table: "SponsoredEventDetails",
+                type: "datetime2",
+                nullable: true);
 
-            migrationBuilder.CreateTable(
-                name: "EventMedias",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    MediaUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    EventsId = table.Column<int>(type: "int", nullable: true),
-                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_EventMedias", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_EventMedias_Events_EventsId",
-                        column: x => x.EventsId,
-                        principalTable: "Events",
-                        principalColumn: "Id");
-                });
+            migrationBuilder.AddColumn<bool>(
+                name: "IsDeleted",
+                table: "SponsoredEventDetails",
+                nullable: false,
+                defaultValue: false); // Sets default value to false
+
+            // Add new Event columns
+            migrationBuilder.AddColumn<string>(
+                name: "OccupiedSeats",
+                table: "Events",
+                type: "nvarchar(max)",
+                nullable: false,
+                defaultValue: "");
+
+            migrationBuilder.AddColumn<int>(
+                name: "MinAge",
+                table: "Events",
+                type: "int",
+                nullable: false,
+                defaultValue: 0);
+
+            migrationBuilder.AddColumn<int>(
+                name: "MaxAge",
+                table: "Events",
+                type: "int",
+                nullable: false,
+                defaultValue: 0);
+
+            migrationBuilder.AddColumn<int>(
+                name: "EventPaymentDetailId",
+                table: "Events",
+                type: "int",
+                nullable: true);
+
+            migrationBuilder.AddColumn<bool>(
+                name: "InviteesException",
+                table: "Events",
+                type: "bit",
+                nullable: false,
+                defaultValue: false);
+
+            migrationBuilder.AddColumn<DateTime>(
+                name: "DateCreated",
+                table: "Events",
+                type: "datetime2",
+                nullable: false,
+                defaultValueSql: "GETDATE()");
+
+            migrationBuilder.AddColumn<DateTime>(
+                name: "DateModified",
+                table: "Events",
+                type: "datetime2",
+                nullable: true);
+
+            migrationBuilder.AddColumn<bool>(
+                name: "IsDeleted",
+                table: "Events",
+                type: "bit",
+                nullable: false,
+                defaultValue: false);
+
+            // Add foreign key for EventPaymentDetail in Event table
+            migrationBuilder.AddForeignKey(
+                name: "FK_Events_EventPaymentDetail_EventPaymentDetailId",
+                table: "Events",
+                column: "EventPaymentDetailId",
+                principalTable: "EventPaymentDetail",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Restrict);
+
+            // Drop old Event table columns
+            migrationBuilder.DropColumn(
+                name: "StartAge",
+                table: "Events");
+
+            migrationBuilder.DropColumn(
+                name: "EndAge",
+                table: "Events");
+
+            migrationBuilder.AddColumn<DateTime>(
+                name: "DateCreated",
+                table: "EventMedias",
+                type: "datetime2",
+                nullable: false,
+                defaultValueSql: "GETDATE()");
+
+            migrationBuilder.AddColumn<DateTime>(
+                name: "DateModified",
+                table: "EventMedias",
+                type: "datetime2",
+                nullable: true);
+
+            migrationBuilder.AddColumn<bool>(
+                name: "IsDeleted",
+                table: "EventMedias",
+                type: "bit",
+                nullable: false,
+                defaultValue: false);
 
             migrationBuilder.CreateTable(
                 name: "EventReviews",
@@ -292,7 +302,7 @@ namespace Fliq.Infrastructure.Migrations
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateIndex(
@@ -300,35 +310,18 @@ namespace Fliq.Infrastructure.Migrations
                 table: "Discount",
                 column: "TicketId");
 
-            migrationBuilder.CreateIndex(
-                name: "IX_EventMedias_EventsId",
-                table: "EventMedias",
-                column: "EventsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_EventReviews_EventId",
                 table: "EventReviews",
                 column: "EventId");
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Events_EventCriteriaId",
-                table: "Events",
-                column: "EventCriteriaId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Events_EventPaymentDetailId",
                 table: "Events",
                 column: "EventPaymentDetailId");
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Events_LocationId",
-                table: "Events",
-                column: "LocationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Events_SponsoredEventDetailId",
-                table: "Events",
-                column: "SponsoredEventDetailId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_EventTickets_PaymentId",
@@ -380,8 +373,37 @@ namespace Fliq.Infrastructure.Migrations
             migrationBuilder.DropTable(
                 name: "Events");
 
-            migrationBuilder.DropTable(
-                name: "EventCriterias");
+            // Recreate the Race column
+            migrationBuilder.AddColumn<int>(
+                name: "Race",
+                table: "EventCriterias",
+                nullable: true);
+
+            // Remove the newly added columns
+            migrationBuilder.DropColumn(
+                name: "DateCreated",
+                table: "EventCriterias");
+
+            migrationBuilder.DropColumn(
+                name: "DateModified",
+                table: "EventCriterias");
+
+            migrationBuilder.DropColumn(
+                name: "IsDeleted",
+                table: "EventCriterias");
+
+            // Remove the newly added columns
+            migrationBuilder.DropColumn(
+                name: "DateCreated",
+                table: "SponsoredEventDetails");
+
+            migrationBuilder.DropColumn(
+                name: "DateModified",
+                table: "SponsoredEventDetails");
+
+            migrationBuilder.DropColumn(
+                name: "IsDeleted",
+                table: "SponsoredEventDetails");
 
             migrationBuilder.DropTable(
                 name: "EventPaymentDetail");
@@ -389,9 +411,25 @@ namespace Fliq.Infrastructure.Migrations
             migrationBuilder.DropTable(
                 name: "SponsoredEventDetails");
 
-            migrationBuilder.DropColumn(
-                name: "IsDocumentVerified",
-                table: "Users");
+            // Remove new columns
+            migrationBuilder.DropColumn(name: "OccupiedSeats", table: "Events");
+            migrationBuilder.DropColumn(name: "MinAge", table: "Events");
+            migrationBuilder.DropColumn(name: "MaxAge", table: "Events");
+            migrationBuilder.DropColumn(name: "EventPaymentDetailId", table: "Events");
+            migrationBuilder.DropColumn(name: "InviteesException", table: "Events");
+            migrationBuilder.DropColumn(name: "DateCreated", table: "Events");
+            migrationBuilder.DropColumn(name: "DateModified", table: "Events");
+            migrationBuilder.DropColumn(name: "IsDeleted", table: "Events");
+
+            // Remove foreign key
+            migrationBuilder.DropForeignKey(
+                name: "FK_Events_EventPaymentDetail_EventPaymentDetailId",
+                table: "Events");
+
+
+            migrationBuilder.DropColumn(name: "DateCreated", table: "EventMedias");
+            migrationBuilder.DropColumn(name: "DateModified", table: "EventMedias");
+            migrationBuilder.DropColumn(name: "IsDeleted", table: "EventMedias");
         }
     }
 }
