@@ -41,6 +41,7 @@ namespace Fliq.Infrastructure.Persistence
         public DbSet<PromptQuestion> PromptQuestions { get; set; }
 
 
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Payment>()

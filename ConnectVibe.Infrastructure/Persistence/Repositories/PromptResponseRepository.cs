@@ -5,18 +5,18 @@ using Fliq.Domain.Entities.Prompts;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {
-    public class PromptAnswerRepository : IPromptAnswerRepository
+    public class PromptResponseRepository : IPromptResponseRepository
     {
         private readonly FliqDbContext _dbContext;
         private readonly IDbConnectionFactory _connectionFactory;
 
-        public PromptAnswerRepository(FliqDbContext dbContext, IDbConnectionFactory connectionFactory)
+        public PromptResponseRepository(FliqDbContext dbContext, IDbConnectionFactory connectionFactory)
         {
             _dbContext = dbContext;
             _connectionFactory = connectionFactory;
         }
 
-        public void Add(PromptAnswer promptAnswer)
+        public void Add(PromptResponse promptAnswer)
         {
             if (promptAnswer.Id > 0)
             {

@@ -52,9 +52,10 @@ namespace Fliq.Application.Profile.Commands.Create
         private readonly IPromptCategoryRepository _promptCategoryRepository;
         private readonly ILoggerManager _loggerManager;
         private readonly IMediaServices _mediaServices;
+        private readonly IPromptResponseRepository _promptResponseRepository;
 
 
-        public CreateProfileCommandHandler(IMapper mapper, IProfileRepository profileRepository, IUserRepository userRepository, ILocationService locationService, ISettingsRepository settingsRepository, ILoggerManager loggerManager, IPromptQuestionRepository promptQuestionRepository, IPromptCategoryRepository promptCategoryRepository, IMediaServices mediaServices)
+        public CreateProfileCommandHandler(IMapper mapper, IProfileRepository profileRepository, IUserRepository userRepository, ILocationService locationService, ISettingsRepository settingsRepository, ILoggerManager loggerManager, IPromptQuestionRepository promptQuestionRepository, IPromptCategoryRepository promptCategoryRepository, IMediaServices mediaServices, IPromptResponseRepository promptResponseRepository)
         {
             _mapper = mapper;
             _profileRepository = profileRepository;
@@ -65,6 +66,7 @@ namespace Fliq.Application.Profile.Commands.Create
             _promptQuestionRepository = promptQuestionRepository;
             _promptCategoryRepository = promptCategoryRepository;
             _mediaServices = mediaServices;
+            _promptResponseRepository = promptResponseRepository;
         }
 
         public async Task<ErrorOr<CreateProfileResult>> Handle(CreateProfileCommand command, CancellationToken cancellationToken)
@@ -124,6 +126,9 @@ namespace Fliq.Application.Profile.Commands.Create
                 var promptResponse = await ProcessPromptResponseAsync(promptDto, userProfile);
                 if (promptResponse.IsError)
                     return promptResponse.Errors;
+
+                //Persist PromptResponse
+                _promptResponseRepository.Add(promptResponse.Value);
                 promptResponses.Add(promptResponse.Value);
             }
 
@@ -203,7 +208,7 @@ namespace Fliq.Application.Profile.Commands.Create
             return promptResponse;
         }
 
-        private async Task<string?> UploadPromptAnswerAsync(IFormFile file, PromptAnswerMediaType type)
+        private async Task<string> UploadPromptAnswerAsync(IFormFile file, PromptAnswerMediaType type)
         {
             // Determine the container name or local folder path based on media type
             string? containerName = type switch
@@ -215,7 +220,7 @@ namespace Fliq.Application.Profile.Commands.Create
 
             //upload the file to the server
             _loggerManager.LogDebug($"Uploading file to container: {containerName}");
-            var uploadResult = await _mediaServices.UploadMediaAsync(file, containerName);
+            var uploadResult = await _mediaServices.UploadMediaAsync(file, containerName) ?? throw new ArgumentException("Failed to get response url.");
             return uploadResult; // Return the URL or path from server upload
 
 

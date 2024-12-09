@@ -10,10 +10,10 @@ namespace Fliq.Api.Mapping
     {
         public void Register(TypeAdapterConfig config)
         {
-            config.NewConfig<PromptAnswerCommand, PromptAnswer>();
-            config.NewConfig<CreatePromptAnswerRequest, PromptAnswerCommand>();
+          //  config.NewConfig<PromptAnswerCommand, PromptAnswer>();
+           // config.NewConfig<CreatePromptAnswerRequest, PromptAnswerCommand>();
             config.NewConfig<CreatePromptAnswerResult, CreatePromptAnswerResponse>().Map(dest => dest.Success, src => src.IsAnswered);
-            config.NewConfig<CreateCustomPromptRequest, CreateCustomPromptCommand>();
+         //   config.NewConfig<CreateCustomPromptRequest, CreateCustomPromptCommand>();
             config.NewConfig<CreatePromptAnswerResult, CreateCustomPromptResponse>().Map(dest => dest.Success, src => src.IsAnswered);
         }
     }

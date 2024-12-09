@@ -24,53 +24,53 @@ namespace Fliq.Api.Controllers
             _logger = logger;
         }
 
-        [Obsolete]
-        [HttpPost("Prompt-Answer")]
-        [Produces(typeof(CreatePromptAnswerResponse))]
-        public async Task<IActionResult> CreatePromptAnswer([FromForm] CreatePromptAnswerRequest request)
-        {
-            _logger.LogInfo($"Prompt answer request received: {request}");
+        //[Obsolete]
+        //[HttpPost("Prompt-Answer")]
+        //[Produces(typeof(CreatePromptAnswerResponse))]
+        //public async Task<IActionResult> CreatePromptAnswer([FromForm] CreatePromptAnswerRequest request)
+        //{
+        //    _logger.LogInfo($"Prompt answer request received: {request}");
 
-            var userId = GetAuthUserId();
-            _logger.LogInfo($"Authenticated user ID: {userId}");
+        //    var userId = GetAuthUserId();
+        //    _logger.LogInfo($"Authenticated user ID: {userId}");
 
-            // Map request to command and add UserId
-            var command = _mapper.Map<PromptAnswerCommand>(request);
-            command = command with { UserId = userId};
+        //    // Map request to command and add UserId
+        //    var command = _mapper.Map<PromptAnswerCommand>(request);
+        //    command = command with { UserId = userId};
 
-            var result = await _mediator.Send(command);
-            _logger.LogInfo($"Prompt Answer Command Executed. Result: {result}");
+        //    var result = await _mediator.Send(command);
+        //    _logger.LogInfo($"Prompt Answer Command Executed. Result: {result}");
 
-            return result.Match(
-                    result => Ok(_mapper.Map<CreatePromptAnswerResponse>(result)),
-                    errors => Problem(string.Join("; ", errors.Select(e => e.Description)))
-                );
+        //    return result.Match(
+        //            result => Ok(_mapper.Map<CreatePromptAnswerResponse>(result)),
+        //            errors => Problem(string.Join("; ", errors.Select(e => e.Description)))
+        //        );
 
-        }
+        //}
 
-        [Obsolete]
-        [HttpPost("Add-custom")]
-        [Produces(typeof(CreateCustomPromptResponse))]
-        public async Task<IActionResult> CreateCustomPrompt([FromForm] CreateCustomPromptRequest request)
-        {
-            _logger.LogInfo($"Custom Prompt request received: {request}");
+        //[Obsolete]
+        //[HttpPost("Add-custom")]
+        //[Produces(typeof(CreateCustomPromptResponse))]
+        //public async Task<IActionResult> CreateCustomPrompt([FromForm] CreateCustomPromptRequest request)
+        //{
+        //    _logger.LogInfo($"Custom Prompt request received: {request}");
 
-            var userId = GetAuthUserId();
-            _logger.LogInfo($"Authenticated user ID: {userId}");
+        //    var userId = GetAuthUserId();
+        //    _logger.LogInfo($"Authenticated user ID: {userId}");
 
-            // Map request to command and add UserId
-            var command = _mapper.Map<CreateCustomPromptCommand>(request);
-            command = command with { UserId = userId };
+        //    // Map request to command and add UserId
+        //    var command = _mapper.Map<CreateCustomPromptCommand>(request);
+        //    command = command with { UserId = userId };
 
-            var result = await _mediator.Send(command);
-            _logger.LogInfo($"Custom Prompt Command Executed. Result: {result}");
+        //    var result = await _mediator.Send(command);
+        //    _logger.LogInfo($"Custom Prompt Command Executed. Result: {result}");
 
-            return result.Match(
-                    result => Ok(_mapper.Map<CreateCustomPromptResponse>(result)),
-                    errors => Problem(string.Join("; ", errors.Select(e => e.Description)))
-                );
+        //    return result.Match(
+        //            result => Ok(_mapper.Map<CreateCustomPromptResponse>(result)),
+        //            errors => Problem(string.Join("; ", errors.Select(e => e.Description)))
+        //        );
 
-        }
+        //}
 
         [HttpPost("AddCategory")]
         [Produces(typeof(AddPromptCategoryResponse))]

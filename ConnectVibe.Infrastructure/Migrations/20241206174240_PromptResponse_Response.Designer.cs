@@ -4,6 +4,7 @@ using Fliq.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fliq.Infrastructure.Migrations
 {
     [DbContext(typeof(FliqDbContext))]
-    partial class FliqDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241206174240_PromptResponse_Response")]
+    partial class PromptResponse_Response
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,7 +50,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AgeRange", (string)null);
+                    b.ToTable("AgeRange");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Event.Currency", b =>
@@ -73,7 +76,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Currencies", (string)null);
+                    b.ToTable("Currencies");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Event.Discount", b =>
@@ -113,7 +116,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasIndex("TicketId");
 
-                    b.ToTable("Discount", (string)null);
+                    b.ToTable("Discount");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Event.EventCriteria", b =>
@@ -141,7 +144,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EventCriterias", (string)null);
+                    b.ToTable("EventCriterias");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Event.EventMedia", b =>
@@ -176,7 +179,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasIndex("EventsId");
 
-                    b.ToTable("EventMedias", (string)null);
+                    b.ToTable("EventMedias");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Event.EventPaymentDetail", b =>
@@ -214,7 +217,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EventPaymentDetail", (string)null);
+                    b.ToTable("EventPaymentDetail");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Event.EventReview", b =>
@@ -251,7 +254,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasIndex("EventId");
 
-                    b.ToTable("EventReviews", (string)null);
+                    b.ToTable("EventReviews");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Event.EventTicket", b =>
@@ -291,7 +294,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("EventTickets", (string)null);
+                    b.ToTable("EventTickets");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Event.Events", b =>
@@ -375,7 +378,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasIndex("SponsoredEventDetailId");
 
-                    b.ToTable("Events", (string)null);
+                    b.ToTable("Events");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Event.SponsoredEventDetail", b =>
@@ -431,7 +434,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SponsoredEventDetails", (string)null);
+                    b.ToTable("SponsoredEventDetails");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Event.Ticket", b =>
@@ -486,7 +489,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasIndex("EventId");
 
-                    b.ToTable("Tickets", (string)null);
+                    b.ToTable("Tickets");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.MatchedProfile.MatchRequest", b =>
@@ -530,7 +533,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("MatchRequests", (string)null);
+                    b.ToTable("MatchRequests");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Notifications.Notification", b =>
@@ -572,7 +575,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Notifications", (string)null);
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Notifications.UserDeviceToken", b =>
@@ -603,7 +606,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserDeviceTokens", (string)null);
+                    b.ToTable("UserDeviceTokens");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.OTP", b =>
@@ -644,7 +647,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("OTPs", (string)null);
+                    b.ToTable("OTPs");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Payment", b =>
@@ -705,7 +708,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Payments", (string)null);
+                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.AddressComponent", b =>
@@ -744,7 +747,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasIndex("LocationResultId");
 
-                    b.ToTable("AddressComponent", (string)null);
+                    b.ToTable("AddressComponent");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.EducationStatus", b =>
@@ -772,7 +775,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EducationStatus", (string)null);
+                    b.ToTable("EducationStatus");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.Ethnicity", b =>
@@ -800,7 +803,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Ethnicity", (string)null);
+                    b.ToTable("Ethnicity");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.Gender", b =>
@@ -828,7 +831,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Gender", (string)null);
+                    b.ToTable("Gender");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.Geometry", b =>
@@ -859,7 +862,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasIndex("LocationId");
 
-                    b.ToTable("Geometry", (string)null);
+                    b.ToTable("Geometry");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.HaveKids", b =>
@@ -887,7 +890,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("HaveKids", (string)null);
+                    b.ToTable("HaveKids");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.Location", b =>
@@ -918,7 +921,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Location", (string)null);
+                    b.ToTable("Location");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.LocationDetail", b =>
@@ -950,7 +953,7 @@ namespace Fliq.Infrastructure.Migrations
                     b.HasIndex("LocationId")
                         .IsUnique();
 
-                    b.ToTable("LocationDetails", (string)null);
+                    b.ToTable("LocationDetails");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.LocationResult", b =>
@@ -994,7 +997,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasIndex("LocationDetailId");
 
-                    b.ToTable("LocationResult", (string)null);
+                    b.ToTable("LocationResult");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.Locationn", b =>
@@ -1022,7 +1025,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Locationn", (string)null);
+                    b.ToTable("Locationn");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.Occupation", b =>
@@ -1051,7 +1054,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Occupation", (string)null);
+                    b.ToTable("Occupation");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.ProfilePhoto", b =>
@@ -1086,7 +1089,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasIndex("UserProfileId");
 
-                    b.ToTable("ProfilePhoto", (string)null);
+                    b.ToTable("ProfilePhoto");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.Religion", b =>
@@ -1114,7 +1117,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Religion", (string)null);
+                    b.ToTable("Religion");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.SexualOrientation", b =>
@@ -1142,7 +1145,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SexualOrientation", (string)null);
+                    b.ToTable("SexualOrientation");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.UserProfile", b =>
@@ -1234,7 +1237,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasIndex("WantKidsId");
 
-                    b.ToTable("UserProfiles", (string)null);
+                    b.ToTable("UserProfiles");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.WantKids", b =>
@@ -1262,7 +1265,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("WantKids", (string)null);
+                    b.ToTable("WantKids");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Prompts.PromptCategory", b =>
@@ -1288,7 +1291,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PromptCategories", (string)null);
+                    b.ToTable("PromptCategories");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Prompts.PromptQuestion", b =>
@@ -1325,7 +1328,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasIndex("PromptCategoryId");
 
-                    b.ToTable("PromptQuestions", (string)null);
+                    b.ToTable("PromptQuestions");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Prompts.PromptResponse", b =>
@@ -1349,7 +1352,6 @@ namespace Fliq.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Response")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ResponseType")
@@ -1366,7 +1368,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasIndex("UserProfileId");
 
-                    b.ToTable("PromptResponse", (string)null);
+                    b.ToTable("PromptResponse");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Settings.Filter", b =>
@@ -1417,7 +1419,7 @@ namespace Fliq.Infrastructure.Migrations
                     b.HasIndex("SettingId")
                         .IsUnique();
 
-                    b.ToTable("Filter", (string)null);
+                    b.ToTable("Filter");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Settings.NotificationPreference", b =>
@@ -1454,7 +1456,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasIndex("SettingId");
 
-                    b.ToTable("NotificationPreference", (string)null);
+                    b.ToTable("NotificationPreference");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Settings.Setting", b =>
@@ -1494,7 +1496,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Settings", (string)null);
+                    b.ToTable("Settings");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Settings.Vice", b =>
@@ -1533,7 +1535,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasIndex("FilterId1");
 
-                    b.ToTable("Vice", (string)null);
+                    b.ToTable("Vice");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Subscription", b =>
@@ -1582,7 +1584,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Subscriptions", (string)null);
+                    b.ToTable("Subscriptions");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.User", b =>
@@ -1634,7 +1636,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Event.Discount", b =>
