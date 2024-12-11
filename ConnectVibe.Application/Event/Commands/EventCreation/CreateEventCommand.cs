@@ -1,18 +1,17 @@
 ﻿using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
-using Fliq.Application.Common.Interfaces.Services.DocumentServices;
 using Fliq.Application.Common.Interfaces.Services.EventServices;
-using Fliq.Application.Common.Interfaces.Services.ImageServices;
 using Fliq.Application.Common.Interfaces.Services.LocationServices;
+using Fliq.Application.Common.Interfaces.Services.MeidaServices;
 using Fliq.Application.Event.Common;
+using Fliq.Application.Notifications.Common.EventCreatedEvents;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Event;
 using Fliq.Domain.Entities.Event.Enums;
 using Fliq.Domain.Entities.Profile;
 using MapsterMapper;
 using MediatR;
-using System.Diagnostics;
 
 namespace Fliq.Application.Event.Commands.EventCreation
 {
@@ -45,25 +44,26 @@ namespace Fliq.Application.Event.Commands.EventCreation
         private readonly IMapper _mapper;
         private readonly ILoggerManager _logger;
         private readonly IUserRepository _userRepository;
-        private readonly IMediaServices _documentServices;
+        private readonly IMediaServices _mediaServices;
         private readonly IEventRepository _eventRepository;
-        private readonly IImageService _imageService;
         private readonly ILocationService _locationService;
         private readonly IEventService _eventService;
         private readonly IEmailService _emailService;
+        private readonly IMediator _mediator;
+        private const string _eventDocument = "Event Documents";
 
         public CreateEventCommandHandler(IMapper mapper, ILoggerManager logger, IUserRepository userRepository,
-            IMediaServices documentServices, IEventRepository eventRepository, IImageService imageService, ILocationService locationService, IEventService eventService, IEmailService emailService)
+            IMediaServices mediaServices, IEventRepository eventRepository, ILocationService locationService, IEventService eventService, IEmailService emailService, IMediator mediator)
         {
             _mapper = mapper;
             _logger = logger;
             _userRepository = userRepository;
-            _documentServices = documentServices;
+            _mediaServices = mediaServices;
             _eventRepository = eventRepository;
-            _imageService = imageService;
             _locationService = locationService;
             _eventService = eventService;
             _emailService = emailService;
+            _mediator = mediator;
         }
 
         public async Task<ErrorOr<CreateEventResult>> Handle(CreateEventCommand command, CancellationToken cancellationToken)
@@ -82,30 +82,18 @@ namespace Fliq.Application.Event.Commands.EventCreation
 
             foreach (var photo in command.MediaDocuments)
             {
-                //Checking if the Application is running on a debugger mode
-                if (Debugger.IsAttached)
-                {
-                    var eventMediaUrl = await _documentServices.UploadEventMediaAsync(photo.DocFile);
-                    if (eventMediaUrl != null)
-                    {
-                        EventMedia eventMedia = new() { MediaUrl = eventMediaUrl, Title = photo.Title };
-                        newEvent.Media.Add(eventMedia);
-                    }
-                }
-                else
-                {
-                    var mediaUrl = await _imageService.UploadMediaAsync(photo.DocFile);
-                    if (mediaUrl != null)
-                    {
-                        EventMedia eventMedia = new() { MediaUrl = mediaUrl, Title = photo.Title };
-                        newEvent.Media.Add(eventMedia);
-                    }
-                    else
-                    {
-                        //return Errors.Image.InvalidImage;
-                        return Errors.Document.InvalidDocument;
-                    }
-                }
+
+               var mediaUrl = await _mediaServices.UploadMediaAsync(photo.DocFile, _eventDocument);
+               if (mediaUrl != null)
+               {
+                   EventMedia eventMedia = new() { MediaUrl = mediaUrl, Title = photo.Title };
+                   newEvent.Media.Add(eventMedia);
+               }
+               else
+               {
+                   //return Errors.Image.InvalidImage;
+                   return Errors.Document.InvalidDocument;
+               }
             }
 
             var locationResponse = await _locationService.GetAddressFromCoordinatesAsync(command.Location.Lat, command.Location.Lng);
@@ -122,15 +110,32 @@ namespace Fliq.Application.Event.Commands.EventCreation
 
                 newEvent.Location = location;
             }
+
             _eventRepository.Add(newEvent);
+
+            // Trigger Organizer Notification
+            var organizerName = $"{user.FirstName} {user.LastName}";
+
+            await _mediator.Publish(new EventCreatedEvent(
+                user.Id,
+                newEvent.Id,
+                user.Id,
+                organizerName,
+                Enumerable.Empty<int>(), // Organizer-only notification
+                "Event Created",
+                $"Your event '{command.EventTitle}' has been successfully created!",
+                false
+            ), cancellationToken);
+
+            // Handle Invitees
             if (command.EventInvitees is not null)
             {
-                await SendInvitations(newEvent.Id, command.EventInvitees);
+                await SendInvitations(newEvent.Id, command.EventInvitees, user.Id, organizerName, newEvent.EventTitle);
             }
             return new CreateEventResult(newEvent);
         }
 
-        private async Task SendInvitations(int eventId, List<EventInvitee> invitees)
+        private async Task SendInvitations(int eventId, List<EventInvitee> invitees, int organizerId, string organizerName, string eventTitle)
         {
             foreach (var invitee in invitees)
             {
@@ -141,8 +146,22 @@ namespace Fliq.Application.Event.Commands.EventCreation
                 if (user != null)
                 {
                     // Existing user: Send push notification and email
-                    //Notification Implementation
 
+                    // Trigger notification
+                    await _mediator.Publish(new EventCreatedEvent(
+                        user.Id,
+                        eventId,
+                        organizerId,
+                        organizerName,
+                        inviteeIds: new List<int> { user.Id }, // Notification for this user
+                        title: "You're Invited!",
+                        message: $"{organizerName} has invited you to '{eventTitle}'.",
+                        actionUrl: null,
+                        buttonText: "View Invitation",
+                        isUpdated: false
+                    ));
+
+                    //Send Email
                     await _emailService.SendEmailAsync(invitee.Email, "Event Invitation", _eventService.GenerateEventCreationEmailContent(eventId, user.FirstName));
                 }
                 else

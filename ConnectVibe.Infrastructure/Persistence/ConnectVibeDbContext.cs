@@ -4,6 +4,7 @@ using Fliq.Domain.Entities.Games;
 using Fliq.Domain.Entities.MatchedProfile;
 using Fliq.Domain.Entities.Notifications;
 using Fliq.Domain.Entities.Profile;
+using Fliq.Domain.Entities.Prompts;
 using Fliq.Domain.Entities.Settings;
 using Microsoft.EntityFrameworkCore;
 
@@ -40,6 +41,10 @@ namespace Fliq.Infrastructure.Persistence
         public DbSet<GameQuestion> GameQuestions { get; set; } = null!;
         public DbSet<GameSession> GameSessions { get; set; } = null!;
         public DbSet<GameRequest> GameRequests { get; set; }
+
+        public DbSet<PromptCategory> PromptCategories { get; set; }
+        public DbSet<PromptQuestion> PromptQuestions { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

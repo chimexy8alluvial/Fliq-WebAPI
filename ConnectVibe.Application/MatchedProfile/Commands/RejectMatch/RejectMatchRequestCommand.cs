@@ -1,6 +1,5 @@
 ﻿using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
-using Fliq.Application.Common.Interfaces.Services.ImageServices;
 using Fliq.Application.MatchedProfile.Common;
 using Fliq.Domain.Enums;
 using Fliq.Domain.Common.Errors;
@@ -19,17 +18,11 @@ namespace Fliq.Application.MatchedProfile.Commands.RejectMatch
 
     public class RejectMatchRequestComandHandler : IRequestHandler<RejectMatchRequestCommand, ErrorOr<RejectMatchResult>>
     {
-        private readonly IMapper _mapper;
-        private readonly IImageService _imageService;
-        private readonly IUserRepository _userRepository;
         private readonly IMatchProfileRepository _matchProfileRepository;
         private readonly IMediator _mediator;
 
-        public RejectMatchRequestComandHandler(IMapper mapper, IImageService imageService, IUserRepository userRepository, IMatchProfileRepository matchProfileRepository, IMediator mediator)
+        public RejectMatchRequestComandHandler(IMatchProfileRepository matchProfileRepository, IMediator mediator)
         {
-            _mapper = mapper;
-            _imageService = imageService;
-            _userRepository = userRepository;
             _matchProfileRepository = matchProfileRepository;
             _mediator = mediator;
         }

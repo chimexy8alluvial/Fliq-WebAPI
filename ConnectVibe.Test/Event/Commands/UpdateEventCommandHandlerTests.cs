@@ -1,8 +1,8 @@
 ﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
-using Fliq.Application.Common.Interfaces.Services.DocumentServices;
-using Fliq.Application.Common.Interfaces.Services.ImageServices;
+using Fliq.Application.Common.Interfaces.Services.EventServices;
 using Fliq.Application.Common.Interfaces.Services.LocationServices;
+using Fliq.Application.Common.Interfaces.Services.MeidaServices;
 using Fliq.Application.Common.Models;
 using Fliq.Application.Event.Commands.UpdateEvent;
 using Fliq.Application.Event.Common;
@@ -11,6 +11,7 @@ using Fliq.Domain.Entities;
 using Fliq.Domain.Entities.Event;
 using Fliq.Domain.Entities.Profile;
 using MapsterMapper;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using System.Text;
@@ -23,10 +24,15 @@ namespace Fliq.Test.Event.Commands
         private Mock<IMapper>? _mapperMock;
         private Mock<ILoggerManager>? _loggerMock;
         private Mock<IUserRepository>? _userRepositoryMock;
-        private Mock<IMediaServices>? _documentServicesMock;
+        private Mock<IMediaServices>? _mediaServicesMock;
         private Mock<IEventRepository>? _eventRepositoryMock;
-        private Mock<IImageService>? _imageServiceMock;
         private Mock<ILocationService>? _locationServiceMock;
+        private Mock<IEventService>? _eventServiceMock;
+        private Mock<IMediator>? _mediatorMock;
+        private Mock<IEmailService>? _emailServiceMock;
+
+        
+       
 
         private UpdateEventCommandHandler _handler;
 
@@ -36,19 +42,25 @@ namespace Fliq.Test.Event.Commands
             _mapperMock = new Mock<IMapper>();
             _loggerMock = new Mock<ILoggerManager>();
             _userRepositoryMock = new Mock<IUserRepository>();
-            _documentServicesMock = new Mock<IMediaServices>();
+            _mediaServicesMock = new Mock<IMediaServices>();
             _eventRepositoryMock = new Mock<IEventRepository>();
-            _imageServiceMock = new Mock<IImageService>();
             _locationServiceMock = new Mock<ILocationService>();
+            _userRepositoryMock = new Mock<IUserRepository>();
+            _eventServiceMock = new Mock<IEventService>();
+            _mediatorMock = new Mock<IMediator>();
+            _emailServiceMock = new Mock<IEmailService>();
 
             _handler = new UpdateEventCommandHandler(
                 _mapperMock.Object,
                 _loggerMock.Object,
                 _userRepositoryMock.Object,
-                _documentServicesMock.Object,
+                _mediaServicesMock.Object,
                 _eventRepositoryMock.Object,
-                _imageServiceMock.Object,
-                _locationServiceMock.Object
+                _locationServiceMock.Object,
+                _mediatorMock.Object,
+                  _emailServiceMock.Object,
+                _eventServiceMock.Object
+              
             );
         }
 
@@ -122,8 +134,8 @@ namespace Fliq.Test.Event.Commands
 
             _eventRepositoryMock?.Setup(repo => repo.GetEventById(It.IsAny<int>())).Returns(existingEvent);
             _userRepositoryMock?.Setup(repo => repo.GetUserById(It.IsAny<int>())).Returns(user);
-            _documentServicesMock?.Setup(service => service.UploadEventMediaAsync(It.IsAny<IFormFile>())).ReturnsAsync("image.jpeg");
-            _imageServiceMock?.Setup(service => service.UploadMediaAsync(It.IsAny<IFormFile>()))
+            _mediaServicesMock?.Setup(service => service.UploadMediaAsync(It.IsAny<IFormFile>(), "Event Documents")).ReturnsAsync("image.jpeg");
+            _mediaServicesMock?.Setup(service => service.UploadMediaAsync(It.IsAny<IFormFile>(), "Event Documents"))
               .ReturnsAsync("image.jpeg");
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);

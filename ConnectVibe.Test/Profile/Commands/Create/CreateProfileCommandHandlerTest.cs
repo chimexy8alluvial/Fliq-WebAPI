@@ -1,6 +1,7 @@
 ﻿using Fliq.Application.Common.Interfaces.Persistence;
-using Fliq.Application.Common.Interfaces.Services.ImageServices;
+using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Interfaces.Services.LocationServices;
+using Fliq.Application.Common.Interfaces.Services.MeidaServices;
 using Fliq.Application.Common.Models;
 using Fliq.Application.Profile.Commands.Create;
 using Fliq.Application.Profile.Common;
@@ -20,19 +21,21 @@ namespace Fliq.Test.Profile.Commands.Create
     {
         private CreateProfileCommandHandler _handler;
         private Mock<IMapper> _mapperMock;
-        private Mock<IImageService> _imageServiceMock;
         private Mock<IProfileRepository> _profileRepositoryMock;
         private Mock<ISettingsRepository> _settingsRepositoryMock;
         private Mock<IUserRepository> _userRepositoryMock;
         private Mock<ILocationService> _locationServiceMock;
         private Mock<IHttpContextAccessor> _httpContextAccessorMock;
         private Mock<ClaimsPrincipal> _claimsPrincipalMock;
+        private Mock<IPromptQuestionRepository> _promptQuestionRepositoryMock;
+        private Mock<IPromptCategoryRepository> _promptCategoryRepositoryMock;
+        private Mock<ILoggerManager> _loggerManagerMock;
+        private Mock<IMediaServices> _mediaServicesMock;
 
         [TestInitialize]
         public void Setup()
         {
             _mapperMock = new Mock<IMapper>();
-            _imageServiceMock = new Mock<IImageService>();
             _profileRepositoryMock = new Mock<IProfileRepository>();
             _settingsRepositoryMock = new Mock<ISettingsRepository>();
             _userRepositoryMock = new Mock<IUserRepository>();
@@ -40,6 +43,10 @@ namespace Fliq.Test.Profile.Commands.Create
             _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
             _settingsRepositoryMock = new Mock<ISettingsRepository>();
             _claimsPrincipalMock = new Mock<ClaimsPrincipal>();
+            _promptQuestionRepositoryMock = new Mock<IPromptQuestionRepository>();
+            _promptCategoryRepositoryMock = new Mock<IPromptCategoryRepository>();
+            _loggerManagerMock = new Mock<ILoggerManager>();
+            _mediaServicesMock = new Mock<IMediaServices>();
 
             // Mocking HttpContext to return a valid user ID
             _httpContextAccessorMock.Setup(x => x.HttpContext.User)
@@ -47,12 +54,14 @@ namespace Fliq.Test.Profile.Commands.Create
 
             _handler = new CreateProfileCommandHandler(
                 _mapperMock.Object,
-                _imageServiceMock.Object,
                 _profileRepositoryMock.Object,
                 _userRepositoryMock.Object,
                 _locationServiceMock.Object,
-                _httpContextAccessorMock.Object,
-                _settingsRepositoryMock.Object);
+                _settingsRepositoryMock.Object,
+                _loggerManagerMock.Object,
+                _promptQuestionRepositoryMock.Object,
+                _promptCategoryRepositoryMock.Object,
+                _mediaServicesMock.Object);
         }
 
         [TestMethod]
@@ -182,7 +191,7 @@ namespace Fliq.Test.Profile.Commands.Create
             _locationServiceMock.Setup(service => service.GetAddressFromCoordinatesAsync(It.IsAny<double>(), It.IsAny<double>()))
                 .ReturnsAsync(locationResponse);
 
-            _imageServiceMock.Setup(service => service.UploadMediaAsync(It.IsAny<IFormFile>()))
+            _mediaServicesMock.Setup(service => service.UploadImageAsync(It.IsAny<IFormFile>()))
               .ReturnsAsync("image.jpeg");
 
             _mapperMock.Setup(mapper => mapper.Map<LocationDetail>(new LocationQueryResponse()));

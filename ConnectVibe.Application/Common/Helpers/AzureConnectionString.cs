@@ -1,13 +1,13 @@
-﻿using Microsoft.WindowsAzure.Storage;
+﻿using Azure.Storage.Blobs;
 
 namespace Fliq.Application.Common.Helpers
 {
     public class AzureConnectionString
     {
-        public static CloudStorageAccount GetConnectionString()
+        public static BlobServiceClient GetConnectionString()
         {
-            string connectionString = string.Format("DefaultEndpointsProtocol=https;AccountName=connectvibemedia;AccountKey=zgzApFbWgrbCW3PzPBhnVFJGysQAdAdbwS55ADxfRdtkr36sHzVrOR9JjAFv6bmeiOjoHCY1gWZz+AStXLk93g==;EndpointSuffix=core.windows.net");
-            return CloudStorageAccount.Parse(connectionString);
+            string connectionString = "DefaultEndpointsProtocol=https;AccountName=connectvibemedia;AccountKey=zgzApFbWgrbCW3PzPBhnVFJGysQAdAdbwS55ADxfRdtkr36sHzVrOR9JjAFv6bmeiOjoHCY1gWZz+AStXLk93g==;EndpointSuffix=core.windows.net";
+            return new BlobServiceClient(connectionString);
         }
     }
 }

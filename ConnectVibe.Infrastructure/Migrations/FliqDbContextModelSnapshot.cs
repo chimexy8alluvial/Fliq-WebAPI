@@ -1443,6 +1443,143 @@ namespace Fliq.Infrastructure.Migrations
                     b.ToTable("WantKids");
                 });
 
+            modelBuilder.Entity("Fliq.Domain.Entities.Prompts.PromptCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CategoryName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PromptCategories");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.Prompts.PromptQuestion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CustomPromptId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsSystemGenerated")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("PromptCategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("QuestionText")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PromptCategoryId");
+
+                    b.ToTable("PromptQuestions");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.Prompts.PromptResponse", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("PromptQuestionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ResponseType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TextResponse")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserProfileId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("VideoClipUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VoiceNoteUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PromptQuestionId")
+                        .IsUnique();
+
+                    b.HasIndex("UserProfileId");
+
+                    b.ToTable("PromptResponse");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.Settings.AgeRange", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("MaxAge")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MinAge")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AgeRange");
+                });
+
             modelBuilder.Entity("Fliq.Domain.Entities.Settings.Filter", b =>
                 {
                     b.Property<int>("Id")
@@ -2007,6 +2144,36 @@ namespace Fliq.Infrastructure.Migrations
                     b.Navigation("WantKids");
                 });
 
+            modelBuilder.Entity("Fliq.Domain.Entities.Prompts.PromptQuestion", b =>
+                {
+                    b.HasOne("Fliq.Domain.Entities.Prompts.PromptCategory", "PromptCategory")
+                        .WithMany("PromptQuestions")
+                        .HasForeignKey("PromptCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PromptCategory");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.Prompts.PromptResponse", b =>
+                {
+                    b.HasOne("Fliq.Domain.Entities.Prompts.PromptQuestion", "PromptQuestion")
+                        .WithOne("PromptResponse")
+                        .HasForeignKey("Fliq.Domain.Entities.Prompts.PromptResponse", "PromptQuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Fliq.Domain.Entities.Profile.UserProfile", "UserProfile")
+                        .WithMany("PromptResponses")
+                        .HasForeignKey("UserProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PromptQuestion");
+
+                    b.Navigation("UserProfile");
+                });
+
             modelBuilder.Entity("Fliq.Domain.Entities.Settings.Filter", b =>
                 {
                     b.HasOne("Fliq.Domain.Entities.AgeRange", "AgeRange")
@@ -2102,6 +2269,18 @@ namespace Fliq.Infrastructure.Migrations
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.UserProfile", b =>
                 {
                     b.Navigation("Photos");
+
+                    b.Navigation("PromptResponses");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.Prompts.PromptCategory", b =>
+                {
+                    b.Navigation("PromptQuestions");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.Prompts.PromptQuestion", b =>
+                {
+                    b.Navigation("PromptResponse");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Settings.Filter", b =>
