@@ -1,6 +1,7 @@
 ﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Interfaces.Services.NotificationServices;
+using Fliq.Application.Notifications.Common.EventCreatedEvents;
 using Fliq.Application.Notifications.Common.MatchEvents;
 using MediatR;
 
@@ -8,7 +9,7 @@ using MediatR;
 namespace Fliq.Application.Notifications.Common
 {
     public class NotificationEventHandler : INotificationHandler<MatchAcceptedEvent>,INotificationHandler<MatchRejectedEvent>,
-                                            INotificationHandler<MatchRequestEvent>
+                                            INotificationHandler<MatchRequestEvent>, INotificationHandler<EventCreatedEvent>, INotificationHandler<EventReviewSubmittedEvent>
     {
         private readonly INotificationRepository _notificationRepository;
         private readonly INotificationService _firebaseNotificationService;
@@ -97,6 +98,91 @@ namespace Fliq.Application.Notifications.Common
             );
         }
 
+        public async Task Handle(EventCreatedEvent notification, CancellationToken cancellationToken)
+        {
+            // Notify the organizer
+            await HandleNotificationAsync(
+                notification.OrganizerId,
+                notification.Title,
+                notification.Message,
+                notification.OrganizerImageUrl,
+                notification.ActionUrl,
+                notification.ButtonText,
+                cancellationToken
+            );
+            _logger.LogInfo($"Notification sent to Event Organizer: {notification.OrganizerId} for EventId: {notification.EventId}");
+
+            // Notify each invitee
+            if (notification.InviteeIds != null && notification.InviteeIds.Any())
+            {
+                foreach (var inviteeId in notification.InviteeIds)
+                {
+                    if (inviteeId == notification.OrganizerId)
+                    {
+                        _logger.LogInfo($"Skipping notification for invitee {inviteeId} as they are the organizer.");
+                        continue;
+                    }
+
+                    await HandleNotificationAsync(
+                        inviteeId,
+                        notification.IsUpdated ? "Event Updated!" : "You're Invited!",
+                        notification.IsUpdated
+                            ? $"{notification.OrganizerName} has updated the event '{notification.Title}'."
+                            : $"{notification.OrganizerName} has invited you to the event '{notification.Title}'.",
+                        notification.OrganizerImageUrl,
+                        notification.ActionUrl,
+                        notification.IsUpdated ? "View Updated Event" : "View Invitation",
+                        cancellationToken
+                    );
+
+                    _logger.LogInfo($"Notification sent to Invitee: {inviteeId} for EventId: {notification.EventId}");
+                }
+            }
+        }
+
+        public async Task Handle(EventReviewSubmittedEvent notification, CancellationToken cancellationToken)
+        {
+            // Notify the organizer
+            await HandleNotificationAsync(
+                notification.OrganizerId,
+                notification.Title,
+                notification.Message,
+                notification.ImageUrl,
+                notification.ActionUrl,
+                notification.ButtonText,
+                cancellationToken
+            );
+            _logger.LogInfo($"Notification sent to Event Organizer: {notification.OrganizerId} for EventId: {notification.EventId}");
+
+        }
+
+        public async Task Handle(TicketPurchasedEvent notification, CancellationToken cancellationToken)
+        {
+            // Notify Buyer
+            await HandleNotificationAsync(
+                notification.BuyerId,
+                "Ticket Purchase Successful!",
+                $"You have successfully purchased {notification.NumberOfTickets} " +
+                $"ticket(s) for the event '{notification.EventTitle}' on {notification.EventDate}.",
+                notification.ImageUrl,
+                notification.ActionUrl,
+                notification.ButtonText,
+                cancellationToken
+            );
+
+            // Notify Organizer
+            await HandleNotificationAsync(
+                notification.OrganizerId,
+                "New Ticket Purchased",
+                $"{notification.BuyerName} purchased {notification.NumberOfTickets} ticket(s) for your event '{notification.EventTitle}'.",
+               notification.ImageUrl,
+                notification.ActionUrl,
+                notification.ButtonText,
+                cancellationToken
+            );
+
+            _logger.LogInfo($"Notifications sent for ticket purchase: BuyerId {notification.BuyerId}, OrganizerId {notification.OrganizerId}.");
+        }
 
         private async Task HandleNotificationAsync(int userId, string title, string message, string? imageUrl, string? actionUrl, string? buttonText, CancellationToken cancellationToken)
         {
@@ -104,12 +190,16 @@ namespace Fliq.Application.Notifications.Common
             // Retrieve device tokens for the user
             var deviceTokens = await _notificationRepository.GetDeviceTokensByUserIdAsync(userId);
 
-            // Send notification to Firebase if there are tokens available
-            if (deviceTokens.Any())
+            if (deviceTokens == null || !deviceTokens.Any())
             {
-                await _firebaseNotificationService.SendNotificationAsync(title, message, deviceTokens, userId, imageUrl, actionUrl, buttonText);
+                _logger.LogInfo($"No registered device tokens for UserId: {userId}");
+                return; // Exit if there are no tokens
             }
 
+            _logger.LogInfo($"Device tokens retrieved for UserId: {userId}: {string.Join(", ", deviceTokens)}");
+
+            // Send notification to Firebase if there are tokens available
+            await _firebaseNotificationService.SendNotificationAsync(title, message, deviceTokens, userId, imageUrl, actionUrl, buttonText);
             _logger.LogInfo($"Notification sent for event to UserId: {userId}");
         }
     }
