@@ -1,10 +1,10 @@
 ﻿using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.MatchedProfile.Commands.AcceptedMatch;
 using Fliq.Application.Notifications.Common.MatchEvents;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.MatchedProfile;
 using Fliq.Domain.Enums;
-using MapsterMapper;
 using MediatR;
 using Moq;
 
@@ -13,25 +13,22 @@ namespace Fliq.Test.MatchProfile.Commands
     [TestClass]
     public class AcceptMatchRequestCommandHandlerTests
     {
-        private Mock<IMapper> _mockMapper;
-        private Mock<IUserRepository> _mockUserRepository;
         private Mock<IMatchProfileRepository> _mockMatchProfileRepository;
         private Mock<IMediator> _mockMediator;
+        private Mock<ILoggerManager> _mockLogger;
         private AcceptMatchRequestCommandHandler _handler;
 
         [TestInitialize]
         public void Setup()
         {
-            _mockMapper = new Mock<IMapper>();
-            _mockUserRepository = new Mock<IUserRepository>();
             _mockMatchProfileRepository = new Mock<IMatchProfileRepository>();
             _mockMediator = new Mock<IMediator>();
+            _mockLogger = new Mock<ILoggerManager>();
 
             _handler = new AcceptMatchRequestCommandHandler(
-                _mockMapper.Object,
-                _mockUserRepository.Object,
                 _mockMatchProfileRepository.Object,
-                _mockMediator.Object
+                _mockMediator.Object,
+                _mockLogger.Object
             );
         }
 

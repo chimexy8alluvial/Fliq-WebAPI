@@ -1,14 +1,15 @@
-﻿using Moq;
+﻿using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.MatchedProfile.Commands.Create;
-using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Notifications.Common.MatchEvents;
 using Fliq.Domain.Common.Errors;
+using Fliq.Domain.Entities;
 using Fliq.Domain.Entities.MatchedProfile;
+using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Enums;
 using MapsterMapper;
 using MediatR;
-using Fliq.Domain.Entities.Profile;
-using Fliq.Domain.Entities;
+using Moq;
 
 namespace Fliq.Test.MatchProfile.Commands
 {
@@ -19,6 +20,7 @@ namespace Fliq.Test.MatchProfile.Commands
         private Mock<IUserRepository> _mockUserRepository;
         private Mock<IMatchProfileRepository> _mockMatchProfileRepository;
         private Mock<IMediator> _mockMediator;
+        private Mock<ILoggerManager> _mockLogger;
         private InitiateMatchRequestCommandHandler _handler;
 
         [TestInitialize]
@@ -28,12 +30,14 @@ namespace Fliq.Test.MatchProfile.Commands
             _mockUserRepository = new Mock<IUserRepository>();
             _mockMatchProfileRepository = new Mock<IMatchProfileRepository>();
             _mockMediator = new Mock<IMediator>();
+            _mockLogger = new Mock<ILoggerManager>();
 
             _handler = new InitiateMatchRequestCommandHandler(
                 _mockMapper.Object,
                 _mockUserRepository.Object,
                 _mockMatchProfileRepository.Object,
-                _mockMediator.Object
+                _mockMediator.Object,
+                _mockLogger.Object
             );
         }
 

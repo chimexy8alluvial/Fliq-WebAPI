@@ -42,9 +42,15 @@ namespace Fliq.Application.MatchedProfile.Commands.Create
             var requestedUser = _userRepository.GetUserById(command.MatchReceiverUserId);
             if (requestedUser == null)
             {
+                _logger.LogError("User not found");
                 return Errors.User.UserNotFound;
             }
             var matchInitiator = _userRepository.GetUserByIdIncludingProfile(command.MatchInitiatorUserId);
+            if (matchInitiator == null)
+            {
+                _logger.LogError("User not found");
+                return Errors.User.UserNotFound;
+            }
             var matchProfile = _mapper.Map<MatchRequest>(command);
 
             matchProfile.MatchRequestStatus = MatchRequestStatus.Pending;

@@ -1,4 +1,5 @@
 ﻿using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.MatchedProfile.Commands.RejectMatch;
 using Fliq.Application.Notifications.Common.MatchEvents;
 using Fliq.Domain.Common.Errors;
@@ -14,6 +15,7 @@ namespace Fliq.Test.MatchProfile.Commands
     {
         private Mock<IMatchProfileRepository> _mockMatchProfileRepository;
         private Mock<IMediator> _mockMediator;
+        private Mock<ILoggerManager> _mockLogger;
         private RejectMatchRequestComandHandler _handler;
 
         [TestInitialize]
@@ -21,10 +23,12 @@ namespace Fliq.Test.MatchProfile.Commands
         {
             _mockMatchProfileRepository = new Mock<IMatchProfileRepository>();
             _mockMediator = new Mock<IMediator>();
+            _mockLogger = new Mock<ILoggerManager>();
 
             _handler = new RejectMatchRequestComandHandler(
                 _mockMatchProfileRepository.Object,
-                _mockMediator.Object
+                _mockMediator.Object,
+                _mockLogger.Object
             );
         }
 

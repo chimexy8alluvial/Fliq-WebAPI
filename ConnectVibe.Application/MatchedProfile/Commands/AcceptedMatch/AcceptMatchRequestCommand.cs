@@ -5,7 +5,6 @@ using Fliq.Application.MatchedProfile.Common;
 using Fliq.Application.Notifications.Common.MatchEvents;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Enums;
-using MapsterMapper;
 using MediatR;
 
 namespace Fliq.Application.MatchedProfile.Commands.AcceptedMatch
@@ -18,16 +17,12 @@ namespace Fliq.Application.MatchedProfile.Commands.AcceptedMatch
 
     public class AcceptMatchRequestCommandHandler : IRequestHandler<AcceptMatchRequestCommand, ErrorOr<CreateAcceptMatchResult>>
     {
-        private readonly IMapper _mapper;
-        private readonly IUserRepository _userRepository;
         private readonly IMatchProfileRepository _matchProfileRepository;
         private readonly IMediator _mediator;
         private readonly ILoggerManager _logger;
 
-        public AcceptMatchRequestCommandHandler(IMapper mapper, IUserRepository userRepository, IMatchProfileRepository matchProfileRepository, IMediator mediator, ILoggerManager logger)
+        public AcceptMatchRequestCommandHandler(IMatchProfileRepository matchProfileRepository, IMediator mediator, ILoggerManager logger)
         {
-            _mapper = mapper;
-            _userRepository = userRepository;
             _matchProfileRepository = matchProfileRepository;
             _mediator = mediator;
             _logger = logger;

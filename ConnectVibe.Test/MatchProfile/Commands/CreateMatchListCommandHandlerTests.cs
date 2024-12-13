@@ -1,4 +1,5 @@
 ﻿using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Pagination;
 using Fliq.Application.MatchedProfile.Commands.MatchedList;
 using Fliq.Application.MatchedProfile.Common;
@@ -12,13 +13,16 @@ namespace Fliq.Test.MatchProfile.Commands
     public class CreateMatchListCommandHandlerTests
     {
         private Mock<IMatchProfileRepository> _mockMatchProfileRepository;
+        private Mock<ILoggerManager> _mockLogger;
+
         private CreateMatchListCommandHandler _handler;
 
         [TestInitialize]
         public void Setup()
         {
             _mockMatchProfileRepository = new Mock<IMatchProfileRepository>();
-            _handler = new CreateMatchListCommandHandler(_mockMatchProfileRepository.Object);
+            _mockLogger = new Mock<ILoggerManager>();
+            _handler = new CreateMatchListCommandHandler(_mockMatchProfileRepository.Object, _mockLogger.Object);
         }
 
         [TestMethod]
