@@ -1,6 +1,7 @@
 ﻿using ErrorOr;
 using Fliq.Application.Common.Helpers;
 using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.MatchedProfile.Common;
 using Fliq.Application.Notifications.Common.MatchEvents;
 using Fliq.Domain.Common.Errors;
@@ -23,18 +24,21 @@ namespace Fliq.Application.MatchedProfile.Commands.Create
         private readonly IUserRepository _userRepository;
         private readonly IMatchProfileRepository _matchProfileRepository;
         private readonly IMediator _mediator;
+        private readonly ILoggerManager _logger;
 
-        public InitiateMatchRequestCommandHandler(IMapper mapper, IUserRepository userRepository, IMatchProfileRepository matchProfileRepository, IMediator mediator)
+        public InitiateMatchRequestCommandHandler(IMapper mapper, IUserRepository userRepository, IMatchProfileRepository matchProfileRepository, IMediator mediator, ILoggerManager logger)
         {
             _mapper = mapper;
             _userRepository = userRepository;
             _matchProfileRepository = matchProfileRepository;
             _mediator = mediator;
+            _logger = logger;
         }
 
         public async Task<ErrorOr<CreateMatchProfileResult>> Handle(InitiateMatchRequestCommand command, CancellationToken cancellationToken)
         {
             await Task.CompletedTask;
+            _logger.LogInfo("InitiateMatchRequestCommandHandler called");
             var requestedUser = _userRepository.GetUserById(command.MatchReceiverUserId);
             if (requestedUser == null)
             {
@@ -47,6 +51,8 @@ namespace Fliq.Application.MatchedProfile.Commands.Create
 
             _matchProfileRepository.Add(matchProfile);
 
+            _logger.LogInfo("MatchProfile created");
+
             var pictureUrl = matchInitiator?.UserProfile?.Photos?.FirstOrDefault()?.PictureUrl;
             var initiatorAge = matchInitiator.UserProfile.DOB.CalculateAge();
             // Trigger MatchRequestEvent notification
@@ -58,6 +64,7 @@ namespace Fliq.Application.MatchedProfile.Commands.Create
                 initiatorName: matchInitiator.FirstName
             ));
 
+            _logger.LogInfo("MatchRequestEvent notification sent");
             return new CreateMatchProfileResult(matchProfile.MatchInitiatorUserId,
                 matchInitiator.FirstName,
                 pictureUrl,
