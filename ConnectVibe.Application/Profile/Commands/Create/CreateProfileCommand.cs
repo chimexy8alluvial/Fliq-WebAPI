@@ -128,12 +128,16 @@ namespace Fliq.Application.Profile.Commands.Create
                     return promptResponse.Errors;
 
                 //Persist PromptResponse
-                _promptResponseRepository.Add(promptResponse.Value);
+                //_promptResponseRepository.Add(promptResponse.Value);
                 promptResponses.Add(promptResponse.Value);
             }
-
-
+            userProfile.PromptResponses = promptResponses;
             _profileRepository.Add(userProfile);
+            foreach(var PromptResp in promptResponses)
+            {
+                PromptResp.UserProfileId = userProfile.Id;
+                 _promptResponseRepository.Add(PromptResp);
+            }
 
             Setting setting = new()
             {
@@ -188,8 +192,8 @@ namespace Fliq.Application.Profile.Commands.Create
             // Set up the prompt response entity
             var promptResponse = new PromptResponse
             {
-                PromptQuestion = promptQuestion,
-                UserProfile = userProfile,
+                PromptQuestionId = promptQuestion.Id,
+                UserProfileId = userProfile.Id,
                 ResponseType = promptDto.TextResponse != null ? nameof(PromptAnswerMediaType.Text) :
                                promptDto.VideoClip != null ? nameof(PromptAnswerMediaType.VideoClip) :
                                nameof(PromptAnswerMediaType.VoiceNote)

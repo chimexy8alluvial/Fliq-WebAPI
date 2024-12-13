@@ -47,6 +47,15 @@ namespace Fliq.Infrastructure.Persistence
             modelBuilder.Entity<Payment>()
                 .Property(p => p.Amount)
                 .HasPrecision(18, 2); // Example: 18 digits total, 2 after decimal
+
+            modelBuilder.Entity<PromptResponse>()
+            .HasOne(pr => pr.PromptQuestion)
+            .WithMany() // No navigation property in PromptQuestion
+            .HasForeignKey(pr => pr.PromptQuestionId);
+
+            modelBuilder.Entity<PromptResponse>()
+                .HasIndex(pr => new { pr.PromptQuestionId, pr.UserProfileId })
+                .IsUnique(); // Ensures a user can only respond once to a question
         }
     }
 }
