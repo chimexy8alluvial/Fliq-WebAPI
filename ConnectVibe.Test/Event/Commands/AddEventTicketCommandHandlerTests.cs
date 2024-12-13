@@ -5,6 +5,7 @@ using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities;
 using Fliq.Domain.Entities.Event;
 using MapsterMapper;
+using MediatR;
 using Moq;
 
 namespace Fliq.Test.Event.Commands
@@ -17,6 +18,8 @@ namespace Fliq.Test.Event.Commands
         private Mock<IPaymentRepository>? _paymentRepositoryMock;
         private Mock<ILoggerManager>? _loggerMock;
         private Mock<IMapper>? _mapperMock;
+        private Mock<IUserRepository>? _userRepositoryMock;
+        private Mock<IMediator>? _mediatorMock;
 
         private AddEventTicketCommandHandler _handler;
 
@@ -28,13 +31,17 @@ namespace Fliq.Test.Event.Commands
             _paymentRepositoryMock = new Mock<IPaymentRepository>();
             _loggerMock = new Mock<ILoggerManager>();
             _mapperMock = new Mock<IMapper>();
+            _userRepositoryMock = new Mock<IUserRepository>();
+            _mediatorMock = new Mock<IMediator>();
 
             _handler = new AddEventTicketCommandHandler(
                 _eventRepositoryMock.Object,
                 _loggerMock.Object,
                 _mapperMock.Object,
                 _ticketRepositoryMock.Object,
-                _paymentRepositoryMock.Object
+                _paymentRepositoryMock.Object,
+                _userRepositoryMock.Object,
+                _mediatorMock.Object
             );
         }
 

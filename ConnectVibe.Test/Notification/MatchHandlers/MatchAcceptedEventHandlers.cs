@@ -5,7 +5,7 @@ using Fliq.Application.Notifications.Common.MatchEvents;
 using Fliq.Application.Notifications.Common;
 using Moq;
 
-namespace Fliq.Test.Notification
+namespace Fliq.Test.Notification.MatchHandlers
 {
     [TestClass]
     public class MatchAcceptedEventHandlers

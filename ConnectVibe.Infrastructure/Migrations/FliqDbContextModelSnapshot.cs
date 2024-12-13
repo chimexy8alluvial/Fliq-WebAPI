@@ -1746,6 +1746,32 @@ namespace Fliq.Infrastructure.Migrations
                     b.Navigation("Event");
                 });
 
+            modelBuilder.Entity("Fliq.Domain.Entities.Games.GameQuestion", b =>
+                {
+                    b.HasOne("Fliq.Domain.Entities.Games.Game", "Game")
+                        .WithMany()
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Fliq.Domain.Entities.Games.GameSession", null)
+                        .WithMany("Questions")
+                        .HasForeignKey("GameSessionId");
+
+                    b.Navigation("Game");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.Games.GameSession", b =>
+                {
+                    b.HasOne("Fliq.Domain.Entities.Games.Game", "Game")
+                        .WithMany()
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Game");
+                });
+
             modelBuilder.Entity("Fliq.Domain.Entities.MatchedProfile.MatchRequest", b =>
                 {
                     b.HasOne("Fliq.Domain.Entities.User", null)
@@ -2017,6 +2043,11 @@ namespace Fliq.Infrastructure.Migrations
             modelBuilder.Entity("Fliq.Domain.Entities.Event.Ticket", b =>
                 {
                     b.Navigation("Discounts");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.Games.GameSession", b =>
+                {
+                    b.Navigation("Questions");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.Location", b =>

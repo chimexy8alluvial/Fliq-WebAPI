@@ -12,6 +12,7 @@ using Fliq.Domain.Entities.Event;
 using Fliq.Domain.Entities.Event.Enums;
 using Fliq.Domain.Entities.Profile;
 using MapsterMapper;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using System.Text;
@@ -29,6 +30,7 @@ namespace Fliq.Test.Event.Commands
         private Mock<ILocationService>? _locationServiceMock;
         private Mock<IEventService>? _eventServiceMock;
         private Mock<IEmailService>? _emailServiceMock;
+        private Mock<IMediator> _mediatorMock;
 
         private CreateEventCommandHandler _handler;
 
@@ -43,6 +45,7 @@ namespace Fliq.Test.Event.Commands
             _locationServiceMock = new Mock<ILocationService>();
             _eventServiceMock = new Mock<IEventService>();
             _emailServiceMock = new Mock<IEmailService>();
+            _mediatorMock = new Mock<IMediator>();
 
             _handler = new CreateEventCommandHandler(
                 _mapperMock.Object,
@@ -52,7 +55,8 @@ namespace Fliq.Test.Event.Commands
                 _eventRepositoryMock.Object,
                 _locationServiceMock.Object,
                 _eventServiceMock.Object,
-                _emailServiceMock.Object
+                _emailServiceMock.Object,
+                _mediatorMock.Object
             );
         }
 

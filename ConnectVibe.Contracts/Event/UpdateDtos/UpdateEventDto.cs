@@ -23,5 +23,6 @@ namespace Fliq.Contracts.Event.UpdateDtos
         public int UserId { get; set; }
         public UpdatePaymentDetailDto? EventPaymentDetail { get; set; }
         public bool? InviteesException { get; set; }
+        public List<EventInviteeDto>? EventInvitees { get; set; }
     }
 }
