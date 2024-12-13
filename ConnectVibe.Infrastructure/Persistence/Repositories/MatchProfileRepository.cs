@@ -1,8 +1,7 @@
 ﻿using Dapper;
 using Fliq.Application.Common.Interfaces.Persistence;
-using Fliq.Application.Common.Pagination;
+using Fliq.Application.MatchedProfile.Common;
 using Fliq.Contracts.MatchedProfile;
-using Fliq.Domain.Entities.MatchedProfile;
 using System.Data;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
@@ -17,6 +16,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             _connectionFactory = connectionFactory;
             _dbContext = dbContext;
         }
+
         public void Add(Domain.Entities.MatchedProfile.MatchRequest matchProfile)
         {
             if (matchProfile.Id > 0)
@@ -30,12 +30,12 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             _dbContext.SaveChanges();
         }
 
-        public async Task<IEnumerable<MatchRequestDto>> GetMatchListById(int userId, MatchListPagination matchListPagination)
+        public async Task<IEnumerable<MatchRequestDto>> GetMatchListById(GetMatchListRequest query)
         {
             using (var connection = _connectionFactory.CreateConnection())
             {
-                var parameters = FilterListDynamicParams(userId, matchListPagination);
-                var result = connection.Query<dynamic>("sPGetMatchedList", param: parameters, commandType: CommandType.StoredProcedure);
+                var parameters = FilterListDynamicParams(query);
+                var result = await connection.QueryAsync<dynamic>("sPGetMatchedList", param: parameters, commandType: CommandType.StoredProcedure);
                 var filteredItems = result.Select(p => new MatchRequestDto
                 {
                     MatchInitiatorUserId = p.MatchInitiatorUserId,
@@ -49,7 +49,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
         public Domain.Entities.MatchedProfile.MatchRequest? GetMatchProfileByUserId(int Id)
         {
-            var matchProfile = _dbContext.MatchRequests.SingleOrDefault(p => p.UserId == Id);
+            var matchProfile = _dbContext.MatchRequests.SingleOrDefault(p => p.MatchReceiverUserId == Id);
             return matchProfile;
         }
 
@@ -65,13 +65,14 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             _dbContext.SaveChanges();
         }
 
-        private static DynamicParameters FilterListDynamicParams(int userId, MatchListPagination paginationRequest)
+        private static DynamicParameters FilterListDynamicParams(GetMatchListRequest query)
         {
             var parameters = new DynamicParameters();
 
-            parameters.Add("@userId", userId);
-            parameters.Add("@pageNumber", 1);
-            parameters.Add("@pageSize", 10);
+            parameters.Add("@userId", query.UserId);
+            parameters.Add("@pageNumber", query.PaginationRequest.PageNumber);
+            parameters.Add("@pageSize", query.PaginationRequest.PageSize);
+            parameters.Add("@MatchRequestStatus ", query.MatchRequestStatus);
             return parameters;
         }
     }

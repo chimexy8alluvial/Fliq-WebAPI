@@ -1,10 +1,10 @@
 ﻿using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.MatchedProfile.Common;
 using Fliq.Application.Notifications.Common.MatchEvents;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Enums;
-using MapsterMapper;
 using MediatR;
 
 namespace Fliq.Application.MatchedProfile.Commands.AcceptedMatch
@@ -13,43 +13,42 @@ namespace Fliq.Application.MatchedProfile.Commands.AcceptedMatch
     {
         public int Id { get; set; }
         public int UserId { get; set; }
-        //public int MatchInitiatorUserId { get; set; }
     }
 
     public class AcceptMatchRequestCommandHandler : IRequestHandler<AcceptMatchRequestCommand, ErrorOr<CreateAcceptMatchResult>>
     {
-        private readonly IMapper _mapper;
-        private readonly IUserRepository _userRepository;
         private readonly IMatchProfileRepository _matchProfileRepository;
         private readonly IMediator _mediator;
+        private readonly ILoggerManager _logger;
 
-        public AcceptMatchRequestCommandHandler(IMapper mapper, IUserRepository userRepository, IMatchProfileRepository matchProfileRepository, IMediator mediator)
+        public AcceptMatchRequestCommandHandler(IMatchProfileRepository matchProfileRepository, IMediator mediator, ILoggerManager logger)
         {
-            _mapper = mapper;
-            _userRepository = userRepository;
             _matchProfileRepository = matchProfileRepository;
             _mediator = mediator;
+            _logger = logger;
         }
 
         public async Task<ErrorOr<CreateAcceptMatchResult>> Handle(AcceptMatchRequestCommand command, CancellationToken cancellationToken)
         {
+            _logger.LogInfo("Accept Match request command received");
             await Task.CompletedTask;
 
             var matchProfile = _matchProfileRepository.GetMatchProfileById(command.Id);
             if (matchProfile == null)
             {
-               return Errors.Profile.ProfileNotFound;
+                _logger.LogError("Match profile not found");
+                return Errors.Profile.ProfileNotFound;
             }
 
-            matchProfile.matchRequestStatus = MatchRequestStatus.Accepted;
+            matchProfile.MatchRequestStatus = MatchRequestStatus.Accepted;
             _matchProfileRepository.Update(matchProfile);
-            
+
             //trigger Accepted match event notification
             await _mediator.Publish(new MatchAcceptedEvent(command.UserId, matchProfile.MatchInitiatorUserId, command.UserId));
 
-           return new CreateAcceptMatchResult(matchProfile.MatchInitiatorUserId,
-                matchProfile.matchRequestStatus);
-
+            _logger.LogInfo("Match request accepted");
+            return new CreateAcceptMatchResult(matchProfile.MatchInitiatorUserId,
+                 matchProfile.MatchRequestStatus);
         }
     }
 }

@@ -4,7 +4,6 @@ using Fliq.Application.Event.Commands.AddEventTicket;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities;
 using Fliq.Domain.Entities.Event;
-using MapsterMapper;
 using MediatR;
 using Moq;
 
@@ -17,7 +16,6 @@ namespace Fliq.Test.Event.Commands
         private Mock<ITicketRepository>? _ticketRepositoryMock;
         private Mock<IPaymentRepository>? _paymentRepositoryMock;
         private Mock<ILoggerManager>? _loggerMock;
-        private Mock<IMapper>? _mapperMock;
         private Mock<IUserRepository>? _userRepositoryMock;
         private Mock<IMediator>? _mediatorMock;
 
@@ -30,14 +28,12 @@ namespace Fliq.Test.Event.Commands
             _ticketRepositoryMock = new Mock<ITicketRepository>();
             _paymentRepositoryMock = new Mock<IPaymentRepository>();
             _loggerMock = new Mock<ILoggerManager>();
-            _mapperMock = new Mock<IMapper>();
             _userRepositoryMock = new Mock<IUserRepository>();
             _mediatorMock = new Mock<IMediator>();
 
             _handler = new AddEventTicketCommandHandler(
                 _eventRepositoryMock.Object,
                 _loggerMock.Object,
-                _mapperMock.Object,
                 _ticketRepositoryMock.Object,
                 _paymentRepositoryMock.Object,
                 _userRepositoryMock.Object,
@@ -67,6 +63,8 @@ namespace Fliq.Test.Event.Commands
             // Arrange
             var command = new AddEventTicketCommand { TicketId = 1, UserId = 100, PaymentId = 200, NumberOfTickets = 5 };
 
+            var user = new User { Id = command.UserId };
+            _userRepositoryMock?.Setup(repo => repo.GetUserById(command.UserId)).Returns(user);
             var eventDetails = new Events { Id = 1, Capacity = 3, OccupiedSeats = new List<int>() };
             _eventRepositoryMock?.Setup(repo => repo.GetEventById(command.TicketId)).Returns(eventDetails);
 
@@ -83,7 +81,8 @@ namespace Fliq.Test.Event.Commands
         {
             // Arrange
             var command = new AddEventTicketCommand { TicketId = 1, UserId = 100, PaymentId = 200, NumberOfTickets = 2 };
-
+            var user = new User { Id = command.UserId };
+            _userRepositoryMock?.Setup(repo => repo.GetUserById(command.UserId)).Returns(user);
             var eventDetails = new Events { Id = 1, Capacity = 10, OccupiedSeats = new List<int>() };
             _eventRepositoryMock?.Setup(repo => repo.GetEventById(command.TicketId)).Returns(eventDetails);
 
@@ -109,7 +108,8 @@ namespace Fliq.Test.Event.Commands
                 Capacity = 10,
                 OccupiedSeats = Enumerable.Range(1, 10).ToList() // All seats are occupied
             };
-
+            var user = new User { Id = command.UserId };
+            _userRepositoryMock?.Setup(repo => repo.GetUserById(command.UserId)).Returns(user);
             _eventRepositoryMock?.Setup(repo => repo.GetEventById(command.TicketId)).Returns(eventDetails);
 
             var payment = new Payment { Id = command.PaymentId };
@@ -137,7 +137,8 @@ namespace Fliq.Test.Event.Commands
             };
 
             var payment = new Payment { Id = command.PaymentId };
-
+            var user = new User { Id = command.UserId };
+            _userRepositoryMock?.Setup(repo => repo.GetUserById(command.UserId)).Returns(user);
             _eventRepositoryMock?.Setup(repo => repo.GetEventById(command.TicketId)).Returns(eventDetails);
             _paymentRepositoryMock?.Setup(repo => repo.GetPaymentById(command.PaymentId)).Returns(payment);
 
