@@ -1,9 +1,11 @@
 ﻿using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.Common.Interfaces.Services.EventServices;
 using Fliq.Application.Common.Interfaces.Services.LocationServices;
 using Fliq.Application.Common.Interfaces.Services.MeidaServices;
 using Fliq.Application.Event.Common;
+using Fliq.Application.Notifications.Common.EventCreatedEvents;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Event;
 using Fliq.Domain.Entities.Event.Enums;
@@ -36,6 +38,7 @@ namespace Fliq.Application.Event.Commands.UpdateEvent
         public EventPaymentDetail? EventPaymentDetail { get; set; }
         public bool? InviteesException { get; set; }
         public List<EventMediaMapped>? MediaDocuments { get; set; }
+        public List<EventInvitee>? EventInvitees { get; set; } = default!;
     }
 
     public class UpdateEventCommandHandler : IRequestHandler<UpdateEventCommand, ErrorOr<CreateEventResult>>
@@ -46,6 +49,9 @@ namespace Fliq.Application.Event.Commands.UpdateEvent
         private readonly IMediaServices _mediaServices;
         private readonly IEventRepository _eventRepository;
         private readonly ILocationService _locationService;
+        private readonly IMediator _mediator;
+        private readonly IEmailService _emailService;
+        private readonly IEventService _eventService;
         private const string _eventDocument = "Event Documents";
 
         public UpdateEventCommandHandler(
@@ -54,7 +60,10 @@ namespace Fliq.Application.Event.Commands.UpdateEvent
             IUserRepository userRepository,
             IMediaServices mediaServices,
             IEventRepository eventRepository,
-            ILocationService locationService)
+            ILocationService locationService,
+            IMediator mediator,
+            IEmailService emailService,
+            IEventService eventService)
         {
             _mapper = mapper;
             _logger = logger;
@@ -62,6 +71,9 @@ namespace Fliq.Application.Event.Commands.UpdateEvent
             _mediaServices = mediaServices;
             _eventRepository = eventRepository;
             _locationService = locationService;
+            _mediator = mediator;
+            _emailService = emailService;
+            _eventService = eventService;
         }
 
         public async Task<ErrorOr<CreateEventResult>> Handle(UpdateEventCommand command, CancellationToken cancellationToken)
@@ -122,7 +134,71 @@ namespace Fliq.Application.Event.Commands.UpdateEvent
 
             _eventRepository.Update(eventToUpdate);
 
+            if(command.EventTitle != eventFromDb.EventTitle || command.StartDate != eventFromDb.StartDate || command.Location != eventFromDb.Location)
+            {
+                // Trigger Organizer Notification
+                var organizerName = $"{user.FirstName} {user.LastName}";
+
+                await _mediator.Publish(new EventCreatedEvent(
+                    user.Id,
+                    eventFromDb.Id,
+                    user.Id,
+                    organizerName,
+                    Enumerable.Empty<int>(), // Organizer-only notification
+                    "Event Updated",
+                    $"Your event '{command.EventTitle}' has been successfully updated!",
+                    false,
+                    null,
+                    null
+                    
+                ), cancellationToken);
+
+                // Handle Invitees
+                if (command.EventInvitees is not null)
+                {
+                    await SendInvitations(command.EventId, command.EventInvitees, user.Id, organizerName, command.EventTitle);
+                }
+            }
+
             return new CreateEventResult(eventToUpdate);
         }
+
+        private async Task SendInvitations(int eventId, List<EventInvitee> invitees, int organizerId, string organizerName, string? eventTitle)
+        {
+            foreach (var invitee in invitees)
+            {
+                // Check if the user exists in the app
+                var user = _userRepository.GetUserByEmail(invitee.Email);
+
+                // Notify based on user type
+                if (user != null)
+                {
+                    // Existing user: Send push notification and email
+
+                    // Trigger notification
+                    await _mediator.Publish(new EventCreatedEvent(
+                        user.Id,
+                        eventId,
+                        organizerId,
+                        organizerName,
+                        inviteeIds: new List<int> { user.Id }, // Notification for this user
+                        title: "Event Updated!",
+                        message: $"The event '{eventTitle}' you were invited you to by  {organizerName} has been updated.",
+                        actionUrl: null,
+                        buttonText: "View Updated Event",
+                        isUpdated: true
+                    ));
+
+                    //Send Email
+                    await _emailService.SendEmailAsync(invitee.Email, "Event Updated", _eventService.GenerateEventCreationEmailContent(eventId, user.FirstName));
+                }
+                else
+                {
+                    // External user: Send email with optional registration link
+                    await _emailService.SendEmailAsync(invitee.Email, "Event Updated", _eventService.GenerateEventCreationEmailContent(eventId, "", true));
+                }
+            }
+        }
+
     }
 }

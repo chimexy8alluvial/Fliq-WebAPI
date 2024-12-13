@@ -54,6 +54,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         List<ProfileType> userProfileTypes,
         bool? filterByDating,
         bool? filterByFriendship,
+
         PaginationRequest paginationRequest)
         {
             using (var connection = _connectionFactory.CreateConnection())
@@ -106,6 +107,5 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
             return parameters;
         }
-
     }
 }
