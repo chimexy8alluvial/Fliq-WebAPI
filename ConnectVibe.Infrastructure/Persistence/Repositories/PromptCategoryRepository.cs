@@ -38,18 +38,20 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
         public PromptCategory? GetCategoryByName(string categoryName)
         {
-            var category = _dbContext.PromptCategories.SingleOrDefault(c => c.CategoryName == categoryName);
+            var category = _dbContext.PromptCategories.SingleOrDefault(c => c.CategoryName.ToLower() == categoryName.ToLower());
             return category;
         }
 
         public IEnumerable<PromptCategory> GetAllPromptCategories()
         {
-            using (var connection = _connectionFactory.CreateConnection())
-            {
-               var categories = connection.Query<PromptCategory>("sp_GetAllPromptCategories", commandType: CommandType.StoredProcedure);
+            //using (var connection = _connectionFactory.CreateConnection())
+            //{
+            //   var categories = connection.Query<PromptCategory>("sp_GetAllPromptCategories", commandType: CommandType.StoredProcedure);
 
-               return categories;
-            }
+            //   return categories;
+            //}
+
+            return _dbContext.PromptCategories.OrderByDescending(c => c.Id);
         }
 
     }

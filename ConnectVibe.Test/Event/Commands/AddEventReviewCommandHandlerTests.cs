@@ -34,7 +34,6 @@ namespace Fliq.Test.Event.Commands
             _handler = new AddEventReviewCommandHandler(
                 _eventReviewRepositoryMock.Object,
                 _loggerMock.Object,
-                _mapperMock.Object,
                 _eventRepositoryMock.Object,
                 _userRepositoryMock.Object,
                 _mediatorMock.Object

@@ -1,5 +1,7 @@
 ﻿using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Prompts.Commands;
+using Fliq.Application.Prompts.Common;
+using Fliq.Application.Prompts.Queries;
 using Fliq.Contracts.Prompts;
 using MapsterMapper;
 using MediatR;
@@ -86,6 +88,27 @@ namespace Fliq.Api.Controllers
 
             return result.Match(
                 result => Ok(_mapper.Map<AddPromptCategoryResponse>(result)),
+                errors => Problem(string.Join("; ", errors.Select(e => e.Description)))
+            );
+        }
+
+
+        [HttpPost("GetCategories")]
+        [Produces(typeof(AddPromptCategoryResponse))]
+        [AllowAnonymous]
+        //[Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetCategories()
+        {
+            _logger.LogInfo($" Prompt Categories Query received");
+            var userId = GetAuthUserId();
+
+            var query = new GetPromptCategoriesQuery(userId);
+
+            var result = await _mediator.Send(query);
+            _logger.LogInfo($"Prompt Categories Query Executed. Result: {result}");
+
+            return result.Match(
+                result => Ok(_mapper.Map<List<GetPromptCategoryResponse>>(result)),
                 errors => Problem(string.Join("; ", errors.Select(e => e.Description)))
             );
         }

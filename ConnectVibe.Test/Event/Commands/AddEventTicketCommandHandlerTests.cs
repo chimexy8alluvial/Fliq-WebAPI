@@ -37,7 +37,6 @@ namespace Fliq.Test.Event.Commands
             _handler = new AddEventTicketCommandHandler(
                 _eventRepositoryMock.Object,
                 _loggerMock.Object,
-                _mapperMock.Object,
                 _ticketRepositoryMock.Object,
                 _paymentRepositoryMock.Object,
                 _userRepositoryMock.Object,

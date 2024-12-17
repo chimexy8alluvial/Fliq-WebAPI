@@ -23,10 +23,6 @@ namespace Fliq.Infrastructure.Migrations
                         Id,
                         GameId,
                         QuestionText,
-                        OptionA,
-                        OptionB,
-                        OptionC,
-                        OptionD,
                         CorrectAnswer
                     FROM 
                         GameQuestions

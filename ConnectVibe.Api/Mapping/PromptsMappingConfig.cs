@@ -15,6 +15,10 @@ namespace Fliq.Api.Mapping
             config.NewConfig<CreatePromptAnswerResult, CreatePromptAnswerResponse>().Map(dest => dest.Success, src => src.IsAnswered);
          //   config.NewConfig<CreateCustomPromptRequest, CreateCustomPromptCommand>();
             config.NewConfig<CreatePromptAnswerResult, CreateCustomPromptResponse>().Map(dest => dest.Success, src => src.IsAnswered);
+
+            config.NewConfig<GetPromptCategoriesResult, PromptCategory>().Map(dest => dest.Id, src => src.CategoryId);
+            config.NewConfig<PromptCategory, GetPromptCategoriesResult>().Map(src => src.CategoryId, dest => dest.Id);
+            config.NewConfig<GetPromptCategoriesResult, GetPromptCategoryResponse>();
         }
     }
 }

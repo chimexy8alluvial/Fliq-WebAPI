@@ -29,19 +29,19 @@ namespace Fliq.Application.Prompts.Commands
 
             _loggerManager.LogInfo($"Starting category creation process for category name: {request.CategoryName}");
 
+            var existingCategory = _categoryRepository.GetCategoryByName(request.CategoryName);
+            if (existingCategory != null)
+            {
+                _loggerManager.LogWarn($"Duplicate category detected: {request.CategoryName}. Aborting creation.");
+                return Errors.Prompts.DuplicateCategory;
+            }
+
+            //Create new prompt category object
             var category = new PromptCategory
             {
                 CategoryName = request.CategoryName,
                 IsSystemGenerated = true
             };
-
-            var existingCategory = _categoryRepository.GetCategoryByName(category.CategoryName);
-            if (existingCategory != null)
-            {
-                _loggerManager.LogWarn($"Duplicate category detected: {category.CategoryName}. Aborting creation.");
-                return Errors.Prompts.DuplicateCategory;
-            }
-
             _categoryRepository.AddCategory(category);
             _loggerManager.LogInfo($"Successfully added new category: {category.CategoryName} with ID: {category.Id}");
 
