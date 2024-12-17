@@ -19,6 +19,7 @@ namespace Fliq.Api.Mapping
             config.NewConfig<GetPromptCategoriesResult, PromptCategory>().Map(dest => dest.Id, src => src.CategoryId);
             config.NewConfig<PromptCategory, GetPromptCategoriesResult>().Map(src => src.CategoryId, dest => dest.Id);
             config.NewConfig<GetPromptCategoriesResult, GetPromptCategoryResponse>();
+            config.NewConfig<AddSystemPromptResult, AddSystemPromptResponse>();
         }
     }
 }

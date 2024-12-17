@@ -1,6 +1,6 @@
 ﻿using Fliq.Application.Common.Interfaces.Services;
-using Fliq.Application.Prompts.Commands;
-using Fliq.Application.Prompts.Common;
+using Fliq.Application.Prompts.Commands.AddPromptCategory;
+using Fliq.Application.Prompts.Commands.AddSystemPrompt;
 using Fliq.Application.Prompts.Queries;
 using Fliq.Contracts.Prompts;
 using MapsterMapper;

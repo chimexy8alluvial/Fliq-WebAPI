@@ -7,7 +7,7 @@ using Fliq.Domain.Entities.Prompts;
 using MediatR;
 
 
-namespace Fliq.Application.Prompts.Commands
+namespace Fliq.Application.Prompts.Commands.AddPromptCategory
 {
     public record AddPromptCategoryCommand(string CategoryName) : IRequest<ErrorOr<AddPromptCategoryResult>>;
 

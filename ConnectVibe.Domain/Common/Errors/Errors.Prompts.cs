@@ -22,6 +22,9 @@ namespace Fliq.Domain.Common.Errors
             public static Error DuplicateCategory => Error.Conflict(
             code: "PromptCategory.AlreadyExist",
             description: "Prompt Category already exists");
+            public static Error DuplicateCategoryQuestion => Error.Conflict(
+            code: "PromptQuestion.AlreadyExist",
+            description: "Prompt Question already exists");
         }
     }
 }

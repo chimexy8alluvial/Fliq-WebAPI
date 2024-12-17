@@ -1,4 +1,5 @@
 ﻿
+using Fliq.Application.Prompts.Commands.AddPromptCategory;
 using FluentValidation;
 
 namespace Fliq.Application.Prompts.Commands

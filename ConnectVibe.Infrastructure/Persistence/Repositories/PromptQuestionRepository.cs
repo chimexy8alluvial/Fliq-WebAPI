@@ -49,5 +49,10 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             }
         }
 
+        public bool QuestionExistInCategory(int categoryId, string QuestionText)
+        {
+            return _dbContext.PromptQuestions.Any(question => question.QuestionText.ToLower() == QuestionText.ToLower() && question.PromptCategoryId == categoryId);
+        }
+
     }
 }
