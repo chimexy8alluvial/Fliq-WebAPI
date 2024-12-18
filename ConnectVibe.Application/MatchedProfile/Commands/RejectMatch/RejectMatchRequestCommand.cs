@@ -3,9 +3,7 @@ using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.MatchedProfile.Common;
 using Fliq.Domain.Enums;
 using Fliq.Domain.Common.Errors;
-using MapsterMapper;
 using MediatR;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using Fliq.Application.Notifications.Common.MatchEvents;
 
 namespace Fliq.Application.MatchedProfile.Commands.RejectMatch
@@ -30,20 +28,29 @@ namespace Fliq.Application.MatchedProfile.Commands.RejectMatch
         {
             await Task.CompletedTask;
 
-            var matchProfile = _matchProfileRepository.GetMatchProfileById(command.Id);
-            if (matchProfile == null)
+            var matchRequest = _matchProfileRepository.GetMatchRequestById(command.Id);
+            if (matchRequest == null)
             {
-                return Errors.Profile.ProfileNotFound;
+                return Errors.MatchRequest.RequestNotFound;
             }
 
-            matchProfile.matchRequestStatus = MatchRequestStatus.Rejected;
-            _matchProfileRepository.Update(matchProfile);
+            if (matchRequest.UserId != command.UserId)
+            {
+                return Errors.MatchRequest.UnauthorizedAttempt;
+            }
+            if (matchRequest.matchRequestStatus == MatchRequestStatus.Rejected)
+            {
+                return Errors.MatchRequest.AlreadyAccepted;
+            }
+
+            matchRequest.matchRequestStatus = MatchRequestStatus.Rejected;
+            _matchProfileRepository.Update(matchRequest);
 
             // Trigger MatchRejectedEvent notification
             await _mediator.Publish(new MatchRejectedEvent(command.UserId));
 
-            return new RejectMatchResult(matchProfile.MatchInitiatorUserId,
-                 matchProfile.matchRequestStatus);
+            return new RejectMatchResult(matchRequest.MatchInitiatorUserId,
+                 matchRequest.matchRequestStatus);
         }
     }
 }

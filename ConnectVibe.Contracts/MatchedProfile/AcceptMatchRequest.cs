@@ -2,7 +2,7 @@
 {
     public record AcceptMatchRequest
     (
-        int? Id,
-        int UserId
+        int Id,
+        int? UserId
     );
 }

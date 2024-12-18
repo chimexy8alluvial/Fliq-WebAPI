@@ -47,13 +47,13 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             }
         }
 
-        public Domain.Entities.MatchedProfile.MatchRequest? GetMatchProfileByUserId(int Id)
+        public Domain.Entities.MatchedProfile.MatchRequest? GetMatchRequestByUserId(int Id)
         {
             var matchProfile = _dbContext.MatchRequests.SingleOrDefault(p => p.UserId == Id);
             return matchProfile;
         }
 
-        public Domain.Entities.MatchedProfile.MatchRequest? GetMatchProfileById(int Id)
+        public Domain.Entities.MatchedProfile.MatchRequest? GetMatchRequestById(int Id)
         {
             var matchProfile = _dbContext.MatchRequests.SingleOrDefault(p => p.Id == Id);
             return matchProfile;

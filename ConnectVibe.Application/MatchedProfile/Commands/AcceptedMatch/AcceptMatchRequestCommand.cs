@@ -18,15 +18,11 @@ namespace Fliq.Application.MatchedProfile.Commands.AcceptedMatch
 
     public class AcceptMatchRequestCommandHandler : IRequestHandler<AcceptMatchRequestCommand, ErrorOr<CreateAcceptMatchResult>>
     {
-        private readonly IMapper _mapper;
-        private readonly IUserRepository _userRepository;
         private readonly IMatchProfileRepository _matchProfileRepository;
         private readonly IMediator _mediator;
 
-        public AcceptMatchRequestCommandHandler(IMapper mapper, IUserRepository userRepository, IMatchProfileRepository matchProfileRepository, IMediator mediator)
+        public AcceptMatchRequestCommandHandler(IMatchProfileRepository matchProfileRepository, IMediator mediator)
         {
-            _mapper = mapper;
-            _userRepository = userRepository;
             _matchProfileRepository = matchProfileRepository;
             _mediator = mediator;
         }
@@ -35,20 +31,29 @@ namespace Fliq.Application.MatchedProfile.Commands.AcceptedMatch
         {
             await Task.CompletedTask;
 
-            var matchProfile = _matchProfileRepository.GetMatchProfileById(command.Id);
-            if (matchProfile == null)
+            var matchRequest = _matchProfileRepository.GetMatchRequestById(command.Id);
+            if (matchRequest == null)
             {
-               return Errors.Profile.ProfileNotFound;
+               return Errors.MatchRequest.RequestNotFound;
             }
 
-            matchProfile.matchRequestStatus = MatchRequestStatus.Accepted;
-            _matchProfileRepository.Update(matchProfile);
+            if(matchRequest.UserId != command.UserId)
+            {
+                return Errors.MatchRequest.UnauthorizedAttempt;
+            }
+            if (matchRequest.matchRequestStatus == MatchRequestStatus.Accepted)
+            {
+                return Errors.MatchRequest.AlreadyAccepted;
+            }
+
+            matchRequest.matchRequestStatus = MatchRequestStatus.Accepted;
+            _matchProfileRepository.Update(matchRequest);
             
             //trigger Accepted match event notification
-            await _mediator.Publish(new MatchAcceptedEvent(command.UserId, matchProfile.MatchInitiatorUserId, command.UserId));
+            await _mediator.Publish(new MatchAcceptedEvent(command.UserId, matchRequest.MatchInitiatorUserId, command.UserId));
 
-           return new CreateAcceptMatchResult(matchProfile.MatchInitiatorUserId,
-                matchProfile.matchRequestStatus);
+           return new CreateAcceptMatchResult(matchRequest.MatchInitiatorUserId,
+                matchRequest.matchRequestStatus);
 
         }
     }
