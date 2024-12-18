@@ -10,6 +10,7 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         void Update(Domain.Entities.MatchedProfile.MatchRequest matchRequest);
         Domain.Entities.MatchedProfile.MatchRequest? GetMatchProfileByUserId(int id);
         Domain.Entities.MatchedProfile.MatchRequest? GetMatchProfileById(int id);
+        bool MatchRequestExist(int initiatorId, int requestedUserId);
         Task <IEnumerable<MatchRequestDto>> GetMatchListById(int userId, MatchListPagination matchListPagination);
     }
 }
