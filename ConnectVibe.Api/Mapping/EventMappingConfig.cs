@@ -17,9 +17,14 @@ namespace Fliq.Api.Mapping
     {
         public void Register(TypeAdapterConfig config)
         {
-            config.NewConfig<CreateEventRequest, CreateEventCommand>().IgnoreNullValues(true);
+            config.NewConfig<CreateEventRequest, CreateEventCommand>()
+                   .Map(dest => dest.EventType, src => (EventType)src.EventType)
+                   .Map(dest => dest.EventCategory, src => (EventCategory)src.EventCategory)
+                   .Ignore(dest => dest.MediaDocuments)
+                .IgnoreNullValues(true);
             config.NewConfig<CreateEventCommand, Events>();
-            config.NewConfig<CreateEventResult, CreateEventResponse>();
+            config.NewConfig<CreateEventResult, CreateEventResponse>()
+                .Map(dest => dest, src => src.Events);
             config.NewConfig<CreateEventResult, GetEventResponse>();
             config.NewConfig<UpdateDiscountDto, DiscountDto>();
             config.NewConfig<UpdateEventDto, UpdateEventCommand>().IgnoreNullValues(true);
@@ -33,6 +38,19 @@ namespace Fliq.Api.Mapping
             config.NewConfig<AddEventReviewDto, AddEventReviewCommand>();
             config.NewConfig<AddReviewResult, GetEventResponse>();
             config.NewConfig<EventInviteeDto, EventInvitee>();
+            config.NewConfig<EventCriteriaDto, EventCriteria>()
+                .Map(dest => dest.Gender, src => (Gender)src.Gender)
+                .Map(dest => dest.EventType, src => (Event_Type)src.EventType);
+            config.NewConfig<TicketDto, Ticket>()
+                .Map(dest => dest.TicketType, src => (TicketType)src.TicketType);
+            config.NewConfig<DiscountDto, Discount>()
+                .Map(dest => dest.Type, src => (DiscountType)src.Type);
+            config.NewConfig<SponsoredEventDetailsDto, SponsoredEventDetail>()
+                .Map(dest => dest.PreferedLevelOfInvolvement, src => (LevelOfInvolvement)src.PreferedLevelOfInvolvement)
+                .Map(dest => dest.SponsoringPlan, src => (SponsoringPlan)src.SponsoringPlan)
+                .Map(dest => dest.TargetAudienceType, src => (TargetAudienceType)src.TargetAudienceType);
+            config.NewConfig<EventInviteeDto, EventInvitee>();
+            config.NewConfig<EventPaymentDetailDto, EventPaymentDetail>();
         }
     }
 }

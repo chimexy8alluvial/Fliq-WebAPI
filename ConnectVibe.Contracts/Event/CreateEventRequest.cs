@@ -13,7 +13,7 @@ namespace Fliq.Contracts.Event
     LocationDto Location,
     int Capacity,
     int MinAge,
-    int Maxge,
+    int MaxAge,
     bool SponsoredEvent,
     EventCriteriaDto EventCriteria,
     List<TicketDto>? Tickets,

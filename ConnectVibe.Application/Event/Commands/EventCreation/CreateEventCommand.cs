@@ -6,6 +6,7 @@ using Fliq.Application.Common.Interfaces.Services.LocationServices;
 using Fliq.Application.Common.Interfaces.Services.MeidaServices;
 using Fliq.Application.Event.Common;
 using Fliq.Application.Notifications.Common.EventCreatedEvents;
+using Fliq.Contracts.Event;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Event;
 using Fliq.Domain.Entities.Event.Enums;
@@ -30,9 +31,9 @@ namespace Fliq.Application.Event.Commands.EventCreation
         public bool SponsoredEvent { get; set; } = default!;
         public SponsoredEventDetail? SponsoredEventDetail { get; set; } = default!;
         public EventCriteria EventCriteria { get; set; } = default!;
-        public List<Ticket> Tickets { get; set; } = default!;
+        public List<TicketDto>? Tickets { get; set; } = default!;
         public int UserId { get; set; } = default!;
-        public EventPaymentDetail EventPaymentDetail { get; set; } = default!;
+        public EventPaymentDetail? EventPaymentDetail { get; set; } = default!;
         public bool InviteesException { get; set; } = default!;
         public List<EventInvitee>? EventInvitees { get; set; } = default!;
 
@@ -50,10 +51,11 @@ namespace Fliq.Application.Event.Commands.EventCreation
         private readonly IEventService _eventService;
         private readonly IEmailService _emailService;
         private readonly IMediator _mediator;
+        private readonly ICurrencyRepository _currencyRepository;
         private const string _eventDocument = "Event Documents";
 
         public CreateEventCommandHandler(IMapper mapper, ILoggerManager logger, IUserRepository userRepository,
-            IMediaServices mediaServices, IEventRepository eventRepository, ILocationService locationService, IEventService eventService, IEmailService emailService, IMediator mediator)
+            IMediaServices mediaServices, IEventRepository eventRepository, ILocationService locationService, IEventService eventService, IEmailService emailService, IMediator mediator, ICurrencyRepository currencyRepository)
         {
             _mapper = mapper;
             _logger = logger;
@@ -64,6 +66,7 @@ namespace Fliq.Application.Event.Commands.EventCreation
             _eventService = eventService;
             _emailService = emailService;
             _mediator = mediator;
+            _currencyRepository = currencyRepository;
         }
 
         public async Task<ErrorOr<CreateEventResult>> Handle(CreateEventCommand command, CancellationToken cancellationToken)
@@ -79,21 +82,19 @@ namespace Fliq.Application.Event.Commands.EventCreation
             }
 
             var newEvent = _mapper.Map<Events>(command);
-
             foreach (var photo in command.MediaDocuments)
             {
-
-               var mediaUrl = await _mediaServices.UploadMediaAsync(photo.DocFile, _eventDocument);
-               if (mediaUrl != null)
-               {
-                   EventMedia eventMedia = new() { MediaUrl = mediaUrl, Title = photo.Title };
-                   newEvent.Media.Add(eventMedia);
-               }
-               else
-               {
-                   //return Errors.Image.InvalidImage;
-                   return Errors.Document.InvalidDocument;
-               }
+                var mediaUrl = await _mediaServices.UploadMediaAsync(photo.DocFile, _eventDocument);
+                if (mediaUrl != null)
+                {
+                    EventMedia eventMedia = new() { MediaUrl = mediaUrl, Title = photo.Title };
+                    newEvent.Media.Add(eventMedia);
+                }
+                else
+                {
+                    //return Errors.Image.InvalidImage;
+                    return Errors.Document.InvalidDocument;
+                }
             }
 
             var locationResponse = await _locationService.GetAddressFromCoordinatesAsync(command.Location.Lat, command.Location.Lng);
@@ -113,25 +114,45 @@ namespace Fliq.Application.Event.Commands.EventCreation
 
             _eventRepository.Add(newEvent);
 
+            if (command.Tickets is not null)
+            {
+                foreach (var ticket in command.Tickets)
+                {
+                    var newTicket = _mapper.Map<Ticket>(ticket);
+                    var currency = _currencyRepository.GetCurrencyById(ticket.CurrencyId);
+
+                    if (currency is null)
+                    {
+                        return Errors.Payment.InvalidPayload;
+                    }
+
+                    newTicket.Currency = currency;
+                    newTicket.EventId = newEvent.Id;
+                    newTicket.EventDate = newEvent.StartDate;
+                    newEvent.Tickets.Add(newTicket);
+                }
+            }
+            _eventRepository.Update(newEvent);
+
             // Trigger Organizer Notification
             var organizerName = $"{user.FirstName} {user.LastName}";
 
-            await _mediator.Publish(new EventCreatedEvent(
-                user.Id,
-                newEvent.Id,
-                user.Id,
-                organizerName,
-                Enumerable.Empty<int>(), // Organizer-only notification
-                "Event Created",
-                $"Your event '{command.EventTitle}' has been successfully created!",
-                false
-            ), cancellationToken);
+            //await _mediator.Publish(new EventCreatedEvent(
+            //    user.Id,
+            //    newEvent.Id,
+            //    user.Id,
+            //    organizerName,
+            //    Enumerable.Empty<int>(), // Organizer-only notification
+            //    "Event Created",
+            //    $"Your event '{command.EventTitle}' has been successfully created!",
+            //    false
+            //), cancellationToken);
 
             // Handle Invitees
-            if (command.EventInvitees is not null)
-            {
-                await SendInvitations(newEvent.Id, command.EventInvitees, user.Id, organizerName, newEvent.EventTitle);
-            }
+            //if (command.EventInvitees is not null)
+            //{
+            //    await SendInvitations(newEvent.Id, command.EventInvitees, user.Id, organizerName, newEvent.EventTitle);
+            //}
             return new CreateEventResult(newEvent);
         }
 

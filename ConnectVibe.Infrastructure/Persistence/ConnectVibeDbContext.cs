@@ -45,12 +45,28 @@ namespace Fliq.Infrastructure.Persistence
         public DbSet<PromptCategory> PromptCategories { get; set; }
         public DbSet<PromptQuestion> PromptQuestions { get; set; }
 
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Payment>()
                 .Property(p => p.Amount)
-                .HasPrecision(18, 2); // Example: 18 digits total, 2 after decimal
+                .HasPrecision(18, 2);
+            modelBuilder.Entity<EventTicket>()
+       .HasOne(e => e.User)
+       .WithMany()
+       .HasForeignKey(e => e.UserId)
+       .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<EventTicket>()
+                .HasOne(e => e.Payment)
+                .WithMany()
+                .HasForeignKey(e => e.PaymentId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<EventTicket>()
+                .HasOne(e => e.Ticket)
+                .WithMany()
+                .HasForeignKey(e => e.TicketId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

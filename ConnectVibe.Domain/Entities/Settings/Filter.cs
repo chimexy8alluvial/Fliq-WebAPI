@@ -5,7 +5,9 @@ namespace Fliq.Domain.Entities.Settings
     public class Filter : Record
     {
         public LookingFor LookingFor { get; set; }
-        public AgeRange AgeRange { get; set; } = default!;
+        public int AgeRangeId { get; set; }
+        public int MinAge { get; set; }
+        public int MaxAge { get; set; }
         public double Distance { get; set; }
         public List<string> Interests { get; set; } = new();
         public List<string> EventPreferences { get; set; } = new();

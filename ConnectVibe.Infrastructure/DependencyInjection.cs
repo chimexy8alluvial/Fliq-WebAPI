@@ -47,6 +47,7 @@ namespace Fliq.Infrastructure
             services.AddScoped<IOtpRepository, OtpRepository>();
             services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
             services.AddScoped<IPaymentRepository, PaymentRepository>();
+            services.AddScoped<ICurrencyRepository, CurrencyRepository>();
             services.AddScoped<ISettingsRepository, SettingsRepository>();
             services.AddScoped<IEventRepository, EventRepository>();
             services.AddScoped<ITicketRepository, TicketRepository>();

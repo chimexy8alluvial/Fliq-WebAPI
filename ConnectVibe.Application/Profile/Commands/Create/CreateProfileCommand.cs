@@ -16,7 +16,6 @@ using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 
-
 namespace Fliq.Application.Profile.Commands.Create
 {
     public class CreateProfileCommand : IRequest<ErrorOr<CreateProfileResult>>
@@ -52,7 +51,6 @@ namespace Fliq.Application.Profile.Commands.Create
         private readonly IPromptCategoryRepository _promptCategoryRepository;
         private readonly ILoggerManager _loggerManager;
         private readonly IMediaServices _mediaServices;
-
 
         public CreateProfileCommandHandler(IMapper mapper, IProfileRepository profileRepository, IUserRepository userRepository, ILocationService locationService, ISettingsRepository settingsRepository, ILoggerManager loggerManager, IPromptQuestionRepository promptQuestionRepository, IPromptCategoryRepository promptCategoryRepository, IMediaServices mediaServices)
         {
@@ -127,7 +125,6 @@ namespace Fliq.Application.Profile.Commands.Create
                 promptResponses.Add(promptResponse.Value);
             }
 
-
             _profileRepository.Add(userProfile);
 
             Setting setting = new()
@@ -138,7 +135,6 @@ namespace Fliq.Application.Profile.Commands.Create
 
             return new CreateProfileResult(userProfile);
         }
-
 
         private async Task<ErrorOr<PromptResponse>> ProcessPromptResponseAsync(PromptResponseDto promptDto, UserProfile userProfile)
         {
@@ -217,9 +213,6 @@ namespace Fliq.Application.Profile.Commands.Create
             _loggerManager.LogDebug($"Uploading file to container: {containerName}");
             var uploadResult = await _mediaServices.UploadMediaAsync(file, containerName);
             return uploadResult; // Return the URL or path from server upload
-
-
         }
-
     }
 }

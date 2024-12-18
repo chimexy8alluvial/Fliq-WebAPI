@@ -14,7 +14,7 @@ namespace Fliq.Domain.Entities.Event
         public Location Location { get; set; } = default!;
         public int Capacity { get; set; } //Original Capacity
         public List<int> OccupiedSeats { get; set; } = new List<int>(); // To track assigned seat numbers
-        public List<EventMedia> Media { get; set; } = default!;
+        public List<EventMedia> Media { get; set; } = new List<EventMedia>();
         public int MinAge { get; set; }
         public int MaxAge { get; set; }
         public bool SponsoredEvent { get; set; } = default!;
