@@ -127,15 +127,18 @@ namespace Fliq.Application.Profile.Commands.Create
                 if (promptResponse.IsError)
                     return promptResponse.Errors;
 
-                //Persist PromptResponse
-                //_promptResponseRepository.Add(promptResponse.Value);
                 promptResponses.Add(promptResponse.Value);
             }
+            
             userProfile.PromptResponses = promptResponses;
+            
             _profileRepository.Add(userProfile);
+            
             foreach(var PromptResp in promptResponses)
             {
                 PromptResp.UserProfileId = userProfile.Id;
+
+                //Persist prompt response
                  _promptResponseRepository.Add(PromptResp);
             }
 
