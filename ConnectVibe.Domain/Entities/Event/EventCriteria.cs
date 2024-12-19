@@ -6,5 +6,6 @@ namespace Fliq.Domain.Entities.Event
     {
         public Event_Type EventType { get; set; }
         public Gender? Gender { get; set; }
+        public string Race { get; set; } = default!;
     }
 }

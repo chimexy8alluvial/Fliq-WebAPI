@@ -6,11 +6,12 @@
         string BusinessAddress,
         string BusinessType,
         string ContactInfromation,
-        int SponsoringBudget,
-        string TargetAudienceType,
+        int SponsoringPlan,
+        int TargetAudienceType,
         int NumberOfInvitees,
-        double Budget,
-        string DurationOfSponsorship,
-        string PreferedLevelOfInvolvement
+        decimal Budget,
+        int PreferedLevelOfInvolvement,
+        DateTime StartDate,
+        DateTime EndDate
     );
 }

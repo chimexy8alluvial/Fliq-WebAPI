@@ -9,23 +9,31 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
 
-
 namespace Fliq.Infrastructure.Services.MediaService
 {
     public class MediaService : IMediaServices
     {
-        private readonly string _uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
+        private readonly string _uploadPath;
         private readonly FaceApi _faceApi;
         private readonly ILoggerManager _logger;
+
         public MediaService(IOptions<FaceApi> faceApiOptions, ILoggerManager logger)
         {
             _faceApi = faceApiOptions.Value;
             _logger = logger;
+            // Get the base directory of the application and combine it with "Uploads"
+            _uploadPath = Path.Combine(AppContext.BaseDirectory, "Uploads");
+
+            // Ensure the directory exists
+            if (!Directory.Exists(_uploadPath))
+            {
+                Directory.CreateDirectory(_uploadPath);
+            }
         }
 
         public async Task<string?> UploadImageAsync(IFormFile imageToUpload)
         {
-           return await UploadMediaAsync(imageToUpload, _uploadPath);
+            return await UploadMediaAsync(imageToUpload, _uploadPath);
         }
 
         public async Task<string?> UploadMediaAsync(IFormFile mediaToUpload, string containerName)
@@ -80,7 +88,6 @@ namespace Fliq.Infrastructure.Services.MediaService
                     return null;
                 }
             }
-
         }
 
         public async Task<string> StartFaceLivelinessSession()
@@ -138,6 +145,5 @@ namespace Fliq.Infrastructure.Services.MediaService
             var fileUrl = filePath;
             return fileUrl;
         }
-
     }
 }

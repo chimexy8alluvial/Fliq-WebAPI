@@ -1,6 +1,5 @@
 ﻿using Fliq.Contracts.Event.ResponseDtos;
 using Fliq.Contracts.Profile;
-using Fliq.Contracts.Settings;
 
 namespace Fliq.Contracts.Event
 {
@@ -14,7 +13,8 @@ namespace Fliq.Contracts.Event
     DateTime EndDate,
     LocationDto Location,
     int Capacity,
-    AgeRangeDto AgeRange,
+    int MinAge,
+    int MaxAge,
     bool SponsoredEvent,
      EventCriteriaDto EventCriteria,
     List<GetTicketResponse> Tickets,
