@@ -1,8 +1,6 @@
-﻿using Azure;
-using Fliq.Application.Profile.Common;
+﻿using Fliq.Application.Profile.Common;
 using Fliq.Contracts.Prompts;
 using Fliq.Domain.Entities.Profile;
-using Fliq.Domain.Entities.Prompts;
 using Fliq.Domain.Enums;
 using FluentValidation;
 
@@ -52,7 +50,7 @@ namespace Fliq.Application.Profile.Commands.Create
 
             RuleFor(x => x.Photos)
            .NotNull().WithMessage("Photos are required.")
-           .Must(photos => photos.Count >= 1).WithMessage("Exactly 6 photos are required.")
+           .Must(photos => photos.Count >= 1).WithMessage("At least one Photo is required.")
            .ForEach(photo => photo.SetValidator(new ProfilePhotoDtoValidator()));
 
             RuleFor(x => x.Location)

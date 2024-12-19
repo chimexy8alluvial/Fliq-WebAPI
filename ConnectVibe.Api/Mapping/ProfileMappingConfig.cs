@@ -19,9 +19,9 @@ namespace Fliq.Api.Mapping
         public void Register(TypeAdapterConfig config)
         {
             config.NewConfig<CreateProfileRequest, CreateProfileCommand>()
-                .Ignore(dest => dest.Photos)
+                .Ignore(dest => dest.Photos).Ignore(dest => dest.PromptResponses)
                 .Map(dest => dest.ProfileTypes,
-            src => src.ProfileTypes.Select(dto => (ProfileType)dto.ProfileType).ToList());  // Explicitly map ProfileTypeDto to ProfileType enum;
+            src => src.ProfileTypes.Select(dto => (ProfileType)dto.ProfileType).ToList());
 
             config.NewConfig<CreateProfileCommand, UserProfile>().Ignore(dest => dest.Photos)
                 .Map(dest => dest.ProfileTypes, src => src.ProfileTypes);

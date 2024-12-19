@@ -185,7 +185,7 @@ namespace Fliq.Application.Profile.Commands.Create
                 promptQuestion = _promptQuestionRepository.GetQuestionByIdAsync(promptDto.PromptQuestionId);
                 if (promptQuestion == null)
                 {
-                    return Errors.Prompts.QuestionNotFound; // Return null or handle as appropriate if the question is invalid
+                    return Errors.Prompts.QuestionNotFound;
                 }
             }
 

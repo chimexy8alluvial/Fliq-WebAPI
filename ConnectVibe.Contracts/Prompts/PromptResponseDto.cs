@@ -2,11 +2,14 @@
 
 namespace Fliq.Contracts.Prompts
 {
-    public record PromptResponseDto(int PromptQuestionId,
-        int CategoryId,
+    public record PromptResponseDto(
+      
+        int PromptQuestionId,
         string? CustomPromptQuestionText,
         string? TextResponse,
         IFormFile? VoiceNote,
         IFormFile? VideoClip,
-        bool IsCustomPrompt);
+          int CategoryId,
+        bool IsCustomPrompt
+        );
 }
