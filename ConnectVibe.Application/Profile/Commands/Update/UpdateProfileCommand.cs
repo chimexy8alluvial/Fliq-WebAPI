@@ -18,6 +18,7 @@ namespace Fliq.Application.Profile.Commands.Update
 {
     public class UpdateProfileCommand : IRequest<ErrorOr<CreateProfileResult>>
     {
+        public int UserId { get; set; }
         public List<string>? Passions { get; set; } = new();
         public string? ProfileDescription { get; set; }
         public List<ProfilePhotoMapped>? Photos { get; set; } = new();
@@ -65,15 +66,14 @@ namespace Fliq.Application.Profile.Commands.Update
             await Task.CompletedTask;
 
             _loggerManager.LogInfo($"Updating profile for user with id: {GetUserId()}");
-            var userId = GetUserId();
 
-            var user = _userRepository.GetUserById(userId);
+            var user = _userRepository.GetUserById(command.UserId);
             if (user == null)
             {
                 _loggerManager.LogError("User not found");
-                return Errors.Profile.ProfileNotFound;
+                return Errors.User.UserNotFound;
             }
-            var userProfile = _profileRepository.GetProfileByUserId(userId);
+            var userProfile = _profileRepository.GetProfileByUserId(command.UserId);
             if (userProfile == null)
             {
                 _loggerManager.LogError("User profile not found");
@@ -87,10 +87,10 @@ namespace Fliq.Application.Profile.Commands.Update
                 userProfile.Photos.Clear();
                 foreach (var photo in command.Photos)
                 {
-                    var profileUrl = await _mediaService.UploadImageAsync(photo.ImageFile);
-                    if (profileUrl != null)
+                    var profilePhotoUrl = await _mediaService.UploadImageAsync(photo.ImageFile);
+                    if (profilePhotoUrl != null)
                     {
-                        ProfilePhoto profilePhoto = new() { PictureUrl = profileUrl, Caption = photo.Caption };
+                        ProfilePhoto profilePhoto = new() { PictureUrl = profilePhotoUrl, Caption = photo.Caption };
                         updatedProfile.Photos.Add(profilePhoto);
                     }
                     else
@@ -121,9 +121,10 @@ namespace Fliq.Application.Profile.Commands.Update
                 }
             }
 
+            updatedProfile.DateModified = DateTime.Now;
             // Save updated profile
             _profileRepository.Update(updatedProfile);
-            _loggerManager.LogInfo($"Profile updated successfully for user with id: {userId}");
+            _loggerManager.LogInfo($"Profile updated successfully for user with id: {command.UserId}");
 
             return new CreateProfileResult(updatedProfile);
         }

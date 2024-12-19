@@ -85,11 +85,12 @@ namespace Fliq.Api.Controllers
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> Update([FromForm] UpdateProfileRequest request)
         {
-            _logger.LogInfo($"Update Profile Request recieved");
+            _logger.LogInfo($"Update Profile Request received");
             var userId = GetAuthUserId();
 
-            var modifiedRequest = request with { UserId = userId };
-            var command = _mapper.Map<UpdateProfileCommand>(modifiedRequest);
+            //var modifiedRequest = request with { UserId = userId };
+            var command = _mapper.Map<UpdateProfileCommand>(request);
+            command.UserId = userId;
             if (request.Photos != null)
             {
                 command.Photos = request.Photos.Select(photo => new ProfilePhotoMapped

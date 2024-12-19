@@ -1,7 +1,6 @@
 ﻿namespace Fliq.Contracts.Profile.UpdateDtos
 {
     public record UpdateProfileRequest(
-     int UserId,
      DateTime? DOB,
       List<string>? Passions,
     List<UpdateProfilePhotoDto>? Photos,
