@@ -5,6 +5,7 @@ using Fliq.Domain.Common.Errors;
 using MediatR;
 using Fliq.Application.Notifications.Common.MatchEvents;
 using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Domain.Enums;
 
 namespace Fliq.Application.MatchedProfile.Commands.RejectMatch
 {
@@ -38,16 +39,16 @@ namespace Fliq.Application.MatchedProfile.Commands.RejectMatch
                 return Errors.MatchRequest.RequestNotFound;
             }
 
-            if (matchRequest.UserId != command.UserId)
+            if (matchRequest.MatchReceiverUserId != command.UserId)
             {
                 return Errors.MatchRequest.UnauthorizedAttempt;
             }
-            if (matchRequest.matchRequestStatus == MatchRequestStatus.Rejected)
+            if (matchRequest.MatchRequestStatus == MatchRequestStatus.Rejected)
             {
-                return Errors.MatchRequest.AlreadyAccepted;
+                return Errors.MatchRequest.AlreadyRejected;
             }
 
-            matchRequest.matchRequestStatus = MatchRequestStatus.Rejected;
+            matchRequest.MatchRequestStatus = MatchRequestStatus.Rejected;
             _matchProfileRepository.Update(matchRequest);
 
             _logger.LogInfo("Match request rejected.");
@@ -55,7 +56,7 @@ namespace Fliq.Application.MatchedProfile.Commands.RejectMatch
             await _mediator.Publish(new MatchRejectedEvent(command.UserId));
 
             return new RejectMatchResult(matchRequest.MatchInitiatorUserId,
-                 matchRequest.matchRequestStatus);
+                 matchRequest.MatchRequestStatus);
         }
     }
 }

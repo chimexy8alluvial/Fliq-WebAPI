@@ -8,7 +8,7 @@ using Fliq.Contracts.Profile;
 using Fliq.Contracts.Profile.UpdateDtos;
 using Fliq.Contracts.Prompts;
 using Fliq.Domain.Entities.Profile;
-
+using Fliq.Domain.Entities.Prompts;
 using Fliq.Domain.Enums;
 using Mapster;
 
@@ -110,6 +110,13 @@ namespace Fliq.Api.Mapping
 
             config.NewConfig<PaginationResponse<UserProfile>, PaginationResponse<ProfileResponse>>().IgnoreNullValues(true)
                  .Map(dest => dest.Data, src => src.Data.Select(userProfile => userProfile.Adapt<ProfileResponse>()).ToList());
+
+            config.NewConfig<UserProfile, ExploreProfileResponse>()
+    .Map(dest => dest.PromptResponses,
+         src => src.PromptResponses.Select(pr => new ExplorePromptResponseDto(
+             pr.PromptQuestionId,
+             pr.Response
+         )).ToList());
 
         }
 

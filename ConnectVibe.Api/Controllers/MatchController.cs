@@ -48,13 +48,13 @@ namespace Fliq.Api.Controllers
         }
 
         [HttpGet("match-requests")]
-        public async Task<IActionResult> GetMatchedList()
+        public async Task<IActionResult> GetMatchedList(GetMatchListRequest request)
         {
             var userId = GetAuthUserId();
             _logger.LogInfo($"Get Match List Request Received: {userId}");
 
             var query = _mapper.Map<GetMatchRequestListCommand>(request);
-            query = query with { UserId = userId, PaginationRequest = new PaginationRequest(request.PageNumber, request.PageSize) };
+            query = query with { UserId = userId};
 
             var matchelistResult = await _mediator.Send(query);
             _logger.LogInfo($"Get Match List Request Command Executed.  Result: {matchelistResult}");

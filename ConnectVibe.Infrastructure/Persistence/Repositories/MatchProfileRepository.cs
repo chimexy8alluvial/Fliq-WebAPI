@@ -61,7 +61,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
         public bool MatchRequestExist(int initiatorId, int requestedUserId)
         {
-            return _dbContext.MatchRequests.Any( r => r.MatchInitiatorUserId == initiatorId && r.UserId == requestedUserId);
+            return _dbContext.MatchRequests.Any( r => r.MatchInitiatorUserId == initiatorId && r.MatchReceiverUserId == requestedUserId);
         }
 
         public void Update(Domain.Entities.MatchedProfile.MatchRequest request)

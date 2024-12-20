@@ -52,11 +52,12 @@ namespace Fliq.Infrastructure.Persistence
             modelBuilder.Entity<Payment>()
                 .Property(p => p.Amount)
                 .HasPrecision(18, 2);
+            
             modelBuilder.Entity<EventTicket>()
-       .HasOne(e => e.User)
-       .WithMany()
-       .HasForeignKey(e => e.UserId)
-       .OnDelete(DeleteBehavior.NoAction);
+            .HasOne(e => e.User)
+            .WithMany()
+            .HasForeignKey(e => e.UserId)
+            .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<EventTicket>()
                 .HasOne(e => e.Payment)
@@ -69,8 +70,7 @@ namespace Fliq.Infrastructure.Persistence
                 .WithMany()
                 .HasForeignKey(e => e.TicketId)
                 .OnDelete(DeleteBehavior.Cascade);
-                .HasPrecision(18, 2); // Example: 18 digits total, 2 after decimal
-
+               
             modelBuilder.Entity<PromptResponse>()
             .HasOne(pr => pr.PromptQuestion)
             .WithMany() // No navigation property in PromptQuestion

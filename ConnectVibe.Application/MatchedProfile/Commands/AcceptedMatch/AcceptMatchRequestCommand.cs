@@ -21,7 +21,7 @@ namespace Fliq.Application.MatchedProfile.Commands.AcceptedMatch
         private readonly IMediator _mediator;
         private readonly ILoggerManager _logger;
 
-        public AcceptMatchRequestCommandHandler(IMatchProfileRepository matchProfileRepository, IMediator mediator)
+        public AcceptMatchRequestCommandHandler(IMatchProfileRepository matchProfileRepository, IMediator mediator, ILoggerManager logger)
         {
             _matchProfileRepository = matchProfileRepository;
             _mediator = mediator;
@@ -39,23 +39,23 @@ namespace Fliq.Application.MatchedProfile.Commands.AcceptedMatch
                return Errors.MatchRequest.RequestNotFound;
             }
 
-            if(matchRequest.UserId != command.UserId)
+            if(matchRequest.MatchReceiverUserId != command.UserId)
             {
                 return Errors.MatchRequest.UnauthorizedAttempt;
             }
-            if (matchRequest.matchRequestStatus == MatchRequestStatus.Accepted)
+            if (matchRequest.MatchRequestStatus == MatchRequestStatus.Accepted)
             {
                 return Errors.MatchRequest.AlreadyAccepted;
             }
 
-            matchRequest.matchRequestStatus = MatchRequestStatus.Accepted;
+            matchRequest.MatchRequestStatus = MatchRequestStatus.Accepted;
             _matchProfileRepository.Update(matchRequest);
             
             //trigger Accepted match event notification
             await _mediator.Publish(new MatchAcceptedEvent(command.UserId, matchRequest.MatchInitiatorUserId, command.UserId));
 
            return new CreateAcceptMatchResult(matchRequest.MatchInitiatorUserId,
-                matchRequest.matchRequestStatus);
+                matchRequest.MatchRequestStatus);
 
         }
     }

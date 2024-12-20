@@ -38,7 +38,7 @@ namespace Fliq.Application.MatchedProfile.Commands.Create
         public async Task<ErrorOr<CreateMatchRequestResult>> Handle(InitiateMatchRequestCommand command, CancellationToken cancellationToken)
         {
             await Task.CompletedTask;
-            var requestedUser = _userRepository.GetUserByIdIncludingProfile(command.UserId);
+            var requestedUser = _userRepository.GetUserByIdIncludingProfile(command.MatchReceiverUserId);
             if (requestedUser == null)
             {
                 _logger.LogError("User not found");
@@ -51,36 +51,37 @@ namespace Fliq.Application.MatchedProfile.Commands.Create
             }
 
             //Check for existing request
-            var isRequestExist = _matchProfileRepository.MatchRequestExist(command.MatchInitiatorUserId, command.UserId);
+            var isRequestExist = _matchProfileRepository.MatchRequestExist(command.MatchInitiatorUserId, command.MatchReceiverUserId);
             if (isRequestExist) return Errors.MatchRequest.DuplicateRequest;
 
             //Create request object
             var matchRequest = _mapper.Map<MatchRequest>(command);
 
-            matchRequest.matchRequestStatus = MatchRequestStatus.Pending;
-            matchRequest.PictureUrl = matchInitiator.UserProfile?.Photos.FirstOrDefault()?.PictureUrl ?? "";
-            matchRequest.Name = matchInitiator.FirstName;
-            matchRequest.Age = matchInitiator.UserProfile?.DOB.CalculateAge();
+            matchRequest.MatchRequestStatus = MatchRequestStatus.Pending;
+
 
             //Save request
             _matchProfileRepository.Add(matchRequest);
 
             _logger.LogInfo("MatchProfile created");
 
-            var pictureUrl = matchInitiator?.UserProfile?.Photos?.FirstOrDefault()?.PictureUrl;
-            var initiatorAge = matchInitiator.UserProfile.DOB.CalculateAge();
-            // Trigger MatchRequestEvent notification
-            //await _mediator.Publish(new MatchRequestEvent(
-            //    command.MatchInitiatorUserId,
-            //    command.UserId,
-            //    accepterImageUrl: requestedUser?.UserProfile?.Photos?.FirstOrDefault()?.PictureUrl,
-            //    initiatorImageUrl: matchRequest.PictureUrl,
-            //    initiatorName: matchRequest.Name
-            //));
+            var initiatorPictureUrl = matchInitiator?.UserProfile?.Photos?.FirstOrDefault()?.PictureUrl;
+            var initiatorAge = matchInitiator?.UserProfile?.DOB.CalculateAge();
+            var initiatorName = matchInitiator?.FirstName + " " + matchInitiator?.LastName;
+            var receiverPictureUrl = requestedUser?.UserProfile?.Photos?.FirstOrDefault()?.PictureUrl;
 
-            return new CreateMatchRequestResult(matchRequest.Id, matchRequest.UserId, matchRequest.MatchInitiatorUserId,
-                matchRequest.Name,
-                matchRequest.PictureUrl, matchRequest.Age, (int)matchRequest.matchRequestStatus);
+            // Trigger MatchRequestEvent notification
+            await _mediator.Publish(new MatchRequestEvent(
+                command.MatchInitiatorUserId,
+                command.MatchReceiverUserId,
+                accepterImageUrl: receiverPictureUrl,
+                initiatorImageUrl: initiatorPictureUrl,
+                initiatorName: initiatorName
+            ));
+
+            return new CreateMatchRequestResult(matchRequest.Id, matchRequest.MatchReceiverUserId, matchRequest.MatchInitiatorUserId,
+                initiatorName,
+                initiatorPictureUrl, initiatorAge, (int)matchRequest.MatchRequestStatus);
         }
     }
 }

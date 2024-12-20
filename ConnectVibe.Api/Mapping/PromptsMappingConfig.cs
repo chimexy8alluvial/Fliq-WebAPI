@@ -1,5 +1,6 @@
 ﻿using Fliq.Application.Prompts.Commands;
 using Fliq.Application.Prompts.Common;
+using Fliq.Contracts.Profile;
 using Fliq.Contracts.Prompts;
 using Fliq.Domain.Entities.Prompts;
 using Mapster;
@@ -20,6 +21,8 @@ namespace Fliq.Api.Mapping
             config.NewConfig<PromptCategory, GetPromptCategoriesResult>().Map(src => src.CategoryId, dest => dest.Id);
             config.NewConfig<GetPromptCategoriesResult, GetPromptCategoryResponse>();
             config.NewConfig<AddSystemPromptResult, AddSystemPromptResponse>();
+            config.NewConfig<PromptResponse, ExplorePromptResponseDto>().Map(dest => dest.Response ,  src => src.Response)
+                .Map(src => src.PromptQuestionId, dest => dest.PromptQuestionId);
         }
     }
 }
