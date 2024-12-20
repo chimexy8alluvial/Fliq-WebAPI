@@ -1,9 +1,11 @@
 ﻿using ErrorOr;
+using Fliq.Application.Common.Hubs;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Games.Common;
 using Fliq.Domain.Entities.Games;
 using MediatR;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Fliq.Application.Games.Commands.CreateGameSession
 {
@@ -13,11 +15,13 @@ namespace Fliq.Application.Games.Commands.CreateGameSession
     {
         private readonly IGamesRepository _gamesRepository;
         private readonly ILoggerManager _logger;
+        private readonly IHubContext<GameHub> _hubContext;
 
-        public CreateGameSessionCommandHandler(IGamesRepository gamesRepository, ILoggerManager logger)
+        public CreateGameSessionCommandHandler(IGamesRepository gamesRepository, ILoggerManager logger, IHubContext<GameHub> hubContext)
         {
             _gamesRepository = gamesRepository;
             _logger = logger;
+            _hubContext = hubContext;
         }
 
         public async Task<ErrorOr<GetGameSessionResult>> Handle(CreateGameSessionCommand request, CancellationToken cancellationToken)
@@ -35,6 +39,8 @@ namespace Fliq.Application.Games.Commands.CreateGameSession
             };
 
             _gamesRepository.CreateGameSession(session);
+
+            await _hubContext.Clients.All.SendAsync("GameSessionCreated", session);
 
             _logger.LogInfo($"Game session created: {session.Id}");
             return new GetGameSessionResult(session);

@@ -1,4 +1,5 @@
-﻿using Fliq.Application.Games.Commands.AcceptGameRequest;
+﻿using Fliq.Application.Common.Hubs;
+using Fliq.Application.Games.Commands.AcceptGameRequest;
 using Fliq.Application.Games.Commands.CreateGame;
 using Fliq.Application.Games.Commands.CreateQuestion;
 using Fliq.Application.Games.Commands.SendGameRequest;
@@ -11,6 +12,7 @@ using Fliq.Contracts.Games;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Fliq.Api.Controllers
 {
@@ -21,12 +23,14 @@ namespace Fliq.Api.Controllers
         private readonly IMediator _mediator;
         private readonly ILogger<GamesController> _logger;
         private readonly IMapper _mapper;
+        private readonly IHubContext<GameHub> _hubContext;
 
-        public GamesController(IMediator mediator, ILogger<GamesController> logger, IMapper mapper)
+        public GamesController(IMediator mediator, ILogger<GamesController> logger, IMapper mapper, IHubContext<GameHub> hubContext)
         {
             _mediator = mediator;
             _logger = logger;
             _mapper = mapper;
+            _hubContext = hubContext;
         }
 
         [HttpPost("create")]
@@ -155,6 +159,22 @@ namespace Fliq.Api.Controllers
               session => Ok(_mapper.Map<List<GameSessionResponse>>(session)),
               errors => Problem(errors)
           );
+        }
+
+        [HttpPost("join-session")]
+        public async Task<IActionResult> JoinSession([FromForm] string sessionId)
+        {
+            var connectionId = HttpContext.Connection.Id;
+            await _hubContext.Clients.Group(sessionId).SendAsync("PlayerJoined", connectionId);
+            return Ok();
+        }
+
+        [HttpPost("leave-session")]
+        public async Task<IActionResult> LeaveSession([FromForm] string sessionId)
+        {
+            var connectionId = HttpContext.Connection.Id;
+            await _hubContext.Clients.Group(sessionId).SendAsync("PlayerLeft", connectionId);
+            return Ok();
         }
     }
 }

@@ -1,10 +1,12 @@
 ﻿using ErrorOr;
+using Fliq.Application.Common.Hubs;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Games.Common;
+using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Games;
 using MediatR;
-using Fliq.Domain.Common.Errors;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Fliq.Application.Games.Commands.SendGameRequest
 {
@@ -16,12 +18,14 @@ namespace Fliq.Application.Games.Commands.SendGameRequest
         private readonly IGamesRepository _gameRequestRepository;
         private readonly ILoggerManager _logger;
         private readonly IUserRepository _userRepository;
+        private readonly IHubContext<GameHub> _hubContext;
 
-        public SendGameRequestCommandHandler(IGamesRepository gameRequestRepository, ILoggerManager logger, IUserRepository userRepository)
+        public SendGameRequestCommandHandler(IGamesRepository gameRequestRepository, ILoggerManager logger, IUserRepository userRepository, IHubContext<GameHub> hubContext)
         {
             _gameRequestRepository = gameRequestRepository;
             _logger = logger;
             _userRepository = userRepository;
+            _hubContext = hubContext;
         }
 
         public async Task<ErrorOr<GetGameRequestResult>> Handle(SendGameRequestCommand request, CancellationToken cancellationToken)

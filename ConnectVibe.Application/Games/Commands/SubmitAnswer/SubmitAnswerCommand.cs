@@ -1,10 +1,13 @@
 ﻿using ErrorOr;
+using Fliq.Application.Common.Hubs;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Games.Common;
+using Fliq.Contracts.Games;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Enums;
 using MediatR;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Fliq.Application.Games.Commands.SubmitAnswer
 {
@@ -15,11 +18,13 @@ namespace Fliq.Application.Games.Commands.SubmitAnswer
     {
         private readonly IGamesRepository _gamesRepository;
         private readonly ILoggerManager _loggerManager;
+        private readonly IHubContext<GameHub> _hubContext;
 
-        public SubmitAnswerCommandHandler(IGamesRepository gamesRepository, ILoggerManager loggerManager)
+        public SubmitAnswerCommandHandler(IGamesRepository gamesRepository, ILoggerManager loggerManager, IHubContext<GameHub> hubContext)
         {
             _gamesRepository = gamesRepository;
             _loggerManager = loggerManager;
+            _hubContext = hubContext;
         }
 
         public async Task<ErrorOr<SubmitAnswerResult>> Handle(SubmitAnswerCommand request, CancellationToken cancellationToken)
@@ -61,6 +66,19 @@ namespace Fliq.Application.Games.Commands.SubmitAnswer
                 : session.Player1Id;
             session.CurrentQuestionIndex++;
             _gamesRepository.UpdateGameSession(session);
+
+            var updatedGameState = new UpdatedGameState
+            {
+                SessionId = session.Id,
+                Player1Score = session.Player1Score,
+                Player2Score = session.Player2Score,
+                CurrentTurnPlayerId = session.CurrentTurnPlayerId,
+                CurrentQuestionIndex = session.CurrentQuestionIndex,
+                IsGameDone = session.Status == GameStatus.Done
+            };
+
+            // Notify players via SignalR
+            await _hubContext.Clients.Group(session.Id.ToString()).SendAsync("GameUpdated", updatedGameState);
 
             return new SubmitAnswerResult(isCorrect, session.Player1Score, session.Player2Score);
         }
