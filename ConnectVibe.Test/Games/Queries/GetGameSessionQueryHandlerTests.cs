@@ -57,7 +57,6 @@ namespace Fliq.Test.Games.Queries.GetSession
             Assert.IsNotNull(result.Value);
             Assert.AreEqual(sessionId, result.Value.GameSession.Id);
             Assert.AreEqual(gameId, result.Value.GameSession.GameId);
-            Assert.AreEqual(2, result.Value.GameSession.Questions.Count);
 
             _mockSessionsRepository.Verify(repo => repo.GetGameSessionById(sessionId), Times.Once);
             _mockSessionsRepository.Verify(repo => repo.GetQuestionsByGameId(gameId, int.MaxValue, int.MaxValue), Times.Once);

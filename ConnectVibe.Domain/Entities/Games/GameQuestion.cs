@@ -7,8 +7,5 @@
         public string QuestionText { get; set; } = string.Empty;
         public List<string>? Options { get; set; }
         public string CorrectAnswer { get; set; } = string.Empty;
-        public string? Category { get; set; }
-        public string? Level { get; set; }
-        public string? Theme { get; set; }
     }
 }

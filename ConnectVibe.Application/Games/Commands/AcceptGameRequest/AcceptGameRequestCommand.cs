@@ -43,7 +43,6 @@ namespace Fliq.Application.Games.Commands.AcceptGameRequest
                 GameId = gameRequest.GameId,
                 Player1Id = gameRequest.RequesterId,
                 Player2Id = request.UserId,
-                CurrentTurnPlayerId = gameRequest.RequesterId,
                 Status = GameStatus.InProgress
             };
 

@@ -1,4 +1,6 @@
-﻿namespace Fliq.Application.Games.Common
+﻿using Fliq.Domain.Entities.Games;
+
+namespace Fliq.Application.Games.Common
 {
-    public record SubmitAnswerResult(bool IsCorrect, int Score1, int Score2);
+    public record SubmitAnswerResult(GameSession GameSession);
 }
