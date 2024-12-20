@@ -6,6 +6,7 @@ using Fliq.Application.Event.Commands.EventCreation;
 using Fliq.Application.Event.Commands.Tickets;
 using Fliq.Application.Event.Commands.UpdateEvent;
 using Fliq.Application.Event.Commands.UpdateTicket;
+using Fliq.Application.Event.Common;
 using Fliq.Application.Event.Queries.GetCurrency;
 using Fliq.Application.Event.Queries.GetEvent;
 using Fliq.Application.Event.Queries.GetTicket;
@@ -39,12 +40,18 @@ namespace Fliq.Api.Controllers
         {
             _logger.LogInfo($"Create Request Received: {request}");
             var command = _mapper.Map<CreateEventCommand>(request);
+            command.MediaDocuments = request.MediaDocuments.Select(x => new EventMediaMapped
+            {
+                DocFile = x.DocFile,
+                Title = x.Title
+            }).ToList();
+
             command.UserId = GetAuthUserId();
             var EventCreatedResult = await _mediator.Send(command);
             _logger.LogInfo($"EventCreatedResult command Executed. Result: {EventCreatedResult}");
 
             return EventCreatedResult.Match(
-                CreateEventResult => Ok(_mapper.Map<CreateEventResponse>(EventCreatedResult)),
+                CreateEventResult => Ok(_mapper.Map<CreateEventResponse>(CreateEventResult)),
                 errors => Problem(errors)
             );
         }

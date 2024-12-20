@@ -1,6 +1,7 @@
 ﻿using ErrorOr;
 using Fliq.Application.Common.Helpers;
 using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.MatchedProfile.Common;
 using Fliq.Application.Notifications.Common.MatchEvents;
 using Fliq.Domain.Common.Errors;
@@ -13,8 +14,8 @@ namespace Fliq.Application.MatchedProfile.Commands.Create
 {
     public class InitiateMatchRequestCommand : IRequest<ErrorOr<CreateMatchRequestResult>>
     {
-        public int UserId { get; set; }
         public int MatchInitiatorUserId { get; set; }
+        public int MatchReceiverUserId { get; set; }
     }
 
     public class InitiateMatchRequestCommandHandler : IRequestHandler<InitiateMatchRequestCommand, ErrorOr<CreateMatchRequestResult>>
@@ -23,13 +24,15 @@ namespace Fliq.Application.MatchedProfile.Commands.Create
         private readonly IUserRepository _userRepository;
         private readonly IMatchProfileRepository _matchProfileRepository;
         private readonly IMediator _mediator;
+        private readonly ILoggerManager _logger;
 
-        public InitiateMatchRequestCommandHandler(IMapper mapper, IUserRepository userRepository, IMatchProfileRepository matchProfileRepository, IMediator mediator)
+        public InitiateMatchRequestCommandHandler(IMapper mapper, IUserRepository userRepository, IMatchProfileRepository matchProfileRepository, IMediator mediator, ILoggerManager logger)
         {
             _mapper = mapper;
             _userRepository = userRepository;
             _matchProfileRepository = matchProfileRepository;
             _mediator = mediator;
+            _logger = logger;
         }
 
         public async Task<ErrorOr<CreateMatchRequestResult>> Handle(InitiateMatchRequestCommand command, CancellationToken cancellationToken)
@@ -38,6 +41,7 @@ namespace Fliq.Application.MatchedProfile.Commands.Create
             var requestedUser = _userRepository.GetUserByIdIncludingProfile(command.UserId);
             if (requestedUser == null)
             {
+                _logger.LogError("User not found");
                 return Errors.User.UserNotFound;
             }
             var matchInitiator = _userRepository.GetUserByIdIncludingProfile(command.MatchInitiatorUserId);
@@ -61,6 +65,10 @@ namespace Fliq.Application.MatchedProfile.Commands.Create
             //Save request
             _matchProfileRepository.Add(matchRequest);
 
+            _logger.LogInfo("MatchProfile created");
+
+            var pictureUrl = matchInitiator?.UserProfile?.Photos?.FirstOrDefault()?.PictureUrl;
+            var initiatorAge = matchInitiator.UserProfile.DOB.CalculateAge();
             // Trigger MatchRequestEvent notification
             //await _mediator.Publish(new MatchRequestEvent(
             //    command.MatchInitiatorUserId,

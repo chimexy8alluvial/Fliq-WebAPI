@@ -16,7 +16,6 @@ using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 
-
 namespace Fliq.Application.Profile.Commands.Create
 {
     public class CreateProfileCommand : IRequest<ErrorOr<CreateProfileResult>>
@@ -151,7 +150,6 @@ namespace Fliq.Application.Profile.Commands.Create
             return new CreateProfileResult(userProfile);
         }
 
-
         private async Task<ErrorOr<PromptResponse>> ProcessPromptResponseAsync(PromptResponseDto promptDto, UserProfile userProfile)
         {
             //Validate answer was provided
@@ -229,9 +227,6 @@ namespace Fliq.Application.Profile.Commands.Create
             _loggerManager.LogDebug($"Uploading file to container: {containerName}");
             var uploadResult = await _mediaServices.UploadMediaAsync(file, containerName) ?? throw new ArgumentException("Failed to get response url.");
             return uploadResult; // Return the URL or path from server upload
-
-
         }
-
     }
 }

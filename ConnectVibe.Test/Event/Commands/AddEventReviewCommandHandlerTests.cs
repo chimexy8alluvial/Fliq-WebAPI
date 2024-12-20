@@ -2,8 +2,8 @@
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Event.Commands.AddEventReview;
 using Fliq.Domain.Common.Errors;
+using Fliq.Domain.Entities;
 using Fliq.Domain.Entities.Event;
-using MapsterMapper;
 using MediatR;
 using Moq;
 
@@ -15,7 +15,6 @@ namespace Fliq.Test.Event.Commands
         private Mock<IEventRepository>? _eventRepositoryMock;
         private Mock<IEventReviewRepository>? _eventReviewRepositoryMock;
         private Mock<ILoggerManager>? _loggerMock;
-        private Mock<IMapper>? _mapperMock;
         private Mock<IUserRepository>? _userRepositoryMock;
         private Mock<IMediator>? _mediatorMock;
 
@@ -27,7 +26,6 @@ namespace Fliq.Test.Event.Commands
             _eventRepositoryMock = new Mock<IEventRepository>();
             _eventReviewRepositoryMock = new Mock<IEventReviewRepository>();
             _loggerMock = new Mock<ILoggerManager>();
-            _mapperMock = new Mock<IMapper>();
             _userRepositoryMock = new Mock<IUserRepository>();
             _mediatorMock = new Mock<IMediator>();
 
@@ -65,6 +63,9 @@ namespace Fliq.Test.Event.Commands
 
             var eventDetails = new Events { Id = command.EventId };
             _eventRepositoryMock?.Setup(repo => repo.GetEventById(command.EventId)).Returns(eventDetails);
+
+            var user = new User { Id = command.UserId };
+            _userRepositoryMock?.Setup(repo => repo.GetUserById(command.UserId)).Returns(user);
 
             var newReview = new EventReview();
             _eventReviewRepositoryMock?.Setup(repo => repo.Add(It.IsAny<EventReview>()))

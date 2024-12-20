@@ -9,46 +9,48 @@ namespace Fliq.Application.Event.Commands.EventCreation
         public CreateEventCommandvalidator()
         {
             RuleFor(x => x.MediaDocuments)
-                .NotNull().WithMessage("Document is required.");
+           .NotNull().WithMessage("Document is required.");
 
-            RuleFor(x => x.EventTitle).NotEmpty().WithMessage("Event title must not be empty!.");
+            RuleFor(x => x.EventTitle).NotEmpty().WithMessage("Event title must not be empty!");
 
-            RuleFor(x => x.EventDescription).NotEmpty().WithMessage("Event Description must not be empty!.");
-
-            //RuleFor(x => x.Id)
-            //   .GreaterThan(0).WithMessage("Id must be greater than 0.");
+            RuleFor(x => x.EventDescription).NotEmpty().WithMessage("Event Description must not be empty!");
 
             RuleFor(x => x.UserId)
-              .GreaterThan(0).WithMessage("UserId must be greater than 0.");
+                .GreaterThan(0).WithMessage("UserId must be greater than 0.");
 
-            RuleFor(x => x.EventType).IsInEnum().WithMessage("Event Type is required!");
+            RuleFor(x => x.EventType)
+                .IsInEnum().WithMessage("Event Type is required!");
 
             RuleFor(x => x.StartDate).NotEmpty();
 
             RuleFor(x => x.EndDate).NotEmpty();
 
             RuleFor(x => x.Capacity)
-               .GreaterThan(0).WithMessage("Capacity must be greater than 0.");
+                .GreaterThan(0).WithMessage("Capacity must be greater than 0.");
 
             RuleFor(x => x.Location)
-               .NotNull().WithMessage("Location is required.")
-               .SetValidator(new LocationValidator());
+                .NotNull().WithMessage("Location is required.")
+                .SetValidator(new LocationValidator());
 
-            RuleFor(x => x.MinAge).NotEmpty().WithMessage("Min Age must not be empty!");
-            RuleFor(x => x.MaxAge).NotEmpty().WithMessage("Max Age must not be empty!");
+            RuleFor(x => x.MinAge)
+                .NotEmpty().WithMessage("Min Age must not be empty!");
+
+            RuleFor(x => x.MaxAge)
+                .NotEmpty().WithMessage("Max Age must not be empty!");
 
             RuleFor(x => x.SponsoredEventDetail)
                 .NotNull().WithMessage("Sponsored Event Detail is required.")
-                .SetValidator(new SponsoredEventDetailValidator());
+                .SetValidator(new SponsoredEventDetailValidator())
+                .When(x => x.SponsoredEventDetail != null); // Validate only if not null
 
             RuleFor(x => x.EventCriteria)
                 .NotNull().WithMessage("Event Criteria is required.")
-                .SetValidator(new EventCriteriaValidator());
+                .SetValidator(new EventCriteriaValidator())
+                .When(x => x.EventCriteria != null); // Validate only if not null
 
-            RuleFor(x => x.Tickets)
-                .NotNull().WithMessage("Ticket type is required.")
-                .Must(Tickets => Tickets.Count >= 1).WithMessage("You can add more tickets!")
-                .ForEach(Ticket => Ticket.SetValidator(new TicketValidator()));
+            RuleFor(x => x.EventInvitees)
+                .Must(invitees => invitees!.Count >= 1).WithMessage("At least one invitee is required.")
+                .When(x => x.EventInvitees != null); // Apply rule only if EventInvitees is not null
         }
     }
 

@@ -1,9 +1,11 @@
 ﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.Common.Pagination;
 using Fliq.Application.MatchedProfile.Commands.AcceptedMatch;
 using Fliq.Application.MatchedProfile.Commands.Create;
 using Fliq.Application.MatchedProfile.Commands.MatchedList;
 using Fliq.Application.MatchedProfile.Commands.RejectMatch;
+using Fliq.Application.MatchedProfile.Common;
 using Fliq.Contracts.MatchedProfile;
 using MapsterMapper;
 using MediatR;
@@ -50,9 +52,11 @@ namespace Fliq.Api.Controllers
         {
             var userId = GetAuthUserId();
             _logger.LogInfo($"Get Match List Request Received: {userId}");
-            var requestList = new GetMatchRequestListCommand(userId);
 
-            var matchelistResult = await _mediator.Send(requestList);
+            var query = _mapper.Map<GetMatchRequestListCommand>(request);
+            query = query with { UserId = userId, PaginationRequest = new PaginationRequest(request.PageNumber, request.PageSize) };
+
+            var matchelistResult = await _mediator.Send(query);
             _logger.LogInfo($"Get Match List Request Command Executed.  Result: {matchelistResult}");
             return matchelistResult.Match(
                 matchelistResult => Ok(_mapper.Map<List<MatchRequestResponse>>(matchelistResult)),
