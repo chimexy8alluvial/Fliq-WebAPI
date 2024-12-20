@@ -43,7 +43,7 @@ namespace Fliq.Test.MatchProfile.Commands
             };
 
             _mockMatchProfileRepository
-                .Setup(repo => repo.GetMatchProfileById(command.Id))
+                .Setup(repo => repo.GetMatchRequestById(command.Id))
                 .Returns((MatchRequest)null);
 
             // Act
@@ -73,7 +73,7 @@ namespace Fliq.Test.MatchProfile.Commands
             };
 
             _mockMatchProfileRepository
-                .Setup(repo => repo.GetMatchProfileById(command.Id))
+                .Setup(repo => repo.GetMatchRequestById(command.Id))
                 .Returns(matchProfile);
 
             // Act
@@ -104,7 +104,7 @@ namespace Fliq.Test.MatchProfile.Commands
             };
 
             _mockMatchProfileRepository
-                .Setup(repo => repo.GetMatchProfileById(command.Id))
+                .Setup(repo => repo.GetMatchRequestById(command.Id))
                 .Returns(matchProfile);
 
             // Act
