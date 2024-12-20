@@ -19,6 +19,7 @@ namespace Fliq.Test.Games.Queries.GetSession
         {
             _mockSessionsRepository = new Mock<IGamesRepository>();
             _mockLogger = new Mock<ILoggerManager>();
+
             _handler = new GetGameSessionQueryHandler(
                 _mockSessionsRepository.Object,
                 _mockLogger.Object

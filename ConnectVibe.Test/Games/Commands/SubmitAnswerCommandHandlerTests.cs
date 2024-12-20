@@ -1,12 +1,12 @@
-﻿using Moq;
-using Fliq.Application.Games.Commands.SubmitAnswer;
+﻿using Fliq.Application.Common.Hubs;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.Games.Commands.SubmitAnswer;
+using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Games;
 using Fliq.Domain.Enums;
-using Fliq.Domain.Common.Errors;
-using Fliq.Application.Common.Hubs;
 using Microsoft.AspNetCore.SignalR;
+using Moq;
 
 namespace Fliq.Test.Games.Commands
 {
@@ -24,6 +24,11 @@ namespace Fliq.Test.Games.Commands
             _mockGamesRepository = new Mock<IGamesRepository>();
             _mockLogger = new Mock<ILoggerManager>();
             _mockHub = new Mock<IHubContext<GameHub>>();
+            var mockClients = new Mock<IHubClients>();
+            var mockClientProxy = new Mock<IClientProxy>();
+            mockClients.Setup(c => c.Group(It.IsAny<string>())).Returns(mockClientProxy.Object);
+
+            _mockHub.Setup(h => h.Clients).Returns(mockClients.Object);
             _handler = new SubmitAnswerCommandHandler(_mockGamesRepository.Object, _mockLogger.Object, _mockHub.Object);
         }
 

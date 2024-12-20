@@ -25,6 +25,11 @@ namespace Fliq.Test.Games.Commands
             _mockLogger = new Mock<ILoggerManager>();
             _mockHub = new Mock<IHubContext<GameHub>>();
 
+            var mockClients = new Mock<IHubClients>();
+            var mockClientProxy = new Mock<IClientProxy>();
+            mockClients.Setup(c => c.Group(It.IsAny<string>())).Returns(mockClientProxy.Object);
+
+            _mockHub.Setup(h => h.Clients).Returns(mockClients.Object);
             _handler = new AcceptGameRequestCommandHandler(
                 _mockGamesRepository.Object,
                 _mockLogger.Object,
@@ -115,7 +120,14 @@ namespace Fliq.Test.Games.Commands
                 RequesterId = 100,
                 Status = GameStatus.Pending
             };
-
+            var gameSession = new GameSession
+            {
+                Id = 1,
+                Status = GameStatus.InProgress,
+                GameId = 10,
+                Player1Id = 100,
+                Player2Id = 101
+            };
             _mockGamesRepository
                 .Setup(repo => repo.GetGameRequestById(It.IsAny<int>()))
                 .Returns(gameRequest);

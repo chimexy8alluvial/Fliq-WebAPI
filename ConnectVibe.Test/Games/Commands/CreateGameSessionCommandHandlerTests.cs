@@ -22,6 +22,11 @@ namespace Fliq.Test.Games.Commands
             _mockGamesRepository = new Mock<IGamesRepository>();
             _mockLogger = new Mock<ILoggerManager>();
             _mockHub = new Mock<IHubContext<GameHub>>();
+            var mockClients = new Mock<IHubClients>();
+            var mockClientProxy = new Mock<IClientProxy>();
+
+            mockClients.Setup(c => c.All).Returns(mockClientProxy.Object);
+            _mockHub.Setup(h => h.Clients).Returns(mockClients.Object);
             _handler = new CreateGameSessionCommandHandler(
                 _mockGamesRepository.Object,
                 _mockLogger.Object,
