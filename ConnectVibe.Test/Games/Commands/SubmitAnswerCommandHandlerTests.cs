@@ -59,7 +59,7 @@ namespace Fliq.Test.Games.Commands
             _mockGamesRepository.Setup(repo => repo.GetQuestionsByGameId(session.GameId, It.IsAny<int>(), It.IsAny<int>()))
                 .Returns(questions);
 
-            var command = new SubmitAnswerCommand(SessionId: 1, Player1Score: 2, Player2Score: 2);
+            var command = new SubmitAnswerCommand(SessionId: 1, Player1Score: 2, Player2Score: 1);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -67,7 +67,7 @@ namespace Fliq.Test.Games.Commands
             // Assert
             Assert.IsFalse(result.IsError);
             Assert.AreEqual(1, session.Player2Score);
-            Assert.AreEqual(0, session.Player1Score);
+            Assert.AreEqual(2, session.Player1Score);
 
             _mockGamesRepository.Verify(repo => repo.UpdateGameSession(It.IsAny<GameSession>()), Times.Once);
         }
