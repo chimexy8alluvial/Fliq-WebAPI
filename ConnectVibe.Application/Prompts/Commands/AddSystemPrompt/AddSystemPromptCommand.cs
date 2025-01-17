@@ -38,8 +38,8 @@ namespace Fliq.Application.Prompts.Commands.AddSystemPrompt
                 return Errors.Prompts.CategoryNotFound;
             }
 
-            var QuestionExist = _questionRepository.QuestionExistInCategory(request.CategoryId, request.QuestionText);
-            if (QuestionExist)
+            var questionExist = _questionRepository.QuestionExistInCategory(request.CategoryId, request.QuestionText);
+            if (questionExist)
             {
                 _loggerManager.LogWarn($"{request.QuestionText} Question already exist for Category ID: {request.CategoryId}. Aborting prompt question creation.");
                 return Errors.Prompts.DuplicateCategoryQuestion;

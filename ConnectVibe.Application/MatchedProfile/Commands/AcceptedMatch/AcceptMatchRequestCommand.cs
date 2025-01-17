@@ -36,21 +36,25 @@ namespace Fliq.Application.MatchedProfile.Commands.AcceptedMatch
             var matchRequest = _matchProfileRepository.GetMatchRequestById(command.Id);
             if (matchRequest == null)
             {
-               return Errors.MatchRequest.RequestNotFound;
+                _logger.LogWarn("Match request not found");
+                return Errors.MatchRequest.RequestNotFound;
             }
 
             if(matchRequest.MatchReceiverUserId != command.UserId)
             {
+                _logger.LogError($"User with Id --> {command.UserId} is unauthorized to accept this match request");
                 return Errors.MatchRequest.UnauthorizedAttempt;
             }
             if (matchRequest.MatchRequestStatus == MatchRequestStatus.Accepted)
             {
+                _logger.LogWarn($"Match request already accepted");
                 return Errors.MatchRequest.AlreadyAccepted;
             }
 
             matchRequest.MatchRequestStatus = MatchRequestStatus.Accepted;
             _matchProfileRepository.Update(matchRequest);
-            
+            _logger.LogInfo($"Match request accepted by user --> {command.UserId}");
+
             //trigger Accepted match event notification
             await _mediator.Publish(new MatchAcceptedEvent(command.UserId, matchRequest.MatchInitiatorUserId, command.UserId));
 

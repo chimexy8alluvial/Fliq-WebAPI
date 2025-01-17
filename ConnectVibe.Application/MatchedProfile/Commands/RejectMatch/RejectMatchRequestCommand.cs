@@ -36,22 +36,25 @@ namespace Fliq.Application.MatchedProfile.Commands.RejectMatch
             var matchRequest = _matchProfileRepository.GetMatchRequestById(command.Id);
             if (matchRequest == null)
             {
+                _logger.LogWarn("Match request not found");
                 return Errors.MatchRequest.RequestNotFound;
             }
 
             if (matchRequest.MatchReceiverUserId != command.UserId)
             {
+                _logger.LogError($"User with Id --> {command.UserId} is unauthorized to reject this match request");
                 return Errors.MatchRequest.UnauthorizedAttempt;
             }
             if (matchRequest.MatchRequestStatus == MatchRequestStatus.Rejected)
             {
+                _logger.LogInfo($"Match request already rejected");
                 return Errors.MatchRequest.AlreadyRejected;
             }
 
             matchRequest.MatchRequestStatus = MatchRequestStatus.Rejected;
             _matchProfileRepository.Update(matchRequest);
+            _logger.LogInfo($"Match request rejected by user --> {command.UserId}");
 
-            _logger.LogInfo("Match request rejected.");
             // Trigger MatchRejectedEvent notification
             await _mediator.Publish(new MatchRejectedEvent(command.UserId));
 

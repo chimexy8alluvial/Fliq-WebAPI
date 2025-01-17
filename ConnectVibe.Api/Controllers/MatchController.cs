@@ -1,6 +1,4 @@
-﻿using Fliq.Application.Common.Interfaces.Persistence;
-using Fliq.Application.Common.Interfaces.Services;
-using Fliq.Application.Common.Pagination;
+﻿using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.MatchedProfile.Commands.AcceptedMatch;
 using Fliq.Application.MatchedProfile.Commands.Create;
 using Fliq.Application.MatchedProfile.Commands.MatchedList;
@@ -19,14 +17,12 @@ namespace Fliq.Api.Controllers
     {
         private readonly ISender _mediator;
         private readonly IMapper _mapper;
-        private readonly IOtpRepository _otpRepository;
         private readonly ILoggerManager _logger;
 
-        public MatchController(ISender mediator, IMapper mapper, IOtpRepository otpRepository, ILoggerManager logger)
+        public MatchController(ISender mediator, IMapper mapper, ILoggerManager logger)
         {
             _mediator = mediator;
             _mapper = mapper;
-            _otpRepository = otpRepository;
             _logger = logger;
         }
 
@@ -34,8 +30,8 @@ namespace Fliq.Api.Controllers
         public async Task<IActionResult> Initiate_Match([FromForm] MatchRequest request)
         {
             _logger.LogInfo($"Initiate Match Request Received: {request}");
-            var MatchInitiatorUserId = GetAuthUserId();
-            var modifiedRequest = request with { MatchInitiatorUserId = MatchInitiatorUserId };
+            var matchInitiatorUserId = GetAuthUserId();
+            var modifiedRequest = request with { MatchInitiatorUserId = matchInitiatorUserId };
             var command = _mapper.Map<InitiateMatchRequestCommand>(modifiedRequest);
 
             var matchedProfileResult = await _mediator.Send(command);
@@ -56,10 +52,10 @@ namespace Fliq.Api.Controllers
             var query = _mapper.Map<GetMatchRequestListCommand>(request);
             query = query with { UserId = userId};
 
-            var matchelistResult = await _mediator.Send(query);
-            _logger.LogInfo($"Get Match List Request Command Executed.  Result: {matchelistResult}");
-            return matchelistResult.Match(
-                matchelistResult => Ok(_mapper.Map<List<MatchRequestResponse>>(matchelistResult)),
+            var matchRequestResult = await _mediator.Send(query);
+            _logger.LogInfo($"Get Match List Request Command Executed.  Result: {matchRequestResult}");
+            return matchRequestResult.Match(
+                matchRequestResult => Ok(_mapper.Map<List<MatchRequestResponse>>(matchRequestResult)),
                 errors => Problem(errors)
             );
         }
