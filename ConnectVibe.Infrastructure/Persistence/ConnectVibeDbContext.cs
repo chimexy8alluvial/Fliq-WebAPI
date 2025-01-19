@@ -45,6 +45,9 @@ namespace Fliq.Infrastructure.Persistence
         public DbSet<PromptCategory> PromptCategories { get; set; }
         public DbSet<PromptQuestion> PromptQuestions { get; set; }
 
+        public DbSet<Wallet> Wallets { get; set; } = null!;
+        public DbSet<Stake> Stakes { get; set; } = null!;
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Payment>()

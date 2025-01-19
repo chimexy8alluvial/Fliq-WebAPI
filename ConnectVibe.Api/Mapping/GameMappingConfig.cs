@@ -1,5 +1,6 @@
 ﻿using Fliq.Application.Games.Commands.AcceptGameRequest;
 using Fliq.Application.Games.Commands.CreateGame;
+using Fliq.Application.Games.Commands.CreateStake;
 using Fliq.Application.Games.Commands.SendGameRequest;
 using Fliq.Application.Games.Commands.SubmitAnswer;
 using Fliq.Application.Games.Common;
@@ -43,6 +44,10 @@ namespace Fliq.Api.Mapping
                .Map(dest => dest.Player2Score, src => src.Player2Score)
                .Map(dest => dest.StartTime, src => src.StartTime)
                .Map(dest => dest.EndTime, src => src.EndTime);
+            config.NewConfig<CreateStakeRequestDto, CreateStakeCommand>()
+                .IgnoreNullValues(true);
+            config.NewConfig<Stake, StakeResponseDto>()
+                .IgnoreNullValues(true);
         }
     }
 }
