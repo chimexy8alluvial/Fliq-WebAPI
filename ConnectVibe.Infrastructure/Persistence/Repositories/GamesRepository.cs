@@ -71,7 +71,8 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
         public GameSession? GetGameSessionById(int id)
         {
-            var session = _dbContext.GameSessions.SingleOrDefault(p => p.Id == id);
+            var session = _dbContext.GameSessions
+                .SingleOrDefault(p => p.Id == id);
             return session;
         }
 

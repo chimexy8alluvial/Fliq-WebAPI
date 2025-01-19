@@ -13,6 +13,7 @@ namespace Fliq.Domain.Entities.Games
         public GameStatus Status { get; set; } = GameStatus.Pending;
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
+        public int StakeId { get; set; }
         public Stake? Stake { get; set; }
     }
 }

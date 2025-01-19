@@ -1,10 +1,10 @@
 ﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Games.Commands.CreateStake;
+using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities;
 using Fliq.Domain.Entities.Games;
 using Moq;
-using Fliq.Domain.Common.Errors;
 
 namespace Fliq.Test.Games.Commands
 {
@@ -14,6 +14,7 @@ namespace Fliq.Test.Games.Commands
         private Mock<IStakeRepository> _mockStakeRepository;
         private Mock<IWalletRepository> _mockWalletRepository;
         private Mock<ILoggerManager> _mockLogger;
+        private Mock<IGamesRepository> _mockGameRepository;
         private CreateStakeCommandHandler _handler;
 
         [TestInitialize]
@@ -22,11 +23,13 @@ namespace Fliq.Test.Games.Commands
             _mockStakeRepository = new Mock<IStakeRepository>();
             _mockWalletRepository = new Mock<IWalletRepository>();
             _mockLogger = new Mock<ILoggerManager>();
+            _mockGameRepository = new Mock<IGamesRepository>();
 
             _handler = new CreateStakeCommandHandler(
                 _mockStakeRepository.Object,
                 _mockWalletRepository.Object,
-                _mockLogger.Object
+                _mockLogger.Object,
+                _mockGameRepository.Object
             );
         }
 

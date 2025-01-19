@@ -120,7 +120,7 @@ namespace Fliq.Api.Controllers
             _logger.LogInformation($"Get Game Session Query Executed. Result: {result}");
 
             return result.Match(
-                session => Ok(_mapper.Map<GetGameSessionResponse>(session)),
+                session => Ok(_mapper.Map<GameSessionResponse>(session)),
                 errors => Problem(errors)
             );
         }
@@ -214,7 +214,9 @@ namespace Fliq.Api.Controllers
         [HttpPost("accept-stake")]
         public async Task<IActionResult> AcceptStake([FromBody] AcceptStakeRequestDto requestDto)
         {
+            var userId = GetAuthUserId();
             var command = requestDto.Adapt<AcceptStakeCommand>();
+            command = command with { UserId = userId };
             var result = await _mediator.Send(command);
 
             return result.Match(
@@ -226,7 +228,9 @@ namespace Fliq.Api.Controllers
         [HttpPost("reject-stake")]
         public async Task<IActionResult> RejectStake([FromBody] AcceptStakeRequestDto requestDto)
         {
+            var userId = GetAuthUserId();
             var command = requestDto.Adapt<RejectStakeCommand>();
+            command = command with { UserId = userId };
             var result = await _mediator.Send(command);
 
             return result.Match(

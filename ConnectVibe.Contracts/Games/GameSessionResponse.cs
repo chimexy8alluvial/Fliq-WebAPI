@@ -10,5 +10,7 @@
         public DateTime StartTime { get; set; }
         public DateTime? EndTime { get; set; }
         public int? WinnerId { get; set; }
+        public int StakeId { get; set; }
+        public decimal StakeAmount { get; set; }
     }
 }

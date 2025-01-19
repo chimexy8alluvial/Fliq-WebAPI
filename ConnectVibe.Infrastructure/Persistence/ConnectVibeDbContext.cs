@@ -70,6 +70,19 @@ namespace Fliq.Infrastructure.Persistence
                 .WithMany()
                 .HasForeignKey(e => e.TicketId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<GameSession>()
+        .HasOne(gs => gs.Stake)
+        .WithOne(s => s.GameSession)
+        .HasForeignKey<GameSession>(gs => gs.StakeId)
+        .OnDelete(DeleteBehavior.Cascade); // Configure delete behavior
+
+            // Configure Stake -> GameSession relationship
+            modelBuilder.Entity<Stake>()
+                .HasOne(s => s.GameSession)
+                .WithOne(gs => gs.Stake)
+                .HasForeignKey<Stake>(s => s.GameSessionId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

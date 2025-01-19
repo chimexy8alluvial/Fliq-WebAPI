@@ -1,9 +1,9 @@
 ﻿using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Games;
 using MediatR;
-using Fliq.Domain.Common.Errors;
-using Fliq.Application.Common.Interfaces.Services;
 
 namespace Fliq.Application.Games.Commands.CreateStake
 {
@@ -19,17 +19,29 @@ namespace Fliq.Application.Games.Commands.CreateStake
         private readonly IStakeRepository _stakeRepository;
         private readonly IWalletRepository _walletRepository;
         private readonly ILoggerManager _logger;
+        private readonly IGamesRepository _gamesRepository;
 
-        public CreateStakeCommandHandler(IStakeRepository stakeRepository, IWalletRepository walletRepository, ILoggerManager logger)
+        public CreateStakeCommandHandler(IStakeRepository stakeRepository, IWalletRepository walletRepository, ILoggerManager logger, IGamesRepository gamesRepository)
         {
             _stakeRepository = stakeRepository;
             _walletRepository = walletRepository;
             _logger = logger;
+            _gamesRepository = gamesRepository;
         }
 
         public async Task<ErrorOr<Stake>> Handle(CreateStakeCommand request, CancellationToken cancellationToken)
         {
+            await Task.CompletedTask;
             _logger.LogInfo("Creating stake");
+
+            //Get game session
+            var gameSession = _gamesRepository.GetGameSessionById(request.GameSessionId);
+            if (gameSession == null)
+            {
+                _logger.LogError("Game session not found");
+                return Errors.Games.GameSessionNotFound;
+            }
+
             // Validate requester wallet balance
             var requesterWallet = _walletRepository.GetWalletByUserId(request.RequesterId);
             if (requesterWallet == null || requesterWallet.Balance < request.Amount)
@@ -52,6 +64,9 @@ namespace Fliq.Application.Games.Commands.CreateStake
 
             _stakeRepository.Add(stake);
 
+            //update gamesession
+            gameSession.Stake = stake;
+            _gamesRepository.UpdateGameSession(gameSession);
             _logger.LogInfo($"Stake created: {stake.Id}");
             return stake;
         }
