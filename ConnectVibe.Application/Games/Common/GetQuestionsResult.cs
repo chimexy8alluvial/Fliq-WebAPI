@@ -2,7 +2,9 @@
 {
     public record GetQuestionResult(
       int Id,
-      string Text,
-      List<string> Options
+      int GameId,
+      string QuestionText,
+      List<string> Options,
+      string CorrectAnswer
   );
 }

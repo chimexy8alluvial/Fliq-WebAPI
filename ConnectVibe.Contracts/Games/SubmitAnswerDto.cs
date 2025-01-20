@@ -2,8 +2,7 @@
 {
     public record SubmitAnswerDto(
     int GameSessionId,
-    int UserId,
-    int QuestionId,
-    string Answer
+    int Player1Score,
+    int Player2Score
 );
 }

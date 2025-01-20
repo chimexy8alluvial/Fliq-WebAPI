@@ -1,9 +1,11 @@
-﻿using Fliq.Application.Common.Interfaces.Persistence;
+﻿using Fliq.Application.Common.Hubs;
+using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Games.Commands.SendGameRequest;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities;
 using Fliq.Domain.Entities.Games;
+using Microsoft.AspNetCore.SignalR;
 using Moq;
 
 namespace Fliq.Test.Games.Commands
@@ -14,6 +16,8 @@ namespace Fliq.Test.Games.Commands
         private Mock<IGamesRepository> _mockGamesRepository;
         private Mock<ILoggerManager> _mockLogger;
         private Mock<IUserRepository> _mockUserRepository;
+        private Mock<IHubContext<GameHub>> _mockHub;
+
         private SendGameRequestCommandHandler _handler;
 
         [TestInitialize]
@@ -22,10 +26,12 @@ namespace Fliq.Test.Games.Commands
             _mockGamesRepository = new Mock<IGamesRepository>();
             _mockLogger = new Mock<ILoggerManager>();
             _mockUserRepository = new Mock<IUserRepository>();
+            _mockHub = new Mock<IHubContext<GameHub>>();
             _handler = new SendGameRequestCommandHandler(
                 _mockGamesRepository.Object,
                 _mockLogger.Object,
-                _mockUserRepository.Object
+                _mockUserRepository.Object,
+                _mockHub.Object
             );
         }
 

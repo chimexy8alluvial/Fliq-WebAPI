@@ -1,16 +1,21 @@
-﻿using Fliq.Application.Games.Commands.AcceptGameRequest;
+﻿using Fliq.Application.Common.Hubs;
+using Fliq.Application.Games.Commands.AcceptGameRequest;
 using Fliq.Application.Games.Commands.CreateGame;
 using Fliq.Application.Games.Commands.CreateQuestion;
 using Fliq.Application.Games.Commands.SendGameRequest;
 using Fliq.Application.Games.Commands.SubmitAnswer;
+using Fliq.Application.Games.Common;
 using Fliq.Application.Games.Queries.GetGame;
 using Fliq.Application.Games.Queries.GetGameHistory;
 using Fliq.Application.Games.Queries.GetGames;
+using Fliq.Application.Games.Queries.GetQuestions;
 using Fliq.Application.Games.Queries.GetSession;
 using Fliq.Contracts.Games;
 using MapsterMapper;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Fliq.Api.Controllers
 {
@@ -21,12 +26,14 @@ namespace Fliq.Api.Controllers
         private readonly IMediator _mediator;
         private readonly ILogger<GamesController> _logger;
         private readonly IMapper _mapper;
+        private readonly IHubContext<GameHub> _hubContext;
 
-        public GamesController(IMediator mediator, ILogger<GamesController> logger, IMapper mapper)
+        public GamesController(IMediator mediator, ILogger<GamesController> logger, IMapper mapper, IHubContext<GameHub> hubContext)
         {
             _mediator = mediator;
             _logger = logger;
             _mapper = mapper;
+            _hubContext = hubContext;
         }
 
         [HttpPost("create")]
@@ -114,18 +121,31 @@ namespace Fliq.Api.Controllers
             );
         }
 
-        [HttpPost("submit-answer")]
+        [HttpGet("questions/paginated")]
+        public async Task<IActionResult> GetGameQuestions([FromQuery] GetQuestionsRequest request)
+        {
+            _logger.LogInformation($"Get Game Questions Request Received for Game with ID: {request.GameId}");
+            var query = _mapper.Map<GetQuestionsQuery>(request);
+            var result = await _mediator.Send(query);
+            _logger.LogInformation($"Get Game Questions Query Executed. Result: {result}");
+
+            return result.Match(
+                session => Ok(_mapper.Map<List<GetQuestionResult>>(session)),
+                errors => Problem(errors)
+            );
+        }
+
+        [HttpPost("submit-scores")]
+        [AllowAnonymous]
         public async Task<IActionResult> SubmitAnswer([FromForm] SubmitAnswerDto request)
         {
             _logger.LogInformation($"Submit Answer Request Received: {request}");
             var command = _mapper.Map<SubmitAnswerCommand>(request);
-            var userId = GetAuthUserId();
-            command = command with { PlayerId = userId };
             var result = await _mediator.Send(command);
             _logger.LogInformation($"Submit Answer Command Executed. Result: {result}");
 
             return result.Match(
-                success => Ok("Answer submitted successfully."),
+                success => Ok("Score submitted successfully."),
                 errors => Problem(errors)
             );
         }
@@ -155,6 +175,24 @@ namespace Fliq.Api.Controllers
               session => Ok(_mapper.Map<List<GameSessionResponse>>(session)),
               errors => Problem(errors)
           );
+        }
+
+        [HttpPost("join-session")]
+        [AllowAnonymous]
+        public async Task<IActionResult> JoinSession([FromForm] string sessionId)
+        {
+            var connectionId = HttpContext.Connection.Id;
+            await _hubContext.Clients.Group(sessionId).SendAsync("PlayerJoined", connectionId);
+            return Ok();
+        }
+
+        [HttpPost("leave-session")]
+        [AllowAnonymous]
+        public async Task<IActionResult> LeaveSession([FromForm] string sessionId)
+        {
+            var connectionId = HttpContext.Connection.Id;
+            await _hubContext.Clients.Group(sessionId).SendAsync("PlayerLeft", connectionId);
+            return Ok();
         }
     }
 }

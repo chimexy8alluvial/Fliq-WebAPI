@@ -1,8 +1,10 @@
-﻿using Moq;
-using Fliq.Application.Games.Commands.CreateGameSession;
+﻿using Fliq.Application.Common.Hubs;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.Games.Commands.CreateGameSession;
 using Fliq.Domain.Entities.Games;
+using Microsoft.AspNetCore.SignalR;
+using Moq;
 
 namespace Fliq.Test.Games.Commands
 {
@@ -11,6 +13,7 @@ namespace Fliq.Test.Games.Commands
     {
         private Mock<IGamesRepository> _mockGamesRepository;
         private Mock<ILoggerManager> _mockLogger;
+        private Mock<IHubContext<GameHub>> _mockHub;
         private CreateGameSessionCommandHandler _handler;
 
         [TestInitialize]
@@ -18,9 +21,16 @@ namespace Fliq.Test.Games.Commands
         {
             _mockGamesRepository = new Mock<IGamesRepository>();
             _mockLogger = new Mock<ILoggerManager>();
+            _mockHub = new Mock<IHubContext<GameHub>>();
+            var mockClients = new Mock<IHubClients>();
+            var mockClientProxy = new Mock<IClientProxy>();
+
+            mockClients.Setup(c => c.All).Returns(mockClientProxy.Object);
+            _mockHub.Setup(h => h.Clients).Returns(mockClients.Object);
             _handler = new CreateGameSessionCommandHandler(
                 _mockGamesRepository.Object,
-                _mockLogger.Object
+                _mockLogger.Object,
+                _mockHub.Object
             );
         }
 
