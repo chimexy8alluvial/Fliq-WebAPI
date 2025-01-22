@@ -9,5 +9,7 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         Wallet? GetWalletByUserId(int userId);
 
         bool UpdateWallet(Wallet wallet);
+
+        WalletHistory AddWalletHistory(WalletHistory walletHistory);
     }
 }

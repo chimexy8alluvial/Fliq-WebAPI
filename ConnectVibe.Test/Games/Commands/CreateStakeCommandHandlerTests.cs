@@ -42,7 +42,7 @@ namespace Fliq.Test.Games.Commands
             _mockWalletRepository
                 .Setup(repo => repo.GetWalletByUserId(command.RequesterId))
                 .Returns(new Wallet { UserId = 101, Balance = 30m });
-
+            _mockGameRepository.Setup(repo => repo.GetGameSessionById(command.GameSessionId)).Returns(new GameSession());
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
 
@@ -65,6 +65,8 @@ namespace Fliq.Test.Games.Commands
 
             _mockWalletRepository
                 .Setup(repo => repo.UpdateWallet(It.IsAny<Wallet>()));
+
+            _mockGameRepository.Setup(repo => repo.GetGameSessionById(command.GameSessionId)).Returns(new GameSession());
 
             _mockStakeRepository
                 .Setup(repo => repo.Add(It.IsAny<Stake>()));
@@ -95,6 +97,7 @@ namespace Fliq.Test.Games.Commands
             _mockWalletRepository
                 .Setup(repo => repo.GetWalletByUserId(command.RequesterId))
                 .Returns((Wallet)null);
+            _mockGameRepository.Setup(repo => repo.GetGameSessionById(command.GameSessionId)).Returns(new GameSession());
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);

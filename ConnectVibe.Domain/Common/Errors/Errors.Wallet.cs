@@ -14,8 +14,13 @@ namespace Fliq.Domain.Common.Errors
             code: "Wallet.NotFound",
             description: "Wallet not found");
 
-            public static readonly Error InsufficientBalance =
-            Error.Validation("Wallet.InsufficientBalance", "The wallet does not have sufficient balance.");
+            public static Error InsufficientBalance => Error.Failure(
+                code: "Wallet.InsufficientBalance",
+                description: "The wallet does not have sufficient balance.");
+
+            public static Error UnableTodeduct => Error.Failure(
+                code: "Wallet.UnableTodeduct",
+                description: "Unable to deduct.");
         }
     }
 }

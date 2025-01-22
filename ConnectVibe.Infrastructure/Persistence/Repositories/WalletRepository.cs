@@ -32,5 +32,12 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             _dbContext.SaveChanges();
             return true;
         }
+
+        public WalletHistory AddWalletHistory(WalletHistory walletHistory)
+        {
+            _dbContext.WalletHistories.Add(walletHistory);
+            _dbContext.SaveChanges();
+            return walletHistory;
+        }
     }
 }

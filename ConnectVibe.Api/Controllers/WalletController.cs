@@ -1,6 +1,5 @@
 ﻿using Fliq.Application.Payments.Commands.CreateWallet;
 using Fliq.Application.Payments.Queries.GetWallet;
-using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,18 +11,17 @@ namespace Fliq.Api.Controllers
     {
         private readonly IMediator _mediator;
         private readonly ILogger<WalletController> _logger;
-        private readonly IMapper _mapper;
 
-        public WalletController(IMediator mediator, ILogger<WalletController> logger, IMapper mapper)
+        public WalletController(IMediator mediator, ILogger<WalletController> logger)
         {
             _mediator = mediator;
             _logger = logger;
-            _mapper = mapper;
         }
 
         [HttpPost("create")]
         public async Task<IActionResult> CreateWallet()
         {
+            _logger.LogInformation("Create Wallet Request Received.");
             var userId = GetAuthUserId();
             var command = new CreateWalletCommand(userId);
             var result = await _mediator.Send(command);
@@ -36,6 +34,7 @@ namespace Fliq.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetWallet()
         {
+            _logger.LogInformation("Get Wallet Request Received.");
             var userId = GetAuthUserId();
             var query = new GetWalletQuery(userId);
             var result = await _mediator.Send(query);
