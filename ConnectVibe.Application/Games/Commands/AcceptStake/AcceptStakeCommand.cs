@@ -109,6 +109,7 @@ namespace Fliq.Application.Games.Commands.AcceptStake
 
             // Mark the stake as accepted
             stake.IsAccepted = true;
+            stake.Amount += stake.Amount;
             _stakeRepository.UpdateStake(stake);
 
             return stake;

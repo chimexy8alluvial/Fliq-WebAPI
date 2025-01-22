@@ -8,5 +8,13 @@
         public int RecipientId { get; set; }
         public decimal Amount { get; set; }
         public bool IsAccepted { get; set; }
+        public StakeStatus StakeStatus { get; set; } = StakeStatus.Pending;
+    }
+
+    public enum StakeStatus
+    {
+        Pending = 0,
+        Paid = 1,
+        Cancelled = 2
     }
 }
