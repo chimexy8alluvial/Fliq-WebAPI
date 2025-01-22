@@ -26,12 +26,12 @@ namespace Fliq.Test.Games.Commands
             _mockGamesRepository = new Mock<IGamesRepository>();
             _mockLogger = new Mock<ILoggerManager>();
             _mockUserRepository = new Mock<IUserRepository>();
-            _mockHub = new Mock<IHubContext<GameHub>>();
+           // _mockHub = new Mock<IHubContext<GameHub>>();
             _handler = new SendGameRequestCommandHandler(
                 _mockGamesRepository.Object,
                 _mockLogger.Object,
-                _mockUserRepository.Object,
-                _mockHub.Object
+                _mockUserRepository.Object
+               // _mockHub.Object
             );
         }
 

@@ -36,7 +36,7 @@ namespace Fliq.Application.MatchedProfile.Commands.RejectMatch
             var matchRequest = _matchProfileRepository.GetMatchRequestById(command.Id);
             if (matchRequest == null)
             {
-                _logger.LogWarn("Match request not found");
+                _logger.LogWarn($"Match request  with Id --> {command.Id} not found");
                 return Errors.MatchRequest.RequestNotFound;
             }
 
@@ -47,7 +47,7 @@ namespace Fliq.Application.MatchedProfile.Commands.RejectMatch
             }
             if (matchRequest.MatchRequestStatus == MatchRequestStatus.Rejected)
             {
-                _logger.LogInfo($"Match request already rejected");
+                _logger.LogInfo($"Match request  with Id --> {command.Id} already rejected");
                 return Errors.MatchRequest.AlreadyRejected;
             }
 

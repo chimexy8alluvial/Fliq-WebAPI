@@ -11,7 +11,6 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         Domain.Entities.MatchedProfile.MatchRequest? GetMatchRequestByUserId(int id);
         Domain.Entities.MatchedProfile.MatchRequest? GetMatchRequestById(int id);
         bool MatchRequestExist(int initiatorId, int requestedUserId);
-        //Task <IEnumerable<MatchRequestDto>> GetMatchListById(int userId, MatchListPagination matchListPagination);
         Task<IEnumerable<MatchRequestDto>> GetMatchListById(GetMatchListRequest query);
     }
 }

@@ -36,7 +36,7 @@ namespace Fliq.Application.MatchedProfile.Commands.AcceptedMatch
             var matchRequest = _matchProfileRepository.GetMatchRequestById(command.Id);
             if (matchRequest == null)
             {
-                _logger.LogWarn("Match request not found");
+                _logger.LogWarn($"Match request with Id --> {command.Id} not found");
                 return Errors.MatchRequest.RequestNotFound;
             }
 
@@ -47,7 +47,7 @@ namespace Fliq.Application.MatchedProfile.Commands.AcceptedMatch
             }
             if (matchRequest.MatchRequestStatus == MatchRequestStatus.Accepted)
             {
-                _logger.LogWarn($"Match request already accepted");
+                _logger.LogWarn($"Match request  with Id --> {command.Id} already accepted");
                 return Errors.MatchRequest.AlreadyAccepted;
             }
 

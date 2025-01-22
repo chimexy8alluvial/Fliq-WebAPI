@@ -44,14 +44,12 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
         public IEnumerable<PromptCategory> GetAllPromptCategories()
         {
-            //using (var connection = _connectionFactory.CreateConnection())
-            //{
-            //   var categories = connection.Query<PromptCategory>("sp_GetAllPromptCategories", commandType: CommandType.StoredProcedure);
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var categories = connection.Query<PromptCategory>("sp_GetAllPromptCategories", commandType: CommandType.StoredProcedure);
 
-            //   return categories;
-            //}
-
-            return _dbContext.PromptCategories.OrderByDescending(c => c.Id);
+                return categories;
+            }
         }
 
     }

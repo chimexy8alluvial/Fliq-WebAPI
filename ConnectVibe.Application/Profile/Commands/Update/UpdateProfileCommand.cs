@@ -121,7 +121,7 @@ namespace Fliq.Application.Profile.Commands.Update
                 }
             }
 
-            updatedProfile.DateModified = DateTime.Now;
+            updatedProfile.DateModified = DateTime.UtcNow;
             // Save updated profile
             _profileRepository.Update(updatedProfile);
             _loggerManager.LogInfo($"Profile updated successfully for user with id: {command.UserId}");

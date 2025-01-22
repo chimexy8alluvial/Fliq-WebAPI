@@ -39,9 +39,6 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                 var filteredItems = result.Select(p => new MatchRequestDto
                 {
                     MatchInitiatorUserId = p.MatchInitiatorUserId,
-                    Name = p.Name,
-                    PictureUrl = p.PictureUrl,
-                    Age = p.Age
                 });
                 return filteredItems;
             }
