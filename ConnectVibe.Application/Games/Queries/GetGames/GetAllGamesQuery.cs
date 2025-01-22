@@ -26,7 +26,7 @@ namespace Fliq.Application.Games.Queries.GetGames
             var games = _gamesRepository.GetAllGames();
 
             _logger.LogInfo($"Got {games.Count()} games");
-            return games.Select(game => new GetGameResult(game)).ToList();
+            return games.Select(game => new GetGameResult(game.Id, game.Name, game.Description, game.RequiresLevel, game.RequiresTheme, game.RequiresCategory)).ToList();
         }
     }
 }
