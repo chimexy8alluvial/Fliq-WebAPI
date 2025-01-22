@@ -54,8 +54,10 @@ namespace Fliq.Application.Games.Commands.CreateQuestion
 
             return new GetQuestionResult(
                 question.Id,
+                question.GameId,
                 question.QuestionText,
-                question.Options
+                question.Options,
+                question.CorrectAnswer
             );
         }
     }

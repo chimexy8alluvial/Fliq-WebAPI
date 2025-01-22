@@ -1,11 +1,13 @@
 ﻿using ErrorOr;
+using Fliq.Application.Common.Hubs;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Games.Common;
+using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Games;
 using Fliq.Domain.Enums;
 using MediatR;
-using Fliq.Domain.Common.Errors;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Fliq.Application.Games.Commands.AcceptGameRequest
 {
@@ -15,11 +17,13 @@ namespace Fliq.Application.Games.Commands.AcceptGameRequest
     {
         private readonly IGamesRepository _gamesRepository;
         private readonly ILoggerManager _logger;
+        private readonly IHubContext<GameHub> _hubContext;
 
-        public AcceptGameRequestCommandHandler(IGamesRepository gamesRepository, ILoggerManager logger)
+        public AcceptGameRequestCommandHandler(IGamesRepository gamesRepository, ILoggerManager logger, IHubContext<GameHub> hubContext)
         {
             _gamesRepository = gamesRepository;
             _logger = logger;
+            _hubContext = hubContext;
         }
 
         public async Task<ErrorOr<GetGameSessionResult>> Handle(AcceptGameRequestCommand request, CancellationToken cancellationToken)
@@ -39,11 +43,14 @@ namespace Fliq.Application.Games.Commands.AcceptGameRequest
                 GameId = gameRequest.GameId,
                 Player1Id = gameRequest.RequesterId,
                 Player2Id = request.UserId,
-                CurrentTurnPlayerId = gameRequest.RequesterId,
                 Status = GameStatus.InProgress
             };
 
             _gamesRepository.CreateGameSession(gameSession);
+
+            await _hubContext.Clients
+                .Group(gameSession.Id.ToString())
+                .SendAsync("GameRequestAccepted", gameSession);
 
             _logger.LogInfo($"Accepted game request: {request.RequestId}");
             return new GetGameSessionResult(gameSession);

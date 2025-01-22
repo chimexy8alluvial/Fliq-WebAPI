@@ -1,5 +1,6 @@
 ﻿using Fliq.Api;
 using Fliq.Application;
+using Fliq.Application.Common.Hubs;
 using Fliq.Infrastructure;
 using Microsoft.OpenApi.Models;
 using NLog;
@@ -43,18 +44,18 @@ var builder = WebApplication.CreateBuilder(args);
 
 var app = builder.Build();
 {
-
-        app.UseSwagger();
-        app.UseSwaggerUI(c =>
-        {
-            c.SwaggerEndpoint("/swagger/v1/swagger.json", "Fliq API v1");
-        });
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Fliq API v1");
+    });
     app.UseExceptionHandler("/error");
     app.UseHttpsRedirection();
     app.UseRouting();
     app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
+    app.MapHub<GameHub>("/gamehub");
 
     app.Run();
 }

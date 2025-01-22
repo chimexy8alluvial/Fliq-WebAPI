@@ -2,9 +2,9 @@
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Games.Common;
+using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Games;
 using MediatR;
-using Fliq.Domain.Common.Errors;
 
 namespace Fliq.Application.Games.Commands.SendGameRequest
 {

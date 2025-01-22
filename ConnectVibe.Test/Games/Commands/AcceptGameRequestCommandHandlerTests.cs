@@ -1,9 +1,11 @@
-﻿using Fliq.Application.Common.Interfaces.Persistence;
+﻿using Fliq.Application.Common.Hubs;
+using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Games.Commands.AcceptGameRequest;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Games;
 using Fliq.Domain.Enums;
+using Microsoft.AspNetCore.SignalR;
 using Moq;
 
 namespace Fliq.Test.Games.Commands
@@ -13,6 +15,7 @@ namespace Fliq.Test.Games.Commands
     {
         private Mock<IGamesRepository> _mockGamesRepository;
         private Mock<ILoggerManager> _mockLogger;
+        private Mock<IHubContext<GameHub>> _mockHub;
         private AcceptGameRequestCommandHandler _handler;
 
         [TestInitialize]
@@ -20,10 +23,17 @@ namespace Fliq.Test.Games.Commands
         {
             _mockGamesRepository = new Mock<IGamesRepository>();
             _mockLogger = new Mock<ILoggerManager>();
+            _mockHub = new Mock<IHubContext<GameHub>>();
 
+            var mockClients = new Mock<IHubClients>();
+            var mockClientProxy = new Mock<IClientProxy>();
+            mockClients.Setup(c => c.Group(It.IsAny<string>())).Returns(mockClientProxy.Object);
+
+            _mockHub.Setup(h => h.Clients).Returns(mockClients.Object);
             _handler = new AcceptGameRequestCommandHandler(
                 _mockGamesRepository.Object,
-                _mockLogger.Object
+                _mockLogger.Object,
+                _mockHub.Object
             );
         }
 
@@ -110,7 +120,14 @@ namespace Fliq.Test.Games.Commands
                 RequesterId = 100,
                 Status = GameStatus.Pending
             };
-
+            var gameSession = new GameSession
+            {
+                Id = 1,
+                Status = GameStatus.InProgress,
+                GameId = 10,
+                Player1Id = 100,
+                Player2Id = 101
+            };
             _mockGamesRepository
                 .Setup(repo => repo.GetGameRequestById(It.IsAny<int>()))
                 .Returns(gameRequest);

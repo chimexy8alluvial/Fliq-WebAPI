@@ -53,7 +53,7 @@ namespace Fliq.Test.Games.Commands
             // Assert
             Assert.IsFalse(result.IsError);
             Assert.IsNotNull(result.Value);
-            Assert.AreEqual(command.Text, result.Value.Text);
+            Assert.AreEqual(command.Text, result.Value.QuestionText);
             Assert.AreEqual(command.Options.Count, result.Value.Options.Count);
 
             Assert.IsNotNull(capturedQuestion);
