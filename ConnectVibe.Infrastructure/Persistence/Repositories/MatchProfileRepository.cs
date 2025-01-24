@@ -39,24 +39,26 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                 var filteredItems = result.Select(p => new MatchRequestDto
                 {
                     MatchInitiatorUserId = p.MatchInitiatorUserId,
-                    Name = p.Name,
-                    PictureUrl = p.PictureUrl,
-                    Age = p.Age
                 });
                 return filteredItems;
             }
         }
 
-        public Domain.Entities.MatchedProfile.MatchRequest? GetMatchProfileByUserId(int Id)
+        public Domain.Entities.MatchedProfile.MatchRequest? GetMatchRequestByUserId(int Id)
         {
             var matchProfile = _dbContext.MatchRequests.SingleOrDefault(p => p.MatchReceiverUserId == Id);
             return matchProfile;
         }
 
-        public Domain.Entities.MatchedProfile.MatchRequest? GetMatchProfileById(int Id)
+        public Domain.Entities.MatchedProfile.MatchRequest? GetMatchRequestById(int Id)
         {
             var matchProfile = _dbContext.MatchRequests.SingleOrDefault(p => p.Id == Id);
             return matchProfile;
+        }
+
+        public bool MatchRequestExist(int initiatorId, int requestedUserId)
+        {
+            return _dbContext.MatchRequests.Any( r => r.MatchInitiatorUserId == initiatorId && r.MatchReceiverUserId == requestedUserId);
         }
 
         public void Update(Domain.Entities.MatchedProfile.MatchRequest request)

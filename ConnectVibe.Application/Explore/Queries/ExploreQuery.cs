@@ -7,7 +7,7 @@ using Fliq.Application.Explore.Common.Services;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Profile;
 using MediatR;
-using Microsoft.AspNetCore.Http;
+
 
 
 namespace Fliq.Application.Explore.Queries
@@ -22,16 +22,13 @@ namespace Fliq.Application.Explore.Queries
 
     public class ExploreQueryHandler : IRequestHandler<ExploreQuery, ErrorOr<ExploreResult>>
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUserRepository _userRepository;
         private readonly IProfileRepository _profileRepository;
         private readonly IProfileMatchingService _profileMatchingService;
-        private const int UnauthorizedUserId = -1;
         private readonly ILoggerManager _logger;
 
-        public ExploreQueryHandler(IHttpContextAccessor httpContextAccessor, IUserRepository userRepository, IProfileRepository profileRepository, ILoggerManager logger, IProfileMatchingService profileMatchingService)
+        public ExploreQueryHandler(IUserRepository userRepository, IProfileRepository profileRepository, ILoggerManager logger, IProfileMatchingService profileMatchingService)
         {
-            _httpContextAccessor = httpContextAccessor;
             _userRepository = userRepository;
             _profileRepository = profileRepository;
             _logger = logger;

@@ -45,16 +45,19 @@ namespace Fliq.Infrastructure.Persistence
         public DbSet<PromptCategory> PromptCategories { get; set; }
         public DbSet<PromptQuestion> PromptQuestions { get; set; }
 
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Payment>()
                 .Property(p => p.Amount)
                 .HasPrecision(18, 2);
+            
             modelBuilder.Entity<EventTicket>()
-       .HasOne(e => e.User)
-       .WithMany()
-       .HasForeignKey(e => e.UserId)
-       .OnDelete(DeleteBehavior.NoAction);
+            .HasOne(e => e.User)
+            .WithMany()
+            .HasForeignKey(e => e.UserId)
+            .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<EventTicket>()
                 .HasOne(e => e.Payment)
@@ -67,6 +70,15 @@ namespace Fliq.Infrastructure.Persistence
                 .WithMany()
                 .HasForeignKey(e => e.TicketId)
                 .OnDelete(DeleteBehavior.Cascade);
+               
+            modelBuilder.Entity<PromptResponse>()
+            .HasOne(pr => pr.PromptQuestion)
+            .WithMany() // No navigation property in PromptQuestion
+            .HasForeignKey(pr => pr.PromptQuestionId);
+
+            modelBuilder.Entity<PromptResponse>()
+                .HasIndex(pr => new { pr.PromptQuestionId, pr.UserProfileId })
+                .IsUnique(); // Ensures a user can only respond once to a question
         }
     }
 }

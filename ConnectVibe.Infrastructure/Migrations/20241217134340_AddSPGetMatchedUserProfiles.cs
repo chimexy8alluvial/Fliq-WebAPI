@@ -11,9 +11,9 @@ namespace Fliq.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@"
-            CREATE PROCEDURE [dbo].[sPGetMatchedUserProfiles]
+            ALTER   PROCEDURE [dbo].[sPGetMatchedUserProfiles]
                 @userId INT,
-                @profileTypes VARCHAR(100),
+                @profileTypes NVARCHAR(MAX),  
                 @filterByDating BIT = NULL,
                 @filterByFriendship BIT = NULL,
                 @pageNumber INT = 1,
@@ -25,35 +25,93 @@ namespace Fliq.Infrastructure.Migrations
                 BEGIN
                     SET @from_row = ((@pageNumber * @pageSize) - (@pageSize)) + 1;
                 END;
-
-                DECLARE @ProfileTypesTable TABLE (ProfileType VARCHAR(100));
-                INSERT INTO @ProfileTypesTable SELECT value FROM STRING_SPLIT(@profileTypes, ',');
-
+            
                 WITH UserProfileRecords AS
                 (
-                    SELECT up.*, ROW_NUMBER() OVER (ORDER BY up.DateCreated DESC) AS Row_Num
+                    SELECT 
+                        up.UserId, 
+                        up.DOB, 
+                        g.Id AS GenderId, 
+                        g.GenderType, 
+                        g.IsVisible AS GenderVisible,
+            			oc.Id AS OccupationId,
+            			oc.OccupationName AS OccupationName,
+            			oc.IsVisible AS OccupationVisible,
+            			ed.Id AS EducationStatusId,
+            			ed.EducationLevel AS EducationLevel,
+            			ed.IsVisible AS EducationVisible,
+                        so.Id AS SexualOrientationId, 
+                        so.SexualOrientationType, 
+                        so.IsVisible AS SexualOrientationVisible, 
+                        r.Id AS ReligionId, 
+                        r.ReligionType, 
+                        r.IsVisible AS ReligionVisible, 
+                        e.Id AS EthnicityId, 
+                        e.EthnicityType, 
+                        e.IsVisible AS EthnicityVisible, 
+                        hk.Id AS HaveKidsId, 
+                        hk.HaveKidsType, 
+                        hk.IsVisible AS HaveKidsVisible, 
+                        wk.Id AS WantKidsId, 
+                        wk.WantKidsType, 
+                        wk.IsVisible AS WantKidsVisible, 
+                        loc.Id AS LocationId, 
+                        loc.Lat, 
+                        loc.Lng, 
+                        loc.IsVisible AS LocationVisible, 
+                        up.AllowNotifications,
+                        up.Passions,
+            			up.ProfileTypes,
+                        up.DateCreated,
+            			up.DateModified,
+            			up.IsDeleted,
+            			up.Id,
+						  
+                  (
+                    SELECT 
+                        pr.Id,
+                        pr.ResponseType,
+						pr.Response,
+					    pr.PromptQuestionId
+                    FROM dbo.PromptResponse pr
+                    WHERE pr.UserProfileId = up.Id
+                    FOR JSON PATH
+                ) AS PromptResponses,
+                        ROW_NUMBER() OVER (ORDER BY up.DateCreated DESC) AS Row_Num
                     FROM dbo.UserProfiles up
+                    
+                    LEFT JOIN Gender g ON up.GenderId = g.Id
+            		LEFT JOIN Occupation oc ON up.OccupationId = oc.Id
+            		LEFT JOIN EducationStatus ed ON up.EducationStatusId = ed.Id
+                    LEFT JOIN SexualOrientation so ON up.SexualOrientationId = so.Id
+                    LEFT JOIN Religion r ON up.ReligionId = r.Id
+                    LEFT JOIN Ethnicity e ON up.EthnicityId = e.Id
+                    LEFT JOIN HaveKids hk ON up.HaveKidsId = hk.Id
+                    LEFT JOIN WantKids wk ON up.WantKidsId = wk.Id
+                    LEFT JOIN Location loc ON up.LocationId = loc.Id
                     WHERE up.UserId != @userId
-                    AND EXISTS
+                    AND EXISTS 
                     (
-                        SELECT 1 FROM @ProfileTypesTable pt
-                        WHERE up.ProfileTypes LIKE '%' + pt.ProfileType + '%'
+                        SELECT 1 FROM OPENJSON(@profileTypes) AS jsonProfileTypes
+                        WHERE up.ProfileTypes LIKE '%' + jsonProfileTypes.value + '%'
                     )
-                    AND (@filterByDating IS NULL OR
-                        (up.ProfileTypes LIKE '%Dating%' AND @filterByDating = 1))
-                    AND (@filterByFriendship IS NULL OR
-                        (up.ProfileTypes LIKE '%Friendship%' AND @filterByFriendship = 1))
+                    AND (@filterByDating IS NULL OR 
+                        (up.ProfileTypes LIKE '%"" + CAST(0 AS NVARCHAR(MAX)) + @""%'))
+                    AND (@filterByFriendship IS NULL OR 
+                        (up.ProfileTypes LIKE '%"" + CAST(1 AS NVARCHAR(MAX)) + @""%'))
                 ),
                 RecordCount AS
                 (
                     SELECT COUNT(*) AS TotalCount FROM UserProfileRecords
                 )
-
-                SELECT * FROM UserProfileRecords
+            
+                SELECT * 
+                FROM UserProfileRecords
                 CROSS JOIN RecordCount
                 WHERE Row_Num BETWEEN @from_row AND (@from_row + @pageSize - 1)
                 ORDER BY DateCreated DESC;
-            END");
+             END
+");
         }
 
         /// <inheritdoc />

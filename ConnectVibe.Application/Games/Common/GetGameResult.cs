@@ -3,6 +3,11 @@
 namespace Fliq.Application.Games.Common
 {
     public record GetGameResult(
-        Game Game
+         int Id,
+    string Name,
+    string? Description,
+    bool RequiresLevel,
+    bool RequiresTheme,
+    bool RequiresCategory
         );
 }

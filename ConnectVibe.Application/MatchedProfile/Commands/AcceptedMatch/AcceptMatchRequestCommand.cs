@@ -33,22 +33,34 @@ namespace Fliq.Application.MatchedProfile.Commands.AcceptedMatch
             _logger.LogInfo("Accept Match request command received");
             await Task.CompletedTask;
 
-            var matchProfile = _matchProfileRepository.GetMatchProfileById(command.Id);
-            if (matchProfile == null)
+            var matchRequest = _matchProfileRepository.GetMatchRequestById(command.Id);
+            if (matchRequest == null)
             {
-                _logger.LogError("Match profile not found");
-                return Errors.Profile.ProfileNotFound;
+                _logger.LogWarn($"Match request with Id --> {command.Id} not found");
+                return Errors.MatchRequest.RequestNotFound;
             }
 
-            matchProfile.MatchRequestStatus = MatchRequestStatus.Accepted;
-            _matchProfileRepository.Update(matchProfile);
+            if(matchRequest.MatchReceiverUserId != command.UserId)
+            {
+                _logger.LogError($"User with Id --> {command.UserId} is unauthorized to accept this match request");
+                return Errors.MatchRequest.UnauthorizedAttempt;
+            }
+            if (matchRequest.MatchRequestStatus == MatchRequestStatus.Accepted)
+            {
+                _logger.LogWarn($"Match request  with Id --> {command.Id} already accepted");
+                return Errors.MatchRequest.AlreadyAccepted;
+            }
+
+            matchRequest.MatchRequestStatus = MatchRequestStatus.Accepted;
+            _matchProfileRepository.Update(matchRequest);
+            _logger.LogInfo($"Match request accepted by user --> {command.UserId}");
 
             //trigger Accepted match event notification
-            await _mediator.Publish(new MatchAcceptedEvent(command.UserId, matchProfile.MatchInitiatorUserId, command.UserId));
+            await _mediator.Publish(new MatchAcceptedEvent(command.UserId, matchRequest.MatchInitiatorUserId, command.UserId));
 
-            _logger.LogInfo("Match request accepted");
-            return new CreateAcceptMatchResult(matchProfile.MatchInitiatorUserId,
-                 matchProfile.MatchRequestStatus);
+           return new CreateAcceptMatchResult(matchRequest.MatchInitiatorUserId,
+                matchRequest.MatchRequestStatus);
+
         }
     }
 }

@@ -7,7 +7,7 @@ using Fliq.Domain.Entities.Prompts;
 using MediatR;
 
 
-namespace Fliq.Application.Prompts.Commands
+namespace Fliq.Application.Prompts.Commands.AddSystemPrompt
 {
     public record AddSystemPromptCommand(string QuestionText, int CategoryId) : IRequest<ErrorOr<AddSystemPromptResult>>;
 
@@ -37,6 +37,13 @@ namespace Fliq.Application.Prompts.Commands
                 _loggerManager.LogWarn($"Category not found for Category ID: {request.CategoryId}. Aborting prompt question creation.");
                 return Errors.Prompts.CategoryNotFound;
             }
+
+            var questionExist = _questionRepository.QuestionExistInCategory(request.CategoryId, request.QuestionText);
+            if (questionExist)
+            {
+                _loggerManager.LogWarn($"{request.QuestionText} Question already exist for Category ID: {request.CategoryId}. Aborting prompt question creation.");
+                return Errors.Prompts.DuplicateCategoryQuestion;
+            }
             var promptQuestion = new PromptQuestion
             {
                 QuestionText = request.QuestionText,
@@ -47,7 +54,7 @@ namespace Fliq.Application.Prompts.Commands
             _questionRepository.AddQuestion(promptQuestion);
             _loggerManager.LogInfo($"Successfully added prompt question: '{promptQuestion.QuestionText}' with ID: {promptQuestion.Id} to Category ID: {request.CategoryId}");
 
-            return new AddSystemPromptResult(promptQuestion.Id, promptQuestion.QuestionText);
+            return new AddSystemPromptResult(promptQuestion.Id, promptQuestion.PromptCategoryId, promptQuestion.QuestionText);
         }
     }
 }

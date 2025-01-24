@@ -15,7 +15,7 @@ namespace Fliq.Domain.Entities.Prompts
 
         public string ResponseType { get; set; } = nameof(PromptAnswerMediaType.Text);
 
-        public string? Response { get; set; }
+        public string Response { get; set; } = default!;
 
     }
 }

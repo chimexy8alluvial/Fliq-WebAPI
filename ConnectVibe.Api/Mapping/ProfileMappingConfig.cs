@@ -8,7 +8,7 @@ using Fliq.Contracts.Profile;
 using Fliq.Contracts.Profile.UpdateDtos;
 using Fliq.Contracts.Prompts;
 using Fliq.Domain.Entities.Profile;
-
+using Fliq.Domain.Entities.Prompts;
 using Fliq.Domain.Enums;
 using Mapster;
 
@@ -19,9 +19,9 @@ namespace Fliq.Api.Mapping
         public void Register(TypeAdapterConfig config)
         {
             config.NewConfig<CreateProfileRequest, CreateProfileCommand>()
-                .Ignore(dest => dest.Photos)
+                .Ignore(dest => dest.Photos).Ignore(dest => dest.PromptResponses)
                 .Map(dest => dest.ProfileTypes,
-            src => src.ProfileTypes.Select(dto => (ProfileType)dto.ProfileType).ToList());  // Explicitly map ProfileTypeDto to ProfileType enum;
+            src => src.ProfileTypes.Select(dto => (ProfileType)dto.ProfileType).ToList());
 
             config.NewConfig<CreateProfileCommand, UserProfile>().Ignore(dest => dest.Photos)
                 .Map(dest => dest.ProfileTypes, src => src.ProfileTypes);
@@ -110,6 +110,13 @@ namespace Fliq.Api.Mapping
 
             config.NewConfig<PaginationResponse<UserProfile>, PaginationResponse<ProfileResponse>>().IgnoreNullValues(true)
                  .Map(dest => dest.Data, src => src.Data.Select(userProfile => userProfile.Adapt<ProfileResponse>()).ToList());
+
+            config.NewConfig<UserProfile, ExploreProfileResponse>()
+    .Map(dest => dest.PromptResponses,
+         src => src.PromptResponses.Select(pr => new ExplorePromptResponseDto(
+             pr.PromptQuestionId,
+             pr.Response
+         )).ToList());
 
         }
 

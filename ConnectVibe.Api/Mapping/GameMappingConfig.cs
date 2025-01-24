@@ -17,8 +17,13 @@ namespace Fliq.Api.Mapping
             config.NewConfig<CreateGameDto, CreateGameCommand>()
                 .IgnoreNullValues(true);
 
+            config.NewConfig<GetGameResult, GetGameResponse>()
+                                .IgnoreNullValues(true);
+
             config.NewConfig<SendGameRequestDto, SendGameRequestCommand>()
-                .IgnoreNullValues(true);
+                .IgnoreNullValues(true)
+                .Map(dest => dest.RequesterId, src => src.SenderUserId)
+                .Map(dest => dest.RecipientId, src => src.ReceiverUserId);
 
             config.NewConfig<AcceptGameRequestDto, AcceptGameRequestCommand>()
                 .IgnoreNullValues(true);

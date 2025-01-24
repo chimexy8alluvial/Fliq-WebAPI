@@ -101,7 +101,7 @@ namespace Fliq.Test.MatchProfile.Commands
             };
 
             _mockUserRepository
-                .Setup(repo => repo.GetUserById(command.MatchReceiverUserId))
+                .Setup(repo => repo.GetUserByIdIncludingProfile(command.MatchReceiverUserId))
                 .Returns(matchReceiver);
 
             _mockUserRepository
@@ -118,7 +118,7 @@ namespace Fliq.Test.MatchProfile.Commands
             // Assert
             Assert.IsFalse(result.IsError);
             Assert.AreEqual(command.MatchInitiatorUserId, result.Value.MatchInitiatorUserId);
-            Assert.AreEqual("John", result.Value.Name);
+            Assert.AreEqual("John ", result.Value.Name);
             Assert.AreEqual("http://image.com/john.jpg", result.Value.PictureUrl);
         }
 
@@ -160,7 +160,7 @@ namespace Fliq.Test.MatchProfile.Commands
             };
 
             _mockUserRepository
-                .Setup(repo => repo.GetUserById(command.MatchReceiverUserId))
+                .Setup(repo => repo.GetUserByIdIncludingProfile(command.MatchReceiverUserId))
                 .Returns(matchReceiver);
 
             _mockUserRepository
@@ -176,12 +176,12 @@ namespace Fliq.Test.MatchProfile.Commands
 
             // Assert
             _mockMediator.Verify(mediator => mediator.Publish(
-                It.Is<MatchRequestEvent>(e =>
-                    e.UserId == command.MatchInitiatorUserId &&
-                    e.AccepterUserId == command.MatchReceiverUserId &&
-                    e.InitiatorName == "John" &&
-                    e.InitiatorImageUrl == "http://image.com/john.jpg"),
-                It.IsAny<CancellationToken>()), Times.Once);
+      It.Is<MatchRequestEvent>(e =>
+         e.UserId == command.MatchInitiatorUserId &&
+          e.AccepterUserId == command.MatchReceiverUserId &&
+           e.InitiatorUserId == command.MatchInitiatorUserId
+          ),  // Same for ButtonText
+      It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }

@@ -37,7 +37,7 @@ namespace Fliq.Application.Games.Commands.CreateGame
             _gameRepository.AddGame(game);
 
             _logger.LogInfo($"Game created: {game.Id}");
-            return new GetGameResult(game);
+            return new GetGameResult(game.Id, game.Name, game.Description, game.RequiresLevel, game.RequiresTheme, game.RequiresCategory);
         }
     }
 }

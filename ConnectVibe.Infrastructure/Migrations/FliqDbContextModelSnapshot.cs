@@ -1411,6 +1411,9 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsSystemGenerated")
+                        .HasColumnType("bit");
+
                     b.HasKey("Id");
 
                     b.ToTable("PromptCategories");
@@ -1474,6 +1477,7 @@ namespace Fliq.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Response")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ResponseType")
@@ -1485,10 +1489,10 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PromptQuestionId")
-                        .IsUnique();
-
                     b.HasIndex("UserProfileId");
+
+                    b.HasIndex("PromptQuestionId", "UserProfileId")
+                        .IsUnique();
 
                     b.ToTable("PromptResponse");
                 });
@@ -2069,8 +2073,8 @@ namespace Fliq.Infrastructure.Migrations
             modelBuilder.Entity("Fliq.Domain.Entities.Prompts.PromptResponse", b =>
                 {
                     b.HasOne("Fliq.Domain.Entities.Prompts.PromptQuestion", "PromptQuestion")
-                        .WithOne("PromptResponse")
-                        .HasForeignKey("Fliq.Domain.Entities.Prompts.PromptResponse", "PromptQuestionId")
+                        .WithMany()
+                        .HasForeignKey("PromptQuestionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -2174,11 +2178,6 @@ namespace Fliq.Infrastructure.Migrations
             modelBuilder.Entity("Fliq.Domain.Entities.Prompts.PromptCategory", b =>
                 {
                     b.Navigation("PromptQuestions");
-                });
-
-            modelBuilder.Entity("Fliq.Domain.Entities.Prompts.PromptQuestion", b =>
-                {
-                    b.Navigation("PromptResponse");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Settings.Filter", b =>

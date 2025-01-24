@@ -34,7 +34,7 @@ namespace Fliq.Application.Games.Queries.GetGame
             }
 
             _logger.LogInfo($"Got game with id: {request.Id}");
-            return new GetGameResult(game);
+            return new GetGameResult(game.Id, game.Name, game.Description, game.RequiresLevel, game.RequiresTheme, game.RequiresCategory);
         }
     }
 }

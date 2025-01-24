@@ -5,6 +5,7 @@ using Fliq.Application.Profile.Common;
 using Fliq.Application.Profile.Queries.Get;
 using Fliq.Contracts.Profile;
 using Fliq.Contracts.Profile.UpdateDtos;
+using Fliq.Contracts.Prompts;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -46,7 +47,7 @@ namespace Fliq.Api.Controllers
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> Create([FromForm] CreateProfileRequest request)
         {
-            _logger.LogInfo($"Create Profile Request recieved");
+            _logger.LogInfo($"Create Profile Request received");
 
             var userId = GetAuthUserId();
             _logger.LogInfo($"Authenticated user ID: {userId}");
@@ -58,6 +59,20 @@ namespace Fliq.Api.Controllers
                 Caption = photo.Caption,
                 ImageFile = photo.ImageFile
             }).ToList();
+
+            // Explicitly map PromptResponses (IFormFile)
+            command.PromptResponses = request.PromptResponses.Select(p => new PromptResponseDto
+            (
+                (int)p.PromptQuestionId,
+                p.CustomPromptQuestionText,
+                p.TextResponse,
+                p.VoiceNote,
+                p.VideoClip,
+                p.CategoryId,
+                p.IsCustomPrompt
+            )).ToList();
+            
+
             var profileResult = await _mediator.Send(command);
 
             return profileResult.Match(
@@ -70,11 +85,12 @@ namespace Fliq.Api.Controllers
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> Update([FromForm] UpdateProfileRequest request)
         {
-            _logger.LogInfo($"Update Profile Request recieved");
+            _logger.LogInfo($"Update Profile Request received");
             var userId = GetAuthUserId();
 
-            var modifiedRequest = request with { UserId = userId };
-            var command = _mapper.Map<UpdateProfileCommand>(modifiedRequest);
+            //var modifiedRequest = request with { UserId = userId };
+            var command = _mapper.Map<UpdateProfileCommand>(request);
+            command.UserId = userId;
             if (request.Photos != null)
             {
                 command.Photos = request.Photos.Select(photo => new ProfilePhotoMapped

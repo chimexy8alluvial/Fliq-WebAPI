@@ -2,10 +2,10 @@
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.MatchedProfile.Common;
 using Fliq.Domain.Common.Errors;
-using Fliq.Domain.Enums;
 using MediatR;
 using Fliq.Application.Notifications.Common.MatchEvents;
 using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Domain.Enums;
 
 namespace Fliq.Application.MatchedProfile.Commands.RejectMatch
 {
@@ -33,22 +33,33 @@ namespace Fliq.Application.MatchedProfile.Commands.RejectMatch
             _logger.LogInfo("Rejecting match request.");
             await Task.CompletedTask;
 
-            var matchProfile = _matchProfileRepository.GetMatchProfileById(command.Id);
-            if (matchProfile == null)
+            var matchRequest = _matchProfileRepository.GetMatchRequestById(command.Id);
+            if (matchRequest == null)
             {
-                _logger.LogError("Match profile not found.");
-                return Errors.Profile.ProfileNotFound;
+                _logger.LogWarn($"Match request  with Id --> {command.Id} not found");
+                return Errors.MatchRequest.RequestNotFound;
             }
 
-            matchProfile.MatchRequestStatus = MatchRequestStatus.Rejected;
-            _matchProfileRepository.Update(matchProfile);
+            if (matchRequest.MatchReceiverUserId != command.UserId)
+            {
+                _logger.LogError($"User with Id --> {command.UserId} is unauthorized to reject this match request");
+                return Errors.MatchRequest.UnauthorizedAttempt;
+            }
+            if (matchRequest.MatchRequestStatus == MatchRequestStatus.Rejected)
+            {
+                _logger.LogInfo($"Match request  with Id --> {command.Id} already rejected");
+                return Errors.MatchRequest.AlreadyRejected;
+            }
 
-            _logger.LogInfo("Match request rejected.");
+            matchRequest.MatchRequestStatus = MatchRequestStatus.Rejected;
+            _matchProfileRepository.Update(matchRequest);
+            _logger.LogInfo($"Match request rejected by user --> {command.UserId}");
+
             // Trigger MatchRejectedEvent notification
             await _mediator.Publish(new MatchRejectedEvent(command.UserId));
 
-            return new RejectMatchResult(matchProfile.MatchInitiatorUserId,
-                 matchProfile.MatchRequestStatus);
+            return new RejectMatchResult(matchRequest.MatchInitiatorUserId,
+                 matchRequest.MatchRequestStatus);
         }
     }
 }
