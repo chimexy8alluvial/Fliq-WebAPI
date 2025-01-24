@@ -45,11 +45,10 @@ namespace Fliq.Application.Profile.Commands.Update
         private readonly IUserRepository _userRepository;
         private readonly ILocationService _locationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly ISettingsRepository _settingsRepository;
         private readonly ILoggerManager _loggerManager;
         private const int UnauthorizedUserId = -1;
 
-        public UpdateProfileCommandHandler(IMapper mapper, IMediaServices mediaService, IProfileRepository profileRepository, IUserRepository userRepository, ILocationService locationService, IHttpContextAccessor httpContextAccessor, ISettingsRepository settingsRepository, ILoggerManager loggerManager)
+        public UpdateProfileCommandHandler(IMapper mapper, IMediaServices mediaService, IProfileRepository profileRepository, IUserRepository userRepository, ILocationService locationService, IHttpContextAccessor httpContextAccessor,  ILoggerManager loggerManager)
         {
             _mapper = mapper;
             _mediaService = mediaService;
@@ -57,7 +56,6 @@ namespace Fliq.Application.Profile.Commands.Update
             _userRepository = userRepository;
             _locationService = locationService;
             _httpContextAccessor = httpContextAccessor;
-            _settingsRepository = settingsRepository;
             _loggerManager = loggerManager;
         }
 

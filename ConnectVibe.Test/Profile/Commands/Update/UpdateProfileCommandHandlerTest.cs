@@ -38,7 +38,6 @@ namespace Fliq.Test.Profile.Commands.Update
             _userRepositoryMock = new Mock<IUserRepository>();
             _locationServiceMock = new Mock<ILocationService>();
             _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
-            _settingsRepositoryMock = new Mock<ISettingsRepository>();
             _loggerManagerMock = new Mock<ILoggerManager>();
 
             _handler = new UpdateProfileCommandHandler(
@@ -48,7 +47,6 @@ namespace Fliq.Test.Profile.Commands.Update
                 _userRepositoryMock.Object,
                 _locationServiceMock.Object,
                 _httpContextAccessorMock.Object,
-                _settingsRepositoryMock.Object,
                 _loggerManagerMock.Object
             );
         }
