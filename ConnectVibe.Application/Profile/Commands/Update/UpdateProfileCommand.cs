@@ -65,7 +65,7 @@ namespace Fliq.Application.Profile.Commands.Update
         {
             await Task.CompletedTask;
 
-            _loggerManager.LogInfo($"Updating profile for user with id: {GetUserId()}");
+            _loggerManager.LogInfo($"Updating profile for user with id: {command.UserId}");
 
             var user = _userRepository.GetUserById(command.UserId);
             if (user == null)

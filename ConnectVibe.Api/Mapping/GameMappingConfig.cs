@@ -21,7 +21,9 @@ namespace Fliq.Api.Mapping
                                 .IgnoreNullValues(true);
 
             config.NewConfig<SendGameRequestDto, SendGameRequestCommand>()
-                .IgnoreNullValues(true);
+                .IgnoreNullValues(true)
+                .Map(dest => dest.RequesterId, src => src.SenderUserId)
+                .Map(dest => dest.RecipientId, src => src.ReceiverUserId);
 
             config.NewConfig<AcceptGameRequestDto, AcceptGameRequestCommand>()
                 .IgnoreNullValues(true);

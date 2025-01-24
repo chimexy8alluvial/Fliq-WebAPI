@@ -57,11 +57,23 @@ namespace Fliq.Test.Profile.Commands.Update
         public async Task Handle_ProfileNotFound_ReturnsProfileNotFoundError()
         {
             // Arrange
-            var command = new UpdateProfileCommand();
+            var command = new UpdateProfileCommand
+            {
+                UserId = 1,
+                Photos = null,
+                Location = null
+            };
+
             _httpContextAccessorMock.Setup(x => x.HttpContext.User.FindFirst(It.IsAny<string>()))
                 .Returns(new Claim(ClaimTypes.NameIdentifier, "1"));
 
-            _userRepositoryMock.Setup(x => x.GetUserById(It.IsAny<int>())).Returns((User?)null);
+            _userRepositoryMock.Setup(x => x.GetUserById(It.IsAny<int>()))
+                .Returns(new User { Id = 1 });
+
+            _profileRepositoryMock.Setup(x => x.GetProfileByUserId(It.IsAny<int>()))
+                .Returns((UserProfile?)null);
+
+            _loggerManagerMock.Setup(x => x.LogError(It.IsAny<string>()));
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -69,7 +81,11 @@ namespace Fliq.Test.Profile.Commands.Update
             // Assert
             Assert.IsTrue(result.IsError);
             Assert.AreEqual(Errors.Profile.ProfileNotFound, result.FirstError);
+
+            // Verify logger was called
+            _loggerManagerMock.Verify(x => x.LogError("User profile not found"), Times.Once);
         }
+
 
         [TestMethod]
         public async Task Handle_UserNotFound_ReturnsProfileNotFoundError()
@@ -86,7 +102,7 @@ namespace Fliq.Test.Profile.Commands.Update
 
             // Assert
             Assert.IsTrue(result.IsError);
-            Assert.AreEqual(Errors.Profile.ProfileNotFound, result.FirstError);
+            Assert.AreEqual(Errors.User.UserNotFound, result.FirstError);
         }
 
         [TestMethod]

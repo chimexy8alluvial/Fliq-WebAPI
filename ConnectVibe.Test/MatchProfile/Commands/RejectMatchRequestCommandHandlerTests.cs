@@ -33,7 +33,7 @@ namespace Fliq.Test.MatchProfile.Commands
         }
 
         [TestMethod]
-        public async Task Handle_MatchProfileNotFound_ReturnsProfileNotFoundError()
+        public async Task Handle_MatchRequestNotFound_ReturnsProfileNotFoundError()
         {
             // Arrange
             var command = new RejectMatchRequestCommand
@@ -51,7 +51,7 @@ namespace Fliq.Test.MatchProfile.Commands
 
             // Assert
             Assert.IsTrue(result.IsError);
-            Assert.IsTrue(result.Errors.Contains(Errors.Profile.ProfileNotFound));
+            Assert.IsTrue(result.Errors.Contains(Errors.MatchRequest.RequestNotFound));
         }
 
         [TestMethod]
