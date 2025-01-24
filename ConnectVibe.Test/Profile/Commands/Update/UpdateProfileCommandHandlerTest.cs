@@ -25,7 +25,6 @@ namespace Fliq.Test.Profile.Commands.Update
         private Mock<IUserRepository> _userRepositoryMock;
         private Mock<ILocationService> _locationServiceMock;
         private Mock<IHttpContextAccessor> _httpContextAccessorMock;
-        private Mock<ISettingsRepository> _settingsRepositoryMock;
         private Mock<ILoggerManager> _loggerManagerMock;
         private UpdateProfileCommandHandler _handler;
 
