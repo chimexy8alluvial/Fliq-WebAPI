@@ -33,7 +33,7 @@ namespace Fliq.Test.MatchProfile.Commands
         }
 
         [TestMethod]
-        public async Task Handle_MatchProfileNotFound_ReturnsProfileNotFoundError()
+        public async Task Handle_MatchRequestNotFound_ReturnsMatchNotFoundError()
         {
             // Arrange
             var command = new AcceptMatchRequestCommand
@@ -43,7 +43,7 @@ namespace Fliq.Test.MatchProfile.Commands
             };
 
             _mockMatchProfileRepository
-                .Setup(repo => repo.GetMatchProfileById(command.Id))
+                .Setup(repo => repo.GetMatchRequestById(command.Id))
                 .Returns((MatchRequest)null);
 
             // Act
@@ -51,7 +51,7 @@ namespace Fliq.Test.MatchProfile.Commands
 
             // Assert
             Assert.IsTrue(result.IsError);
-            Assert.IsTrue(result.Errors.Contains(Errors.Profile.ProfileNotFound));
+            Assert.IsTrue(result.Errors.Contains(Errors.MatchRequest.RequestNotFound));
         }
 
         [TestMethod]
@@ -73,7 +73,7 @@ namespace Fliq.Test.MatchProfile.Commands
             };
 
             _mockMatchProfileRepository
-                .Setup(repo => repo.GetMatchProfileById(command.Id))
+                .Setup(repo => repo.GetMatchRequestById(command.Id))
                 .Returns(matchProfile);
 
             // Act
@@ -104,7 +104,7 @@ namespace Fliq.Test.MatchProfile.Commands
             };
 
             _mockMatchProfileRepository
-                .Setup(repo => repo.GetMatchProfileById(command.Id))
+                .Setup(repo => repo.GetMatchRequestById(command.Id))
                 .Returns(matchProfile);
 
             // Act

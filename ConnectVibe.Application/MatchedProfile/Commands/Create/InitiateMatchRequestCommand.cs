@@ -12,13 +12,13 @@ using MediatR;
 
 namespace Fliq.Application.MatchedProfile.Commands.Create
 {
-    public class InitiateMatchRequestCommand : IRequest<ErrorOr<CreateMatchProfileResult>>
+    public class InitiateMatchRequestCommand : IRequest<ErrorOr<CreateMatchRequestResult>>
     {
         public int MatchInitiatorUserId { get; set; }
         public int MatchReceiverUserId { get; set; }
     }
 
-    public class InitiateMatchRequestCommandHandler : IRequestHandler<InitiateMatchRequestCommand, ErrorOr<CreateMatchProfileResult>>
+    public class InitiateMatchRequestCommandHandler : IRequestHandler<InitiateMatchRequestCommand, ErrorOr<CreateMatchRequestResult>>
     {
         private readonly IMapper _mapper;
         private readonly IUserRepository _userRepository;
@@ -35,11 +35,10 @@ namespace Fliq.Application.MatchedProfile.Commands.Create
             _logger = logger;
         }
 
-        public async Task<ErrorOr<CreateMatchProfileResult>> Handle(InitiateMatchRequestCommand command, CancellationToken cancellationToken)
+        public async Task<ErrorOr<CreateMatchRequestResult>> Handle(InitiateMatchRequestCommand command, CancellationToken cancellationToken)
         {
             await Task.CompletedTask;
-            _logger.LogInfo("InitiateMatchRequestCommandHandler called");
-            var requestedUser = _userRepository.GetUserById(command.MatchReceiverUserId);
+            var requestedUser = _userRepository.GetUserByIdIncludingProfile(command.MatchReceiverUserId);
             if (requestedUser == null)
             {
                 _logger.LogError("User not found");
@@ -48,33 +47,41 @@ namespace Fliq.Application.MatchedProfile.Commands.Create
             var matchInitiator = _userRepository.GetUserByIdIncludingProfile(command.MatchInitiatorUserId);
             if (matchInitiator == null)
             {
-                _logger.LogError("User not found");
                 return Errors.User.UserNotFound;
             }
-            var matchProfile = _mapper.Map<MatchRequest>(command);
 
-            matchProfile.MatchRequestStatus = MatchRequestStatus.Pending;
+            //Check for existing request
+            var isRequestExist = _matchProfileRepository.MatchRequestExist(command.MatchInitiatorUserId, command.MatchReceiverUserId);
+            if (isRequestExist) return Errors.MatchRequest.DuplicateRequest;
 
-            _matchProfileRepository.Add(matchProfile);
+            //Create request object
+            var matchRequest = _mapper.Map<MatchRequest>(command);
+
+            matchRequest.MatchRequestStatus = MatchRequestStatus.Pending;
+
+
+            //Save request
+            _matchProfileRepository.Add(matchRequest);
 
             _logger.LogInfo("MatchProfile created");
 
-            var pictureUrl = matchInitiator?.UserProfile?.Photos?.FirstOrDefault()?.PictureUrl;
-            var initiatorAge = matchInitiator.UserProfile.DOB.CalculateAge();
+            var initiatorPictureUrl = matchInitiator?.UserProfile?.Photos?.FirstOrDefault()?.PictureUrl;
+            var initiatorAge = matchInitiator?.UserProfile?.DOB.CalculateAge();
+            var initiatorName = matchInitiator?.FirstName + " " + matchInitiator?.LastName;
+            var receiverPictureUrl = requestedUser?.UserProfile?.Photos?.FirstOrDefault()?.PictureUrl;
+
             // Trigger MatchRequestEvent notification
             await _mediator.Publish(new MatchRequestEvent(
                 command.MatchInitiatorUserId,
                 command.MatchReceiverUserId,
-                accepterImageUrl: requestedUser?.UserProfile?.Photos?.FirstOrDefault()?.PictureUrl,
-                initiatorImageUrl: pictureUrl,
-                initiatorName: matchInitiator.FirstName
+                accepterImageUrl: receiverPictureUrl,
+                initiatorImageUrl: initiatorPictureUrl,
+                initiatorName: initiatorName
             ));
 
-            _logger.LogInfo("MatchRequestEvent notification sent");
-            return new CreateMatchProfileResult(matchProfile.MatchInitiatorUserId,
-                matchInitiator.FirstName,
-                pictureUrl,
-                initiatorAge);
+            return new CreateMatchRequestResult(matchRequest.Id, matchRequest.MatchReceiverUserId, matchRequest.MatchInitiatorUserId,
+                initiatorName,
+                initiatorPictureUrl, initiatorAge, (int)matchRequest.MatchRequestStatus);
         }
     }
 }

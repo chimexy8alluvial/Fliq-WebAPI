@@ -40,7 +40,7 @@ namespace Fliq.Infrastructure
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IProfileRepository, ProfileRepository>();
-            services.AddScoped<IPromptAnswerRepository, PromptAnswerRepository>();
+            services.AddScoped<IPromptResponseRepository, PromptResponseRepository>();
             services.AddScoped<IPromptCategoryRepository, PromptCategoryRepository>();
             services.AddScoped<IPromptQuestionRepository, PromptQuestionRepository>();
             services.AddScoped<ISocialAuthService, SocialAuthService>();

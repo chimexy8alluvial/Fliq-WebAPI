@@ -8,7 +8,7 @@ namespace Fliq.Domain.Common.Errors
         {
             public static Error ProfileNotFound => Error.NotFound(
                 code: "Profile.NotFound",
-                description: "Match profile not found.");
+                description: "User profile not found.");
 
             public static Error DuplicateProfile => Error.Conflict(
             code: "Profile.DuplicateProfile",

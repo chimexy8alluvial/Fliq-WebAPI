@@ -31,7 +31,6 @@ namespace Fliq.Test.Explore.Queries
             _loggerMock = new Mock<ILoggerManager>();
 
             _handler = new ExploreQueryHandler(
-                _httpContextAccessorMock.Object,
                 _userRepositoryMock.Object,
                 _profileRepositoryMock.Object,
                 _loggerMock.Object,

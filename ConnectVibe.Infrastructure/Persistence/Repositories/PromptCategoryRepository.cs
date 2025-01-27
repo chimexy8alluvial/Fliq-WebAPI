@@ -38,7 +38,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
         public PromptCategory? GetCategoryByName(string categoryName)
         {
-            var category = _dbContext.PromptCategories.SingleOrDefault(c => c.CategoryName == categoryName);
+            var category = _dbContext.PromptCategories.SingleOrDefault(c => c.CategoryName.ToLower() == categoryName.ToLower());
             return category;
         }
 
@@ -46,9 +46,9 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         {
             using (var connection = _connectionFactory.CreateConnection())
             {
-               var categories = connection.Query<PromptCategory>("sp_GetAllPromptCategories", commandType: CommandType.StoredProcedure);
+                var categories = connection.Query<PromptCategory>("sp_GetAllPromptCategories", commandType: CommandType.StoredProcedure);
 
-               return categories;
+                return categories;
             }
         }
 

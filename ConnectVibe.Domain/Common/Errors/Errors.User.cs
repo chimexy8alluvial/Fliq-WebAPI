@@ -13,6 +13,10 @@ namespace Fliq.Domain.Common.Errors
             public static Error DuplicateEmail => Error.Conflict(
              code: "User.DuplicateEmail",
              description: "Email already in use");
+
+            public static Error DocumentUnverified => Error.Conflict(
+            code: "User.DocumentUnverified",
+            description: "User's Document is Unverified");
         }
     }
 }

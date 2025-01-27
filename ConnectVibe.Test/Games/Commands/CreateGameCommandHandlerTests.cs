@@ -57,9 +57,9 @@ namespace Fliq.Test.Games.Commands
             // Assert
             Assert.IsFalse(result.IsError);
             Assert.IsNotNull(result.Value);
-            Assert.AreEqual(game.Id, result.Value.Game.Id);
-            Assert.AreEqual(game.Name, result.Value.Game.Name);
-            Assert.AreEqual(game.Description, result.Value.Game.Description);
+            Assert.AreEqual(game.Id, result.Value.Id);
+            Assert.AreEqual(game.Name, result.Value.Name);
+            Assert.AreEqual(game.Description, result.Value.Description);
 
             _mockGamesRepository.Verify(repo => repo.AddGame(It.IsAny<Game>()), Times.Once);
         }

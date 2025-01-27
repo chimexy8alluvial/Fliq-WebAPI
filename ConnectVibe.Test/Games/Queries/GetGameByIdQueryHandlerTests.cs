@@ -41,8 +41,8 @@ namespace Fliq.Test.Games.Queries.GetGame
             // Assert
             Assert.IsFalse(result.IsError);
             Assert.IsNotNull(result.Value);
-            Assert.AreEqual(gameId, result.Value.Game.Id);
-            Assert.AreEqual("Test Game", result.Value.Game.Name);
+            Assert.AreEqual(gameId, result.Value.Id);
+            Assert.AreEqual("Test Game", result.Value.Name);
 
             _mockGamesRepository.Verify(repo => repo.GetGameById(gameId), Times.Once);
             _mockLogger.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains($"Getting game with id: {gameId}"))), Times.Once);

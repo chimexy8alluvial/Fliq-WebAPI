@@ -123,7 +123,7 @@ namespace Fliq.Application.Event.Commands.EventCreation
 
                     if (currency is null)
                     {
-                        return Errors.Payment.InvalidPayload;
+                        return Errors.Payment.InvalidPayload; //Currentcy does not exist
                     }
 
                     newTicket.Currency = currency;

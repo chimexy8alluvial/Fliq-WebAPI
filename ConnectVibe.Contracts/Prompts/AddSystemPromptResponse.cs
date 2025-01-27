@@ -2,5 +2,5 @@
 
 namespace Fliq.Contracts.Prompts
 {
-    public record AddSystemPromptResponse(int Id, string QuestionText);
+    public record AddSystemPromptResponse(int Id, int CategoryId, string QuestionText);
 }
