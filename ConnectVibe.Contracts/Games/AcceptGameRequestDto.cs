@@ -2,6 +2,5 @@
 {
     public record AcceptGameRequestDto(
      int RequestId
-     
  );
 }

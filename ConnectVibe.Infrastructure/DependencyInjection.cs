@@ -66,6 +66,8 @@ namespace Fliq.Infrastructure
             services.AddScoped<INotificationService, FireBaseNotificationService>();
             services.AddScoped<IFirebaseMessagingWrapper, FirebaseMessagingWrapper>();
             services.AddScoped<IGamesRepository, GamesRepository>();
+            services.AddScoped<IWalletRepository, WalletRepository>();
+            services.AddScoped<IStakeRepository, StakeRepository>();
             services.AddSingleton<ICustomProfileMapper, CustomProfileMapper>();
             services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
             services.AddDbContext<FliqDbContext>(options =>

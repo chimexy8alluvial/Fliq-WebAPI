@@ -4,6 +4,7 @@ using Fliq.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fliq.Infrastructure.Migrations
 {
     [DbContext(typeof(FliqDbContext))]
-    partial class FliqDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250119003836_stakeupdate")]
+    partial class stakeupdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -612,6 +615,9 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<int>("StakeId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("StakeId1")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");
 
@@ -621,6 +627,8 @@ namespace Fliq.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("GameId");
+
+                    b.HasIndex("StakeId1");
 
                     b.ToTable("GameSessions");
                 });
@@ -658,9 +666,6 @@ namespace Fliq.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("GameSessionId")
-                        .IsUnique();
 
                     b.ToTable("Stakes");
                 });
@@ -1454,9 +1459,6 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsSystemGenerated")
-                        .HasColumnType("bit");
-
                     b.HasKey("Id");
 
                     b.ToTable("PromptCategories");
@@ -1520,7 +1522,6 @@ namespace Fliq.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Response")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ResponseType")
@@ -1532,10 +1533,10 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserProfileId");
-
-                    b.HasIndex("PromptQuestionId", "UserProfileId")
+                    b.HasIndex("PromptQuestionId")
                         .IsUnique();
+
+                    b.HasIndex("UserProfileId");
 
                     b.ToTable("PromptResponse");
                 });
@@ -1961,18 +1962,13 @@ namespace Fliq.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Fliq.Domain.Entities.Games.Stake", "Stake")
+                        .WithMany()
+                        .HasForeignKey("StakeId1");
+
                     b.Navigation("Game");
-                });
 
-            modelBuilder.Entity("Fliq.Domain.Entities.Games.Stake", b =>
-                {
-                    b.HasOne("Fliq.Domain.Entities.Games.GameSession", "GameSession")
-                        .WithOne("Stake")
-                        .HasForeignKey("Fliq.Domain.Entities.Games.Stake", "GameSessionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("GameSession");
+                    b.Navigation("Stake");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.MatchedProfile.MatchRequest", b =>
@@ -2155,8 +2151,8 @@ namespace Fliq.Infrastructure.Migrations
             modelBuilder.Entity("Fliq.Domain.Entities.Prompts.PromptResponse", b =>
                 {
                     b.HasOne("Fliq.Domain.Entities.Prompts.PromptQuestion", "PromptQuestion")
-                        .WithMany()
-                        .HasForeignKey("PromptQuestionId")
+                        .WithOne("PromptResponse")
+                        .HasForeignKey("Fliq.Domain.Entities.Prompts.PromptResponse", "PromptQuestionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -2234,11 +2230,6 @@ namespace Fliq.Infrastructure.Migrations
                     b.Navigation("Discounts");
                 });
 
-            modelBuilder.Entity("Fliq.Domain.Entities.Games.GameSession", b =>
-                {
-                    b.Navigation("Stake");
-                });
-
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.Location", b =>
                 {
                     b.Navigation("LocationDetail")
@@ -2265,6 +2256,11 @@ namespace Fliq.Infrastructure.Migrations
             modelBuilder.Entity("Fliq.Domain.Entities.Prompts.PromptCategory", b =>
                 {
                     b.Navigation("PromptQuestions");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.Prompts.PromptQuestion", b =>
+                {
+                    b.Navigation("PromptResponse");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Settings.Filter", b =>

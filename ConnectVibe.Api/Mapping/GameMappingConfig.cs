@@ -1,5 +1,6 @@
 ﻿using Fliq.Application.Games.Commands.AcceptGameRequest;
 using Fliq.Application.Games.Commands.CreateGame;
+using Fliq.Application.Games.Commands.CreateStake;
 using Fliq.Application.Games.Commands.SendGameRequest;
 using Fliq.Application.Games.Commands.SubmitAnswer;
 using Fliq.Application.Games.Common;
@@ -22,8 +23,7 @@ namespace Fliq.Api.Mapping
 
             config.NewConfig<SendGameRequestDto, SendGameRequestCommand>()
                 .IgnoreNullValues(true)
-                .Map(dest => dest.RequesterId, src => src.SenderUserId)
-                .Map(dest => dest.RecipientId, src => src.ReceiverUserId);
+                .Map(dest => dest.ReceiverUserId, src => src.ReceiverUserId);
 
             config.NewConfig<AcceptGameRequestDto, AcceptGameRequestCommand>()
                 .IgnoreNullValues(true);
@@ -37,6 +37,8 @@ namespace Fliq.Api.Mapping
 
             config.NewConfig<GameSession, GetGameSessionResponse>()
                 .IgnoreNullValues(true);
+            config.NewConfig<GetGameResult, GetGameResponse>()
+                .Map(dest => dest, src => src);
 
             config.NewConfig<Game, GetGameResponse>()
                 .IgnoreNullValues(true); // Mapping from Game entity to GetGameResponse
@@ -48,6 +50,13 @@ namespace Fliq.Api.Mapping
                .Map(dest => dest.Player2Score, src => src.Player2Score)
                .Map(dest => dest.StartTime, src => src.StartTime)
                .Map(dest => dest.EndTime, src => src.EndTime);
+            config.NewConfig<GetGameSessionResult, GameSessionResponse>()
+                .Map(dest => dest, src => src.GameSession)
+                .Map(dest => dest.StakeAmount, src => src.GameSession.Stake != null ? src.GameSession.Stake.Amount : (decimal?)null);
+            config.NewConfig<CreateStakeRequestDto, CreateStakeCommand>()
+                .IgnoreNullValues(true);
+            config.NewConfig<Stake, StakeResponseDto>()
+                .IgnoreNullValues(true);
         }
     }
 }

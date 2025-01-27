@@ -1,7 +1,10 @@
 ﻿using Fliq.Application.Common.Hubs;
 using Fliq.Application.Games.Commands.AcceptGameRequest;
+using Fliq.Application.Games.Commands.AcceptStake;
 using Fliq.Application.Games.Commands.CreateGame;
 using Fliq.Application.Games.Commands.CreateQuestion;
+using Fliq.Application.Games.Commands.CreateStake;
+using Fliq.Application.Games.Commands.RejectStake;
 using Fliq.Application.Games.Commands.SendGameRequest;
 using Fliq.Application.Games.Commands.SubmitAnswer;
 using Fliq.Application.Games.Common;
@@ -11,6 +14,7 @@ using Fliq.Application.Games.Queries.GetGames;
 using Fliq.Application.Games.Queries.GetQuestions;
 using Fliq.Application.Games.Queries.GetSession;
 using Fliq.Contracts.Games;
+using Mapster;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -116,7 +120,7 @@ namespace Fliq.Api.Controllers
             _logger.LogInformation($"Get Game Session Query Executed. Result: {result}");
 
             return result.Match(
-                session => Ok(_mapper.Map<GetGameSessionResponse>(session)),
+                session => Ok(_mapper.Map<GameSessionResponse>(session)),
                 errors => Problem(errors)
             );
         }
@@ -193,6 +197,46 @@ namespace Fliq.Api.Controllers
             var connectionId = HttpContext.Connection.Id;
             await _hubContext.Clients.Group(sessionId).SendAsync("PlayerLeft", connectionId);
             return Ok();
+        }
+
+        [HttpPost("create-stake")]
+        public async Task<IActionResult> CreateStake([FromBody] CreateStakeRequestDto requestDto)
+        {
+            var command = requestDto.Adapt<CreateStakeCommand>();
+            var result = await _mediator.Send(command);
+
+            return result.Match(
+                stake => Ok(stake.Adapt<StakeResponseDto>()),
+                errors => Problem(errors)
+            );
+        }
+
+        [HttpPost("accept-stake")]
+        public async Task<IActionResult> AcceptStake([FromBody] AcceptStakeRequestDto requestDto)
+        {
+            var userId = GetAuthUserId();
+            var command = requestDto.Adapt<AcceptStakeCommand>();
+            command = command with { UserId = userId };
+            var result = await _mediator.Send(command);
+
+            return result.Match(
+                stake => Ok(stake.Adapt<StakeResponseDto>()),
+                errors => Problem(errors.First().Description)
+            );
+        }
+
+        [HttpPost("reject-stake")]
+        public async Task<IActionResult> RejectStake([FromBody] AcceptStakeRequestDto requestDto)
+        {
+            var userId = GetAuthUserId();
+            var command = requestDto.Adapt<RejectStakeCommand>();
+            command = command with { UserId = userId };
+            var result = await _mediator.Send(command);
+
+            return result.Match(
+                stake => Ok(stake.Adapt<StakeResponseDto>()),
+                errors => Problem(errors.First().Description)
+            );
         }
     }
 }

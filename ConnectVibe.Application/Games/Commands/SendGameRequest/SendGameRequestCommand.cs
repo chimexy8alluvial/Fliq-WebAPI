@@ -8,7 +8,7 @@ using MediatR;
 
 namespace Fliq.Application.Games.Commands.SendGameRequest
 {
-    public record SendGameRequestCommand(int GameId, int RequesterId, int RecipientId)
+    public record SendGameRequestCommand(int GameId, int RequesterId, int ReceiverUserId)
       : IRequest<ErrorOr<GetGameRequestResult>>;
 
     public class SendGameRequestCommandHandler : IRequestHandler<SendGameRequestCommand, ErrorOr<GetGameRequestResult>>
@@ -33,13 +33,13 @@ namespace Fliq.Application.Games.Commands.SendGameRequest
             {
                 GameId = request.GameId,
                 RequesterId = request.RequesterId,
-                RecipientId = request.RecipientId
+                RecipientId = request.ReceiverUserId
             };
 
-            var receiver = _userRepository.GetUserById(request.RecipientId);
-            if (receiver is null)
+            var reciever = _userRepository.GetUserById(request.ReceiverUserId);
+            if (reciever is null)
             {
-                _logger.LogError($"User with Id --> {request.RecipientId} not found");
+                _logger.LogError($"User with Id --> {request.ReceiverUserId} not found");
                 return Errors.User.UserNotFound;
             }
             // Notification

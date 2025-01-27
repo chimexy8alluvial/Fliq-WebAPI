@@ -40,6 +40,7 @@
 
   <ItemGroup>
     <Folder Include="Notifications\Queries\" />
+    <Folder Include="Prompts\Queries\" />
     <Folder Include="Payments\Queries\" />
   </ItemGroup>
 

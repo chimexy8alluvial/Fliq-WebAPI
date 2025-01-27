@@ -4,6 +4,7 @@ using Fliq.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fliq.Infrastructure.Migrations
 {
     [DbContext(typeof(FliqDbContext))]
-    partial class FliqDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250119034921_stakeupdate-two")]
+    partial class stakeupdatetwo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1454,9 +1457,6 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsSystemGenerated")
-                        .HasColumnType("bit");
-
                     b.HasKey("Id");
 
                     b.ToTable("PromptCategories");
@@ -1520,7 +1520,6 @@ namespace Fliq.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Response")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ResponseType")
@@ -1532,10 +1531,10 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserProfileId");
-
-                    b.HasIndex("PromptQuestionId", "UserProfileId")
+                    b.HasIndex("PromptQuestionId")
                         .IsUnique();
+
+                    b.HasIndex("UserProfileId");
 
                     b.ToTable("PromptResponse");
                 });
@@ -2155,8 +2154,8 @@ namespace Fliq.Infrastructure.Migrations
             modelBuilder.Entity("Fliq.Domain.Entities.Prompts.PromptResponse", b =>
                 {
                     b.HasOne("Fliq.Domain.Entities.Prompts.PromptQuestion", "PromptQuestion")
-                        .WithMany()
-                        .HasForeignKey("PromptQuestionId")
+                        .WithOne("PromptResponse")
+                        .HasForeignKey("Fliq.Domain.Entities.Prompts.PromptResponse", "PromptQuestionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -2265,6 +2264,11 @@ namespace Fliq.Infrastructure.Migrations
             modelBuilder.Entity("Fliq.Domain.Entities.Prompts.PromptCategory", b =>
                 {
                     b.Navigation("PromptQuestions");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.Prompts.PromptQuestion", b =>
+                {
+                    b.Navigation("PromptResponse");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Settings.Filter", b =>

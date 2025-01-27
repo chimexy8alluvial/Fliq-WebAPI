@@ -45,7 +45,9 @@ namespace Fliq.Infrastructure.Persistence
         public DbSet<PromptCategory> PromptCategories { get; set; }
         public DbSet<PromptQuestion> PromptQuestions { get; set; }
 
-
+        public DbSet<Wallet> Wallets { get; set; } = null!;
+        public DbSet<WalletHistory> WalletHistories { get; set; } = null!;
+        public DbSet<Stake> Stakes { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -69,6 +71,19 @@ namespace Fliq.Infrastructure.Persistence
                 .HasOne(e => e.Ticket)
                 .WithMany()
                 .HasForeignKey(e => e.TicketId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<GameSession>()
+        .HasOne(gs => gs.Stake)
+        .WithOne(s => s.GameSession)
+        .HasForeignKey<GameSession>(gs => gs.StakeId)
+        .OnDelete(DeleteBehavior.Cascade); // Configure delete behavior
+
+            // Configure Stake -> GameSession relationship
+            modelBuilder.Entity<Stake>()
+                .HasOne(s => s.GameSession)
+                .WithOne(gs => gs.Stake)
+                .HasForeignKey<Stake>(s => s.GameSessionId)
                 .OnDelete(DeleteBehavior.Cascade);
                
             modelBuilder.Entity<PromptResponse>()
