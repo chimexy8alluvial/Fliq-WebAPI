@@ -23,8 +23,7 @@ namespace Fliq.Api.Mapping
 
             config.NewConfig<SendGameRequestDto, SendGameRequestCommand>()
                 .IgnoreNullValues(true)
-                .Map(dest => dest.RequesterId, src => src.SenderUserId)
-                .Map(dest => dest.RecipientId, src => src.ReceiverUserId);
+                .Map(dest => dest.ReceiverUserId, src => src.ReceiverUserId);
 
             config.NewConfig<AcceptGameRequestDto, AcceptGameRequestCommand>()
                 .IgnoreNullValues(true);
@@ -39,7 +38,7 @@ namespace Fliq.Api.Mapping
             config.NewConfig<GameSession, GetGameSessionResponse>()
                 .IgnoreNullValues(true);
             config.NewConfig<GetGameResult, GetGameResponse>()
-                .Map(dest => dest, src => src.Game);
+                .Map(dest => dest, src => src);
 
             config.NewConfig<Game, GetGameResponse>()
                 .IgnoreNullValues(true); // Mapping from Game entity to GetGameResponse
