@@ -11,9 +11,9 @@ namespace Fliq.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@"
-            ALTER   PROCEDURE [dbo].[sPGetMatchedUserProfiles]
+            CREATE OR ALTER PROCEDURE [dbo].[sPGetMatchedUserProfiles]
                 @userId INT,
-                @profileTypes NVARCHAR(MAX),  
+                @profileTypes NVARCHAR(MAX),
                 @filterByDating BIT = NULL,
                 @filterByFriendship BIT = NULL,
                 @pageNumber INT = 1,
@@ -25,14 +25,14 @@ namespace Fliq.Infrastructure.Migrations
                 BEGIN
                     SET @from_row = ((@pageNumber * @pageSize) - (@pageSize)) + 1;
                 END;
-            
+
                 WITH UserProfileRecords AS
                 (
-                    SELECT 
-                        up.UserId, 
-                        up.DOB, 
-                        g.Id AS GenderId, 
-                        g.GenderType, 
+                    SELECT
+                        up.UserId,
+                        up.DOB,
+                        g.Id AS GenderId,
+                        g.GenderType,
                         g.IsVisible AS GenderVisible,
             			oc.Id AS OccupationId,
             			oc.OccupationName AS OccupationName,
@@ -40,25 +40,25 @@ namespace Fliq.Infrastructure.Migrations
             			ed.Id AS EducationStatusId,
             			ed.EducationLevel AS EducationLevel,
             			ed.IsVisible AS EducationVisible,
-                        so.Id AS SexualOrientationId, 
-                        so.SexualOrientationType, 
-                        so.IsVisible AS SexualOrientationVisible, 
-                        r.Id AS ReligionId, 
-                        r.ReligionType, 
-                        r.IsVisible AS ReligionVisible, 
-                        e.Id AS EthnicityId, 
-                        e.EthnicityType, 
-                        e.IsVisible AS EthnicityVisible, 
-                        hk.Id AS HaveKidsId, 
-                        hk.HaveKidsType, 
-                        hk.IsVisible AS HaveKidsVisible, 
-                        wk.Id AS WantKidsId, 
-                        wk.WantKidsType, 
-                        wk.IsVisible AS WantKidsVisible, 
-                        loc.Id AS LocationId, 
-                        loc.Lat, 
-                        loc.Lng, 
-                        loc.IsVisible AS LocationVisible, 
+                        so.Id AS SexualOrientationId,
+                        so.SexualOrientationType,
+                        so.IsVisible AS SexualOrientationVisible,
+                        r.Id AS ReligionId,
+                        r.ReligionType,
+                        r.IsVisible AS ReligionVisible,
+                        e.Id AS EthnicityId,
+                        e.EthnicityType,
+                        e.IsVisible AS EthnicityVisible,
+                        hk.Id AS HaveKidsId,
+                        hk.HaveKidsType,
+                        hk.IsVisible AS HaveKidsVisible,
+                        wk.Id AS WantKidsId,
+                        wk.WantKidsType,
+                        wk.IsVisible AS WantKidsVisible,
+                        loc.Id AS LocationId,
+                        loc.Lat,
+                        loc.Lng,
+                        loc.IsVisible AS LocationVisible,
                         up.AllowNotifications,
                         up.Passions,
             			up.ProfileTypes,
@@ -66,12 +66,11 @@ namespace Fliq.Infrastructure.Migrations
             			up.DateModified,
             			up.IsDeleted,
             			up.Id,
-						  
+
                   (
-                    SELECT 
+                    SELECT
                         pr.Id,
                         pr.ResponseType,
-						pr.Response,
 					    pr.PromptQuestionId
                     FROM dbo.PromptResponse pr
                     WHERE pr.UserProfileId = up.Id
@@ -79,7 +78,7 @@ namespace Fliq.Infrastructure.Migrations
                 ) AS PromptResponses,
                         ROW_NUMBER() OVER (ORDER BY up.DateCreated DESC) AS Row_Num
                     FROM dbo.UserProfiles up
-                    
+
                     LEFT JOIN Gender g ON up.GenderId = g.Id
             		LEFT JOIN Occupation oc ON up.OccupationId = oc.Id
             		LEFT JOIN EducationStatus ed ON up.EducationStatusId = ed.Id
@@ -90,34 +89,34 @@ namespace Fliq.Infrastructure.Migrations
                     LEFT JOIN WantKids wk ON up.WantKidsId = wk.Id
                     LEFT JOIN Location loc ON up.LocationId = loc.Id
                     WHERE up.UserId != @userId
-                    AND EXISTS 
+                    AND EXISTS
                     (
                         SELECT 1 FROM OPENJSON(@profileTypes) AS jsonProfileTypes
                         WHERE up.ProfileTypes LIKE '%' + jsonProfileTypes.value + '%'
                     )
-                    AND (@filterByDating IS NULL OR 
+                    AND (@filterByDating IS NULL OR
                         (up.ProfileTypes LIKE '%"" + CAST(0 AS NVARCHAR(MAX)) + @""%'))
-                    AND (@filterByFriendship IS NULL OR 
+                    AND (@filterByFriendship IS NULL OR
                         (up.ProfileTypes LIKE '%"" + CAST(1 AS NVARCHAR(MAX)) + @""%'))
                 ),
                 RecordCount AS
                 (
                     SELECT COUNT(*) AS TotalCount FROM UserProfileRecords
                 )
-            
-                SELECT * 
+
+                SELECT *
                 FROM UserProfileRecords
                 CROSS JOIN RecordCount
                 WHERE Row_Num BETWEEN @from_row AND (@from_row + @pageSize - 1)
                 ORDER BY DateCreated DESC;
-             END
-");
+             END"
+               );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql("DROP PROCEDURE [dbo].[sPGetMatchedUserProfiles]");
+            migrationBuilder.Sql("DROP PROCEDURE IF EXISTS [dbo].[sPGetMatchedUserProfiles];");
         }
     }
 }
