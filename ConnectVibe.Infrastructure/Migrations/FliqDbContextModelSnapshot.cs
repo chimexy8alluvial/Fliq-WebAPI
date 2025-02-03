@@ -609,9 +609,6 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<int>("Player2Score")
                         .HasColumnType("int");
 
-                    b.Property<int>("StakeId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");
 
@@ -655,6 +652,9 @@ namespace Fliq.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("RequesterId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StakeStatus")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -824,7 +824,6 @@ namespace Fliq.Infrastructure.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<decimal>("Amount")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Currency")
@@ -1532,10 +1531,9 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserProfileId");
+                    b.HasIndex("PromptQuestionId");
 
-                    b.HasIndex("PromptQuestionId", "UserProfileId")
-                        .IsUnique();
+                    b.HasIndex("UserProfileId");
 
                     b.ToTable("PromptResponse");
                 });
@@ -1840,6 +1838,48 @@ namespace Fliq.Infrastructure.Migrations
                     b.ToTable("Wallets");
                 });
 
+            modelBuilder.Entity("Fliq.Domain.Entities.WalletHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ActivityType")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FailureReason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("TransactionStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WalletId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WalletId");
+
+                    b.ToTable("WalletHistories");
+                });
+
             modelBuilder.Entity("Fliq.Domain.Entities.Event.Discount", b =>
                 {
                     b.HasOne("Fliq.Domain.Entities.Event.Ticket", null)
@@ -1882,7 +1922,7 @@ namespace Fliq.Infrastructure.Migrations
                     b.HasOne("Fliq.Domain.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Payment");
@@ -2218,6 +2258,17 @@ namespace Fliq.Infrastructure.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.WalletHistory", b =>
+                {
+                    b.HasOne("Fliq.Domain.Entities.Wallet", "Wallet")
+                        .WithMany()
+                        .HasForeignKey("WalletId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Wallet");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Event.Events", b =>

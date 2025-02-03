@@ -25,10 +25,8 @@ BEGIN
         GameId,
         QuestionText,
         Options, -- Assuming stored as JSON or delimited string
-        CorrectAnswer,
-        Category,
-        Level,
-        Theme
+        CorrectAnswer
+
     FROM
         GameQuestions
     WHERE

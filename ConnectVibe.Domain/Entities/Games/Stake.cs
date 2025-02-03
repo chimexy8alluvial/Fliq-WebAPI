@@ -3,12 +3,13 @@
     public class Stake : Record
     {
         public int GameSessionId { get; set; }
-        public GameSession? GameSession { get; set; }
         public int RequesterId { get; set; }
         public int RecipientId { get; set; }
         public decimal Amount { get; set; }
         public bool IsAccepted { get; set; }
         public StakeStatus StakeStatus { get; set; } = StakeStatus.Pending;
+        public GameSession GameSession { get; set; } = default!;
+
     }
 
     public enum StakeStatus
