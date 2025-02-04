@@ -3,7 +3,6 @@
     public class Stake : Record
     {
         public int GameSessionId { get; set; }
-        public GameSession? GameSession { get; set; }
         public int RequesterId { get; set; }
         public int RecipientId { get; set; }
         public decimal Amount { get; set; }
@@ -11,6 +10,8 @@
         public StakeStatus StakeStatus { get; set; } = StakeStatus.Pending;
         public bool IsResolved { get; set; } = false;
         public StakeResolutionOption ResolutionOption { get; set; } = StakeResolutionOption.ReturnToPlayers;
+        public GameSession GameSession { get; set; } = default!;
+
     }
 
     public enum StakeStatus

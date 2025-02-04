@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Fliq.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class initial_migration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -251,6 +251,7 @@ namespace Fliq.Infrastructure.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CategoryName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsSystemGenerated = table.Column<bool>(type: "bit", nullable: false),
                     DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
@@ -343,6 +344,23 @@ namespace Fliq.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Wallets",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Balance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Wallets", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "WantKids",
                 columns: table => new
                 {
@@ -360,6 +378,31 @@ namespace Fliq.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "GameQuestions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    GameId = table.Column<int>(type: "int", nullable: false),
+                    QuestionText = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Options = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CorrectAnswer = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GameQuestions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_GameQuestions_Games_GameId",
+                        column: x => x.GameId,
+                        principalTable: "Games",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "GameSessions",
                 columns: table => new
                 {
@@ -370,8 +413,6 @@ namespace Fliq.Infrastructure.Migrations
                     Player2Id = table.Column<int>(type: "int", nullable: false),
                     Player1Score = table.Column<int>(type: "int", nullable: false),
                     Player2Score = table.Column<int>(type: "int", nullable: false),
-                    CurrentTurnPlayerId = table.Column<int>(type: "int", nullable: false),
-                    CurrentQuestionIndex = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndTime = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -575,7 +616,7 @@ namespace Fliq.Infrastructure.Migrations
                     Provider = table.Column<int>(type: "int", nullable: false),
                     TransactionId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ProductId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Amount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Currency = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PaymentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
@@ -676,6 +717,33 @@ namespace Fliq.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "WalletHistories",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    WalletId = table.Column<int>(type: "int", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    ActivityType = table.Column<int>(type: "int", nullable: false),
+                    TransactionStatus = table.Column<int>(type: "int", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FailureReason = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WalletHistories", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_WalletHistories_Wallets_WalletId",
+                        column: x => x.WalletId,
+                        principalTable: "Wallets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UserProfiles",
                 columns: table => new
                 {
@@ -763,35 +831,28 @@ namespace Fliq.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "GameQuestions",
+                name: "Stakes",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    GameId = table.Column<int>(type: "int", nullable: false),
-                    QuestionText = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Options = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CorrectAnswer = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Category = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Level = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Theme = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    GameSessionId = table.Column<int>(type: "int", nullable: true),
+                    GameSessionId = table.Column<int>(type: "int", nullable: false),
+                    RequesterId = table.Column<int>(type: "int", nullable: false),
+                    RecipientId = table.Column<int>(type: "int", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    IsAccepted = table.Column<bool>(type: "bit", nullable: false),
+                    StakeStatus = table.Column<int>(type: "int", nullable: false),
                     DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GameQuestions", x => x.Id);
+                    table.PrimaryKey("PK_Stakes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_GameQuestions_GameSessions_GameSessionId",
+                        name: "FK_Stakes_GameSessions_GameSessionId",
                         column: x => x.GameSessionId,
                         principalTable: "GameSessions",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_GameQuestions_Games_GameId",
-                        column: x => x.GameId,
-                        principalTable: "Games",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -997,7 +1058,7 @@ namespace Fliq.Infrastructure.Migrations
                     UserProfileId = table.Column<int>(type: "int", nullable: false),
                     PromptQuestionId = table.Column<int>(type: "int", nullable: false),
                     ResponseType = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Response = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Response = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
@@ -1101,7 +1162,8 @@ namespace Fliq.Infrastructure.Migrations
                         name: "FK_EventTickets_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -1200,11 +1262,6 @@ namespace Fliq.Infrastructure.Migrations
                 column: "GameId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GameQuestions_GameSessionId",
-                table: "GameQuestions",
-                column: "GameSessionId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_GameSessions_GameId",
                 table: "GameSessions",
                 column: "GameId");
@@ -1263,8 +1320,7 @@ namespace Fliq.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_PromptResponse_PromptQuestionId",
                 table: "PromptResponse",
-                column: "PromptQuestionId",
-                unique: true);
+                column: "PromptQuestionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PromptResponse_UserProfileId",
@@ -1275,6 +1331,12 @@ namespace Fliq.Infrastructure.Migrations
                 name: "IX_Settings_UserId",
                 table: "Settings",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Stakes_GameSessionId",
+                table: "Stakes",
+                column: "GameSessionId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Subscriptions_UserId",
@@ -1356,6 +1418,11 @@ namespace Fliq.Infrastructure.Migrations
                 name: "IX_Vice_FilterId1",
                 table: "Vice",
                 column: "FilterId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WalletHistories_WalletId",
+                table: "WalletHistories",
+                column: "WalletId");
         }
 
         /// <inheritdoc />
@@ -1401,6 +1468,9 @@ namespace Fliq.Infrastructure.Migrations
                 name: "PromptResponse");
 
             migrationBuilder.DropTable(
+                name: "Stakes");
+
+            migrationBuilder.DropTable(
                 name: "Subscriptions");
 
             migrationBuilder.DropTable(
@@ -1408,6 +1478,9 @@ namespace Fliq.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Vice");
+
+            migrationBuilder.DropTable(
+                name: "WalletHistories");
 
             migrationBuilder.DropTable(
                 name: "LocationResult");
@@ -1419,16 +1492,19 @@ namespace Fliq.Infrastructure.Migrations
                 name: "Tickets");
 
             migrationBuilder.DropTable(
-                name: "GameSessions");
-
-            migrationBuilder.DropTable(
                 name: "PromptQuestions");
 
             migrationBuilder.DropTable(
                 name: "UserProfiles");
 
             migrationBuilder.DropTable(
+                name: "GameSessions");
+
+            migrationBuilder.DropTable(
                 name: "Filter");
+
+            migrationBuilder.DropTable(
+                name: "Wallets");
 
             migrationBuilder.DropTable(
                 name: "Geometry");
@@ -1441,9 +1517,6 @@ namespace Fliq.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Events");
-
-            migrationBuilder.DropTable(
-                name: "Games");
 
             migrationBuilder.DropTable(
                 name: "PromptCategories");
@@ -1471,6 +1544,9 @@ namespace Fliq.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "WantKids");
+
+            migrationBuilder.DropTable(
+                name: "Games");
 
             migrationBuilder.DropTable(
                 name: "Settings");

@@ -15,7 +15,6 @@ namespace Fliq.Test.Explore.Queries
     public class ExploreQueryHandlerTest
     {
         private ExploreQueryHandler _handler;
-        private Mock<IHttpContextAccessor> _httpContextAccessorMock;
         private Mock<IUserRepository> _userRepositoryMock;
         private Mock<IProfileRepository> _profileRepositoryMock;
         private Mock<IProfileMatchingService> _profileMatchingServiceMock; // Added mock for profile matching service
@@ -24,7 +23,6 @@ namespace Fliq.Test.Explore.Queries
         [TestInitialize]
         public void Setup()
         {
-            _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
             _userRepositoryMock = new Mock<IUserRepository>();
             _profileRepositoryMock = new Mock<IProfileRepository>();
             _profileMatchingServiceMock = new Mock<IProfileMatchingService>(); // Initialize the new mock

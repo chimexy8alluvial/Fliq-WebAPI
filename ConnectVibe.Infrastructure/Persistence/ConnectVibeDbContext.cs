@@ -15,7 +15,10 @@ namespace Fliq.Infrastructure.Persistence
         public FliqDbContext(DbContextOptions<FliqDbContext> options) : base(options)
         {
         }
-
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+        }
         public DbSet<User> Users { get; set; } = null!;
         public DbSet<OTP> OTPs { get; set; } = null!;
         public DbSet<UserProfile> UserProfiles { get; set; } = null!;
@@ -49,51 +52,6 @@ namespace Fliq.Infrastructure.Persistence
         public DbSet<WalletHistory> WalletHistories { get; set; } = null!;
         public DbSet<Stake> Stakes { get; set; } = null!;
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Payment>()
-                .Property(p => p.Amount)
-                .HasPrecision(18, 2);
-            
-            modelBuilder.Entity<EventTicket>()
-            .HasOne(e => e.User)
-            .WithMany()
-            .HasForeignKey(e => e.UserId)
-            .OnDelete(DeleteBehavior.NoAction);
 
-            modelBuilder.Entity<EventTicket>()
-                .HasOne(e => e.Payment)
-                .WithMany()
-                .HasForeignKey(e => e.PaymentId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<EventTicket>()
-                .HasOne(e => e.Ticket)
-                .WithMany()
-                .HasForeignKey(e => e.TicketId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<GameSession>()
-        .HasOne(gs => gs.Stake)
-        .WithOne(s => s.GameSession)
-        .HasForeignKey<GameSession>(gs => gs.StakeId)
-        .OnDelete(DeleteBehavior.Cascade); // Configure delete behavior
-
-            // Configure Stake -> GameSession relationship
-            modelBuilder.Entity<Stake>()
-                .HasOne(s => s.GameSession)
-                .WithOne(gs => gs.Stake)
-                .HasForeignKey<Stake>(s => s.GameSessionId)
-                .OnDelete(DeleteBehavior.Cascade);
-               
-            modelBuilder.Entity<PromptResponse>()
-            .HasOne(pr => pr.PromptQuestion)
-            .WithMany() // No navigation property in PromptQuestion
-            .HasForeignKey(pr => pr.PromptQuestionId);
-
-            modelBuilder.Entity<PromptResponse>()
-                .HasIndex(pr => new { pr.PromptQuestionId, pr.UserProfileId })
-                .IsUnique(); // Ensures a user can only respond once to a question
-        }
     }
 }

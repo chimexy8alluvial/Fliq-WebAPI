@@ -42,6 +42,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         {
             using (var connection = _connectionFactory.CreateConnection())
             {
+                //Highlight this
                 const string SQL = "SELECT * FROM Events WHERE EventTitle IS NOT NULL";
 
                 // Ensure 'Events' is a class that matches the schema of your 'Events' table
