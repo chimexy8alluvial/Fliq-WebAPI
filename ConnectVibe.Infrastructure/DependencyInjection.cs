@@ -72,6 +72,7 @@ namespace Fliq.Infrastructure
             services.AddScoped<IGamesRepository, GamesRepository>();
             services.AddScoped<IWalletRepository, WalletRepository>();
             services.AddScoped<IStakeRepository, StakeRepository>();
+            services.AddScoped<IUserFeatureActivityRepository, UserFeatureActivityRepository>();
             services.AddSingleton<ICustomProfileMapper, CustomProfileMapper>();
             services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
             services.AddDbContext<FliqDbContext>(options =>
