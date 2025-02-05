@@ -37,7 +37,7 @@ namespace Fliq.Test.Games.Commands
         public async Task Handle_InsufficientBalance_ReturnsError()
         {
             // Arrange
-            var command = new CreateStakeCommand(1, 101, 102, 50m);
+            var command = new CreateStakeCommand(1, 101, 102, 50m, StakeResolutionOption.WinnerTakesAll);
 
             _mockWalletRepository
                 .Setup(repo => repo.GetWalletByUserId(command.RequesterId))
@@ -57,7 +57,7 @@ namespace Fliq.Test.Games.Commands
         public async Task Handle_ValidRequest_CreatesStake()
         {
             // Arrange
-            var command = new CreateStakeCommand(1, 101, 102, 50m);
+            var command = new CreateStakeCommand(1, 101, 102, 50m, StakeResolutionOption.WinnerTakesAll);
 
             _mockWalletRepository
                 .Setup(repo => repo.GetWalletByUserId(command.RequesterId))
@@ -92,7 +92,7 @@ namespace Fliq.Test.Games.Commands
         public async Task Handle_RequesterWalletNotFound_ReturnsError()
         {
             // Arrange
-            var command = new CreateStakeCommand(1, 101, 102, 50m);
+            var command = new CreateStakeCommand(1, 101, 102, 50m, StakeResolutionOption.WinnerTakesAll);
 
             _mockWalletRepository
                 .Setup(repo => repo.GetWalletByUserId(command.RequesterId))

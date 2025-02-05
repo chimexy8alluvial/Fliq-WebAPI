@@ -3,6 +3,7 @@
     public record SubmitAnswerDto(
     int GameSessionId,
     int Player1Score,
-    int Player2Score
+    int Player2Score,
+     bool Completed
 );
 }

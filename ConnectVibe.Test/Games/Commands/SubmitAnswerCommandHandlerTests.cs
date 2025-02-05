@@ -17,6 +17,8 @@ namespace Fliq.Test.Games.Commands
         private Mock<ILoggerManager> _mockLogger;
         private SubmitAnswerCommandHandler _handler;
         private Mock<IHubContext<GameHub>> _mockHub;
+        private Mock<IWalletRepository> _mockWalletRepository;
+        private Mock<IStakeRepository> _mockStakeRepository;
 
         [TestInitialize]
         public void Setup()
@@ -24,12 +26,14 @@ namespace Fliq.Test.Games.Commands
             _mockGamesRepository = new Mock<IGamesRepository>();
             _mockLogger = new Mock<ILoggerManager>();
             _mockHub = new Mock<IHubContext<GameHub>>();
+            _mockStakeRepository = new Mock<IStakeRepository>();
+            _mockWalletRepository = new Mock<IWalletRepository>();
             var mockClients = new Mock<IHubClients>();
             var mockClientProxy = new Mock<IClientProxy>();
             mockClients.Setup(c => c.Group(It.IsAny<string>())).Returns(mockClientProxy.Object);
 
             _mockHub.Setup(h => h.Clients).Returns(mockClients.Object);
-            _handler = new SubmitAnswerCommandHandler(_mockGamesRepository.Object, _mockLogger.Object, _mockHub.Object);
+            _handler = new SubmitAnswerCommandHandler(_mockGamesRepository.Object, _mockLogger.Object, _mockHub.Object, _mockWalletRepository.Object, _mockStakeRepository.Object);
         }
 
         [TestMethod]
@@ -59,7 +63,7 @@ namespace Fliq.Test.Games.Commands
             _mockGamesRepository.Setup(repo => repo.GetQuestionsByGameId(session.GameId, It.IsAny<int>(), It.IsAny<int>()))
                 .Returns(questions);
 
-            var command = new SubmitAnswerCommand(SessionId: 1, Player1Score: 2, Player2Score: 1);
+            var command = new SubmitAnswerCommand(SessionId: 1, Player1Score: 2, Player2Score: 1, true);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -78,7 +82,7 @@ namespace Fliq.Test.Games.Commands
             // Arrange
             _mockGamesRepository.Setup(repo => repo.GetGameSessionById(It.IsAny<int>())).Returns((GameSession)null);
 
-            var command = new SubmitAnswerCommand(SessionId: 999, Player1Score: 2, Player2Score: 1);
+            var command = new SubmitAnswerCommand(SessionId: 999, Player1Score: 2, Player2Score: 1, true);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);

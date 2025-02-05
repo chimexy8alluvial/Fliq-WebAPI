@@ -54,6 +54,7 @@ namespace Fliq.Api.Mapping
                 .Map(dest => dest, src => src.GameSession)
                 .Map(dest => dest.StakeAmount, src => src.GameSession.Stake != null ? src.GameSession.Stake.Amount : (decimal?)null);
             config.NewConfig<CreateStakeRequestDto, CreateStakeCommand>()
+                .Map(dest => dest.ResolutionOption, src => (StakeResolutionOption)src.ResolutionOption)
                 .IgnoreNullValues(true);
             config.NewConfig<Stake, StakeResponseDto>()
                 .IgnoreNullValues(true);

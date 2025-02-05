@@ -12,7 +12,8 @@ namespace Fliq.Application.Games.Commands.CreateStake
     int GameSessionId,
     int RequesterId,
     int RecipientId,
-    decimal Amount
+    decimal Amount,
+    StakeResolutionOption ResolutionOption
 ) : IRequest<ErrorOr<Stake>>;
 
     public class CreateStakeCommandHandler : IRequestHandler<CreateStakeCommand, ErrorOr<Stake>>
