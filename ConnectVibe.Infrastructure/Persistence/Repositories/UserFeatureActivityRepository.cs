@@ -31,5 +31,14 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             return await _dbContext.UserFeatureActivities
                 .FirstOrDefaultAsync(a => a.UserId == userId && a.Feature == feature);
         }
+
+        public async Task<List<UserFeatureActivity>> GetInactiveFeatureUsersAsync(DateTime thresholdDate)
+        {
+            return await _dbContext.UserFeatureActivities
+                .Where(ufa => ufa.LastActiveAt < thresholdDate)
+                .GroupBy(ufa => new { ufa.UserId, ufa.Feature })
+                .Select(g => g.First())
+                .ToListAsync();
+        }
     }
 }

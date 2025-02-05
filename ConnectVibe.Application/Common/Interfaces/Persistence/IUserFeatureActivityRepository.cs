@@ -8,5 +8,6 @@ namespace Fliq.Application.Common.Interfaces.Persistence
     {
         Task Add(UserFeatureActivity userActivity);
         Task<UserFeatureActivity?> GetUserFeatureActivity(int userId, string feature);
+        Task<List<UserFeatureActivity>> GetInactiveFeatureUsersAsync(DateTime thresholdDate);
     }
 }

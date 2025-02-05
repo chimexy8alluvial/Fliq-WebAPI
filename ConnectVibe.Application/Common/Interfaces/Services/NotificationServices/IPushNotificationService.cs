@@ -1,8 +1,10 @@
 ﻿
 
+using Fliq.Domain.Entities.Notifications;
+
 namespace Fliq.Application.Common.Interfaces.Services.NotificationServices
 {
-    public interface INotificationService
+    public interface IPushNotificationService
     {
         Task SendNotificationAsync(
             string title,

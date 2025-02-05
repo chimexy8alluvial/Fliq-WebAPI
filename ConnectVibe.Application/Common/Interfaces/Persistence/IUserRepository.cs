@@ -10,5 +10,6 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         IEnumerable<User> GetAllUsers();
         User? GetUserById(int Id);
         User? GetUserByIdIncludingProfile(int Id);
+        Task<List<User>> GetInactiveUsersAsync(DateTime thresholdDate);
     }
 }
