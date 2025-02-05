@@ -20,12 +20,15 @@ namespace Fliq.Application.Common.UserFeatureActivities
 
         public async Task TrackUserFeatureActivity(int userId, string featureName)
         {
+            _logger.LogInfo($"[TrackUserFeatureActivity] Start - UserId: {userId}, Feature: {featureName}");
+
             var existingActivity = await _userFeatureActivityRepository.GetUserFeatureActivity(userId, featureName);
 
             if (existingActivity != null)
             {
                 existingActivity.LastActiveAt = DateTime.UtcNow;
                 existingActivity.DateModified = DateTime.UtcNow;
+                _logger.LogInfo($"[TrackUserFeatureActivity] Updating existing activity for UserId: {userId}, Feature: {featureName}");
             }
             else
             {
@@ -36,9 +39,11 @@ namespace Fliq.Application.Common.UserFeatureActivities
                     LastActiveAt = DateTime.UtcNow,
                     DateCreated = DateTime.UtcNow
                 };
+                _logger.LogInfo($"[TrackUserFeatureActivity] Creating new activity record for UserId: {userId}, Feature: {featureName}");
             }
 
              await _userFeatureActivityRepository.Add(existingActivity);
+            _logger.LogInfo($"[TrackUserFeatureActivity] Successfully tracked feature activity for UserId: {userId}, Feature: {featureName}");
         }
     }
 }
