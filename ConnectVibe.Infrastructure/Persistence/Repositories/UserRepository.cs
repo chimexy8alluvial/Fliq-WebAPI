@@ -52,9 +52,14 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
         public async Task<List<User>> GetInactiveUsersAsync(DateTime thresholdDate)
         {
-            return await _dbContext.Users
-                .Where(u => u.LastActiveAt < thresholdDate)
-                .ToListAsync();
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var sql = "sp_GetInactiveUsers";
+                var parameter = new { ThresholdDate = thresholdDate };
+
+                var users = await connection.QueryAsync<User>(sql, parameter, commandType: CommandType.StoredProcedure);
+                return users.ToList();
+            }
         }
 
         public User? GetUserById(int id)

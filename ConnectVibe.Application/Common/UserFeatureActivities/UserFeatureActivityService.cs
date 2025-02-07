@@ -22,7 +22,7 @@ namespace Fliq.Application.Common.UserFeatureActivities
         {
             _logger.LogInfo($"[TrackUserFeatureActivity] Start - UserId: {userId}, Feature: {featureName}");
 
-            var existingActivity = await _userFeatureActivityRepository.GetUserFeatureActivity(userId, featureName);
+            var existingActivity = await _userFeatureActivityRepository.GetUserFeatureActivityAsync(userId, featureName);
 
             if (existingActivity != null)
             {
@@ -42,7 +42,7 @@ namespace Fliq.Application.Common.UserFeatureActivities
                 _logger.LogInfo($"[TrackUserFeatureActivity] Creating new activity record for UserId: {userId}, Feature: {featureName}");
             }
 
-             await _userFeatureActivityRepository.Add(existingActivity);
+             await _userFeatureActivityRepository.AddAsync(existingActivity);
             _logger.LogInfo($"[TrackUserFeatureActivity] Successfully tracked feature activity for UserId: {userId}, Feature: {featureName}");
         }
     }
