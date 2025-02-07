@@ -1,4 +1,7 @@
-﻿using Fliq.Infrastructure.Persistence;
+﻿using Dapper;
+using Fliq.Infrastructure.Persistence;
+using Microsoft.Data.SqlClient;
+using System.Data;
 using System.Security.Claims;
 
 namespace Fliq.Api.Common.Middlewares
@@ -6,10 +9,12 @@ namespace Fliq.Api.Common.Middlewares
     public class ActivityTrackingMiddleware
     {
         private readonly RequestDelegate _next;  // Stores the next middleware in the pipeline
+        private readonly string _connectionString;
 
-        public ActivityTrackingMiddleware(RequestDelegate next)
+        public ActivityTrackingMiddleware(RequestDelegate next, IConfiguration configuration)
         {
             _next = next;
+            _connectionString = configuration.GetConnectionString("FliqDbContext")!;
         }
 
         public async Task Invoke(HttpContext context, FliqDbContext dbContext)
@@ -22,12 +27,12 @@ namespace Fliq.Api.Common.Middlewares
 
                 if (int.TryParse(userId, out var userIdInt)) // Ensure userId is a valid integer
                 {
-                    var user = await dbContext.Users.FindAsync(userIdInt); 
-                    if (user is not null)
-                    {
-                        user.LastActiveAt = DateTime.UtcNow;  // Update activity timestamp
-                        await dbContext.SaveChangesAsync();
-                    }
+                    using var connection = new SqlConnection(_connectionString);
+                    await connection.ExecuteAsync(
+                        "sp_UpdateUserLastActiveAt",
+                        new { UserId = userIdInt, LastActiveAt = DateTime.UtcNow },
+                        commandType: CommandType.StoredProcedure
+                    );
                 }
             }
 
