@@ -20,14 +20,17 @@ using Fliq.Infrastructure.Services.AuthServices;
 using Fliq.Infrastructure.Services.EventServices;
 using Fliq.Infrastructure.Services.LocationServices;
 using Fliq.Infrastructure.Services.MediaService;
+using Fliq.Infrastructure.Services.NotificationServices.Email;
 using Fliq.Infrastructure.Services.NotificationServices.Firebase;
 using Fliq.Infrastructure.Services.PaymentServices;
+using Fliq.Infrastructure.Services.SchedulingServices.QuartzJobs;
 using Fliq.Infrastructure.Services.SubscriptionServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Quartz;
 using System.Text;
 
 namespace Fliq.Infrastructure
@@ -63,11 +66,13 @@ namespace Fliq.Infrastructure
             services.AddScoped<IEventService, EventService>();
             services.AddScoped<IEventReviewRepository, EventReviewRepository>();
             services.AddScoped<INotificationRepository, NotificationRepository>();
-            services.AddScoped<INotificationService, FireBaseNotificationService>();
+            services.AddScoped<IPushNotificationService, FireBaseNotificationService>();
+            services.AddScoped<IEmailNotificationService, EmailNotificationService>();
             services.AddScoped<IFirebaseMessagingWrapper, FirebaseMessagingWrapper>();
             services.AddScoped<IGamesRepository, GamesRepository>();
             services.AddScoped<IWalletRepository, WalletRepository>();
             services.AddScoped<IStakeRepository, StakeRepository>();
+            services.AddScoped<IUserFeatureActivityRepository, UserFeatureActivityRepository>();
             services.AddSingleton<ICustomProfileMapper, CustomProfileMapper>();
             services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
             services.AddDbContext<FliqDbContext>(options =>
@@ -116,5 +121,25 @@ namespace Fliq.Infrastructure
             });
             return services;
         }
+
+        // Register Quartz
+        public static IServiceCollection AddQuartz(this IServiceCollection services, ConfigurationManager configurationManager)
+        {
+             services.AddQuartz(q =>
+            {
+                var inactivityJobKey = new JobKey("InactivityCheckJob");
+
+                q.AddJob<InactivityCheckJob>(opts => opts.WithIdentity(inactivityJobKey));
+
+                q.AddTrigger(opts => opts
+                    .ForJob(inactivityJobKey)
+                    .WithIdentity("InactivityCheckTrigger")
+                    .WithCronSchedule("0 0 12 * * ?") // Runs daily at 12 PM UTC
+                );
+            });
+            return services;
+        }
+       
+       
     }
 }

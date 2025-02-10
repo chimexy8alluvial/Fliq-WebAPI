@@ -1,4 +1,5 @@
 ﻿using Fliq.Api;
+using Fliq.Api.Common.Middlewares;
 using Fliq.Application;
 using Fliq.Application.Common.Hubs;
 using Fliq.Infrastructure;
@@ -53,6 +54,7 @@ var app = builder.Build();
     app.UseHttpsRedirection();
     app.UseRouting();
     app.UseAuthentication();
+    app.UseActivityTrackingMiddleware();
     app.UseAuthorization();
     app.MapControllers();
     app.MapHub<GameHub>("/gamehub");

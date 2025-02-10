@@ -15,7 +15,7 @@ namespace Fliq.Test.Notification.MatchHandlers
         private NotificationEventHandler _handler;
         private Mock<IUserRepository> _userRepositoryMock;
         private Mock<INotificationRepository> _notificationRepositoryMock;
-        private Mock<INotificationService> _firebaseServiceMock;
+        private Mock<IPushNotificationService> _firebaseServiceMock;
         private Mock<ILoggerManager> _loggerManagerMock;
 
         [TestInitialize]
@@ -23,7 +23,7 @@ namespace Fliq.Test.Notification.MatchHandlers
         {
             _userRepositoryMock = new Mock<IUserRepository>();
             _notificationRepositoryMock = new Mock<INotificationRepository>();
-            _firebaseServiceMock = new Mock<INotificationService>();
+            _firebaseServiceMock = new Mock<IPushNotificationService>();
             _loggerManagerMock = new Mock<ILoggerManager>();
 
             _handler = new NotificationEventHandler(

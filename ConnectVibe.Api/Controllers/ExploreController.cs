@@ -1,4 +1,5 @@
 ﻿using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.Common.Interfaces.UserFeatureActivities;
 using Fliq.Application.Common.Pagination;
 using Fliq.Application.Explore.Common;
 using Fliq.Application.Explore.Queries;
@@ -18,12 +19,14 @@ namespace Fliq.Api.Controllers
         private readonly ISender _mediator;
         private readonly IMapper _mapper;
         private readonly ILoggerManager _logger;
+        private readonly IUserFeatureActivityService _userFeatureActivityService;
 
-        public ExploreController(ISender mediator, IMapper mapper, ILoggerManager logger)
+        public ExploreController(ISender mediator, IMapper mapper, ILoggerManager logger, IUserFeatureActivityService userFeatureActivityService)
         {
             _mediator = mediator;
             _mapper = mapper;
             _logger = logger;
+            _userFeatureActivityService = userFeatureActivityService;
         }
 
         [HttpGet("Explore-Profiles")]
@@ -34,6 +37,9 @@ namespace Fliq.Api.Controllers
 
             var userId = GetAuthUserId();
             _logger.LogInfo($"Authenticated user ID: {userId}");
+
+            // Track Feature Activity
+            await _userFeatureActivityService.TrackUserFeatureActivity(userId, "Explore-Profiles");
 
             // Map request to ExploreQuery and add UserId
             var query = _mapper.Map<ExploreQuery>(request);
@@ -57,6 +63,9 @@ namespace Fliq.Api.Controllers
 
             var userId = GetAuthUserId();
             _logger.LogInfo($"Authenticated user ID: {userId}");
+
+            // Track Feature Activity
+            await _userFeatureActivityService.TrackUserFeatureActivity(userId, "Explore-Events");
 
             // Map request to ExploreQuery and add UserId
             var query = _mapper.Map<ExploreEventsQuery>(request);

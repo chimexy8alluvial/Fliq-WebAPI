@@ -1,4 +1,6 @@
 ﻿using Fliq.Application.Common.Behaviours;
+using Fliq.Application.Common.Interfaces.UserFeatureActivities;
+using Fliq.Application.Common.UserFeatureActivities;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +16,7 @@ namespace Fliq.Application
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             services.AddSignalR();
+            services.AddScoped<IUserFeatureActivityService, UserFeatureActivityService>();
             return services;
         }
     }

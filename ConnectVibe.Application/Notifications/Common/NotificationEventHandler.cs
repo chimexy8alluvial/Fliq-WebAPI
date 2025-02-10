@@ -12,9 +12,9 @@ namespace Fliq.Application.Notifications.Common
                                             INotificationHandler<MatchRequestEvent>, INotificationHandler<EventCreatedEvent>, INotificationHandler<EventReviewSubmittedEvent>
     {
         private readonly INotificationRepository _notificationRepository;
-        private readonly INotificationService _firebaseNotificationService;
+        private readonly IPushNotificationService _firebaseNotificationService;
         private readonly ILoggerManager _logger;
-        public NotificationEventHandler(INotificationRepository notificationRepository, INotificationService firebaseNotificationService, ILoggerManager logger)
+        public NotificationEventHandler(INotificationRepository notificationRepository, IPushNotificationService firebaseNotificationService, ILoggerManager logger)
         {
             _notificationRepository = notificationRepository;
             _firebaseNotificationService = firebaseNotificationService;

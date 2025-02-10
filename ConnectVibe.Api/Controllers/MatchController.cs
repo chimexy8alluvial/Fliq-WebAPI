@@ -1,4 +1,5 @@
 ﻿using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.Common.Interfaces.UserFeatureActivities;
 using Fliq.Application.MatchedProfile.Commands.AcceptedMatch;
 using Fliq.Application.MatchedProfile.Commands.Create;
 using Fliq.Application.MatchedProfile.Commands.MatchedList;
@@ -18,12 +19,13 @@ namespace Fliq.Api.Controllers
         private readonly ISender _mediator;
         private readonly IMapper _mapper;
         private readonly ILoggerManager _logger;
-
-        public MatchController(ISender mediator, IMapper mapper, ILoggerManager logger)
+        private readonly IUserFeatureActivityService _userFeatureActivityService;
+        public MatchController(ISender mediator, IMapper mapper, ILoggerManager logger, IUserFeatureActivityService userFeatureActivityService)
         {
             _mediator = mediator;
             _mapper = mapper;
             _logger = logger;
+            _userFeatureActivityService = userFeatureActivityService;
         }
 
         [HttpPost("initiate-match")]
@@ -31,6 +33,10 @@ namespace Fliq.Api.Controllers
         {
             _logger.LogInfo($"Initiate Match Request Received: {request}");
             var matchInitiatorUserId = GetAuthUserId();
+
+            // Track Feature Activity
+            await _userFeatureActivityService.TrackUserFeatureActivity(matchInitiatorUserId, "Initiate-MatchRequest");
+
             var modifiedRequest = request with { MatchInitiatorUserId = matchInitiatorUserId };
             var command = _mapper.Map<InitiateMatchRequestCommand>(modifiedRequest);
 
@@ -65,6 +71,10 @@ namespace Fliq.Api.Controllers
         {
             _logger.LogInfo($"Accept Match Request Received: {request}");
             var userId = GetAuthUserId();
+
+            // Track Feature Activity
+            await _userFeatureActivityService.TrackUserFeatureActivity(userId, "Accept-MatchRequest");
+
             var modifiedRequest = request with { UserId = userId };
             var command = _mapper.Map<AcceptMatchRequestCommand>(modifiedRequest);
 
@@ -82,6 +92,10 @@ namespace Fliq.Api.Controllers
         {
             _logger.LogInfo($"Accept Match Request Received: {request}");
             var userId = GetAuthUserId();
+
+            // Track Feature Activity
+            await _userFeatureActivityService.TrackUserFeatureActivity(userId, "Reject-MatchRequest");
+
             var modifiedRequest = request with { UserId = userId };
             var command = _mapper.Map<RejectMatchRequestCommand>(modifiedRequest);
 

@@ -1,4 +1,5 @@
 ﻿using Fliq.Application.Common.Hubs;
+using Fliq.Application.Common.Interfaces.UserFeatureActivities;
 using Fliq.Application.Games.Commands.AcceptGameRequest;
 using Fliq.Application.Games.Commands.AcceptStake;
 using Fliq.Application.Games.Commands.CreateGame;
@@ -31,13 +32,15 @@ namespace Fliq.Api.Controllers
         private readonly ILogger<GamesController> _logger;
         private readonly IMapper _mapper;
         private readonly IHubContext<GameHub> _hubContext;
+        private readonly IUserFeatureActivityService _userFeatureActivityService;
 
-        public GamesController(IMediator mediator, ILogger<GamesController> logger, IMapper mapper, IHubContext<GameHub> hubContext)
+        public GamesController(IMediator mediator, ILogger<GamesController> logger, IMapper mapper, IHubContext<GameHub> hubContext, IUserFeatureActivityService userFeatureActivityService)
         {
             _mediator = mediator;
             _logger = logger;
             _mapper = mapper;
             _hubContext = hubContext;
+            _userFeatureActivityService = userFeatureActivityService;
         }
 
         [HttpPost("create")]
@@ -202,7 +205,13 @@ namespace Fliq.Api.Controllers
         [HttpPost("create-stake")]
         public async Task<IActionResult> CreateStake([FromBody] CreateStakeRequestDto requestDto)
         {
+            var userId = GetAuthUserId();
+
+            // Track Feature Activity
+            await _userFeatureActivityService.TrackUserFeatureActivity(userId, "Create-GameStake");
+
             var command = requestDto.Adapt<CreateStakeCommand>();
+            command = command with { RequesterId = userId };
             var result = await _mediator.Send(command);
 
             return result.Match(
@@ -215,6 +224,10 @@ namespace Fliq.Api.Controllers
         public async Task<IActionResult> AcceptStake([FromBody] AcceptStakeRequestDto requestDto)
         {
             var userId = GetAuthUserId();
+
+            // Track Feature Activity
+            await _userFeatureActivityService.TrackUserFeatureActivity(userId, "Accept-GameStake");
+
             var command = requestDto.Adapt<AcceptStakeCommand>();
             command = command with { UserId = userId };
             var result = await _mediator.Send(command);
@@ -229,6 +242,10 @@ namespace Fliq.Api.Controllers
         public async Task<IActionResult> RejectStake([FromBody] AcceptStakeRequestDto requestDto)
         {
             var userId = GetAuthUserId();
+
+            // Track Feature Activity
+            await _userFeatureActivityService.TrackUserFeatureActivity(userId, "Reject-GameStake");
+
             var command = requestDto.Adapt<RejectStakeCommand>();
             command = command with { UserId = userId };
             var result = await _mediator.Send(command);

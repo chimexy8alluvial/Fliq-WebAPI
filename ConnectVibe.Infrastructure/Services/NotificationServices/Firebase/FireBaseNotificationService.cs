@@ -7,7 +7,7 @@ using Fliq.Application.Common.Interfaces.Services.NotificationServices;
 
 namespace Fliq.Infrastructure.Services.NotificationServices.Firebase
 {
-    public class FireBaseNotificationService : INotificationService
+    public class FireBaseNotificationService : IPushNotificationService
     {
         private readonly ILoggerManager _logger;
         private readonly INotificationRepository _notificationRepository;

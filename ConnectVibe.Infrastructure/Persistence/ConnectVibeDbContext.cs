@@ -6,6 +6,7 @@ using Fliq.Domain.Entities.Notifications;
 using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Entities.Prompts;
 using Fliq.Domain.Entities.Settings;
+using Fliq.Domain.Entities.UserFeatureActivities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Fliq.Infrastructure.Persistence
@@ -52,6 +53,7 @@ namespace Fliq.Infrastructure.Persistence
         public DbSet<WalletHistory> WalletHistories { get; set; } = null!;
         public DbSet<Stake> Stakes { get; set; } = null!;
 
+        public DbSet<UserFeatureActivity> UserFeatureActivities { get; set; } = null!;
 
     }
 }
