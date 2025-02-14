@@ -41,6 +41,7 @@ namespace Fliq.Application.Authentication.Commands.ValidateOTP
                 return Errors.Authentication.InvalidOTP;
             var user = _userRepository.GetUserByEmail(command.Email);
             user.IsEmailValidated = true;
+            user.IsActive = true;
             _userRepository.Update(user);
             var token = _jwtTokenGenerator.GenerateToken(user);
             return new AuthenticationResult(user, token);
