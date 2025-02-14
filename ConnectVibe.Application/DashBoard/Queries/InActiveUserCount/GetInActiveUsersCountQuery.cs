@@ -6,16 +6,16 @@ using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.DashBoard.Common;
 using MediatR;
 
-namespace Fliq.Application.DashBoard.Queries.ActiveUserCount
+namespace Fliq.Application.DashBoard.Queries.InActiveUserCount
 {
     public record GetInActiveUsersCountQuery() : IRequest<ErrorOr<UserCountResult>>;
 
-    public class GetActiveUsersCountQueryHandler : IRequestHandler<GetInActiveUsersCountQuery, ErrorOr<UserCountResult>>
+    public class GetInActiveUsersCountQueryHandler : IRequestHandler<GetInActiveUsersCountQuery, ErrorOr<UserCountResult>>
     {
         private readonly IUserRepository _userRepository;
         private readonly ILoggerManager _logger;
 
-        public GetActiveUsersCountQueryHandler(IUserRepository userRepository, ILoggerManager logger)
+        public GetInActiveUsersCountQueryHandler(IUserRepository userRepository, ILoggerManager logger)
         {
             _userRepository = userRepository;
             _logger = logger;
@@ -23,10 +23,10 @@ namespace Fliq.Application.DashBoard.Queries.ActiveUserCount
 
         public async Task<ErrorOr<UserCountResult>> Handle(GetInActiveUsersCountQuery query, CancellationToken cancellationToken)
         {
-            _logger.LogInfo("Fetching active users count...");
+            _logger.LogInfo("Fetching Inactive users count...");
 
-            var count = await _userRepository.CountActiveUsers();
-            _logger.LogInfo($"Active Users Count: {count}");
+            var count = await _userRepository.CountInactiveUsers();
+            _logger.LogInfo($"Inactive Users Count: {count}");
 
             return new UserCountResult(count);
         }
