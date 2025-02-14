@@ -14,7 +14,7 @@ namespace Fliq.Domain.Entities
         public string PasswordSalt { get; set; } = string.Empty;
         public bool IsEmailValidated { get; set; }
         public bool IsDocumentVerified { get; set; }
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
         public DateTime LastActiveAt { get; set; } = DateTime.UtcNow; 
 
         public UserProfile? UserProfile { get; set; }

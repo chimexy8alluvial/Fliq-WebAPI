@@ -73,5 +73,21 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             var user = _dbContext.Users.Include(p=>p.UserProfile).ThenInclude(p => p.Photos).SingleOrDefault(p => p.Id == id);
             return user;
         }
+
+        //Count Queries
+        public async Task<int> CountActiveUsers()
+        {
+            return await _dbContext.Users.CountAsync(u => u.IsActive); // Using IsActive flag
+        }
+
+        public async Task<int> CountInactiveUsers()
+        {
+            return await _dbContext.Users.CountAsync(u => !u.IsActive); // Using IsActive flag
+        }
+
+        public async Task<int> CountNewSignups(int days)
+        {
+            return await _dbContext.Users.CountAsync(u => u.DateCreated >= DateTime.UtcNow.AddDays(-days));
+        }
     }
 }
