@@ -2,6 +2,7 @@
 using Fliq.Application.DashBoard.Queries.ActiveUserCount;
 using Fliq.Application.DashBoard.Queries.InActiveUserCount;
 using Fliq.Application.DashBoard.Queries.NewSignUpsCount;
+using Fliq.Application.DashBoard.Queries.UsersCount;
 using Fliq.Contracts.DashBoard;
 using MapsterMapper;
 using MediatR;
@@ -44,6 +45,20 @@ namespace Fliq.Api.Controllers
             _logger.LogInfo("Received request for inactive users count.");
 
             var query = new GetInActiveUsersCountQuery();
+            var result = await _mediator.Send(query);
+
+            return result.Match(
+              matchedProfileResult => Ok(_mapper.Map<UserCountResponse>(result.Value)),
+              errors => Problem(errors)
+          );
+        }
+
+        [HttpGet("users-count")]
+        public async Task<IActionResult> GetUsersCount()
+        {
+            _logger.LogInfo("Received request for inactive users count.");
+
+            var query = new GetAllUsersCountQuery();
             var result = await _mediator.Send(query);
 
             return result.Match(

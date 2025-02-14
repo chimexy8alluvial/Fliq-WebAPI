@@ -15,6 +15,7 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         //Count Queries
         Task<int> CountActiveUsers();
         Task<int> CountInactiveUsers();
+        Task<int> CountAllUsers();
         Task<int> CountNewSignups(int days);
     }
 }

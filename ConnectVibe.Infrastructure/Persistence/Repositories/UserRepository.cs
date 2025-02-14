@@ -96,6 +96,14 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                 return count;
             }
         }
+        public async Task<int> CountAllUsers()
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_CountAllUsers", commandType: CommandType.StoredProcedure);
+                return count;
+            }
+        }
 
         public async Task<int> CountNewSignups(int days)
         {
