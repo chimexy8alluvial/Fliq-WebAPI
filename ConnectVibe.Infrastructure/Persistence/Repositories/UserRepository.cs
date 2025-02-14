@@ -3,6 +3,8 @@ using Fliq.Domain.Entities;
 using Dapper;
 using System.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {
@@ -75,19 +77,34 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         }
 
         //Count Queries
+
         public async Task<int> CountActiveUsers()
         {
-            return await _dbContext.Users.CountAsync(u => u.IsActive); // Using IsActive flag
+
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_CountActiveUsers", commandType: CommandType.StoredProcedure);
+                return count;
+            }
         }
 
         public async Task<int> CountInactiveUsers()
         {
-            return await _dbContext.Users.CountAsync(u => !u.IsActive); // Using IsActive flag
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_CountInActiveUsers", commandType: CommandType.StoredProcedure); // Using IsActive flag
+                return count;
+            }
         }
 
         public async Task<int> CountNewSignups(int days)
         {
-            return await _dbContext.Users.CountAsync(u => u.DateCreated >= DateTime.UtcNow.AddDays(-days));
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_CountNewSignUps", commandType: CommandType.StoredProcedure); // Using IsActive flag
+                return count;
+            }
+            //return await _dbContext.Users.CountAsync(u => u.DateCreated >= DateTime.UtcNow.AddDays(-days));
         }
     }
 }
