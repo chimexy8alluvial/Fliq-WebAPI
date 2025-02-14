@@ -8,9 +8,9 @@ using MediatR;
 
 namespace Fliq.Application.DashBoard.Queries.ActiveUserCount
 {
-    public record GetInActiveUsersCountQuery() : IRequest<ErrorOr<UserCountResult>>;
+    public record GetActiveUsersCountQuery() : IRequest<ErrorOr<UserCountResult>>;
 
-    public class GetActiveUsersCountQueryHandler : IRequestHandler<GetInActiveUsersCountQuery, ErrorOr<UserCountResult>>
+    public class GetActiveUsersCountQueryHandler : IRequestHandler<GetActiveUsersCountQuery, ErrorOr<UserCountResult>>
     {
         private readonly IUserRepository _userRepository;
         private readonly ILoggerManager _logger;
@@ -21,7 +21,7 @@ namespace Fliq.Application.DashBoard.Queries.ActiveUserCount
             _logger = logger;
         }
 
-        public async Task<ErrorOr<UserCountResult>> Handle(GetInActiveUsersCountQuery query, CancellationToken cancellationToken)
+        public async Task<ErrorOr<UserCountResult>> Handle(GetActiveUsersCountQuery query, CancellationToken cancellationToken)
         {
             _logger.LogInfo("Fetching active users count...");
 
