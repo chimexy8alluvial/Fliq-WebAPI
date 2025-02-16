@@ -13,32 +13,26 @@ namespace Fliq.Test.Authentication.Commands.Register
     public class RegisterCommandHandlerTests
     {
         private RegisterCommandHandler _handler;
-        private Mock<IJwtTokenGenerator> _jwtTokenGeneratorMock;
         private Mock<IUserRepository> _userRepositoryMock;
         private Mock<IMapper> _mapperMock;
         private Mock<IEmailService> _emailServiceMock;
-        private Mock<IOtpRepository> _otpRepositoryMock;
         private Mock<IOtpService> _otpServiceMock;
         private Mock<ILoggerManager> _loggerManagerMock;
 
         [TestInitialize]
         public void Setup()
         {
-            _jwtTokenGeneratorMock = new Mock<IJwtTokenGenerator>();
             _userRepositoryMock = new Mock<IUserRepository>();
             _mapperMock = new Mock<IMapper>();
             _emailServiceMock = new Mock<IEmailService>();
-            _otpRepositoryMock = new Mock<IOtpRepository>();
             _otpServiceMock = new Mock<IOtpService>();
             _loggerManagerMock = new Mock<ILoggerManager>();
             
 
             _handler = new RegisterCommandHandler(
-                _jwtTokenGeneratorMock.Object,
                 _userRepositoryMock.Object,
                 _mapperMock.Object,
                 _emailServiceMock.Object,
-                _otpRepositoryMock.Object,
                 _otpServiceMock.Object,
                 _loggerManagerMock.Object);
         }
