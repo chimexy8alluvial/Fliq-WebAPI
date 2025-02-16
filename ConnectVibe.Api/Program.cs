@@ -3,6 +3,7 @@ using Fliq.Api.Common.Middlewares;
 using Fliq.Application;
 using Fliq.Application.Common.Hubs;
 using Fliq.Infrastructure;
+using Fliq.Infrastructure.Persistence;
 using Microsoft.OpenApi.Models;
 using NLog;
 
@@ -12,6 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddApplication();
     builder.Services.AddPresentation();
     builder.Services.AddInfrastructure(builder.Configuration);
+    builder.Services.AddScoped<SuperAdminSeeder>();
     // Configure NLog
     LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
 
@@ -45,6 +47,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 var app = builder.Build();
 {
+    using (var scope = app.Services.CreateScope())
+    {
+        var services = scope.ServiceProvider;
+        var superAdminSeeder = services.GetRequiredService<SuperAdminSeeder>();
+        await superAdminSeeder.SeedSuperAdmin(); //Seed super Admin
+    }
+
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
