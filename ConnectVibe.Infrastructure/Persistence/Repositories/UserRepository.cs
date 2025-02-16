@@ -3,8 +3,6 @@ using Fliq.Domain.Entities;
 using Dapper;
 using System.Data;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {
@@ -69,6 +67,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             var user = _dbContext.Users.SingleOrDefault(p => p.Id == id);
             return user;
         }
+
         //To be changed to stored procedure
         public User? GetUserByIdIncludingProfile(int id)
         {
@@ -76,7 +75,8 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             return user;
         }
 
-        //Count Queries
+
+        #region Count Queries
 
         public async Task<int> CountActiveUsers()
         {
@@ -112,7 +112,8 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                 var count = await connection.QueryFirstOrDefaultAsync<int>("sp_CountNewSignUps", commandType: CommandType.StoredProcedure); // Using IsActive flag
                 return count;
             }
-            //return await _dbContext.Users.CountAsync(u => u.DateCreated >= DateTime.UtcNow.AddDays(-days));
         }
+
+        #endregion
     }
 }
