@@ -6,7 +6,6 @@ using Fliq.Application.Common.Security;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities;
 using ErrorOr;
-using Fliq.Domain.Common.Errors;
 using MapsterMapper;
 using MediatR;
 
@@ -25,27 +24,23 @@ namespace Fliq.Application.Authentication.Commands.Register
 
     public class RegisterCommandHandler : IRequestHandler<RegisterCommand, ErrorOr<RegistrationResult>>
     {
-        private readonly IJwtTokenGenerator _jwtTokenGenerator;
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
         private readonly IEmailService _emailService;
-        private readonly IOtpRepository _otpRepository;
         private readonly IOtpService _otpService;
         private readonly ILoggerManager _logger;
-        public RegisterCommandHandler(IJwtTokenGenerator jwtTokenGenerator, IUserRepository userRepository, IMapper mapper, IEmailService emailService, IOtpRepository otpRepository, IOtpService otpService, ILoggerManager logger)
+        public RegisterCommandHandler(IUserRepository userRepository, IMapper mapper, IEmailService emailService, IOtpService otpService, ILoggerManager logger)
         {
-            _jwtTokenGenerator = jwtTokenGenerator;
             _userRepository = userRepository;
             _mapper = mapper;
             _emailService = emailService;
-            _otpRepository = otpRepository;
             _otpService = otpService;
             _logger = logger;
         }
         public async Task<ErrorOr<RegistrationResult>> Handle(RegisterCommand command, CancellationToken cancellationToken)
         {
             await Task.CompletedTask;
-            User user = _userRepository.GetUserByEmail(command.Email);
+            User? user = _userRepository.GetUserByEmail(command.Email);
             _logger.LogInfo($"Register command validation Result: {user}");
             if (user != null && user.IsEmailValidated)
                 return Errors.User.DuplicateEmail;
@@ -55,6 +50,7 @@ namespace Fliq.Application.Authentication.Commands.Register
 
             user.PasswordSalt = PasswordSalt.Create();
             user.PasswordHash = PasswordHash.Create(command.Password, user.PasswordSalt);
+            user.RoleId = 3;
             _userRepository.Add(user);
 
             var otp = await _otpService.GetOtpAsync(user.Email, user.Id);
