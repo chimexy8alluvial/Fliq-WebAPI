@@ -6,12 +6,14 @@ using Fliq.Application.DashBoard.Queries.UsersCount;
 using Fliq.Contracts.DashBoard;
 using MapsterMapper;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Fliq.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin,SuperAdmin")]
     public class DashboardController : ApiBaseController
     {
         private readonly ISender _mediator;
