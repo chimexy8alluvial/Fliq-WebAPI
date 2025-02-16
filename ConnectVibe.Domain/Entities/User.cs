@@ -16,8 +16,11 @@ namespace Fliq.Domain.Entities
         public bool IsDocumentVerified { get; set; }
         public bool IsActive { get; set; }
         public DateTime LastActiveAt { get; set; } = DateTime.UtcNow; 
+        public int RoleId { get; set; }
+
 
         public UserProfile? UserProfile { get; set; }
+        public Role? Role { get; set; }
         public List<Payment>? Payments { get; set; }
         public List<Subscription>? Subscriptions { get; set; }
         public List<MatchRequest>? MatchRequests { get; set; }
