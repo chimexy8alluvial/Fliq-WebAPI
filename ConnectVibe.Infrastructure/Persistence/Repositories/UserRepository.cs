@@ -37,7 +37,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
         public User? GetUserByEmail(string email)
         {
-            var user = _dbContext.Users.SingleOrDefault(p => p.Email == email);
+            var user = _dbContext.Users.Include(u => u.Role).SingleOrDefault(p => p.Email == email);
             return user;
         }
 
@@ -109,7 +109,9 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         {
             using (var connection = _connectionFactory.CreateConnection())
             {
-                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_CountNewSignUps", commandType: CommandType.StoredProcedure); // Using IsActive flag
+                var sql = "sp_CountUsersCreatedInLastDays";
+                var parameter = new { Days = days };
+                var count = await connection.QueryFirstOrDefaultAsync<int>(sql, parameter, commandType: CommandType.StoredProcedure); // Using IsActive flag
                 return count;
             }
         }
