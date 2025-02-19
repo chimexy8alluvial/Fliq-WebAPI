@@ -1,5 +1,4 @@
 ﻿using Fliq.Application.Authentication.Commands.CreateAdmin;
-using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Contracts.Authentication;
 using MapsterMapper;
