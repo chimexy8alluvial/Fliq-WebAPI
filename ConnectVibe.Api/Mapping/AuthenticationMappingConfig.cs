@@ -1,4 +1,5 @@
-﻿using Fliq.Application.Authentication.Commands.Register;
+﻿using Fliq.Application.Authentication.Commands.CreateAdmin;
+using Fliq.Application.Authentication.Commands.Register;
 using Fliq.Application.Authentication.Common;
 using Fliq.Application.Authentication.Queries.FacebookLogin;
 using Fliq.Application.Authentication.Queries.GoogleLogin;
@@ -13,6 +14,7 @@ namespace Fliq.Api.Mapping
         public void Register(TypeAdapterConfig config)
         {
             config.NewConfig<RegisterRequest, RegisterCommand>();
+            config.NewConfig<RegisterRequest, CreateAdminCommand>();
             config.NewConfig<LoginRequest, LoginQuery>();
             config.NewConfig<GoogleLoginRequest, GoogleLoginQuery>();
             config.NewConfig<FacebookLoginRequest, FacebookLoginQuery>();

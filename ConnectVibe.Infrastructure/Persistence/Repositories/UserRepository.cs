@@ -37,7 +37,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
         public User? GetUserByEmail(string email)
         {
-            var user = _dbContext.Users.SingleOrDefault(p => p.Email == email);
+            var user = _dbContext.Users.Include(u => u.Role).SingleOrDefault(p => p.Email == email);
             return user;
         }
 
@@ -67,11 +67,55 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             var user = _dbContext.Users.SingleOrDefault(p => p.Id == id);
             return user;
         }
+
         //To be changed to stored procedure
         public User? GetUserByIdIncludingProfile(int id)
         {
             var user = _dbContext.Users.Include(p=>p.UserProfile).ThenInclude(p => p.Photos).SingleOrDefault(p => p.Id == id);
             return user;
         }
+
+
+        #region Count Queries
+
+        public async Task<int> CountActiveUsers()
+        {
+
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_CountActiveUsers", commandType: CommandType.StoredProcedure);
+                return count;
+            }
+        }
+
+        public async Task<int> CountInactiveUsers()
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_CountInActiveUsers", commandType: CommandType.StoredProcedure); // Using IsActive flag
+                return count;
+            }
+        }
+        public async Task<int> CountAllUsers()
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_CountAllUsers", commandType: CommandType.StoredProcedure);
+                return count;
+            }
+        }
+
+        public async Task<int> CountNewSignups(int days)
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var sql = "sp_CountUsersCreatedInLastDays";
+                var parameter = new { Days = days };
+                var count = await connection.QueryFirstOrDefaultAsync<int>(sql, parameter, commandType: CommandType.StoredProcedure); // Using IsActive flag
+                return count;
+            }
+        }
+
+        #endregion
     }
 }

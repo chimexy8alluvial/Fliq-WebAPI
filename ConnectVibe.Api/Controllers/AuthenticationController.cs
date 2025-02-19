@@ -11,7 +11,6 @@ using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using Fliq.Application.Authentication.Commands.ChangePassword;
 using Fliq.Application.Authentication.Commands.PasswordReset;
 using Fliq.Application.Authentication.Commands.ValidatePasswordOTP;

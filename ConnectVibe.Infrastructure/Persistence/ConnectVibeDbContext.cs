@@ -19,10 +19,17 @@ namespace Fliq.Infrastructure.Persistence
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Role>().HasData(
+            new Role { Id = 1, Name = "SuperAdmin" },
+            new Role { Id = 2, Name = "Admin" },
+            new Role { Id = 3, Name = "User" }
+            );
         }
         public DbSet<User> Users { get; set; } = null!;
         public DbSet<OTP> OTPs { get; set; } = null!;
         public DbSet<UserProfile> UserProfiles { get; set; } = null!;
+        public DbSet<Role> Roles { get; set; } = null!;
 
         public DbSet<Events> Events { get; set; }
         public DbSet<EventMedia> EventMedias { get; set; }

@@ -4,6 +4,7 @@ using Fliq.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fliq.Infrastructure.Migrations
 {
     [DbContext(typeof(FliqDbContext))]
-    partial class FliqDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250214152739_AddCountInActiveUsers_SP")]
+    partial class AddCountInActiveUsers_SP
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1544,55 +1547,6 @@ namespace Fliq.Infrastructure.Migrations
                     b.ToTable("PromptResponse");
                 });
 
-            modelBuilder.Entity("Fliq.Domain.Entities.Role", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DateModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Roles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            DateCreated = new DateTime(2025, 2, 16, 6, 52, 58, 113, DateTimeKind.Utc).AddTicks(1345),
-                            IsDeleted = false,
-                            Name = "SuperAdmin"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            DateCreated = new DateTime(2025, 2, 16, 6, 52, 58, 113, DateTimeKind.Utc).AddTicks(1355),
-                            IsDeleted = false,
-                            Name = "Admin"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            DateCreated = new DateTime(2025, 2, 16, 6, 52, 58, 113, DateTimeKind.Utc).AddTicks(1357),
-                            IsDeleted = false,
-                            Name = "User"
-                        });
-                });
-
             modelBuilder.Entity("Fliq.Domain.Entities.Settings.Filter", b =>
                 {
                     b.Property<int>("Id")
@@ -1866,12 +1820,7 @@ namespace Fliq.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("RoleId");
 
                     b.ToTable("Users");
                 });
@@ -2360,17 +2309,6 @@ namespace Fliq.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Fliq.Domain.Entities.User", b =>
-                {
-                    b.HasOne("Fliq.Domain.Entities.Role", "Role")
-                        .WithMany("Users")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Role");
-                });
-
             modelBuilder.Entity("Fliq.Domain.Entities.UserFeatureActivities.UserFeatureActivity", b =>
                 {
                     b.HasOne("Fliq.Domain.Entities.User", "User")
@@ -2438,11 +2376,6 @@ namespace Fliq.Infrastructure.Migrations
             modelBuilder.Entity("Fliq.Domain.Entities.Prompts.PromptCategory", b =>
                 {
                     b.Navigation("PromptQuestions");
-                });
-
-            modelBuilder.Entity("Fliq.Domain.Entities.Role", b =>
-                {
-                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Settings.Filter", b =>
