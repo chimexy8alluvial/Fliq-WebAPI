@@ -10,7 +10,6 @@ using Fliq.Contracts.Prompts;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Entities.Prompts;
-using Fliq.Domain.Entities.Settings;
 using Fliq.Domain.Enums;
 using Mapster;
 using MapsterMapper;
@@ -67,88 +66,6 @@ namespace Fliq.Application.Profile.Commands.Create
             _promptCategoryRepository = promptCategoryRepository;
             _mediaServices = mediaServices;
             _promptResponseRepository = promptResponseRepository;
-        }
-
-        public async Task<ErrorOr<CreateProfileResult>> Handlev2(CreateProfileCommand command, CancellationToken cancellationToken)
-        {
-            await Task.CompletedTask;
-
-            var user = _userRepository.GetUserById(command.UserId);
-            if (user == null)
-            {
-                return Errors.Profile.ProfileNotFound;
-            }
-            var existingProfile = _profileRepository.GetUserProfileByUserId(command.UserId);
-            if (existingProfile != null)
-            {
-                return Errors.Profile.DuplicateProfile;
-            }
-
-            var userProfile = _mapper.Map<UserProfile>(command);
-            userProfile.UserId = 0;
-            userProfile.Photos = new();
-            userProfile.User = user;
-            foreach (var photo in command.Photos)
-            {
-                var profileUrl = await _mediaServices.UploadImageAsync(photo.ImageFile);
-
-                if (profileUrl != null)
-                {
-                    ProfilePhoto profilePhoto = new() { PictureUrl = profileUrl, Caption = photo.Caption };
-                    userProfile.Photos.Add(profilePhoto);
-                }
-                else
-                {
-                    return Errors.Image.InvalidImage;
-                }
-            }
-
-            var locationResponse = await _locationService.GetAddressFromCoordinatesAsync(command.Location.Lat, command.Location.Lng);
-
-            if (locationResponse is not null)
-            {
-                LocationDetail locationDetail = _mapper.Map<LocationDetail>(locationResponse);
-                Location location = new Location()
-                {
-                    LocationDetail = locationDetail,
-                    IsVisible = command.Location.IsVisible,
-                    Lat = command.Location.Lat,
-                    Lng = command.Location.Lng
-                };
-
-                userProfile.Location = location;
-            }
-
-            // Process default prompt response
-            var promptResponses = new List<PromptResponse>();
-            foreach (var promptDto in command.PromptResponses)
-            {
-                var promptResponse = await ProcessPromptResponseAsync(promptDto, userProfile);
-                if (promptResponse.IsError)
-                    return promptResponse.Errors;
-
-                promptResponses.Add(promptResponse.Value);
-            }
-
-            userProfile.PromptResponses = promptResponses;
-
-            _profileRepository.Add(userProfile);
-
-            foreach (var PromptResp in promptResponses)
-            {
-                PromptResp.UserProfileId = userProfile.Id;
-
-                //Persist prompt response
-                _promptResponseRepository.Add(PromptResp);
-            }
-
-            Setting setting = new()
-            {
-                UserId = command.UserId,
-            };
-            _settingsRepository.Add(setting);
-
-            return new CreateProfileResult(userProfile);
         }
 
         public async Task<ErrorOr<CreateProfileResult>> Handle(CreateProfileCommand command, CancellationToken cancellationToken)

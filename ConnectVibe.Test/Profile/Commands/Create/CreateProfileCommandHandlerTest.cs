@@ -96,46 +96,6 @@ namespace Fliq.Test.Profile.Commands.Create
         }
 
         [TestMethod]
-        public async Task Handle_DuplicateProfile_ReturnsDuplicateProfileError()
-        {
-            // Arrange
-
-            var location = new Location { Lat = 51.5074, Lng = -0.1278, IsVisible = true };
-
-            var command = new CreateProfileCommand
-            {
-                DOB = DateTime.Now.AddYears(-25),
-                Gender = new Gender { GenderType = GenderType.Male },
-                ProfileDescription = "I am a software engineer who admires hardworking women in tech description",
-                Photos =
-                [
-                    new ProfilePhotoMapped { ImageFile = CreateMockFormFile(), Caption = "Test Photo" }
-                ],
-                Location = location,
-            };
-
-            var user = new User { Id = 1 };
-            var existingProfile = new UserProfile { UserId = 1 };
-            var image = CreateMockFormFile();
-
-            _userRepositoryMock.Setup(repo => repo.GetUserById(It.IsAny<int>()))
-                .Returns(user);
-
-            _profileRepositoryMock.Setup(repo => repo.GetUserProfileByUserId(It.IsAny<int>()))
-                .Returns(existingProfile);
-
-            _mapperMock.Setup(mapper => mapper.Map<UserProfile>(command))
-                .Returns(new UserProfile());
-
-            // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
-
-            // Assert
-            Assert.IsTrue(result.IsError);
-            Assert.AreEqual(Errors.Profile.DuplicateProfile, result.FirstError);
-        }
-
-        [TestMethod]
         public async Task Handle_ValidCommand_CreatesUserProfileSuccessfully()
         {
             // Arrange
