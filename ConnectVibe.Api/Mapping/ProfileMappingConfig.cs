@@ -8,7 +8,6 @@ using Fliq.Contracts.Profile;
 using Fliq.Contracts.Profile.UpdateDtos;
 using Fliq.Contracts.Prompts;
 using Fliq.Domain.Entities.Profile;
-using Fliq.Domain.Entities.Prompts;
 using Fliq.Domain.Enums;
 using Mapster;
 
@@ -18,12 +17,20 @@ namespace Fliq.Api.Mapping
     {
         public void Register(TypeAdapterConfig config)
         {
-            config.NewConfig<CreateProfileRequest, CreateProfileCommand>()
-                .Ignore(dest => dest.Photos).Ignore(dest => dest.PromptResponses)
-                .Map(dest => dest.ProfileTypes,
-            src => src.ProfileTypes.Select(dto => (ProfileType)dto.ProfileType).ToList());
+            
+        config.NewConfig<CreateProfileRequest, CreateProfileCommand>()
+            .IgnoreNullValues(true)
+            .Ignore(dest => dest.Photos).Ignore(dest => dest.PromptResponses)
+            .Map(dest => dest.ProfileTypes,
+                src => src.ProfileTypes != null
+                    ? src.ProfileTypes.Select(dto => (ProfileType)dto.ProfileType).ToList()
+                    : new List<ProfileType>())
+            .Map(dest => dest.CurrentSection, src => (ProfileSection)src.CurrentSection);
+      
 
-            config.NewConfig<CreateProfileCommand, UserProfile>().Ignore(dest => dest.Photos)
+            config.NewConfig<CreateProfileCommand, UserProfile>()
+                .IgnoreNullValues(true)
+                .Ignore(dest => dest.Photos)
                 .Map(dest => dest.ProfileTypes, src => src.ProfileTypes);
 
             config.NewConfig<EthnicityDto, Ethnicity>()
