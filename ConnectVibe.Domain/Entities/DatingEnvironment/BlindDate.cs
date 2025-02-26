@@ -1,4 +1,5 @@
 ﻿
+using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Enums;
 
 namespace Fliq.Domain.Entities.DatingEnvironment
@@ -9,9 +10,9 @@ namespace Fliq.Domain.Entities.DatingEnvironment
         public BlindDateCategory BlindDateCategory { get; set; } = default!;
 
         public string Title { get; set; } = default!;
-        public DateTime Date { get; set; }
-        public TimeSpan Time { get; set; }
-        public string Location { get; set; } = default!;
+        public DateTime StartDateTime { get; set; }
+        public int LocationId { get; set; }
+        public Location Location { get; set; } = default!;
 
         public bool IsOneOnOne { get; set; }
         public int? NumberOfParticipants { get; set; }
