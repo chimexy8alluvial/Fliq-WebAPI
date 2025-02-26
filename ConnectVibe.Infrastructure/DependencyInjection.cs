@@ -73,6 +73,9 @@ namespace Fliq.Infrastructure
             services.AddScoped<IWalletRepository, WalletRepository>();
             services.AddScoped<IStakeRepository, StakeRepository>();
             services.AddScoped<IUserFeatureActivityRepository, UserFeatureActivityRepository>();
+            services.AddScoped<IBlindDateCategoryRepository, BlindDateCategoryRepository>();
+            services.AddScoped<IBlindDateParticipantRepository, BlindDateParticipantRepository>();
+            services.AddScoped<IBlindDateRepository, BlindDateRepository>();
             services.AddSingleton<ICustomProfileMapper, CustomProfileMapper>();
             services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
             services.AddDbContext<FliqDbContext>(options =>
