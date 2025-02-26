@@ -75,6 +75,7 @@ namespace Fliq.Application.Profile.Commands.Create
             var user = _userRepository.GetUserById(command.UserId);
             if (user == null)
             {
+                _loggerManager.LogError("User not found. Aborting profile creation.");
                 return Errors.Profile.ProfileNotFound;
             }
 
@@ -106,6 +107,7 @@ namespace Fliq.Application.Profile.Commands.Create
                     }
                     else
                     {
+                        _loggerManager.LogError("Failed to upload image. Aborting profile creation.");
                         return Errors.Image.InvalidImage;
                     }
                 }
@@ -117,6 +119,11 @@ namespace Fliq.Application.Profile.Commands.Create
                 if (locationResponse is not null)
                 {
                     existingProfile.Location = locationResponse.Adapt<Location>();
+                }
+                else
+                {
+                    _loggerManager.LogError("Failed to get location details. Aborting profile creation.");
+                    return Errors.Profile.InvalidPayload;
                 }
             }
 
