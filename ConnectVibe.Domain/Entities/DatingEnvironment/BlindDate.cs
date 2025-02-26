@@ -29,18 +29,27 @@ namespace Fliq.Domain.Entities.DatingEnvironment
             ? SessionEndTime - SessionStartTime
             : null; 
 
-        public BlindDateStatus Status { get; set; } = BlindDateStatus.Pending; 
+        public BlindDateStatus Status { get; set; } = BlindDateStatus.Pending;
 
+        // Track the creator
+        public int CreatedByUserId { get; set; }
+        public User CreatedByUser { get; set; } = default!;
 
         public ICollection<BlindDateParticipant> Participants { get; set; } = new List<BlindDateParticipant>();
 
         // Ensure proper validation when saving/updating
         public void Validate()
         {
-            if (!IsOneOnOne && (NumberOfParticipants == null || NumberOfParticipants <= 1))
+            if (IsOneOnOne && NumberOfParticipants is not (null or 1))
             {
-                throw new ArgumentException("Number of participants must be greater than 1 for group blind dates.");
+                throw new ArgumentException("One-on-one blind dates must have exactly 1 participant.");
+            }
+
+            if (!IsOneOnOne && (NumberOfParticipants == null || NumberOfParticipants < 2))
+            {
+                throw new ArgumentException("Group blind dates must have at least 2 participants.");
             }
         }
+
     }
 }

@@ -21,6 +21,13 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
 
+        public async Task<BlindDateCategory?> GetByCategoryName(string CategoryName)
+        {
+            return await _dbContext.BlindDateCategories
+                .Include(c => c.BlindDates)
+                .FirstOrDefaultAsync(c => c.CategoryName == CategoryName);
+        }
+
         public async Task<IEnumerable<BlindDateCategory>> GetAllAsync()
         {
             return await _dbContext.BlindDateCategories
@@ -45,5 +52,6 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             _dbContext.BlindDateCategories.Remove(category);
             await _dbContext.SaveChangesAsync();
         }
+
     }
 }
