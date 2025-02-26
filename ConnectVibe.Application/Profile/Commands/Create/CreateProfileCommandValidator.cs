@@ -10,70 +10,93 @@ namespace Fliq.Application.Profile.Commands.Create
     {
         public CreateProfileCommandValidator()
         {
-            RuleFor(x => x.DOB)
-                .NotEmpty().WithMessage("Date of Birth is required.");
+            RuleFor(x => x.CurrentSection)
+                .NotNull().WithMessage("CurrentSection is required.")
+                .IsInEnum().WithMessage("Invalid CurrentSection value.");
 
-            RuleFor(x => x.Gender)
-                .NotNull().WithMessage("Gender is required.")
-                .SetValidator(new GenderValidator());
+            When(x => x.CurrentSection == ProfileSection.BasicInfo, () =>
+            {
+                RuleFor(x => x.DOB)
+                    .NotEmpty().WithMessage("Date of Birth is required.");
 
-            RuleFor(x => x.SexualOrientation)
-            .NotNull().When(x => x.ProfileTypes.Any(pt => pt == ProfileType.Dating || pt == ProfileType.Friendship))
-            .WithMessage("Sexual Orientation is required for Dating or Friendship profile types.")
-            .SetValidator(new SexualOrientationValidator());
+                RuleFor(x => x.Gender)
+                    .NotNull().WithMessage("Gender is required.")
+                    .SetValidator(new GenderValidator());
 
-            RuleFor(x => x.Religion)
-                .NotNull().WithMessage("Religion is required.")
-                .SetValidator(new ReligionValidator());
+                RuleFor(x => x.SexualOrientation)
+                    .NotNull().When(x => x.ProfileTypes.Any(pt => pt == ProfileType.Dating || pt == ProfileType.Friendship))
+                    .WithMessage("Sexual Orientation is required for Dating or Friendship profile types.")
+                    .SetValidator(new SexualOrientationValidator());
 
-            RuleFor(x => x.Ethnicity)
-                .NotNull().WithMessage("Ethnicity is required.")
-                .SetValidator(new EthnicityValidator());
+                RuleFor(x => x.Religion)
+                    .NotNull().WithMessage("Religion is required.")
+                    .SetValidator(new ReligionValidator());
 
-            RuleFor(x => x.Occupation)
-           .NotNull().WithMessage("Occupation is required.")
-           .SetValidator(new OccupationValidator());
+                RuleFor(x => x.Ethnicity)
+                    .NotNull().WithMessage("Ethnicity is required.")
+                    .SetValidator(new EthnicityValidator());
 
-            RuleFor(x => x.EducationStatus)
-                .NotNull().WithMessage("Education Status is required.")
-                .SetValidator(new EducationStatusValidator());
+                RuleFor(x => x.Occupation)
+                    .NotNull().WithMessage("Occupation is required.")
+                    .SetValidator(new OccupationValidator());
 
-            RuleFor(x => x.HaveKids)
-           .NotNull().When(x => x.ProfileTypes.Any(pt => pt == ProfileType.Dating || pt == ProfileType.Friendship))
-           .WithMessage("HaveKids is required for Dating or Friendship profile types.")
-           .SetValidator(new HaveKidsValidator());
+                RuleFor(x => x.EducationStatus)
+                    .NotNull().WithMessage("Education Status is required.")
+                    .SetValidator(new EducationStatusValidator());
 
-            RuleFor(x => x.WantKids)
-           .NotNull().When(x => x.ProfileTypes.Any(pt => pt == ProfileType.Dating || pt == ProfileType.Friendship))
-           .WithMessage("WantKids is required for Dating or Friendship profile types.")
-           .SetValidator(new WantKidsValidator());
+                RuleFor(x => x.HaveKids)
+                    .NotNull().When(x => x.ProfileTypes.Any(pt => pt == ProfileType.Dating || pt == ProfileType.Friendship))
+                    .WithMessage("HaveKids is required for Dating or Friendship profile types.")
+                    .SetValidator(new HaveKidsValidator());
 
-            RuleFor(x => x.Photos)
-           .NotNull().WithMessage("Photos are required.")
-           .Must(photos => photos.Count >= 1).WithMessage("At least one Photo is required.")
-           .ForEach(photo => photo.SetValidator(new ProfilePhotoDtoValidator()));
+                RuleFor(x => x.WantKids)
+                    .NotNull().When(x => x.ProfileTypes.Any(pt => pt == ProfileType.Dating || pt == ProfileType.Friendship))
+                    .WithMessage("WantKids is required for Dating or Friendship profile types.")
+                    .SetValidator(new WantKidsValidator());
+            });
 
-            RuleFor(x => x.Location)
-                .NotNull().WithMessage("Location is required.")
-                .SetValidator(new LocationValidator());
+            When(x => x.CurrentSection == ProfileSection.Photos, () =>
+            {
+                RuleFor(x => x.Photos)
+                    .NotNull().WithMessage("Photos are required.")
+                    .Must(photos => photos.Count >= 1).WithMessage("At least one Photo is required.")
+                    .ForEach(photo => photo.SetValidator(new ProfilePhotoDtoValidator()));
+            });
+
+            When(x => x.CurrentSection == ProfileSection.Location, () =>
+            {
+                RuleFor(x => x.Location)
+                    .NotNull().WithMessage("Location is required.")
+                    .SetValidator(new LocationValidator());
+
+                RuleFor(x => x.LocationDetail)
+                    .NotNull().WithMessage("Location details are required.");
+            });
+
+            When(x => x.CurrentSection == ProfileSection.Interests, () =>
+            {
+                RuleFor(x => x.Passions)
+                    .NotNull().WithMessage("Passions are required.")
+                    .Must(p => p.Count > 0).WithMessage("At least one passion is required.");
+            });
+
+            When(x => x.CurrentSection == ProfileSection.Preferences, () =>
+            {
+                RuleForEach(x => x.ProfileTypes)
+                    .IsInEnum()
+                    .WithMessage("Invalid ProfileType value.");
+            });
+
+            When(x => x.CurrentSection == ProfileSection.Prompts, () =>
+            {
+                RuleFor(x => x.PromptResponses)
+                    .Cascade(CascadeMode.Stop)
+                    .NotEmpty().WithMessage("Prompts should be provided")
+                    .ForEach(response => response.SetValidator(new PromptResponseValidator()));
+            });
 
             RuleFor(x => x.AllowNotifications)
                 .NotNull().WithMessage("AllowNotifications is required.");
-
-            RuleForEach(x => x.ProfileTypes).IsInEnum()
-                .WithMessage("Invalid ProfileType value.");
-
-            // Profile Description Rule
-            RuleFor(x => x.ProfileDescription)
-                .NotEmpty().When(x => x.ProfileTypes.Any(pt => pt == ProfileType.Dating || pt == ProfileType.Friendship))
-                .WithMessage("Profile description is required for Dating or Friendship profile types.");
-
-            RuleFor(x => x.PromptResponses)
-                .Cascade(CascadeMode.Stop)
-                .NotEmpty().When(x => x.ProfileTypes.Any(pt => pt == ProfileType.Dating || pt == ProfileType.Friendship))
-                .WithMessage("Prompts should be provided for Dating or Friendship profile types")
-                .ForEach(response => response.SetValidator(new PromptResponseValidator()))
-                .When(x => x.PromptResponses != null);
         }
     }
 
@@ -254,5 +277,4 @@ namespace Fliq.Application.Profile.Commands.Create
             return answerCount == 1;
         }
     }
-
 }

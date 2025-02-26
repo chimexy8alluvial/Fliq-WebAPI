@@ -4,6 +4,7 @@ using Fliq.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fliq.Infrastructure.Migrations
 {
     [DbContext(typeof(FliqDbContext))]
-    partial class FliqDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250220215318_profile_foriegn_keys")]
+    partial class profile_foriegn_keys
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1371,9 +1374,10 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<bool>("AllowNotifications")
                         .HasColumnType("bit");
 
-                    b.Property<string>("CompletedSections")
+                    b.Property<string>("CompletedSectionsJson")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("CompletedSections");
 
                     b.Property<DateTime>("DOB")
                         .HasColumnType("datetime2");
@@ -1387,12 +1391,8 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("LocationId")
+                    b.Property<int>("LocationId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Passions")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PassionsJson")
                         .IsRequired()
@@ -1417,11 +1417,7 @@ namespace Fliq.Infrastructure.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("UserProfiles", t =>
-                        {
-                            t.Property("Passions")
-                                .HasColumnName("Passions1");
-                        });
+                    b.ToTable("UserProfiles");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.WantKids", b =>
@@ -1593,21 +1589,21 @@ namespace Fliq.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            DateCreated = new DateTime(2025, 2, 20, 22, 55, 48, 839, DateTimeKind.Utc).AddTicks(9278),
+                            DateCreated = new DateTime(2025, 2, 20, 21, 53, 15, 201, DateTimeKind.Utc).AddTicks(6656),
                             IsDeleted = false,
                             Name = "SuperAdmin"
                         },
                         new
                         {
                             Id = 2,
-                            DateCreated = new DateTime(2025, 2, 20, 22, 55, 48, 839, DateTimeKind.Utc).AddTicks(9280),
+                            DateCreated = new DateTime(2025, 2, 20, 21, 53, 15, 201, DateTimeKind.Utc).AddTicks(6667),
                             IsDeleted = false,
                             Name = "Admin"
                         },
                         new
                         {
                             Id = 3,
-                            DateCreated = new DateTime(2025, 2, 20, 22, 55, 48, 839, DateTimeKind.Utc).AddTicks(9281),
+                            DateCreated = new DateTime(2025, 2, 20, 21, 53, 15, 201, DateTimeKind.Utc).AddTicks(6672),
                             IsDeleted = false,
                             Name = "User"
                         });
@@ -2291,7 +2287,9 @@ namespace Fliq.Infrastructure.Migrations
                 {
                     b.HasOne("Fliq.Domain.Entities.Profile.Location", "Location")
                         .WithMany()
-                        .HasForeignKey("LocationId");
+                        .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Fliq.Domain.Entities.User", "User")
                         .WithOne("UserProfile")
@@ -2462,21 +2460,26 @@ namespace Fliq.Infrastructure.Migrations
 
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.UserProfile", b =>
                 {
-                    b.Navigation("EducationStatus");
+                    b.Navigation("EducationStatus")
+                        .IsRequired();
 
-                    b.Navigation("Ethnicity");
+                    b.Navigation("Ethnicity")
+                        .IsRequired();
 
-                    b.Navigation("Gender");
+                    b.Navigation("Gender")
+                        .IsRequired();
 
                     b.Navigation("HaveKids");
 
-                    b.Navigation("Occupation");
+                    b.Navigation("Occupation")
+                        .IsRequired();
 
                     b.Navigation("Photos");
 
                     b.Navigation("PromptResponses");
 
-                    b.Navigation("Religion");
+                    b.Navigation("Religion")
+                        .IsRequired();
 
                     b.Navigation("SexualOrientation");
 

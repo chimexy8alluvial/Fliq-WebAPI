@@ -18,5 +18,6 @@ namespace Fliq.Contracts.Profile
      bool AllowNotifications = false,
      List<string> Passions = default!,
     List<ProfilePhotoResponse> Photos = default!,
-        List<PromptResponseDto> PromptResponses = default!);
+    List<PromptResponseDto> PromptResponses = default!,
+    List<string> CompletedSections = default!);
 }

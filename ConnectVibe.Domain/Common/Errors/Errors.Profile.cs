@@ -13,6 +13,10 @@ namespace Fliq.Domain.Common.Errors
             public static Error DuplicateProfile => Error.Conflict(
             code: "Profile.DuplicateProfile",
             description: "User already has a profile");
+
+            public static Error InvalidPayload => Error.Forbidden(
+           code: "Profile.InvalidPayload",
+           description: "Invalid Payload");
         }
     }
 }

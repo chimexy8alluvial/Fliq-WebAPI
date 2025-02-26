@@ -5,9 +5,11 @@ using Fliq.Application.Common.Interfaces.Services.MeidaServices;
 using Fliq.Application.Common.Models;
 using Fliq.Application.Profile.Commands.Create;
 using Fliq.Application.Profile.Common;
+using Fliq.Contracts.Prompts;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities;
 using Fliq.Domain.Entities.Profile;
+using Fliq.Domain.Entities.Prompts;
 using MapsterMapper;
 using Microsoft.AspNetCore.Http;
 using Moq;
@@ -50,7 +52,6 @@ namespace Fliq.Test.Profile.Commands.Create
             _mediaServicesMock = new Mock<IMediaServices>();
             _promptResponseRepositoryMock = new Mock<IPromptResponseRepository>();
 
-            // Mocking HttpContext to return a valid user ID
             _httpContextAccessorMock.Setup(x => x.HttpContext.User)
                 .Returns(_claimsPrincipalMock.Object);
 
@@ -71,21 +72,10 @@ namespace Fliq.Test.Profile.Commands.Create
         public async Task Handle_UserNotFound_ReturnsProfileNotFoundError()
         {
             // Arrange
-            var command = new CreateProfileCommand
-            {
-                DOB = DateTime.Now.AddYears(-25),
-                Gender = new Gender { GenderType = GenderType.Male },
-                ProfileDescription = "I am a software engineer who admires hardworking women in tech description",
-                Photos =
-                [
-                    new ProfilePhotoMapped { ImageFile = CreateMockFormFile(), Caption = "Test Photo" }
-                ],
-            };
-
-            User? user = null;
+            var command = new CreateProfileCommand { UserId = 1 };
 
             _userRepositoryMock.Setup(repo => repo.GetUserById(It.IsAny<int>()))
-                .Returns(user);
+                .Returns((User?)null);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -96,111 +86,30 @@ namespace Fliq.Test.Profile.Commands.Create
         }
 
         [TestMethod]
-        public async Task Handle_DuplicateProfile_ReturnsDuplicateProfileError()
-        {
-            // Arrange
-
-            var location = new Location { Lat = 51.5074, Lng = -0.1278, IsVisible = true };
-
-            var command = new CreateProfileCommand
-            {
-                DOB = DateTime.Now.AddYears(-25),
-                Gender = new Gender { GenderType = GenderType.Male },
-                ProfileDescription = "I am a software engineer who admires hardworking women in tech description",
-                Photos =
-                [
-                    new ProfilePhotoMapped { ImageFile = CreateMockFormFile(), Caption = "Test Photo" }
-                ],
-                Location = location,
-            };
-
-            var user = new User { Id = 1 };
-            var existingProfile = new UserProfile { UserId = 1 };
-            var image = CreateMockFormFile();
-
-            _userRepositoryMock.Setup(repo => repo.GetUserById(It.IsAny<int>()))
-                .Returns(user);
-
-            _profileRepositoryMock.Setup(repo => repo.GetUserProfileByUserId(It.IsAny<int>()))
-                .Returns(existingProfile);
-
-            _mapperMock.Setup(mapper => mapper.Map<UserProfile>(command))
-                .Returns(new UserProfile());
-
-            // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
-
-            // Assert
-            Assert.IsTrue(result.IsError);
-            Assert.AreEqual(Errors.Profile.DuplicateProfile, result.FirstError);
-        }
-
-        [TestMethod]
         public async Task Handle_ValidCommand_CreatesUserProfileSuccessfully()
         {
             // Arrange
-            var location = new Location { Lat = 51.5074, Lng = -0.1278, IsVisible = true };
-            var profileDescription = "I am a software engineer who admires hardworking women in tech description";
             var command = new CreateProfileCommand
             {
-                DOB = DateTime.Now.AddYears(-25),
-                Gender = new Gender { GenderType = GenderType.Male },
-                ProfileDescription = profileDescription,
-                Photos =
-                [
-                    new ProfilePhotoMapped { ImageFile = CreateMockFormFile(), Caption = "Test Photo" }
-                ],
-                Location = location,
-            };
-
-            var userProfile = new UserProfile
-            {
-                DOB = DateTime.Now.AddYears(-25),
-                Gender = new Gender { GenderType = GenderType.Male },
-                ProfileDescription = "I am a software engineer who admires hardworking women in tech description",
                 UserId = 1,
+                DOB = DateTime.Now.AddYears(-25),
+                Gender = new Gender { GenderType = GenderType.Male },
+                ProfileDescription = "Test Description",
+                Photos = [new ProfilePhotoMapped { ImageFile = CreateMockFormFile(), Caption = "Test Photo" }],
+                Location = new Location { Lat = 51.5074, Lng = -0.1278 }
             };
 
             var user = new User { Id = 1 };
-
-            // Mocking the Location Service Response
-            var locationResponse = new LocationQueryResponse
-            {
-                PlusCode = new Fliq.Application.Common.Models.PlusCode { CompoundCode = "FakeCode", GlobalCode = "GlobalCode123" },
-                Results = new List<Result>
-                {
-                    new Result
-                    {
-                        FormattedAddress = "123 Fake Street, Faketown, Fakestate",
-                        Geometry = new Fliq.Application.Common.Models.Geometry
-                        {
-                            Location = new Fliq.Application.Common.Models.Locationn
-                            {
-                                Lat = 40.7128,
-                                Lng = -74.0060
-                            }
-                        }
-                    }
-                },
-                Status = "OK"
-            };
+            var locationResponse = new LocationQueryResponse { Status = "OK" };
 
             _userRepositoryMock.Setup(repo => repo.GetUserById(It.IsAny<int>()))
                 .Returns(user);
-
-            _profileRepositoryMock.Setup(repo => repo.GetUserProfileByUserId(It.IsAny<int>()))
-                .Returns((UserProfile?)null);
 
             _locationServiceMock.Setup(service => service.GetAddressFromCoordinatesAsync(It.IsAny<double>(), It.IsAny<double>()))
                 .ReturnsAsync(locationResponse);
 
             _mediaServicesMock.Setup(service => service.UploadImageAsync(It.IsAny<IFormFile>()))
-              .ReturnsAsync("image.jpeg");
-
-            _mapperMock.Setup(mapper => mapper.Map<LocationDetail>(new LocationQueryResponse()));
-
-            _mapperMock.Setup(mapper => mapper.Map<UserProfile>(command))
-                .Returns(userProfile);
+                .ReturnsAsync("image.jpeg");
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -208,34 +117,194 @@ namespace Fliq.Test.Profile.Commands.Create
             // Assert
             Assert.IsFalse(result.IsError);
             Assert.IsNotNull(result.Value);
-            Assert.AreEqual(profileDescription, result.Value.Profile.ProfileDescription);
             _profileRepositoryMock.Verify(repo => repo.Add(It.IsAny<UserProfile>()), Times.Once);
+        }
+
+        [TestMethod]
+        public async Task Handle_PhotosUploadFails_ReturnsInvalidImageError()
+        {
+            // Arrange
+            var command = new CreateProfileCommand
+            {
+                UserId = 1,
+                Photos = [new ProfilePhotoMapped { ImageFile = CreateMockFormFile(), Caption = "Test Photo" }]
+            };
+
+            var user = new User { Id = 1 };
+
+            _userRepositoryMock.Setup(repo => repo.GetUserById(It.IsAny<int>()))
+                .Returns(user);
+
+            _mediaServicesMock.Setup(service => service.UploadImageAsync(It.IsAny<IFormFile>()))
+                .ReturnsAsync((string?)null);
+
+            // Act
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            Assert.IsTrue(result.IsError);
+            Assert.AreEqual(Errors.Image.InvalidImage, result.FirstError);
+        }
+
+        [TestMethod]
+        public async Task Handle_LocationServiceFails_ReturnsLocationServiceError()
+        {
+            // Arrange
+            var command = new CreateProfileCommand
+            {
+                UserId = 1,
+                Location = new Location { Lat = 51.5074, Lng = -0.1278 }
+            };
+
+            var user = new User { Id = 1 };
+
+            _userRepositoryMock.Setup(repo => repo.GetUserById(It.IsAny<int>()))
+                .Returns(user);
+
+            _locationServiceMock.Setup(service => service.GetAddressFromCoordinatesAsync(It.IsAny<double>(), It.IsAny<double>()))
+                .ReturnsAsync((LocationQueryResponse?)null);
+
+            // Act
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            Assert.IsTrue(result.IsError);
+            Assert.AreEqual(Errors.Profile.InvalidPayload, result.FirstError);
+        }
+
+        [TestMethod]
+        public async Task Handle_PromptResponsesWithInvalidCategory_ReturnsCategoryNotFoundError()
+        {
+            // Arrange
+            var command = new CreateProfileCommand
+            {
+                UserId = 1,
+                PromptResponses = [new PromptResponseDto(1, null, "New Answer", CreateMockFormFile(), CreateMockFormFile(), 999, false)]
+            };
+
+            var user = new User { Id = 1 };
+
+            _userRepositoryMock.Setup(repo => repo.GetUserById(It.IsAny<int>()))
+                .Returns(user);
+
+            _promptCategoryRepositoryMock.Setup(repo => repo.GetCategoryById(It.IsAny<int>()))
+                .Returns((PromptCategory?)null);
+
+            // Act
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            Assert.IsTrue(result.IsError);
+            Assert.AreEqual(Errors.Prompts.CategoryNotFound, result.FirstError);
+        }
+
+        [TestMethod]
+        public async Task Handle_PromptResponsesWithInvalidQuestion_ReturnsQuestionNotFoundError()
+        {
+            // Arrange
+            var command = new CreateProfileCommand
+            {
+                UserId = 1,
+                PromptResponses = [new PromptResponseDto(99, "Valid Question", "Valid Answer", CreateMockFormFile(), CreateMockFormFile(), 1, false)]
+            };
+
+            var user = new User { Id = 1 };
+
+            _userRepositoryMock.Setup(repo => repo.GetUserById(It.IsAny<int>()))
+                .Returns(user);
+
+            _promptCategoryRepositoryMock.Setup(repo => repo.GetCategoryById(It.IsAny<int>()))
+               .Returns(new PromptCategory() { CategoryName = "Category Name", Id = 1 });
+
+            _promptQuestionRepositoryMock.Setup(repo => repo.GetQuestionByIdAsync(It.IsAny<int>()))
+                .Returns((PromptQuestion?)null);
+
+            // Act
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            Assert.IsTrue(result.IsError);
+            Assert.AreEqual(Errors.Prompts.QuestionNotFound, result.FirstError);
+        }
+
+        [TestMethod]
+        public async Task Handle_PromptResponsesWithNoAnswer_ReturnsAnswerNotProvidedError()
+        {
+            // Arrange
+            var command = new CreateProfileCommand
+            {
+                UserId = 1,
+                PromptResponses = [new PromptResponseDto(1, null, null, null, null, 999, false)]
+            };
+
+            var user = new User { Id = 1 };
+
+            _userRepositoryMock.Setup(repo => repo.GetUserById(It.IsAny<int>()))
+                .Returns(user);
+
+            // Act
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            Assert.IsTrue(result.IsError);
+            Assert.AreEqual(Errors.Prompts.AnswerNotProvided, result.FirstError);
+        }
+
+        [TestMethod]
+        public async Task Handle_ExistingProfile_UpdatesProfileSuccessfully()
+        {
+            // Arrange
+            var command = new CreateProfileCommand
+            {
+                UserId = 1,
+                DOB = DateTime.Now.AddYears(-25),
+                Gender = new Gender { GenderType = GenderType.Male },
+                ProfileDescription = "Test Description",
+                Photos = [new ProfilePhotoMapped { ImageFile = CreateMockFormFile(), Caption = "Test Photo" }],
+                Location = new Location { Lat = 51.5074, Lng = -0.1278 }
+            };
+
+            var user = new User { Id = 1 };
+            var existingProfile = new UserProfile { UserId = 1 };
+
+            _userRepositoryMock.Setup(repo => repo.GetUserById(It.IsAny<int>()))
+                .Returns(user);
+
+            _profileRepositoryMock.Setup(repo => repo.GetProfileByUserId(It.IsAny<int>()))
+                .Returns(existingProfile);
+
+            _locationServiceMock.Setup(service => service.GetAddressFromCoordinatesAsync(It.IsAny<double>(), It.IsAny<double>()))
+                .ReturnsAsync(new LocationQueryResponse { Status = "OK" });
+
+            _mediaServicesMock.Setup(service => service.UploadImageAsync(It.IsAny<IFormFile>()))
+                .ReturnsAsync("image.jpeg");
+
+            // Act
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            Assert.IsFalse(result.IsError);
+            Assert.IsNotNull(result.Value);
+            _profileRepositoryMock.Verify(repo => repo.Update(It.IsAny<UserProfile>()), Times.Once);
         }
 
         private IFormFile CreateMockFormFile()
         {
             var fileMock = new Mock<IFormFile>();
-
-            // Mock file content
             var content = "Fake file content";
             var fileName = "test.jpg";
             var ms = new MemoryStream(Encoding.UTF8.GetBytes(content));
 
-            // Set up the stream for reading
             fileMock.Setup(_ => _.OpenReadStream()).Returns(ms);
-
-            // Setup file properties
             fileMock.Setup(_ => _.FileName).Returns(fileName);
             fileMock.Setup(_ => _.Length).Returns(ms.Length);
             fileMock.Setup(_ => _.ContentType).Returns("image/jpeg");
             fileMock.Setup(_ => _.Name).Returns("file");
-            fileMock.Setup(_ => _.Headers).Returns(new HeaderDictionary()); // Headers mock
+            fileMock.Setup(_ => _.Headers).Returns(new HeaderDictionary());
 
-            // Mock the CopyTo method (synchronous)
             fileMock.Setup(_ => _.CopyTo(It.IsAny<Stream>()))
                 .Callback<Stream>(stream => ms.CopyTo(stream));
 
-            // Mock the CopyToAsync method (asynchronous)
             fileMock.Setup(_ => _.CopyToAsync(It.IsAny<Stream>(), It.IsAny<CancellationToken>()))
                 .Returns<Stream, CancellationToken>((stream, token) => ms.CopyToAsync(stream, token));
 
