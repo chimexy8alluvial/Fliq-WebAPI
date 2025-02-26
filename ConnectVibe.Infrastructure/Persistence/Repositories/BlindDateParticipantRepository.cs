@@ -54,5 +54,17 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             _dbContext.BlindDatesParticipants.Remove(participant);
             await _dbContext.SaveChangesAsync();
         }
+
+        public async Task<BlindDateParticipant?> GetByUserAndBlindDateId(int userId, int blindDateId)
+        {
+            return await _dbContext.BlindDatesParticipants
+                          .FirstOrDefaultAsync(c => c.UserId == userId && c.BlindDateId == blindDateId);
+        }
+
+        public async Task<int> CountByBlindDateId(int blindDateId)
+        {
+            return await _dbContext.BlindDatesParticipants
+                         .Where(c => c.BlindDateId == blindDateId).CountAsync();
+        }
     }
 }

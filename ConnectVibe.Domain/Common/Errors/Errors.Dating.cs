@@ -11,22 +11,25 @@ namespace Fliq.Domain.Common.Errors
             code: "BlindDateCategory.AlreadyExist",
             description: "Blind Date Category already exists");
 
-            //public static Error DuplicateCategoryQuestion => Error.Conflict(
-            //code: "PromptQuestion.AlreadyExist",
-            //description: "Prompt Question already exists");
+            public static Error AlreadyJoined => Error.Conflict(
+          code: "BlindDate.AlreadyJoined",
+          description: "Blind Date Already Joined");
 
-            //public static Error AnswerNotProvided => Error.Validation(
-            //    code: "PromptAnswer.NotProvided",
-            //    description: "No prompt answer provided.");
+            public static Error BlindDateSessionEnded => Error.Custom( 444,
+          code: "BlindDate.SessionEnded",
+          description: "Blind Date session ended");
 
             public static Error BlindDateCategoryNotFound => Error.NotFound(
             code: "BlindDateCategory.NotFound",
             description: "Blind Date Category not found");
 
-            //public static Error CategoryNotFound => Error.NotFound(
-            //code: "PromptCategory.NotFound",
-            //description: "Prompt Category not found");
+            public static Error BlindDateNotFound => Error.NotFound(
+            code: "BlindDate.NotFound",
+            description: "Blind Date not found");
 
+            public static Error BlindDateFull => Error.Forbidden(
+            code: "BlindDate.AlreadyFull",
+            description: "Blind Date already full");
 
         }
     }
