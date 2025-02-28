@@ -77,7 +77,7 @@ namespace Fliq.Application.DatingEnvironment.Commands.BlindDates
 
             // Notify the other participant that a user joined
             await _hubContext.Clients.Group($"BlindDate-{command.BlindDateId}")
-                .SendAsync("UserJoined", command.UserId);
+                .SendAsync("UserJoined", command.UserId, cancellationToken);
 
             return Unit.Value;
         }

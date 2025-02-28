@@ -65,5 +65,64 @@ namespace Fliq.Api.Controllers
                 errors => Problem(string.Join("; ", errors.Select(e => e.Description)))
             );
         }
+
+        [HttpPost("BlindDate/start")]
+        [Produces(typeof(StartBlindDateResponse))]
+        [Authorize]
+        public async Task<IActionResult> StartBlindDate([FromBody] StartBlindDateRequest request)
+        {
+            _logger.LogInfo($"Start Blind Date request received: {request}");
+            var userId = GetAuthUserId();
+
+            var command = new StartBlindDateCommand(userId, request.BlindDateId);
+            var result = await _mediator.Send(command);
+
+            _logger.LogInfo($"Start Blind Date Command Executed. Result: {result}");
+
+            return result.Match(
+                result => Ok(_mapper.Map<StartBlindDateResponse>(result)),
+                errors => Problem(string.Join("; ", errors.Select(e => e.Description)))
+            );
+        }
+
+        [HttpPost("BlindDate/join")]
+        [Produces(typeof(JoinBlindDateResponse))]
+        [Authorize]
+        public async Task<IActionResult> JoinBlindDate([FromBody] JoinBlindDateRequest request)
+        {
+            _logger.LogInfo($"Join Blind Date request received: {request}");
+            var userId = GetAuthUserId();
+
+            var command = new JoinBlindDateCommand(userId, request.BlindDateId);
+            var result = await _mediator.Send(command);
+
+            _logger.LogInfo($"Join Blind Date Command Executed. Result: {result}");
+
+            return result.Match(
+                result => Ok(new JoinBlindDateResponse()),
+                errors => Problem(string.Join("; ", errors.Select(e => e.Description)))
+            );
+        }
+
+
+        [HttpPost("BlindDate/end")]
+        [Produces(typeof(EndBlindDateResponse))]
+        [Authorize]
+        public async Task<IActionResult> EndBlindDate([FromBody] EndBlindDateRequest request)
+        {
+            _logger.LogInfo($"End Blind Date request received: {request}");
+            var userId = GetAuthUserId();
+
+            var command = new EndBlindDateCommand(userId, request.BlindDateId);
+            var result = await _mediator.Send(command);
+
+            _logger.LogInfo($"End Blind Date Command Executed. Result: {result}");
+
+            return result.Match(
+                result => Ok(_mapper.Map<EndBlindDateResponse>(result)),
+                errors => Problem(string.Join("; ", errors.Select(e => e.Description)))
+            );
+        }
+
     }
 }

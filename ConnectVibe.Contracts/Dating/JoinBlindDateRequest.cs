@@ -1,7 +1,5 @@
 ﻿
 namespace Fliq.Contracts.Dating
 {
-    public record JoinBlindDateRequest
-    {
-    }
+    public record JoinBlindDateRequest(int BlindDateId);
 }

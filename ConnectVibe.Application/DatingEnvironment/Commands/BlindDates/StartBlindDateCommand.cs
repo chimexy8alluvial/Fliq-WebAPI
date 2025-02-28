@@ -65,6 +65,11 @@ namespace Fliq.Application.DatingEnvironment.Commands.BlindDates
                 return Errors.Dating.BlindDateAlreadyEnded;
             }
 
+            if (blindDate.Status == BlindDateStatus.Cancelled)
+            {
+                _loggerManager.LogWarn($"Blind date session {command.BlindDateId} is cancelled and cannot be started.");
+                return Errors.Dating.BlindDateCancelled;
+            }
             // Step 4: Start the session
             var sessionStartTime = DateTime.UtcNow;
             blindDate.SessionStartTime = sessionStartTime;

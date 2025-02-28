@@ -43,6 +43,10 @@ namespace Fliq.Domain.Common.Errors
            code: "BlindDate.BlindDateAlreadyEnded;",
            description: "Session has already ended");
 
+            public static Error BlindDateCancelled => Error.Failure(
+         code: "BlindDate.BlindDateCancelled;",
+         description: "Session is cancelled");
+
             public static Error BlindDateNotOngoing => Error.Failure(
          code: "BlindDate.BlindDateNotOngoing;",
          description: "This Session is not ongoing");
