@@ -1,9 +1,11 @@
 ﻿using ErrorOr;
+using Fliq.Application.Common.Hubs;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.DatingEnvironment;
 using MediatR;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Fliq.Application.DatingEnvironment.Commands.BlindDates
 {
@@ -13,15 +15,18 @@ namespace Fliq.Application.DatingEnvironment.Commands.BlindDates
         private readonly IBlindDateRepository _blindDateRepository;
         private readonly IBlindDateParticipantRepository _blindDateParticipantRepository;
         private readonly ILoggerManager _loggerManager;
+        private readonly IHubContext<BlindDateHub> _hubContext;
 
         public JoinBlindDateCommandHandler(
             IBlindDateRepository blindDateRepository,
             IBlindDateParticipantRepository blindDateParticipantRepository,
-            ILoggerManager loggerManager)
+            ILoggerManager loggerManager,
+            IHubContext<BlindDateHub> hubContext)
         {
             _blindDateRepository = blindDateRepository;
             _blindDateParticipantRepository = blindDateParticipantRepository;
             _loggerManager = loggerManager;
+            _hubContext = hubContext;
         }
 
         public async Task<ErrorOr<Unit>> Handle(JoinBlindDateCommand command, CancellationToken cancellationToken)
@@ -69,6 +74,10 @@ namespace Fliq.Application.DatingEnvironment.Commands.BlindDates
 
             await _blindDateParticipantRepository.AddAsync(newParticipant);
             _loggerManager.LogInfo($"User {command.UserId} successfully joined blind date {command.BlindDateId}.");
+
+            // Notify the other participant that a user joined
+            await _hubContext.Clients.Group($"BlindDate-{command.BlindDateId}")
+                .SendAsync("UserJoined", command.UserId);
 
             return Unit.Value;
         }

@@ -1,10 +1,12 @@
 ﻿using ErrorOr;
+using Fliq.Application.Common.Hubs;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.DatingEnvironment.Common.BlindDates;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Enums;
 using MediatR;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Fliq.Application.DatingEnvironment.Commands.BlindDates
 {
@@ -15,15 +17,19 @@ namespace Fliq.Application.DatingEnvironment.Commands.BlindDates
         private readonly IBlindDateRepository _blindDateRepository;
         private readonly IBlindDateParticipantRepository _blindDateParticipantRepository;
         private readonly ILoggerManager _loggerManager;
+        private readonly IHubContext<BlindDateHub> _hubContext;
+
 
         public StartBlindDateCommandHandler(
             IBlindDateRepository blindDateRepository,
             IBlindDateParticipantRepository blindDateParticipantRepository,
-            ILoggerManager loggerManager)
+            ILoggerManager loggerManager,
+            IHubContext<BlindDateHub> hubContext)
         {
             _blindDateRepository = blindDateRepository;
             _blindDateParticipantRepository = blindDateParticipantRepository;
             _loggerManager = loggerManager;
+            _hubContext = hubContext;
         }
 
         public async Task<ErrorOr<StartBlindDateResult>> Handle(StartBlindDateCommand command, CancellationToken cancellationToken)
@@ -64,6 +70,9 @@ namespace Fliq.Application.DatingEnvironment.Commands.BlindDates
             blindDate.SessionStartTime = sessionStartTime;
             blindDate.Status = BlindDateStatus.Ongoing;
             await _blindDateRepository.UpdateAsync(blindDate);
+
+            // Notify users via signalR
+            await _hubContext.Clients.Group($"BlindDate-{command.BlindDateId}").SendAsync("BlinDateStarted", command.BlindDateId, cancellationToken);
 
             _loggerManager.LogInfo($"Blind date session {command.BlindDateId} started successfully by user {command.UserId}.");
 
