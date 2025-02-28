@@ -60,13 +60,14 @@ namespace Fliq.Application.DatingEnvironment.Commands.BlindDates
             }
 
             // Step 4: Start the session
-            blindDate.SessionStartTime = DateTime.UtcNow;
+            var sessionStartTime = DateTime.UtcNow;
+            blindDate.SessionStartTime = sessionStartTime;
             blindDate.Status = BlindDateStatus.Ongoing;
             await _blindDateRepository.UpdateAsync(blindDate);
 
             _loggerManager.LogInfo($"Blind date session {command.BlindDateId} started successfully by user {command.UserId}.");
 
-            return new StartBlindDateResult(DateTime.UtcNow);
+            return new StartBlindDateResult(sessionStartTime);
         }
     }
 }
