@@ -67,8 +67,15 @@ namespace Fliq.Application.DatingEnvironment.Commands.BlindDates
 
             if (locationResponse is not null)
             {
-                blindDate.Location = _mapper.Map<Location>(locationResponse);
-                blindDate.Location.IsVisible = command.Location.IsVisible;
+                LocationDetail locationDetail = _mapper.Map<LocationDetail>(locationResponse);
+                Location location = new Location()
+                {
+                    LocationDetail = locationDetail,
+                    IsVisible = command.Location.IsVisible,
+                    Lat = command.Location.Lat,
+                    Lng = command.Location.Lng
+                };
+                blindDate.Location = location;
             }
             else
             {
