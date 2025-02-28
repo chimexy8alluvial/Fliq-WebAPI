@@ -55,11 +55,12 @@ namespace Fliq.Test.Dating.Commands
         {
             // Arrange
             var location = new Location { Lat = 51.5074, Lng = -0.1278, IsVisible = true };
-
+            var locationDetail = new LocationDetail { Results = [], Status = "", Location = location };
             var command = new CreateBlindDateCommand(
                 Title: "Speed Dating Night",
                 CategoryId: 1,
                 Location: location,
+                  LocationDetail: locationDetail,
                 BlindDateImage: new BlindDatePhotoMapped( CreateMockFormFile()),
                 IsOneOnOne: false,
                 NumberOfParticipants: 10,
@@ -128,11 +129,13 @@ namespace Fliq.Test.Dating.Commands
         {
             // Arrange - Missing required fields
             var location = new Location { Lat = 0, Lng = 0, IsVisible = false }; // Invalid location
+            var locationDetail = new LocationDetail { Results = [], Status = "", Location = location };
 
             var command = new CreateBlindDateCommand(
                 Title: "", // Empty title (invalid)
                 CategoryId: 0, // Invalid category ID
                 Location: location,
+                LocationDetail: locationDetail,
                 BlindDateImage: null, // No image provided
                 IsOneOnOne: false,
                 NumberOfParticipants: -5, // Invalid negative participants

@@ -10,7 +10,9 @@ namespace Fliq.Domain.Common.Errors
             public static Error DuplicateBlindDateCategory => Error.Conflict(
             code: "BlindDateCategory.AlreadyExist",
             description: "Blind Date Category already exists");
-
+            public static Error NoBlindDateCategoryName => Error.Failure(
+          code: "BlindDateCategory.EmptyName",
+          description: "Blind Date Category requires name");
             public static Error AlreadyJoined => Error.Conflict(
           code: "BlindDate.AlreadyJoined",
           description: "Blind Date Already Joined");

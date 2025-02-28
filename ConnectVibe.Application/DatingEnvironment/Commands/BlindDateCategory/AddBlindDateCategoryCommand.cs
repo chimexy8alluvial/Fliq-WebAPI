@@ -23,7 +23,11 @@ namespace Fliq.Application.DatingEnvironment.Commands.BlindDateCategory
         public async Task<ErrorOr<AddBlindDateCategoryResult>> Handle(AddBlindDateCategoryCommand request, CancellationToken cancellationToken)
         {
             _loggerManager.LogInfo($"Starting blind date category creation process for category name: {request.CategoryName}");
-
+            if(string.IsNullOrEmpty(request.CategoryName) )
+            {
+                _loggerManager.LogError($"Category name is required for blind date category creation: Aborting creation.");
+                return Errors.Dating.NoBlindDateCategoryName;
+            }
             var existingCategory = await _blindDateCategoryRepository.GetByCategoryName(request.CategoryName);
             if (existingCategory != null)
             {
