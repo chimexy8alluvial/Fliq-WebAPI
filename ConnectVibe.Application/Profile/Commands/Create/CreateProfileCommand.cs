@@ -10,8 +10,8 @@ using Fliq.Contracts.Prompts;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Entities.Prompts;
-using Fliq.Domain.Entities.Settings;
 using Fliq.Domain.Enums;
+using Mapster;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -20,22 +20,23 @@ namespace Fliq.Application.Profile.Commands.Create
 {
     public class CreateProfileCommand : IRequest<ErrorOr<CreateProfileResult>>
     {
-        public List<string> Passions { get; set; } = new();
+        public List<string>? Passions { get; set; }
         public string? ProfileDescription { get; set; }
-        public List<ProfilePhotoMapped> Photos { get; set; } = new();
-        public List<ProfileType> ProfileTypes { get; set; } = new();
-        public DateTime DOB { get; set; }
-        public Gender Gender { get; set; } = default!;
+        public List<ProfilePhotoMapped>? Photos { get; set; }
+        public List<ProfileType>? ProfileTypes { get; set; }
+        public ProfileSection CurrentSection { get; set; }
+        public DateTime? DOB { get; set; }
+        public Gender? Gender { get; set; }
         public SexualOrientation? SexualOrientation { get; set; }
-        public Religion Religion { get; set; } = default!;
-        public Ethnicity Ethnicity { get; set; } = default!;
-        public Occupation Occupation { get; set; } = default!;
-        public EducationStatus EducationStatus { get; set; } = default!;
+        public Religion? Religion { get; set; }
+        public Ethnicity? Ethnicity { get; set; }
+        public Occupation? Occupation { get; set; }
+        public EducationStatus? EducationStatus { get; set; }
         public HaveKids? HaveKids { get; set; }
         public WantKids? WantKids { get; set; }
-        public Location Location { get; set; } = default!;
-        public LocationDetail LocationDetail { get; set; } = default!;
-        public List<PromptResponseDto> PromptResponses { get; set; } = new(); // for default prompt responses
+        public Location? Location { get; set; }
+        public LocationDetail? LocationDetail { get; set; }
+        public List<PromptResponseDto>? PromptResponses { get; set; } = new(); // for default prompt responses
         public bool AllowNotifications { get; set; }
         public int UserId { get; set; }
     }
@@ -52,7 +53,6 @@ namespace Fliq.Application.Profile.Commands.Create
         private readonly ILoggerManager _loggerManager;
         private readonly IMediaServices _mediaServices;
         private readonly IPromptResponseRepository _promptResponseRepository;
-
 
         public CreateProfileCommandHandler(IMapper mapper, IProfileRepository profileRepository, IUserRepository userRepository, ILocationService locationService, ISettingsRepository settingsRepository, ILoggerManager loggerManager, IPromptQuestionRepository promptQuestionRepository, IPromptCategoryRepository promptCategoryRepository, IMediaServices mediaServices, IPromptResponseRepository promptResponseRepository)
         {
@@ -75,79 +75,74 @@ namespace Fliq.Application.Profile.Commands.Create
             var user = _userRepository.GetUserById(command.UserId);
             if (user == null)
             {
+                _loggerManager.LogError("User not found. Aborting profile creation.");
                 return Errors.Profile.ProfileNotFound;
             }
-            var existingProfile = _profileRepository.GetUserProfileByUserId(command.UserId);
-            if (existingProfile != null)
+
+            var existingProfile = _profileRepository.GetProfileByUserId(command.UserId);
+            if (existingProfile == null)
             {
-                return Errors.Profile.DuplicateProfile;
+                // Create a new profile if none exists
+                existingProfile = new UserProfile { UserId = command.UserId, User = user };
+                _profileRepository.Add(existingProfile);
             }
 
-            var userProfile = _mapper.Map<UserProfile>(command);
-            userProfile.UserId = 0;
-            userProfile.Photos = new();
-            userProfile.User = user;
-            foreach (var photo in command.Photos)
+            // Track session completeness using an enum
+            if (!existingProfile.CompletedSections.Contains(command.CurrentSection.ToString()))
             {
-                var profileUrl = await _mediaServices.UploadImageAsync(photo.ImageFile);
+                existingProfile.CompletedSections.Add(command.CurrentSection.ToString());
+            }
 
-                if (profileUrl != null)
+            // Map non-null properties using Mapster Adapt
+            existingProfile = command.Adapt(existingProfile);
+
+            if (command.Photos is not null)
+            {
+                foreach (var photo in command.Photos)
                 {
-                    ProfilePhoto profilePhoto = new() { PictureUrl = profileUrl, Caption = photo.Caption };
-                    userProfile.Photos.Add(profilePhoto);
+                    var profileUrl = await _mediaServices.UploadImageAsync(photo.ImageFile);
+                    if (profileUrl != null)
+                    {
+                        existingProfile.Photos.Add(new ProfilePhoto { PictureUrl = profileUrl, Caption = photo.Caption });
+                    }
+                    else
+                    {
+                        _loggerManager.LogError("Failed to upload image. Aborting profile creation.");
+                        return Errors.Image.InvalidImage;
+                    }
+                }
+            }
+
+            if (command.Location != null)
+            {
+                var locationResponse = await _locationService.GetAddressFromCoordinatesAsync(command.Location.Lat, command.Location.Lng);
+                if (locationResponse is not null)
+                {
+                    existingProfile.Location = locationResponse.Adapt<Location>();
                 }
                 else
                 {
-                    return Errors.Image.InvalidImage;
+                    _loggerManager.LogError("Failed to get location details. Aborting profile creation.");
+                    return Errors.Profile.InvalidPayload;
                 }
             }
 
-            var locationResponse = await _locationService.GetAddressFromCoordinatesAsync(command.Location.Lat, command.Location.Lng);
-
-            if (locationResponse is not null)
+            if (command.PromptResponses.Any())
             {
-                LocationDetail locationDetail = _mapper.Map<LocationDetail>(locationResponse);
-                Location location = new Location()
+                foreach (var promptDto in command.PromptResponses)
                 {
-                    LocationDetail = locationDetail,
-                    IsVisible = command.Location.IsVisible,
-                    Lat = command.Location.Lat,
-                    Lng = command.Location.Lng
-                };
+                    var promptResponse = await ProcessPromptResponseAsync(promptDto, existingProfile);
+                    if (promptResponse.IsError)
+                        return promptResponse.Errors;
 
-                userProfile.Location = location;
+                    existingProfile.PromptResponses.Add(promptResponse.Value);
+                }
             }
 
-            // Process default prompt response
-            var promptResponses = new List<PromptResponse>();
-            foreach (var promptDto in command.PromptResponses)
-            {
-                var promptResponse = await ProcessPromptResponseAsync(promptDto, userProfile);
-                if (promptResponse.IsError)
-                    return promptResponse.Errors;
+            existingProfile.CompletedSections = existingProfile.CompletedSections.Distinct().ToList();
+            _profileRepository.Update(existingProfile);
 
-                promptResponses.Add(promptResponse.Value);
-            }
-            
-            userProfile.PromptResponses = promptResponses;
-            
-            _profileRepository.Add(userProfile);
-            
-            foreach(var PromptResp in promptResponses)
-            {
-                PromptResp.UserProfileId = userProfile.Id;
-
-                //Persist prompt response
-                 _promptResponseRepository.Add(PromptResp);
-            }
-
-            Setting setting = new()
-            {
-                UserId = command.UserId,
-            };
-            _settingsRepository.Add(setting);
-
-            return new CreateProfileResult(userProfile);
+            return new CreateProfileResult(existingProfile);
         }
 
         private async Task<ErrorOr<PromptResponse>> ProcessPromptResponseAsync(PromptResponseDto promptDto, UserProfile userProfile)
