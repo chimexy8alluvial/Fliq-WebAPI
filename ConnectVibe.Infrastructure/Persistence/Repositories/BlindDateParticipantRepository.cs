@@ -66,5 +66,11 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             return await _dbContext.BlindDatesParticipants
                          .Where(c => c.BlindDateId == blindDateId).CountAsync();
         }
+
+        public async Task<BlindDateParticipant?> GetCreatorByBlindDateId(int blindDateId)
+        {
+            return await _dbContext.BlindDatesParticipants
+                          .FirstOrDefaultAsync(c => c.BlindDateId == blindDateId && c.IsCreator);
+        }
     }
 }

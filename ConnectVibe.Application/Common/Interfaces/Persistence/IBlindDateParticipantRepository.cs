@@ -11,6 +11,7 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         Task<IEnumerable<BlindDateParticipant>> GetByBlindDateIdAsync(int blindDateId);
         Task<BlindDateParticipant?>GetByUserAndBlindDateId(int userId, int blindDateId);
         Task<BlindDateParticipant?> GetByIdAsync(int id);
+        Task<BlindDateParticipant?> GetCreatorByBlindDateId(int blindDateId);
         Task UpdateAsync(BlindDateParticipant participant);
 
        Task<int> CountByBlindDateId(int blindDateId);

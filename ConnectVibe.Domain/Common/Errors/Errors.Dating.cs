@@ -31,6 +31,18 @@ namespace Fliq.Domain.Common.Errors
             code: "BlindDate.AlreadyFull",
             description: "Blind Date already full");
 
+            public static Error NotSessionCreator => Error.Forbidden(
+            code: "BlindDate.NotSessionCreator",
+            description: "User is not the Session Creator");
+
+            public static Error BlindDateAlreadyStarted => Error.Conflict(
+            code: "BlindDate.BlindDateAlreadyStarted;",
+            description: "Session has already started");
+
+           public static Error BlindDateAlreadyEnded => Error.Conflict(
+           code: "BlindDate.BlindDateAlreadyEnded;",
+           description: "Session has already ended");
+
         }
     }
 }
