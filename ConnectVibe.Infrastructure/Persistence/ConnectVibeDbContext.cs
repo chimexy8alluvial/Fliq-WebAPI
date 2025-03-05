@@ -1,5 +1,5 @@
 ﻿using Fliq.Domain.Entities;
-using Fliq.Domain.Entities.DatingEnvironment;
+using Fliq.Domain.Entities.DatingEnvironment.BlindDates;
 using Fliq.Domain.Entities.Event;
 using Fliq.Domain.Entities.Games;
 using Fliq.Domain.Entities.MatchedProfile;

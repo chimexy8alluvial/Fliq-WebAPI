@@ -5,6 +5,7 @@ using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.DatingEnvironment.Commands.BlindDates;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.DatingEnvironment;
+using Fliq.Domain.Entities.DatingEnvironment.BlindDates;
 using Fliq.Domain.Enums;
 using Microsoft.AspNetCore.SignalR;
 using Moq;

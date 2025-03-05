@@ -7,7 +7,7 @@ using Fliq.Application.Common.Interfaces.Services.LocationServices;
 using Fliq.Application.Common.Interfaces.Services.MeidaServices;
 using Fliq.Application.DatingEnvironment.Commands.BlindDates;
 using Fliq.Domain.Common.Errors;
-using Fliq.Domain.Entities.DatingEnvironment;
+using Fliq.Domain.Entities.DatingEnvironment.BlindDates;
 using MapsterMapper;
 using Microsoft.AspNetCore.SignalR;
 using Moq;

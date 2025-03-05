@@ -6,13 +6,13 @@ using Fliq.Application.Common.Interfaces.Services.MeidaServices;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.DatingEnvironment.Commands.BlindDates;
 using Fliq.Application.DatingEnvironment.Common;
-using Fliq.Domain.Entities.DatingEnvironment;
 using MapsterMapper;
 using Moq;
 using Microsoft.AspNetCore.Http;
 using System.Text;
 using Fliq.Domain.Entities.Profile;
 using Fliq.Application.Common.Models;
+using Fliq.Domain.Entities.DatingEnvironment.BlindDates;
 
 namespace Fliq.Test.Dating.Commands
 {

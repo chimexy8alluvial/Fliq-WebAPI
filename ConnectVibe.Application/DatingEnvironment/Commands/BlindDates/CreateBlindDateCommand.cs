@@ -7,6 +7,7 @@ using Fliq.Application.DatingEnvironment.Common;
 using Fliq.Application.DatingEnvironment.Common.BlindDates;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.DatingEnvironment;
+using Fliq.Domain.Entities.DatingEnvironment.BlindDates;
 using Fliq.Domain.Entities.Profile;
 using MapsterMapper;
 using MediatR;

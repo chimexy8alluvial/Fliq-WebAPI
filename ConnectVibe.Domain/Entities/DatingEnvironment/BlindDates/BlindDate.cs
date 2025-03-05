@@ -1,8 +1,7 @@
-﻿
-using Fliq.Domain.Entities.Profile;
+﻿using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Enums;
 
-namespace Fliq.Domain.Entities.DatingEnvironment
+namespace Fliq.Domain.Entities.DatingEnvironment.BlindDates
 {
     public class BlindDate : Record
     {
@@ -17,7 +16,7 @@ namespace Fliq.Domain.Entities.DatingEnvironment
         public bool IsOneOnOne { get; set; }
         public int? NumberOfParticipants { get; set; }
 
-        public string? ImageUrl { get; set; } 
+        public string? ImageUrl { get; set; }
 
         public bool IsRecordingEnabled { get; set; } = false;
         public string? RecordingUrl { get; set; }
@@ -25,9 +24,9 @@ namespace Fliq.Domain.Entities.DatingEnvironment
         public DateTime? SessionStartTime { get; set; }
         public DateTime? SessionEndTime { get; set; }
         public TimeSpan? Duration =>
-            (SessionStartTime.HasValue && SessionEndTime.HasValue)
+            SessionStartTime.HasValue && SessionEndTime.HasValue
             ? SessionEndTime - SessionStartTime
-            : null; 
+            : null;
 
         public BlindDateStatus Status { get; set; } = BlindDateStatus.Pending;
 
