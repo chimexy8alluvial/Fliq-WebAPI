@@ -33,9 +33,31 @@ namespace Fliq.Application.DatingEnvironment.Commands.BlindDateCategory
                 return Errors.Dating.BlindDateCategoryNotFound;
             }
 
-            // Update fields
-            category.CategoryName = request.CategoryName ?? category.CategoryName;
-            category.Description = request.Description ?? category.Description;
+            // Trim inputs to remove accidental whitespace changes
+            var newCategoryName = request.CategoryName?.Trim();
+            var newDescription = request.Description?.Trim();
+
+            // Check if any update is needed
+            bool isUpdated = false;
+
+            if (!string.IsNullOrWhiteSpace(newCategoryName) && newCategoryName != category.CategoryName)
+            {
+                category.CategoryName = newCategoryName;
+                isUpdated = true;
+            }
+
+            if (!string.IsNullOrWhiteSpace(newDescription) && newDescription != category.Description)
+            {
+                category.Description = newDescription;
+                isUpdated = true;
+            }
+
+            // If nothing changed, return without updating the DB
+            if (!isUpdated)
+            {
+                _loggerManager.LogInfo($"No changes detected for blind date category ID: {category.Id}");
+                return new AddBlindDateCategoryResult(category.Id, category.CategoryName);
+            }
 
             await _blindDateCategoryRepository.UpdateAsync(category);
             _loggerManager.LogInfo($"Successfully updated blind date category ID: {category.Id}");
