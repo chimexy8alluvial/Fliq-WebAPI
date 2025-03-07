@@ -6,7 +6,6 @@ using Fliq.Application.Explore.Queries;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities;
 using Fliq.Domain.Entities.Profile;
-using Microsoft.AspNetCore.Http;
 using Moq;
 
 namespace Fliq.Test.Explore.Queries

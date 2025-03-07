@@ -6,7 +6,6 @@ using Fliq.Domain.Common.Errors;
 using ErrorOr;
 using MapsterMapper;
 using MediatR;
-using Newtonsoft.Json;
 
 namespace Fliq.Application.Authentication.Commands.ChangePassword
 {

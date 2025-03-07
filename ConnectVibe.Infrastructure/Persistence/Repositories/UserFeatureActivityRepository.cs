@@ -1,7 +1,6 @@
 ﻿using Dapper;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Domain.Entities.UserFeatureActivities;
-using Microsoft.AspNetCore.Connections;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 

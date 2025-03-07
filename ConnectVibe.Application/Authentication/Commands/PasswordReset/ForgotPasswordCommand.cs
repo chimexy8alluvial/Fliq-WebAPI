@@ -1,12 +1,10 @@
-﻿using Fliq.Application.Authentication.Commands.PasswordReset;
-using Fliq.Application.Authentication.Common;
+﻿using Fliq.Application.Authentication.Common;
 using Fliq.Application.Common.Interfaces.Authentication;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Domain.Common.Errors;
 using ErrorOr;
 using MediatR;
-using Newtonsoft.Json;
 
 
 namespace Fliq.Application.Authentication.Commands.PasswordReset

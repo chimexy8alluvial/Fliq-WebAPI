@@ -1,14 +1,11 @@
 ﻿
 using ErrorOr;
-using Fliq.Application.Authentication.Common.Profile;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
-using Fliq.Application.Profile.Queries.Get;
 using Fliq.Application.Prompts.Common;
 using Fliq.Domain.Common.Errors;
 using MapsterMapper;
 using MediatR;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Fliq.Application.Prompts.Queries
 {

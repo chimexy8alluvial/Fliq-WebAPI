@@ -1,5 +1,4 @@
 ﻿using Fliq.Application.Authentication.Commands.Register;
-using Fliq.Application.Common.Interfaces.Authentication;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Domain.Common.Errors;
