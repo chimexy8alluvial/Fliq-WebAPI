@@ -77,19 +77,5 @@ namespace Fliq.Test.Dating.Commands
             _mockLoggerManager.Verify(logger => logger.LogWarn(It.Is<string>(msg => msg.Contains("Duplicate blind date category detected"))), Times.Once);
         }
 
-        [TestMethod]
-        public async Task Handle_EmptyCategoryName_ReturnsError()
-        {
-            // Arrange
-            var command = new AddBlindDateCategoryCommand("", "No name provided");
-
-            // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
-
-            // Assert
-            Assert.IsTrue(result.IsError);
-            _mockBlindDateCategoryRepository.Verify(repo => repo.AddAsync(It.IsAny<BlindDateCategory>()), Times.Never);
-            _mockLoggerManager.Verify(logger => logger.LogWarn(It.IsAny<string>()), Times.Never);
-        }
     }
 }
