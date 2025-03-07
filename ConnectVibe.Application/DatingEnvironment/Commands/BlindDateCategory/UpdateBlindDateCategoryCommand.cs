@@ -8,7 +8,7 @@ using MediatR;
 
 namespace Fliq.Application.DatingEnvironment.Commands.BlindDateCategory
 {
-    public record UpdateBlindDateCategoryCommand(int Id, string CategoryName, string? Description) : IRequest<ErrorOr<AddBlindDateCategoryResult>>;
+    public record UpdateBlindDateCategoryCommand(int Id, string? CategoryName, string? Description) : IRequest<ErrorOr<AddBlindDateCategoryResult>>;
 
     public class UpdateBlindDateCategoryCommandHandler
     : IRequestHandler<UpdateBlindDateCategoryCommand, ErrorOr<AddBlindDateCategoryResult>>
@@ -34,8 +34,8 @@ namespace Fliq.Application.DatingEnvironment.Commands.BlindDateCategory
             }
 
             // Update fields
-            category.CategoryName = request.CategoryName;
-            category.Description = request.Description;
+            category.CategoryName = request.CategoryName ?? category.CategoryName;
+            category.Description = request.Description ?? category.Description;
 
             await _blindDateCategoryRepository.UpdateAsync(category);
             _loggerManager.LogInfo($"Successfully updated blind date category ID: {category.Id}");

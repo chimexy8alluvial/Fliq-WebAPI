@@ -3,13 +3,12 @@ using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.DatingEnvironment.Common.BlindDateCategory;
 using Fliq.Domain.Common.Errors;
-using Fliq.Domain.Entities.DatingEnvironment;
 using MediatR;
 
 
 namespace Fliq.Application.DatingEnvironment.Commands.BlindDateCategory
 {
-    public record AddBlindDateCategoryCommand(string CategoryName, string? Description) : IRequest<ErrorOr<AddBlindDateCategoryResult>>;
+    public record AddBlindDateCategoryCommand(string CategoryName, string Description) : IRequest<ErrorOr<AddBlindDateCategoryResult>>;
 
     public class AddBlindDateCategoryCommandHandler : IRequestHandler<AddBlindDateCategoryCommand, ErrorOr<AddBlindDateCategoryResult>>
     {
@@ -23,11 +22,7 @@ namespace Fliq.Application.DatingEnvironment.Commands.BlindDateCategory
         public async Task<ErrorOr<AddBlindDateCategoryResult>> Handle(AddBlindDateCategoryCommand request, CancellationToken cancellationToken)
         {
             _loggerManager.LogInfo($"Starting blind date category creation process for category name: {request.CategoryName}");
-            if(string.IsNullOrEmpty(request.CategoryName) )
-            {
-                _loggerManager.LogError($"Category name is required for blind date category creation: Aborting creation.");
-                return Errors.Dating.NoBlindDateCategoryName;
-            }
+
             var existingCategory = await _blindDateCategoryRepository.GetByCategoryName(request.CategoryName);
             if (existingCategory != null)
             {
