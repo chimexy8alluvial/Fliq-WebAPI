@@ -12,7 +12,6 @@ using MapsterMapper;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using System.Security.Claims;
-using System.Web;
 
 namespace Fliq.Test.Profile.Commands.Update
 

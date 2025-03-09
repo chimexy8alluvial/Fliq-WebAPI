@@ -8,7 +8,6 @@ using Fliq.Contracts.Profile;
 using Fliq.Contracts.Profile.UpdateDtos;
 using Fliq.Contracts.Prompts;
 using Fliq.Domain.Entities.Profile;
-using Fliq.Domain.Entities.Prompts;
 using Fliq.Domain.Enums;
 using Mapster;
 
