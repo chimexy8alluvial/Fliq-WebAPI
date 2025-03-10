@@ -5,5 +5,6 @@ namespace Fliq.Application.Authentication.Common;
 public record AuthenticationResult
    (
        User user,
-       string Token
+       string Token,
+       string StreamToken
     );

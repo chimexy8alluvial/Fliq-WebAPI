@@ -8,6 +8,7 @@ using Fliq.Domain.Common.Errors;
 using ErrorOr;
 using MediatR;
 using Newtonsoft.Json;
+using StreamChat.Clients;
 
 
 namespace Fliq.Application.Authentication.Queries.Login
@@ -22,11 +23,13 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, ErrorOr<Authenticat
     private readonly IJwtTokenGenerator _jwtTokenGenerator;
     private readonly IUserRepository _userRepository;
     private readonly ILoggerManager _logger;
-    public LoginQueryHandler(IJwtTokenGenerator jwtTokenGenerator, IUserRepository userRepository, ILoggerManager logger)
+    private readonly StreamClientFactory _streamClientFactory;
+    public LoginQueryHandler(IJwtTokenGenerator jwtTokenGenerator, IUserRepository userRepository, ILoggerManager logger, StreamClientFactory streamClientFactory)
     {
         _jwtTokenGenerator = jwtTokenGenerator;
         _userRepository = userRepository;
         _logger = logger;
+        _streamClientFactory = streamClientFactory;
     }
     public async Task<ErrorOr<AuthenticationResult>> Handle(LoginQuery query, CancellationToken cancellationToken)
     {
@@ -43,7 +46,11 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, ErrorOr<Authenticat
 
         var token = _jwtTokenGenerator.GenerateToken(user);
 
-        return new AuthenticationResult(user, token);
+        // Generate Stream Chat token
+        var userClient = _streamClientFactory.GetUserClient();
+        var streamToken = userClient.CreateToken(user.DisplayName ?? user.Id.ToString()); // Use user ID or username
+
+        return new AuthenticationResult(user, token, streamToken);
     }
 
 }
