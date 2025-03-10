@@ -1,6 +1,7 @@
 ﻿using Fliq.Domain.Entities;
 using Fliq.Domain.Entities.Event;
 using Fliq.Domain.Entities.Games;
+using Fliq.Domain.Entities.HelpAndSupport;
 using Fliq.Domain.Entities.MatchedProfile;
 using Fliq.Domain.Entities.Notifications;
 using Fliq.Domain.Entities.Profile;
@@ -16,6 +17,7 @@ namespace Fliq.Infrastructure.Persistence
         public FliqDbContext(DbContextOptions<FliqDbContext> options) : base(options)
         {
         }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -26,6 +28,7 @@ namespace Fliq.Infrastructure.Persistence
             new Role { Id = 3, Name = "User" }
             );
         }
+
         public DbSet<User> Users { get; set; } = null!;
         public DbSet<OTP> OTPs { get; set; } = null!;
         public DbSet<UserProfile> UserProfiles { get; set; } = null!;
@@ -61,6 +64,6 @@ namespace Fliq.Infrastructure.Persistence
         public DbSet<Stake> Stakes { get; set; } = null!;
 
         public DbSet<UserFeatureActivity> UserFeatureActivities { get; set; } = null!;
-
+        public DbSet<SupportTicket> SupportTickets { get; set; } = null!;
     }
 }
