@@ -63,7 +63,7 @@ namespace Fliq.Api.Controllers
 
         [HttpGet("BlindDateCategory/{CategoryId}")]
         [Produces(typeof(GetBlindDateCategoryResponse))]
-        public async Task<IActionResult> UpdateBlindDateCategory(int CategoryId)
+        public async Task<IActionResult> GetBlindDateCategory(int CategoryId)
         {
             _logger.LogInfo($"Fetch Blind Date Category request received for ID: {CategoryId}");
             var query = new GetBlindDateCategoryByIdQuery(CategoryId);

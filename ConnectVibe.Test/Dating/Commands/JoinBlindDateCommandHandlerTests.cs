@@ -40,8 +40,7 @@ namespace Fliq.Test.Dating.Commands
             _handler = new JoinBlindDateCommandHandler(
                 _blindDateRepositoryMock.Object,
                 _blindDateParticipantRepositoryMock.Object,
-                _loggerMock.Object,
-                _hubContextMock.Object
+                _loggerMock.Object
             );
         }
 

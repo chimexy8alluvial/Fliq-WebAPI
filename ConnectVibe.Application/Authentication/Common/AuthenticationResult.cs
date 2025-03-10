@@ -6,5 +6,5 @@ public record AuthenticationResult
    (
        User user,
        string Token,
-       string StreamToken
+       string? StreamToken
     );

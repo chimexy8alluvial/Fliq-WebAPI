@@ -31,8 +31,7 @@ namespace Fliq.Test.Dating.Commands
             _handler = new StartBlindDateCommandHandler(
                 _mockBlindDateRepository.Object,
                 _mockBlindDateParticipantRepository.Object,
-                _mockLoggerManager.Object,
-                _mockHubContext.Object
+                _mockLoggerManager.Object
             );
         }
 
