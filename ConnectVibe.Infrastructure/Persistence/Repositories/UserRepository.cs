@@ -50,6 +50,33 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             }
         }
 
+         public IEnumerable<User> GetAllUsersForDashBoard(int pageNumber, int pageSize)
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var parameters = new
+                {
+                    PageNumber = pageNumber,
+                    PageSize = pageSize
+                };
+
+                var results = connection.Query<dynamic>("sp_GetAllUsersForDashBoard",
+                    parameters,
+                    commandType: CommandType.StoredProcedure);
+               
+                return   results.Select(r => new User
+                {
+                    DisplayName = r.DisplayName,
+                    Email = r.Email,
+                    DateCreated = r.DateJoined,
+                    LastActiveAt = r.LastOnline,
+                    Subscriptions = r.SubscriptionType != "None"
+                        ? new List<Subscription> { new Subscription { ProductId = r.SubscriptionType } }
+                        : null
+                });
+            }
+        }
+
         public async Task<List<User>> GetInactiveUsersAsync(DateTime thresholdDate)
         {
             using (var connection = _connectionFactory.CreateConnection())
@@ -116,6 +143,32 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             }
         }
 
+        public async Task<int> CountAllMaleUsers()
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_CountAllMaleUsers", commandType: CommandType.StoredProcedure);
+                return count;
+            }
+        }
+        
+        public async Task<int> CountAllFemaleUsers()
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_CountAllFemaleUsers", commandType: CommandType.StoredProcedure);
+                return count;
+            }
+        }
+        
+        public async Task<int> CountAllOtherUsers()
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_CountAllOtherUsers", commandType: CommandType.StoredProcedure);
+                return count;
+            }
+        }
         #endregion
     }
 }

@@ -8,6 +8,7 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         void Update(User user);
         User? GetUserByEmail(string email);
         IEnumerable<User> GetAllUsers();
+        IEnumerable<User> GetAllUsersForDashBoard(int pageNumber, int pageSize);
         User? GetUserById(int Id);
         User? GetUserByIdIncludingProfile(int Id);
         Task<List<User>> GetInactiveUsersAsync(DateTime thresholdDate);
@@ -17,5 +18,8 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         Task<int> CountInactiveUsers();
         Task<int> CountAllUsers();
         Task<int> CountNewSignups(int days);
+        Task<int> CountAllMaleUsers();
+        Task<int> CountAllFemaleUsers();  
+        Task<int> CountAllOtherUsers();
     }
 }
