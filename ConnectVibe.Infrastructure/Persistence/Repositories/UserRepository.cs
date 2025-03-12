@@ -50,14 +50,20 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             }
         }
 
-         public IEnumerable<User> GetAllUsersForDashBoard(int pageNumber, int pageSize)
+         public IEnumerable<User> GetAllUsersForDashBoard(int pageNumber, int pageSize,
+             bool? hasSubscription = null,
+            DateTime? activeSince = null, 
+            string roleName = null)
         {
             using (var connection = _connectionFactory.CreateConnection())
             {
                 var parameters = new
                 {
                     PageNumber = pageNumber,
-                    PageSize = pageSize
+                    PageSize = pageSize,
+                    HasSubscription= hasSubscription,
+                    ActiveSince = activeSince,
+                    RoleName = roleName
                 };
 
                 var results = connection.Query<dynamic>("sp_GetAllUsersForDashBoard",

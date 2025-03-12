@@ -8,7 +8,10 @@ using MediatR;
 
 namespace Fliq.Application.DashBoard.Queries.GetAllUser
 {
-    public record GetAllUsersQuery(int PageNumber, int PageSize) : IRequest<ErrorOr<List<CreateUserResult>>>;
+    public record GetAllUsersQuery(int PageNumber, int PageSize,
+                                        bool? hasSubscription = null,
+                                          DateTime? activeSince = null,
+                                            string roleName = null)          : IRequest<ErrorOr<List<CreateUserResult>>>;
 
     public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, ErrorOr<List<CreateUserResult>>>
     {
@@ -28,7 +31,7 @@ namespace Fliq.Application.DashBoard.Queries.GetAllUser
             _logger.LogInfo($"Getting users for page {query.PageNumber} with page size {query.PageSize}");
 
 
-            var users = _userRepository.GetAllUsersForDashBoard(query.PageNumber, query.PageSize);
+            var users = _userRepository.GetAllUsersForDashBoard(query.PageNumber, query.PageSize,query.hasSubscription, query.activeSince, query.roleName);
 
 
             var userList = users.ToList();

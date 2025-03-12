@@ -1,5 +1,4 @@
 ﻿using Fliq.Application.Common.Interfaces.Services;
-using Fliq.Application.DashBoard.Command.DeleteUser;
 using Fliq.Application.DashBoard.Common;
 using Fliq.Application.DashBoard.Queries.ActiveUserCount;
 using Fliq.Application.DashBoard.Queries.EventsCount;
@@ -12,12 +11,10 @@ using Fliq.Application.DashBoard.Queries.OtherUsersCount;
 using Fliq.Application.DashBoard.Queries.SponsoredEventsCount;
 using Fliq.Application.DashBoard.Queries.UsersCount;
 using Fliq.Contracts.DashBoard;
-using Fliq.Contracts.Games;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Drawing.Printing;
 
 namespace Fliq.Api.Controllers
 {
@@ -102,7 +99,7 @@ namespace Fliq.Api.Controllers
             var result = await _mediator.Send(query);
 
             return result.Match(
-              matchedProfileResult => Ok(_mapper.Map<EventCountResponse>(result.Value)),
+              eventCountResult => Ok(_mapper.Map<EventCountResponse>(result.Value)),
               errors => Problem(errors)
           );
         }
@@ -116,7 +113,7 @@ namespace Fliq.Api.Controllers
             var result = await _mediator.Send(query);
 
             return result.Match(
-              matchedProfileResult => Ok(_mapper.Map<EventCountResponse>(result.Value)),
+             sponsoredEventsCountResult => Ok(_mapper.Map<EventCountResponse>(result.Value)),
               errors => Problem(errors)
           );
         }
@@ -131,7 +128,7 @@ namespace Fliq.Api.Controllers
             var result = await _mediator.Send(query);
 
             return result.Match(
-              matchedProfileResult => Ok(_mapper.Map<UserCountResponse>(result.Value)),
+              maleUsersCountResult => Ok(_mapper.Map<UserCountResponse>(result.Value)),
               errors => Problem(errors)
           );
         }
@@ -145,7 +142,7 @@ namespace Fliq.Api.Controllers
             var result = await _mediator.Send(query);
 
             return result.Match(
-              matchedProfileResult => Ok(_mapper.Map<UserCountResponse>(result.Value)),
+             femaleUsersCountResult => Ok(_mapper.Map<UserCountResponse>(result.Value)),
               errors => Problem(errors)
           );
         }
@@ -159,43 +156,29 @@ namespace Fliq.Api.Controllers
             var result = await _mediator.Send(query);
 
             return result.Match(
-              matchedProfileResult => Ok(_mapper.Map<UserCountResponse>(result.Value)),
+             otherUsersCountResult => Ok(_mapper.Map<UserCountResponse>(result.Value)),
               errors => Problem(errors)
           );
         }
         
         [HttpGet("get-all-users")]
         public async Task<IActionResult> GetAllUsersForDashBoard([FromQuery] int pageNumber = 1,
-            [FromQuery] int pageSize = 10)
+            [FromQuery] int pageSize = 10, [FromQuery] bool? hasSubscription = null,
+            [FromQuery] DateTime? activeSince = null, [FromQuery] string roleName = null)
         {
             _logger.LogInfo("Get All Users Request Received");
 
-            var query = new GetAllUsersQuery(pageNumber, pageSize);
+            var query = new GetAllUsersQuery(pageNumber, pageSize, hasSubscription, activeSince, roleName);
             var result = await _mediator.Send(query);
 
             _logger.LogInfo($"Get All Users Query Executed. Result: {result} ");
 
             return result.Match(
-              matchedProfileResult => Ok(_mapper.Map<List<CreateUserResult>>(result.Value)),
+              getAllUsersResult => Ok(_mapper.Map<List<CreateUserResult>>(result.Value)),
               errors => Problem(errors)
           );
         }
 
-        [HttpPut("delete-user/{userId}")]
-        public async Task<IActionResult> DeleteUserById(int userId)
-        {
-            _logger.LogInfo($"Delete user with Id {userId} received");
-
-            var command = new DeleteUserByIdCommand(userId);
-            var result  = await _mediator.Send(command);
-
-            _logger.LogInfo($"Delete user with Id {userId} executed. Result: {result} ");
-
-            return result.Match(
-              matchedProfileResult => Ok(_mapper.Map<DeleteUserResult>(result.Value)),
-              errors => Problem(errors)
-          );
-
-        }
+       
     }
 }

@@ -1593,21 +1593,21 @@ namespace Fliq.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            DateCreated = new DateTime(2025, 3, 11, 8, 35, 46, 224, DateTimeKind.Utc).AddTicks(9791),
+                            DateCreated = new DateTime(2025, 3, 12, 15, 0, 20, 587, DateTimeKind.Utc).AddTicks(4092),
                             IsDeleted = false,
                             Name = "SuperAdmin"
                         },
                         new
                         {
                             Id = 2,
-                            DateCreated = new DateTime(2025, 3, 11, 8, 35, 46, 224, DateTimeKind.Utc).AddTicks(9804),
+                            DateCreated = new DateTime(2025, 3, 12, 15, 0, 20, 587, DateTimeKind.Utc).AddTicks(4366),
                             IsDeleted = false,
                             Name = "Admin"
                         },
                         new
                         {
                             Id = 3,
-                            DateCreated = new DateTime(2025, 3, 11, 8, 35, 46, 224, DateTimeKind.Utc).AddTicks(9806),
+                            DateCreated = new DateTime(2025, 3, 12, 15, 0, 20, 587, DateTimeKind.Utc).AddTicks(4369),
                             IsDeleted = false,
                             Name = "User"
                         });

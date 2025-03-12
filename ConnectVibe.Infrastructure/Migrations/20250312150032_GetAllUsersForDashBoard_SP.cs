@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -12,27 +11,28 @@ namespace Fliq.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@"
-            CREATE PROCEDURE sp_GetAllUsersForDashBoard
+            CREATE  PROCEDURE sp_GetAllUsersForDashBoard
                      @PageNumber INT,
-                      @PageSize INT  
+                      @PageSize INT  ,
+                       @HasSubscription BIT = NULL,      
+                       @ActiveSince DATETIME = NULL,     
+                       @RoleName NVARCHAR(50) = NULL         
             AS
             BEGIN
                      SET NOCOUNT ON;
+                      
+                         -- Validate parameters
+                    IF @PageNumber < 1
+                    BEGIN
+                        RAISERROR ('PageNumber must be greater than or equal to 1.', 16, 1);
+                        RETURN;
+                    END
 
-                        -- Validate parameters
-                        IF @PageNumber < 1
-                        BEGIN
-                            RAISERROR ('PageNumber must be greater than or equal to 1.', 16, 1);
-                            RETURN;
-                        END
-
-                        IF @PageSize < 1
-                        BEGIN
-                            RAISERROR ('PageSize must be greater than or equal to 1.', 16, 1);
-                            RETURN;
-                        END
-               
-
+                    IF @PageSize < 1
+                    BEGIN
+                        RAISERROR ('PageSize must be greater than or equal to 1.', 16, 1);
+                        RETURN;
+                    END
 
                 SELECT 
                     u.DisplayName,
@@ -49,8 +49,16 @@ namespace Fliq.Infrastructure.Migrations
                         FROM Subscriptions s2
                         WHERE s2.UserId = u.Id
                     )
+                LEFT JOIN 
+                    Roles r ON u.RoleId = r.Id
+
                 WHERE 
                     u.IsDeleted = 0
+                    AND (@HasSubscription IS NULL OR 
+                         (@HasSubscription = 1 AND s.ProductId IS NOT NULL) OR 
+                         (@HasSubscription = 0 AND s.ProductId IS NULL))
+                    AND (@ActiveSince IS NULL OR u.LastActiveAt >= @ActiveSince)
+                    AND (@RoleName IS NULL OR r.Name = @RoleName)
                 ORDER BY 
                     u.DateCreated DESC
                 OFFSET (@PageNumber - 1) * @PageSize ROWS
