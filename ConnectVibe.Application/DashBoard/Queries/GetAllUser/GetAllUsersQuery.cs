@@ -1,4 +1,5 @@
-﻿using Fliq.Application.Common.Interfaces.Persistence;
+﻿using ErrorOr;
+using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.DashBoard.Common;
 using MapsterMapper;
@@ -7,9 +8,9 @@ using MediatR;
 
 namespace Fliq.Application.DashBoard.Queries.GetAllUser
 {
-    public record GetAllUsersQuery(int PageNumber, int PageSize) : IRequest<List<CreateUserResult>>;
+    public record GetAllUsersQuery(int PageNumber, int PageSize) : IRequest<ErrorOr<List<CreateUserResult>>>;
 
-    public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, List<CreateUserResult>>
+    public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, ErrorOr<List<CreateUserResult>>>
     {
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
@@ -22,11 +23,13 @@ namespace Fliq.Application.DashBoard.Queries.GetAllUser
             _logger = logger;
         }
 
-        public async Task<List<CreateUserResult>> Handle(GetAllUsersQuery query, CancellationToken cancellationToken)
+        public async Task<ErrorOr<List<CreateUserResult>>> Handle(GetAllUsersQuery query, CancellationToken cancellationToken)
         {
             _logger.LogInfo($"Getting users for page {query.PageNumber} with page size {query.PageSize}");
 
+
             var users = _userRepository.GetAllUsersForDashBoard(query.PageNumber, query.PageSize);
+
 
             var userList = users.ToList();
 

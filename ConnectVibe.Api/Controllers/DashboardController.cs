@@ -1,4 +1,5 @@
 ﻿using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.DashBoard.Command.DeleteUser;
 using Fliq.Application.DashBoard.Common;
 using Fliq.Application.DashBoard.Queries.ActiveUserCount;
 using Fliq.Application.DashBoard.Queries.EventsCount;
@@ -172,9 +173,29 @@ namespace Fliq.Api.Controllers
             var query = new GetAllUsersQuery(pageNumber, pageSize);
             var result = await _mediator.Send(query);
 
-            _logger.LogInfo($"Get All Users Query Executed. Result: {result.Count} users found.");
+            _logger.LogInfo($"Get All Users Query Executed. Result: {result} ");
 
-            return Ok(result);
+            return result.Match(
+              matchedProfileResult => Ok(_mapper.Map<List<CreateUserResult>>(result.Value)),
+              errors => Problem(errors)
+          );
+        }
+
+        [HttpPut("delete-user/{userId}")]
+        public async Task<IActionResult> DeleteUserById(int userId)
+        {
+            _logger.LogInfo($"Delete user with Id {userId} received");
+
+            var command = new DeleteUserByIdCommand(userId);
+            var result  = await _mediator.Send(command);
+
+            _logger.LogInfo($"Delete user with Id {userId} executed. Result: {result} ");
+
+            return result.Match(
+              matchedProfileResult => Ok(_mapper.Map<DeleteUserResult>(result.Value)),
+              errors => Problem(errors)
+          );
+
         }
     }
 }
