@@ -4,7 +4,6 @@ using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.DatingEnvironment.Commands.BlindDates;
 using Fliq.Domain.Common.Errors;
-using Fliq.Domain.Entities.DatingEnvironment;
 using Fliq.Domain.Entities.DatingEnvironment.BlindDates;
 using Fliq.Domain.Enums;
 using Microsoft.AspNetCore.SignalR;
@@ -59,7 +58,7 @@ namespace Fliq.Test.Dating.Commands
         {
             // Arrange
             var command = new StartBlindDateCommand(1, 100);
-            var blindDate = new BlindDate { Id = 100, Status = BlindDateStatus.Pending };
+            var blindDate = new BlindDate { Id = 100, Status = DateStatus.Pending };
             var creator = new BlindDateParticipant { UserId = 2 }; // Different user
 
             _mockBlindDateRepository.Setup(repo => repo.GetByIdAsync(command.BlindDateId)).ReturnsAsync(blindDate);
@@ -79,7 +78,7 @@ namespace Fliq.Test.Dating.Commands
         {
             // Arrange
             var command = new StartBlindDateCommand(1, 100);
-            var blindDate = new BlindDate { Id = 100, Status = BlindDateStatus.Ongoing, SessionStartTime = DateTime.UtcNow };
+            var blindDate = new BlindDate { Id = 100, Status = DateStatus.Ongoing, SessionStartTime = DateTime.UtcNow };
             var creator = new BlindDateParticipant { UserId = 1 };
 
             _mockBlindDateRepository.Setup(repo => repo.GetByIdAsync(command.BlindDateId)).ReturnsAsync(blindDate);
@@ -99,7 +98,7 @@ namespace Fliq.Test.Dating.Commands
         {
             // Arrange
             var command = new StartBlindDateCommand(1, 100);
-            var blindDate = new BlindDate { Id = 100, Status = BlindDateStatus.Completed, SessionStartTime = DateTime.UtcNow };
+            var blindDate = new BlindDate { Id = 100, Status = DateStatus.Completed, SessionStartTime = DateTime.UtcNow };
             var creator = new BlindDateParticipant { UserId = 1 };
 
             _mockBlindDateRepository.Setup(repo => repo.GetByIdAsync(command.BlindDateId)).ReturnsAsync(blindDate);
@@ -119,7 +118,7 @@ namespace Fliq.Test.Dating.Commands
         {
             // Arrange
             var command = new StartBlindDateCommand(1, 100);
-            var blindDate = new BlindDate { Id = 100, Status = BlindDateStatus.Cancelled };
+            var blindDate = new BlindDate { Id = 100, Status = DateStatus.Cancelled };
             var creator = new BlindDateParticipant { UserId = 1 };
 
             _mockBlindDateRepository.Setup(repo => repo.GetByIdAsync(command.BlindDateId)).ReturnsAsync(blindDate);
@@ -139,7 +138,7 @@ namespace Fliq.Test.Dating.Commands
         {
             // Arrange
             var command = new StartBlindDateCommand(1, 100);
-            var blindDate = new BlindDate { Id = 100, Status = BlindDateStatus.Pending };
+            var blindDate = new BlindDate { Id = 100, Status = DateStatus.Pending };
             var creator = new BlindDateParticipant { UserId = 1 };
 
             _mockBlindDateRepository.Setup(repo => repo.GetByIdAsync(command.BlindDateId)).ReturnsAsync(blindDate);
