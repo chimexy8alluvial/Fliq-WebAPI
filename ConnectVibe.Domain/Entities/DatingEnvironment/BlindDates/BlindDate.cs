@@ -28,7 +28,7 @@ namespace Fliq.Domain.Entities.DatingEnvironment.BlindDates
             ? SessionEndTime - SessionStartTime
             : null;
 
-        public BlindDateStatus Status { get; set; } = BlindDateStatus.Pending;
+        public DateStatus Status { get; set; } = DateStatus.Pending;
 
         // Track the creator
         public int CreatedByUserId { get; set; }
