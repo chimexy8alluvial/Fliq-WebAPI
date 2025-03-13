@@ -70,7 +70,7 @@ public class DeleteUserByIdCommandHandlerTests
     }
 
     [TestMethod]
-    public async Task Handle_AlreadyDeletedUser_ReturnsUserNotFoundError()
+    public async Task Handle_AlreadyDeletedUser_ReturnsUserAlreadyDeletedError()
     {
         // Arrange
         int userId = 1;
