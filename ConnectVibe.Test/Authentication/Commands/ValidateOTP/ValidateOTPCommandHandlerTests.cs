@@ -6,6 +6,7 @@ using MapsterMapper;
 using Moq;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities;
+using StreamChat.Clients;
 
 namespace Fliq.Test.Authentication.Commands.ValidateOTP
 {
@@ -19,6 +20,7 @@ namespace Fliq.Test.Authentication.Commands.ValidateOTP
         private Mock<IEmailService> _emailServiceMock;
         private Mock<IOtpService> _otpServiceMock;
         private Mock<ILoggerManager> _loggerManagerMock;
+        private Mock<StreamClientFactory> _streamClientFactoryMock;
 
         [TestInitialize]
         public void Setup()
@@ -29,6 +31,7 @@ namespace Fliq.Test.Authentication.Commands.ValidateOTP
             _emailServiceMock = new Mock<IEmailService>();
             _otpServiceMock = new Mock<IOtpService>();
             _loggerManagerMock = new Mock<ILoggerManager>();
+            _streamClientFactoryMock = new Mock<StreamClientFactory>();
             
 
             _handler = new ValidateOTPCommandHandler(
@@ -37,7 +40,8 @@ namespace Fliq.Test.Authentication.Commands.ValidateOTP
                 _mapperMock.Object,
                 _emailServiceMock.Object,
                 _otpServiceMock.Object,
-                _loggerManagerMock.Object);
+                _loggerManagerMock.Object,
+                _streamClientFactoryMock.Object);
         }
 
         [TestMethod]

@@ -17,7 +17,6 @@ namespace Fliq.Test.Dating.Commands
         private Mock<IBlindDateRepository> _mockBlindDateRepository;
         private Mock<IBlindDateParticipantRepository> _mockBlindDateParticipantRepository;
         private Mock<ILoggerManager> _mockLoggerManager;
-        private Mock<IHubContext<BlindDateHub>> _mockHubContext;
         private StartBlindDateCommandHandler _handler;
 
         [TestInitialize]
@@ -26,7 +25,6 @@ namespace Fliq.Test.Dating.Commands
             _mockBlindDateRepository = new Mock<IBlindDateRepository>();
             _mockBlindDateParticipantRepository = new Mock<IBlindDateParticipantRepository>();
             _mockLoggerManager = new Mock<ILoggerManager>();
-            _mockHubContext = new Mock<IHubContext<BlindDateHub>>();
 
             _handler = new StartBlindDateCommandHandler(
                 _mockBlindDateRepository.Object,
@@ -148,7 +146,6 @@ namespace Fliq.Test.Dating.Commands
             var mockClientProxy = new Mock<IClientProxy>();
 
             mockClients.Setup(clients => clients.Group(It.IsAny<string>())).Returns(mockClientProxy.Object);
-            _mockHubContext.Setup(hub => hub.Clients).Returns(mockClients.Object);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -160,7 +157,6 @@ namespace Fliq.Test.Dating.Commands
 
             _mockBlindDateRepository.Verify(repo => repo.UpdateAsync(It.IsAny<BlindDate>()), Times.Once);
             _mockLoggerManager.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains("started successfully"))), Times.Once);
-            mockClientProxy.Verify(client => client.SendCoreAsync("BlinDateStarted", It.IsAny<object[]>(), It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 }
