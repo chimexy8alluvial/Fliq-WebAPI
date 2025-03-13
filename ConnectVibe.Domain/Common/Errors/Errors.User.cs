@@ -7,8 +7,12 @@ namespace Fliq.Domain.Common.Errors
         public static class User
         {
             public static Error UserNotFound => Error.NotFound(
-    code: "User.NotFound",
-    description: "User not found.");
+            code: "User.NotFound",
+            description: "User not found.");
+
+           public static Error UserAlreadyDeleted => Error.NotFound(
+            code: "User.AlreadyDeleted ",
+            description: "User Already Deleted ");
 
             public static Error DuplicateEmail => Error.Conflict(
              code: "User.DuplicateEmail",

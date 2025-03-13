@@ -42,7 +42,7 @@ public class DeleteUserByIdCommandHandlerTests
 
         // Assert
         Assert.IsFalse(result.IsError);
-        Assert.AreEqual("TestUser has been deleted", result.Value.Message);
+        Assert.AreEqual($"{user.Id} has been deleted", result.Value.Message);
 
         Assert.IsTrue(user.IsDeleted); // Verify the user was marked as deleted
         _userRepositoryMock.Verify(r => r.Update(user), Times.Once());
@@ -84,8 +84,8 @@ public class DeleteUserByIdCommandHandlerTests
 
         // Assert
         Assert.IsTrue(result.IsError);
-        Assert.AreEqual(Errors.User.UserNotFound, result.FirstError);
-        _loggerMock.Verify(l => l.LogError("This user has been delete before"), Times.Once());
+        Assert.AreEqual(Errors.User.UserAlreadyDeleted, result.FirstError);
+        _loggerMock.Verify(l => l.LogError($"This user with id {user.Id} has been deleted before"), Times.Once());
         _userRepositoryMock.Verify(r => r.Update(It.IsAny<User>()), Times.Never());
     }
 
