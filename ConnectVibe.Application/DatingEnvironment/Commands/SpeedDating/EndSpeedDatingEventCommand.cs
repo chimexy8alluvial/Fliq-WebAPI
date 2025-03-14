@@ -11,9 +11,9 @@ using MediatR;
 
 namespace Fliq.Application.DatingEnvironment.Commands.SpeedDating
 {
-    public record EndSpeedDatingEventCommand(int UserId, int SpeedDateId) : IRequest<ErrorOr<EndBlindDateResult>>;
+    public record EndSpeedDatingEventCommand(int UserId, int SpeedDateId) : IRequest<ErrorOr<EndSpeedDatingEventResult>>;
 
-    public class EndSpeedDateCommandHandler : IRequestHandler<EndSpeedDatingEventCommand, ErrorOr<EndBlindDateResult>>
+    public class EndSpeedDateCommandHandler : IRequestHandler<EndSpeedDatingEventCommand, ErrorOr<EndSpeedDatingEventResult>>
     {
         private readonly ISpeedDatingEventRepository _speedDateRepository;
         private readonly ISpeedDateParticipantRepository _speedDateParticipantRepository;
@@ -29,7 +29,7 @@ namespace Fliq.Application.DatingEnvironment.Commands.SpeedDating
             _loggerManager = loggerManager;
         }
 
-        public async Task<ErrorOr<EndBlindDateResult>> Handle(EndSpeedDatingEventCommand command, CancellationToken cancellationToken)
+        public async Task<ErrorOr<EndSpeedDatingEventResult>> Handle(EndSpeedDatingEventCommand command, CancellationToken cancellationToken)
         {
             _loggerManager.LogInfo($"User {command.UserId} attempting to end blind date {command.SpeedDateId}");
 
@@ -64,7 +64,7 @@ namespace Fliq.Application.DatingEnvironment.Commands.SpeedDating
 
             _loggerManager.LogInfo($"Speed date session {command.SpeedDateId} ended successfully by user {command.UserId}.");
 
-            return new EndBlindDateResult(sessionEndTime);
+            return new EndSpeedDatingEventResult(sessionEndTime);
         }
     }
    

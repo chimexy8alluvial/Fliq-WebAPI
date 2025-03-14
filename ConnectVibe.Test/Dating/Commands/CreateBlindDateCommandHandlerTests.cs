@@ -61,7 +61,7 @@ namespace Fliq.Test.Dating.Commands
                 CategoryId: 1,
                 Location: location,
                   LocationDetail: locationDetail,
-                BlindDateImage: new BlindDatePhotoMapped( CreateMockFormFile()),
+                BlindDateImage: new DatePhotoMapped( CreateMockFormFile()),
                 IsOneOnOne: false,
                 NumberOfParticipants: 10,
                 IsRecordingEnabled: true,

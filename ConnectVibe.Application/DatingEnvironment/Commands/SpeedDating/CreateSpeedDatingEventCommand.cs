@@ -13,6 +13,7 @@ using Fliq.Domain.Entities.DatingEnvironment.SpeedDates;
 using Fliq.Infrastructure.Persistence.Repositories;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Enums;
+using Fliq.Application.DatingEnvironment.Common;
 
 namespace Fliq.Application.DatingEnvironment.Commands.SpeedDating
 {
@@ -25,7 +26,7 @@ namespace Fliq.Application.DatingEnvironment.Commands.SpeedDating
         int MaxAge,
         int MaxParticipants,
         int DurationPerPairingMinutes,
-        BlindDatePhotoDto? SpeedDateImage,
+        DatePhotoMapped? SpeedDateImage,
         LocationDto Location,
         LocationDetail LocationDetail
         ) : IRequest<ErrorOr<CreateSpeedDatingEventResult>>;

@@ -14,7 +14,7 @@ namespace Fliq.Domain.Entities.DatingEnvironment.SpeedDates
         public DateTime? StartSessionTime { get; set; }
         public DateTime? EndSessionTime { get; set; }
 
-        public string ImageUrl { get; set; } = default!;
+        public string? ImageUrl { get; set; }
         public int MinAge { get; set; }
         public int MaxAge { get; set; }
         public int MaxParticipants { get; set; }

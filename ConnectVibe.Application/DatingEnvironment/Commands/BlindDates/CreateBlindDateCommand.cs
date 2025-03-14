@@ -24,7 +24,7 @@ namespace Fliq.Application.DatingEnvironment.Commands.BlindDates
        bool IsRecordingEnabled,
        DateTime? SessionStartTime,
        DateTime? SessionEndTime,
-       BlindDatePhotoMapped? BlindDateImage,
+       DatePhotoMapped? BlindDateImage,
        Location Location,
        LocationDetail LocationDetail
         ) : IRequest<ErrorOr<CreateBlindDateResult>>;

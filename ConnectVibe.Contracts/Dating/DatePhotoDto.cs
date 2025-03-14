@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Http;
 
 namespace Fliq.Contracts.Dating
 {
-    public record BlindDatePhotoDto 
+    public record DatePhotoDto 
     (
-       IFormFile BlindDateSessionImageFile
+       IFormFile DateSessionImageFile
     );
 }

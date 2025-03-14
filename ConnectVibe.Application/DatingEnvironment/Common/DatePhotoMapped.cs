@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Fliq.Application.DatingEnvironment.Common
 {
-    public record BlindDatePhotoMapped
+    public record DatePhotoMapped
     (
      IFormFile BlindDateSessionImageFile
         );

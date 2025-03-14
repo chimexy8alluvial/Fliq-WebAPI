@@ -21,7 +21,7 @@ namespace Fliq.Api.Mapping
             config.NewConfig<StartBlindDateResult, StartBlindDateResponse>();
 
             config.NewConfig<EndBlindDateRequest, EndBlindDateCommand>();
-            config.NewConfig<EndBlindDateResult, EndBlindDateResponse>();
+            config.NewConfig<EndSpeedDatingEventResult, EndBlindDateResponse>();
 
             config.NewConfig<JoinBlindDateRequest, JoinBlindDateCommand>();
         }

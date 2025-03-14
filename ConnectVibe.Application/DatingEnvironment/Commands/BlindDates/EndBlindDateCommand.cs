@@ -11,9 +11,9 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Fliq.Application.DatingEnvironment.Commands.BlindDates
 {
-    public record EndBlindDateCommand(int UserId, int BlindDateId) : IRequest<ErrorOr<EndBlindDateResult>>;
+    public record EndBlindDateCommand(int UserId, int BlindDateId) : IRequest<ErrorOr<EndSpeedDatingEventResult>>;
 
-    public class EndBlindDateCommandHandler : IRequestHandler<EndBlindDateCommand, ErrorOr<EndBlindDateResult>>
+    public class EndBlindDateCommandHandler : IRequestHandler<EndBlindDateCommand, ErrorOr<EndSpeedDatingEventResult>>
     {
         private readonly IBlindDateRepository _blindDateRepository;
         private readonly IBlindDateParticipantRepository _blindDateParticipantRepository;
@@ -32,7 +32,7 @@ namespace Fliq.Application.DatingEnvironment.Commands.BlindDates
             _hubContext = hubContext;
         }
 
-        public async Task<ErrorOr<EndBlindDateResult>> Handle(EndBlindDateCommand command, CancellationToken cancellationToken)
+        public async Task<ErrorOr<EndSpeedDatingEventResult>> Handle(EndBlindDateCommand command, CancellationToken cancellationToken)
         {
             _loggerManager.LogInfo($"User {command.UserId} attempting to end blind date {command.BlindDateId}");
 
@@ -71,7 +71,7 @@ namespace Fliq.Application.DatingEnvironment.Commands.BlindDates
             await _hubContext.Clients.Group($"BlindDate-{command.BlindDateId}")
                 .SendAsync("BlindDateEnded", command.BlindDateId, cancellationToken);
 
-            return new EndBlindDateResult(sessionEndTime);
+            return new EndSpeedDatingEventResult(sessionEndTime);
         }
     }
 }
