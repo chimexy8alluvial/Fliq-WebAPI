@@ -27,7 +27,7 @@ namespace Fliq.Application.DatingEnvironment.Commands.SpeedDating
         int MaxParticipants,
         int DurationPerPairingMinutes,
         DatePhotoMapped? SpeedDateImage,
-        LocationDto Location,
+        Location Location,
         LocationDetail LocationDetail
         ) : IRequest<ErrorOr<CreateSpeedDatingEventResult>>;
 

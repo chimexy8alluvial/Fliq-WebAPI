@@ -1,5 +1,6 @@
 ﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Domain.Entities.DatingEnvironment.SpeedDates;
+using Fliq.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
@@ -33,7 +34,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<SpeedDatingEvent>> GetByCategoryAsync(string category)
+        public async Task<IEnumerable<SpeedDatingEvent>> GetByCategoryAsync(SpeedDatingCategory category)
         {
             return await _dbContext.SpeedDatingEvents
                 .Where(b => b.Category == category && !b.IsDeleted)
