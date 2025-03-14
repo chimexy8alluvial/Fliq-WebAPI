@@ -150,7 +150,7 @@ namespace Fliq.Infrastructure
             var key = configurationManager.GetValue<string>("StreamApi:Key");
             var secret = configurationManager.GetValue<string>("StreamApi:Secret");
 
-            services.AddSingleton(new StreamClientFactory(key, secret));
+            services.AddSingleton<IStreamClientFactory>(new StreamClientFactory(key, secret));
             return services;
         }
 

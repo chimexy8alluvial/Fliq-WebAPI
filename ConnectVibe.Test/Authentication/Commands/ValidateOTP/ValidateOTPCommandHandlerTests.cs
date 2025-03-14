@@ -5,8 +5,8 @@ using Fliq.Application.Common.Interfaces.Services;
 using MapsterMapper;
 using Moq;
 using Fliq.Domain.Common.Errors;
-using Fliq.Domain.Entities;
 using StreamChat.Clients;
+using StreamChat.Models;
 
 namespace Fliq.Test.Authentication.Commands.ValidateOTP
 {
@@ -20,19 +20,35 @@ namespace Fliq.Test.Authentication.Commands.ValidateOTP
         private Mock<IEmailService> _emailServiceMock;
         private Mock<IOtpService> _otpServiceMock;
         private Mock<ILoggerManager> _loggerManagerMock;
-        private Mock<StreamClientFactory> _streamClientFactoryMock;
+        private Mock<IStreamClientFactory> _streamClientFactoryMock;
 
         [TestInitialize]
         public void Setup()
         {
+            // Set the STREAM_KEY environment variable for the test context
+            System.Environment.SetEnvironmentVariable("STREAM_KEY", "dummy-key");
+
             _jwtTokenGeneratorMock = new Mock<IJwtTokenGenerator>();
             _userRepositoryMock = new Mock<IUserRepository>();
             _mapperMock = new Mock<IMapper>();
             _emailServiceMock = new Mock<IEmailService>();
             _otpServiceMock = new Mock<IOtpService>();
             _loggerManagerMock = new Mock<ILoggerManager>();
-            _streamClientFactoryMock = new Mock<StreamClientFactory>();
-            
+            _streamClientFactoryMock = new Mock<IStreamClientFactory>();
+
+            // Mock Stream API behavior
+            var mockUserClient = new Mock<IUserClient>();
+            _streamClientFactoryMock
+                .Setup(factory => factory.GetUserClient())
+                .Returns(mockUserClient.Object);
+
+            mockUserClient
+                .Setup(client => client.CreateToken(It.IsAny<string>()))
+                .Returns("mock-stream-token");
+
+            mockUserClient
+       .Setup(client => client.UpsertManyAsync(It.IsAny<List<UserRequest>>()))
+       .ReturnsAsync(new UpsertResponse());
 
             _handler = new ValidateOTPCommandHandler(
                 _jwtTokenGeneratorMock.Object,
@@ -42,6 +58,8 @@ namespace Fliq.Test.Authentication.Commands.ValidateOTP
                 _otpServiceMock.Object,
                 _loggerManagerMock.Object,
                 _streamClientFactoryMock.Object);
+
+            
         }
 
         [TestMethod]
@@ -66,7 +84,7 @@ namespace Fliq.Test.Authentication.Commands.ValidateOTP
         {
             // Arrange
             var command = new ValidateOTPCommand("johndoe@example.com", "123456");
-            var user = new User { Email = command.Email, Id = 1, IsEmailValidated = false };
+            var user = new Domain.Entities.User { Email = command.Email, Id = 1, IsEmailValidated = false, Role = new Domain.Entities.Role { Name = "User", Id = 1} };
             var expectedToken = "valid-token";
 
             _otpServiceMock.Setup(service => service.ValidateOtpAsync(command.Email, command.Otp))
@@ -84,6 +102,7 @@ namespace Fliq.Test.Authentication.Commands.ValidateOTP
             // Assert
             Assert.IsFalse(result.IsError);
             Assert.AreEqual(expectedToken, result.Value.Token);
+            Assert.AreEqual("mock-stream-token", result.Value.StreamToken); // Validate Stream token
             Assert.AreEqual(user.Email, result.Value.user.Email);
             Assert.IsTrue(user.IsEmailValidated);
 
