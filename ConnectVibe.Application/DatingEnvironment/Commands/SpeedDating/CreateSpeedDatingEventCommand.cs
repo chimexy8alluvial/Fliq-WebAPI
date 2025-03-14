@@ -4,8 +4,6 @@ using Fliq.Application.Common.Interfaces.Services.LocationServices;
 using Fliq.Application.Common.Interfaces.Services.MeidaServices;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.DatingEnvironment.Common.SpeedDating;
-using Fliq.Contracts.Dating;
-using Fliq.Contracts.Profile;
 using Fliq.Domain.Entities.Profile;
 using MapsterMapper;
 using MediatR;
