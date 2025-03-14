@@ -11,13 +11,15 @@ using MapsterMapper;
 using MediatR;
 using Fliq.Domain.Entities.DatingEnvironment.SpeedDates;
 using Fliq.Infrastructure.Persistence.Repositories;
+using Fliq.Domain.Common.Errors;
+using Fliq.Domain.Enums;
 
 namespace Fliq.Application.DatingEnvironment.Commands.SpeedDating
 {
     public record CreateSpeedDatingEventCommand(
         int CreatedByUserId,
          string Title,
-        string Category,
+        SpeedDatingCategory Category,
         DateTime StartTime,
         int MinAge,
         int MaxAge,
@@ -36,8 +38,9 @@ namespace Fliq.Application.DatingEnvironment.Commands.SpeedDating
         private readonly ILocationService _locationService;
         private readonly IMediaServices _mediaServices;
         private readonly ISpeedDateParticipantRepository _speedDateParticipantRepository;
+        private readonly IUserRepository _userRepository;
 
-        public CreateSpeedDatingEventCommandHandler(ISpeedDatingEventRepository speedDateRepository, ILoggerManager loggerManager, IMapper mapper, ILocationService locationService, IMediaServices mediaServices, ISpeedDateParticipantRepository speedDateParticipantRepository)
+        public CreateSpeedDatingEventCommandHandler(ISpeedDatingEventRepository speedDateRepository, ILoggerManager loggerManager, IMapper mapper, ILocationService locationService, IMediaServices mediaServices, ISpeedDateParticipantRepository speedDateParticipantRepository, IUserRepository userRepository)
         {
             _speedDateRepository = speedDateRepository;
             _loggerManager = loggerManager;
@@ -45,12 +48,20 @@ namespace Fliq.Application.DatingEnvironment.Commands.SpeedDating
             _locationService = locationService;
             _mediaServices = mediaServices;
             _speedDateParticipantRepository = speedDateParticipantRepository;
+            _userRepository = userRepository;
         }
 
         public async Task<ErrorOr<CreateSpeedDatingEventResult>> Handle(CreateSpeedDatingEventCommand command, CancellationToken cancellationToken)
         {
             _loggerManager.LogInfo($"Attempting to create a speed dating event: {command.Title}");
 
+            var user = _userRepository.GetUserById(command.CreatedByUserId);
+
+            if(user == null)
+            {
+                _loggerManager.LogError($"User with ID -- {command.CreatedByUserId} not found");
+                return Errors.User.UserNotFound;
+            }
 
             // Map the BlindDate entity
             var speedDate = _mapper.Map<SpeedDatingEvent>(command);
@@ -81,20 +92,20 @@ namespace Fliq.Application.DatingEnvironment.Commands.SpeedDating
                 speedDate.ImageUrl = await _mediaServices.UploadImageAsync(command.SpeedDateImage.BlindDateSessionImageFile);
             }
 
-
-
             //save the blind date
             await _speedDateRepository.AddAsync(speedDate);
 
-            // add the creator as a participant
-            var creatorParticipant = new SpeedDatingParticipant
+            if (user.RoleId == 3)
             {
-                SpeedDatingEventId = speedDate.Id,
-                UserId = command.CreatedByUserId,
-                IsCreator = true
-            };
+                var creatorParticipant = new SpeedDatingParticipant
+                {
+                    SpeedDatingEventId = speedDate.Id,
+                    UserId = command.CreatedByUserId,
+                    IsCreator = true
+                };
 
-            await _speedDateParticipantRepository.AddAsync(creatorParticipant);
+                await _speedDateParticipantRepository.AddAsync(creatorParticipant);
+            }
 
             _loggerManager.LogInfo($"Successfully created Speed Date Event: {speedDate.Title} with ID: {speedDate.Id}");
 
