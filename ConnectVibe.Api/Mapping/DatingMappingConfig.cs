@@ -15,6 +15,8 @@ namespace Fliq.Api.Mapping
         {
             config.NewConfig<AddBlindDateCategoryRequest, AddBlindDateCategoryCommand>();
             config.NewConfig<AddBlindDateCategoryResult, AddBlindDateCategoryResponse>();
+            config.NewConfig<AddBlindDateCategoryResult, AddBlindDateCategoryResponse>();
+            config.NewConfig<UpdateBlindDateCategoryRequest, UpdateBlindDateCategoryCommand>();
 
             config.NewConfig<CreateBlindDateRequest, CreateBlindDateCommand>();
             config.NewConfig<CreateBlindDateResult, CreateBlindDateResponse>();

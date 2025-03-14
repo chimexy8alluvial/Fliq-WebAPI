@@ -21,7 +21,6 @@ namespace Fliq.Test.Dating.Commands
         private Mock<IBlindDateParticipantRepository> _blindDateParticipantRepositoryMock;
         private Mock<ILoggerManager> _loggerMock;
         private Mock<IHubContext<BlindDateHub>> _hubContextMock;
-        private Mock<IClientProxy> _clientProxyMock;
         private JoinBlindDateCommandHandler _handler;
 
         [TestInitialize]
@@ -31,17 +30,11 @@ namespace Fliq.Test.Dating.Commands
             _blindDateParticipantRepositoryMock = new Mock<IBlindDateParticipantRepository>();
             _loggerMock = new Mock<ILoggerManager>();
             _hubContextMock = new Mock<IHubContext<BlindDateHub>>();
-            _clientProxyMock = new Mock<IClientProxy>();
-
-            var clientsMock = new Mock<IHubClients>();
-            clientsMock.Setup(c => c.Group(It.IsAny<string>())).Returns(_clientProxyMock.Object);
-            _hubContextMock.Setup(h => h.Clients).Returns(clientsMock.Object);
 
             _handler = new JoinBlindDateCommandHandler(
                 _blindDateRepositoryMock.Object,
                 _blindDateParticipantRepositoryMock.Object,
-                _loggerMock.Object,
-                _hubContextMock.Object
+                _loggerMock.Object
             );
         }
 
@@ -141,7 +134,6 @@ namespace Fliq.Test.Dating.Commands
             // Assert
             //Assert.IsTrue(result.IsSuccess);
             _blindDateParticipantRepositoryMock.Verify(repo => repo.AddAsync(It.IsAny<BlindDateParticipant>()), Times.Once);
-            _clientProxyMock.Verify(client => client.SendCoreAsync("UserJoined", It.IsAny<object[]>(), default), Times.Once);
         }
     }
 }

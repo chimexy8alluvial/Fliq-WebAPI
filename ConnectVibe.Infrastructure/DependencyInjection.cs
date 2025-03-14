@@ -31,6 +31,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Quartz;
+using StreamChat.Clients;
 using System.Text;
 
 namespace Fliq.Infrastructure
@@ -40,6 +41,7 @@ namespace Fliq.Infrastructure
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, ConfigurationManager configurationManager)
         {
             services.AddAuth(configurationManager);
+            services.AddStream(configurationManager);
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IProfileRepository, ProfileRepository>();
@@ -144,7 +146,15 @@ namespace Fliq.Infrastructure
             });
             return services;
         }
-       
-       
+
+        public static IServiceCollection AddStream(this IServiceCollection services, ConfigurationManager configurationManager)
+        {
+            var key = configurationManager.GetValue<string>("StreamApi:Key");
+            var secret = configurationManager.GetValue<string>("StreamApi:Secret");
+
+            services.AddSingleton<IStreamClientFactory>(new StreamClientFactory(key, secret));
+            return services;
+        }
+
     }
 }

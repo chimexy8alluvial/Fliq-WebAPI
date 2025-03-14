@@ -1,11 +1,10 @@
 ﻿using ErrorOr;
-using Fliq.Application.Common.Hubs;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.DatingEnvironment.BlindDates;
 using MediatR;
-using Microsoft.AspNetCore.SignalR;
+
 
 namespace Fliq.Application.DatingEnvironment.Commands.BlindDates
 {
@@ -19,8 +18,7 @@ namespace Fliq.Application.DatingEnvironment.Commands.BlindDates
         public JoinBlindDateCommandHandler(
             IBlindDateRepository blindDateRepository,
             IBlindDateParticipantRepository blindDateParticipantRepository,
-            ILoggerManager loggerManager,
-            IHubContext<BlindDateHub> hubContext)
+            ILoggerManager loggerManager)
         {
             _blindDateRepository = blindDateRepository;
             _blindDateParticipantRepository = blindDateParticipantRepository;

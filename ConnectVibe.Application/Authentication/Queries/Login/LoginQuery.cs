@@ -7,7 +7,6 @@ using Fliq.Application.Common.Security;
 using Fliq.Domain.Common.Errors;
 using ErrorOr;
 using MediatR;
-using Newtonsoft.Json;
 
 
 namespace Fliq.Application.Authentication.Queries.Login
@@ -43,7 +42,7 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, ErrorOr<Authenticat
 
         var token = _jwtTokenGenerator.GenerateToken(user);
 
-        return new AuthenticationResult(user, token);
+        return new AuthenticationResult(user, token, "");
     }
 
 }
