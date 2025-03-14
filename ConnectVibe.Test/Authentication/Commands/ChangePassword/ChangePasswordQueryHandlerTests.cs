@@ -13,14 +13,14 @@ namespace Fliq.Test.Authentication.Commands.ChangePassword
     [TestClass]
     public class ChangePasswordQueryHandlerTests
     {
-        private ChangePasswordQueryHandler _handler;
-        private Mock<IJwtTokenGenerator> _jwtTokenGeneratorMock;
-        private Mock<IUserRepository> _userRepositoryMock;
-        private Mock<IMapper> _mapperMock;
-        private Mock<IEmailService> _emailServiceMock;
-        private Mock<IOtpRepository> _otpRepositoryMock;
-        private Mock<IOtpService> _otpServiceMock;
-        private Mock<ILoggerManager> _loggerManagerMock;
+        private ChangePasswordQueryHandler? _handler;
+        private Mock<IJwtTokenGenerator>? _jwtTokenGeneratorMock;
+        private Mock<IUserRepository>? _userRepositoryMock;
+        private Mock<IMapper>? _mapperMock;
+        private Mock<IEmailService>? _emailServiceMock;
+        private Mock<IOtpRepository>? _otpRepositoryMock;
+        private Mock<IOtpService>? _otpServiceMock;
+        private Mock<ILoggerManager>? _loggerManagerMock;
 
         [TestInitialize]
         public void Setup()
@@ -50,8 +50,8 @@ namespace Fliq.Test.Authentication.Commands.ChangePassword
             // Arrange
             var command = new ChangePasswordCommand("johndoe@example.com", "oldPassword", "newPassword");
 
-            _userRepositoryMock.Setup(repo => repo.GetUserByEmail(command.Email))
-                .Returns((User)null);
+            _userRepositoryMock?.Setup(repo => repo.GetUserByEmail(command.Email))
+                .Returns((User?)null);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -68,7 +68,7 @@ namespace Fliq.Test.Authentication.Commands.ChangePassword
             var command = new ChangePasswordCommand("johndoe@example.com", "wrongOldPassword", "newPassword");
             var user = new User { Email = command.Email, PasswordSalt = "salt", PasswordHash = PasswordHash.Create("correctOldPassword", "salt") };
 
-            _userRepositoryMock.Setup(repo => repo.GetUserByEmail(command.Email))
+            _userRepositoryMock?.Setup(repo => repo.GetUserByEmail(command.Email))
                 .Returns(user);
 
             // Act
@@ -86,10 +86,10 @@ namespace Fliq.Test.Authentication.Commands.ChangePassword
             var command = new ChangePasswordCommand("johndoe@example.com", "oldPassword", "newPassword");
             var user = new User { Email = command.Email, PasswordSalt = "salt", PasswordHash = PasswordHash.Create("oldPassword", "salt") };
 
-            _userRepositoryMock.Setup(repo => repo.GetUserByEmail(command.Email))
+            _userRepositoryMock?.Setup(repo => repo.GetUserByEmail(command.Email))
                 .Returns(user);
 
-            _emailServiceMock.Setup(service => service.SendEmailAsync(command.Email, "Password Changed", "Successfully changed Password!"))
+            _emailServiceMock?.Setup(service => service.SendEmailAsync(command.Email, "Password Changed", "Successfully changed Password!"))
                 .Returns(Task.CompletedTask);
 
             // Act
@@ -99,8 +99,8 @@ namespace Fliq.Test.Authentication.Commands.ChangePassword
             Assert.IsFalse(result.IsError);
             Assert.IsTrue(result.Value);
 
-            _userRepositoryMock.Verify(repo => repo.Update(It.IsAny<User>()), Times.Once);
-            _emailServiceMock.Verify(service => service.SendEmailAsync(command.Email, "Password Changed", "Successfully changed Password!"), Times.Once);
+            _userRepositoryMock?.Verify(repo => repo.Update(It.IsAny<User>()), Times.Once);
+            _emailServiceMock?.Verify(service => service.SendEmailAsync(command.Email, "Password Changed", "Successfully changed Password!"), Times.Once);
         }
     }
 }

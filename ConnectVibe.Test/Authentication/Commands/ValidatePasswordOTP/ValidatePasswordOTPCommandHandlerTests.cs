@@ -13,12 +13,12 @@ namespace Fliq.Test.Authentication.Commands.ValidatePasswordOTP
     [TestClass]
     public class ValidatePasswordOTPCommandHandlerTests
     {
-        private ValidatePasswordOTPCommandHandler _handler;
-        private Mock<IJwtTokenGenerator> _jwtTokenGeneratorMock;
-        private Mock<IUserRepository> _userRepositoryMock;
-        private Mock<IMapper> _mapperMock;
-        private Mock<IEmailService> _emailServiceMock;
-        private Mock<IOtpService> _otpServiceMock;
+        private ValidatePasswordOTPCommandHandler? _handler;
+        private Mock<IJwtTokenGenerator>? _jwtTokenGeneratorMock;
+        private Mock<IUserRepository>? _userRepositoryMock;
+        private Mock<IMapper>? _mapperMock;
+        private Mock<IEmailService>? _emailServiceMock;
+        private Mock<IOtpService>? _otpServiceMock;
 
         [TestInitialize]
         public void Setup()
@@ -43,7 +43,7 @@ namespace Fliq.Test.Authentication.Commands.ValidatePasswordOTP
             // Arrange
             var command = new ValidatePasswordOTPCommand("johndoe@example.com", "123456");
 
-            _otpServiceMock.Setup(service => service.ValidateOtpAsync(command.Email, command.Otp))
+            _otpServiceMock?.Setup(service => service.ValidateOtpAsync(command.Email, command.Otp))
                 .ReturnsAsync(false);
 
             // Act
@@ -61,10 +61,10 @@ namespace Fliq.Test.Authentication.Commands.ValidatePasswordOTP
             var command = new ValidatePasswordOTPCommand("johndoe@example.com", "123456");
             var user = new User { Email = command.Email, Id = 1 };
 
-            _otpServiceMock.Setup(service => service.ValidateOtpAsync(command.Email, command.Otp))
+            _otpServiceMock?.Setup(service => service.ValidateOtpAsync(command.Email, command.Otp))
                 .ReturnsAsync(true);
 
-            _userRepositoryMock.Setup(repo => repo.GetUserByEmail(command.Email))
+            _userRepositoryMock?.Setup(repo => repo.GetUserByEmail(command.Email))
                 .Returns(user);
 
             // Act

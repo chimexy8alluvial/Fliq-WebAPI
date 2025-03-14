@@ -9,9 +9,9 @@ namespace Fliq.Test.Games.Commands
     [TestClass]
     public class CreateGameCommandHandlerTests
     {
-        private Mock<IGamesRepository> _mockGamesRepository;
-        private Mock<ILoggerManager> _mockLogger;
-        private CreateGameCommandHandler _handler;
+        private Mock<IGamesRepository>? _mockGamesRepository;
+        private Mock<ILoggerManager>? _mockLogger;
+        private CreateGameCommandHandler? _handler;
 
         [TestInitialize]
         public void Setup()
@@ -47,7 +47,7 @@ namespace Fliq.Test.Games.Commands
                 RequiresCategory = command.RequiresCategory
             };
 
-            _mockGamesRepository
+            _mockGamesRepository?
                 .Setup(repo => repo.AddGame(It.IsAny<Game>()))
                 .Callback<Game>(g => g.Id = 1);
 
@@ -61,7 +61,7 @@ namespace Fliq.Test.Games.Commands
             Assert.AreEqual(game.Name, result.Value.Name);
             Assert.AreEqual(game.Description, result.Value.Description);
 
-            _mockGamesRepository.Verify(repo => repo.AddGame(It.IsAny<Game>()), Times.Once);
+            _mockGamesRepository?.Verify(repo => repo.AddGame(It.IsAny<Game>()), Times.Once);
         }
 
         [TestMethod]
@@ -76,7 +76,7 @@ namespace Fliq.Test.Games.Commands
                 RequiresCategory: false
             );
 
-            _mockGamesRepository
+            _mockGamesRepository?
                 .Setup(repo => repo.AddGame(It.IsAny<Game>()))
                 .Callback<Game>(g => g.Id = 2);
 
@@ -84,8 +84,8 @@ namespace Fliq.Test.Games.Commands
             await _handler.Handle(command, CancellationToken.None);
 
             // Assert
-            _mockLogger.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains("Creating game: Chess Game"))), Times.Once);
-            _mockLogger.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains("Game created: 2"))), Times.Once);
+            _mockLogger?.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains("Creating game: Chess Game"))), Times.Once);
+            _mockLogger?.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains("Game created: 2"))), Times.Once);
         }
 
         [TestMethod]
@@ -102,7 +102,7 @@ namespace Fliq.Test.Games.Commands
 
             Game capturedGame = null;
 
-            _mockGamesRepository
+            _mockGamesRepository?
                 .Setup(repo => repo.AddGame(It.IsAny<Game>()))
                 .Callback<Game>(g => capturedGame = g);
 

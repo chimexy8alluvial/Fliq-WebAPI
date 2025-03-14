@@ -26,7 +26,7 @@ namespace Fliq.Test.Profile.Commands.Update
         private Mock<ILocationService>? _locationServiceMock;
         private Mock<IHttpContextAccessor>? _httpContextAccessorMock;
         private Mock<ILoggerManager>? _loggerManagerMock;
-        private UpdateProfileCommandHandler _handler;
+        private UpdateProfileCommandHandler? _handler;
 
         [TestInitialize]
         public void Setup()
@@ -92,7 +92,7 @@ namespace Fliq.Test.Profile.Commands.Update
             _httpContextAccessorMock?.Setup(x => x.HttpContext.User.FindFirst(It.IsAny<string>()))
                 .Returns(new Claim(ClaimTypes.NameIdentifier, "1"));
 
-            _userRepositoryMock?.Setup(x => x.GetUserById(It.IsAny<int>())).Returns((User)null);
+            _userRepositoryMock?.Setup(x => x.GetUserById(It.IsAny<int>())).Returns((User?)null);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -111,7 +111,7 @@ namespace Fliq.Test.Profile.Commands.Update
                 .Returns(new Claim(ClaimTypes.NameIdentifier, "1"));
 
             _userRepositoryMock?.Setup(x => x.GetUserById(It.IsAny<int>())).Returns(new User());
-            _profileRepositoryMock?.Setup(x => x.GetProfileByUserId(It.IsAny<int>())).Returns((UserProfile)null);
+            _profileRepositoryMock?.Setup(x => x.GetProfileByUserId(It.IsAny<int>())).Returns((UserProfile?)null);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);

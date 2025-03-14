@@ -12,10 +12,10 @@ namespace Fliq.Test.Notification.EventHandlers
     [TestClass]
     public class EventReviewNotificationHandlerTests
     {
-        private Mock<INotificationRepository> _notificationRepositoryMock;
-        private Mock<IPushNotificationService> _firebaseServiceMock;
-        private Mock<ILoggerManager> _loggerMock;
-        private NotificationEventHandler _handler;
+        private Mock<INotificationRepository>? _notificationRepositoryMock;
+        private Mock<IPushNotificationService>? _firebaseServiceMock;
+        private Mock<ILoggerManager>? _loggerMock;
+        private NotificationEventHandler? _handler;
 
         [TestInitialize]
         public void Setup()
@@ -46,14 +46,14 @@ namespace Fliq.Test.Notification.EventHandlers
 
             var organizerTokens = new List<string> { "organizer-token" };
 
-            _notificationRepositoryMock.Setup(repo => repo.GetDeviceTokensByUserIdAsync(eventReviewEvent.OrganizerId))
+            _notificationRepositoryMock?.Setup(repo => repo.GetDeviceTokensByUserIdAsync(eventReviewEvent.OrganizerId))
                 .ReturnsAsync(organizerTokens);
 
             // Act
             await _handler.Handle(eventReviewEvent, CancellationToken.None);
 
             // Assert
-            _firebaseServiceMock.Verify(service => service.SendNotificationAsync(
+            _firebaseServiceMock?.Verify(service => service.SendNotificationAsync(
                 "New Event Review Submitted",
                 "John Doe rated your event 'Tech Conference' with 5 stars. Comment: Great event!",
                 organizerTokens,
@@ -63,7 +63,7 @@ namespace Fliq.Test.Notification.EventHandlers
                 It.IsAny<string>()
             ), Times.Once);
 
-            _loggerMock.Verify(logger => logger.LogInfo(
+            _loggerMock?.Verify(logger => logger.LogInfo(
                 $"Notification sent to Event Organizer: {eventReviewEvent.OrganizerId} for EventId: {eventReviewEvent.EventId}"
             ), Times.Once);
         }
@@ -82,14 +82,14 @@ namespace Fliq.Test.Notification.EventHandlers
                 message: "John Doe rated your event 'Tech Meetup' with 4 stars. Comment: Good event!"
             );
 
-            _notificationRepositoryMock.Setup(repo => repo.GetDeviceTokensByUserIdAsync(eventReviewEvent.OrganizerId))
+            _notificationRepositoryMock?.Setup(repo => repo.GetDeviceTokensByUserIdAsync(eventReviewEvent.OrganizerId))
                 .ReturnsAsync(new List<string>());
 
             // Act
             await _handler.Handle(eventReviewEvent, CancellationToken.None);
 
             // Assert
-            _firebaseServiceMock.Verify(service => service.SendNotificationAsync(
+            _firebaseServiceMock?.Verify(service => service.SendNotificationAsync(
                 It.IsAny<string>(),
                 It.IsAny<string>(),
                 It.IsAny<List<string>>(),
@@ -99,7 +99,7 @@ namespace Fliq.Test.Notification.EventHandlers
                 It.IsAny<string>()
             ), Times.Never);
 
-            _loggerMock.Verify(logger => logger.LogInfo(
+            _loggerMock?.Verify(logger => logger.LogInfo(
                 $"No registered device tokens for UserId: {eventReviewEvent.OrganizerId}"
             ), Times.Once);
         }

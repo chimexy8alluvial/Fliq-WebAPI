@@ -16,7 +16,7 @@ namespace Fliq.Test.Event.Commands
         private Mock<ILoggerManager>? _loggerMock;
         private Mock<IMapper>? _mapperMock;
 
-        private UpdateTicketCommandHandler _handler;
+        private UpdateTicketCommandHandler? _handler;
 
         [TestInitialize]
         public void Setup()

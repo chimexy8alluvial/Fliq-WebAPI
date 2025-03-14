@@ -16,12 +16,12 @@ namespace Fliq.Test.MatchProfile.Commands
     [TestClass]
     public class InitiateMatchRequestCommandHandlerTests
     {
-        private Mock<IMapper> _mockMapper;
-        private Mock<IUserRepository> _mockUserRepository;
-        private Mock<IMatchProfileRepository> _mockMatchProfileRepository;
-        private Mock<IMediator> _mockMediator;
-        private Mock<ILoggerManager> _mockLogger;
-        private InitiateMatchRequestCommandHandler _handler;
+        private Mock<IMapper>? _mockMapper;
+        private Mock<IUserRepository>? _mockUserRepository;
+        private Mock<IMatchProfileRepository>? _mockMatchProfileRepository;
+        private Mock<IMediator>? _mockMediator;
+        private Mock<ILoggerManager>? _mockLogger;
+        private InitiateMatchRequestCommandHandler? _handler;
 
         [TestInitialize]
         public void Setup()
@@ -51,9 +51,9 @@ namespace Fliq.Test.MatchProfile.Commands
                 MatchReceiverUserId = 2
             };
 
-            _mockUserRepository
+            _mockUserRepository?
                 .Setup(repo => repo.GetUserById(command.MatchReceiverUserId))
-                .Returns((Domain.Entities.User)null);
+                .Returns((Domain.Entities.User?)null);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -100,15 +100,15 @@ namespace Fliq.Test.MatchProfile.Commands
                 MatchRequestStatus = MatchRequestStatus.Pending
             };
 
-            _mockUserRepository
+            _mockUserRepository?
                 .Setup(repo => repo.GetUserByIdIncludingProfile(command.MatchReceiverUserId))
                 .Returns(matchReceiver);
 
-            _mockUserRepository
+            _mockUserRepository?
                 .Setup(repo => repo.GetUserByIdIncludingProfile(command.MatchInitiatorUserId))
                 .Returns(matchInitiator);
 
-            _mockMapper
+            _mockMapper?
                 .Setup(mapper => mapper.Map<MatchRequest>(command))
                 .Returns(matchRequest);
 
@@ -159,15 +159,15 @@ namespace Fliq.Test.MatchProfile.Commands
                 MatchRequestStatus = MatchRequestStatus.Pending
             };
 
-            _mockUserRepository
+            _mockUserRepository?
                 .Setup(repo => repo.GetUserByIdIncludingProfile(command.MatchReceiverUserId))
                 .Returns(matchReceiver);
 
-            _mockUserRepository
+            _mockUserRepository?
                 .Setup(repo => repo.GetUserByIdIncludingProfile(command.MatchInitiatorUserId))
                 .Returns(matchInitiator);
 
-            _mockMapper
+            _mockMapper?
                 .Setup(mapper => mapper.Map<MatchRequest>(command))
                 .Returns(matchRequest);
 
@@ -175,7 +175,7 @@ namespace Fliq.Test.MatchProfile.Commands
             await _handler.Handle(command, CancellationToken.None);
 
             // Assert
-            _mockMediator.Verify(mediator => mediator.Publish(
+            _mockMediator?.Verify(mediator => mediator.Publish(
       It.Is<MatchRequestEvent>(e =>
          e.UserId == command.MatchInitiatorUserId &&
           e.AccepterUserId == command.MatchReceiverUserId &&
