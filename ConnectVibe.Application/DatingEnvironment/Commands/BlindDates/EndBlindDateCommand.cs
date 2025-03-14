@@ -10,9 +10,9 @@ using MediatR;
 
 namespace Fliq.Application.DatingEnvironment.Commands.BlindDates
 {
-    public record EndBlindDateCommand(int UserId, int BlindDateId) : IRequest<ErrorOr<EndSpeedDatingEventResult>>;
+    public record EndBlindDateCommand(int UserId, int BlindDateId) : IRequest<ErrorOr<EndBlindDateResult>>;
 
-    public class EndBlindDateCommandHandler : IRequestHandler<EndBlindDateCommand, ErrorOr<EndSpeedDatingEventResult>>
+    public class EndBlindDateCommandHandler : IRequestHandler<EndBlindDateCommand, ErrorOr<EndBlindDateResult>>
     {
         private readonly IBlindDateRepository _blindDateRepository;
         private readonly IBlindDateParticipantRepository _blindDateParticipantRepository;
@@ -28,7 +28,7 @@ namespace Fliq.Application.DatingEnvironment.Commands.BlindDates
             _loggerManager = loggerManager;
         }
 
-        public async Task<ErrorOr<EndSpeedDatingEventResult>> Handle(EndBlindDateCommand command, CancellationToken cancellationToken)
+        public async Task<ErrorOr<EndBlindDateResult>> Handle(EndBlindDateCommand command, CancellationToken cancellationToken)
         {
             _loggerManager.LogInfo($"User {command.UserId} attempting to end blind date {command.BlindDateId}");
 
