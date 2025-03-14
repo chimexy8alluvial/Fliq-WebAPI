@@ -3,18 +3,13 @@ using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.DashBoard.Common;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Fliq.Application.DashBoard.Queries.FemaleUsersCount
 {
 
-    public record GetAllFemaleUsersCountQuery() : IRequest<ErrorOr<UserCountResult>>;
+    public record GetAllFemaleUsersCountQuery() : IRequest<ErrorOr<CountResult>>;
 
-    public class GetAllFemaleUsersCountQueryHandler : IRequestHandler<GetAllFemaleUsersCountQuery, ErrorOr<UserCountResult>>
+    public class GetAllFemaleUsersCountQueryHandler : IRequestHandler<GetAllFemaleUsersCountQuery, ErrorOr<CountResult>>
     {
         private readonly IUserRepository _userRepository;
         private readonly ILoggerManager _logger;
@@ -25,14 +20,14 @@ namespace Fliq.Application.DashBoard.Queries.FemaleUsersCount
             _logger = logger;
         }
 
-        public async Task<ErrorOr<UserCountResult>> Handle(GetAllFemaleUsersCountQuery query, CancellationToken cancellationToken)
+        public async Task<ErrorOr<CountResult>> Handle(GetAllFemaleUsersCountQuery query, CancellationToken cancellationToken)
         {
             _logger.LogInfo("Fetching all female-users count...");
 
             var count = await _userRepository.CountAllFemaleUsers();
             _logger.LogInfo($"All female-users count: {count}");
 
-            return new UserCountResult(count);
+            return new CountResult(count);
         }
     }
 }

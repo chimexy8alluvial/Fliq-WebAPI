@@ -6,9 +6,9 @@ using MediatR;
 
 namespace Fliq.Application.DashBoard.Queries.SponsoredEventsCount
 {
-    public record GetAllSponsoredEventsCountQuery() : IRequest<ErrorOr<EventCountResult>>;
+    public record GetAllSponsoredEventsCountQuery() : IRequest<ErrorOr<CountResult>>;
 
-    public class GetAllSponsoredEventsCountQueryHandler : IRequestHandler<GetAllSponsoredEventsCountQuery, ErrorOr<EventCountResult>>
+    public class GetAllSponsoredEventsCountQueryHandler : IRequestHandler<GetAllSponsoredEventsCountQuery, ErrorOr<CountResult>>
     {
         private readonly IEventRepository _eventRepository;
         private readonly ILoggerManager _logger;
@@ -18,14 +18,14 @@ namespace Fliq.Application.DashBoard.Queries.SponsoredEventsCount
             _eventRepository = eventRepository;
             _logger = logger;
         }
-        public async Task<ErrorOr<EventCountResult>> Handle(GetAllSponsoredEventsCountQuery request, CancellationToken cancellationToken)
+        public async Task<ErrorOr<CountResult>> Handle(GetAllSponsoredEventsCountQuery request, CancellationToken cancellationToken)
         {
             _logger.LogInfo("Fetching all sponsored-events count...");
 
             var count = await _eventRepository.CountAllSponsoredEvents();
             _logger.LogInfo($"All sponsored-events count: {count}");
 
-            return new EventCountResult(count);
+            return new CountResult(count);
         }
     }
 }

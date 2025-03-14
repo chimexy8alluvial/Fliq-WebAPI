@@ -1,8 +1,9 @@
-﻿using Fliq.Application.Common.Interfaces.Persistence;
+﻿using Dapper;
+using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.DashBoard.Common;
 using Fliq.Domain.Entities;
-using Dapper;
-using System.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {
@@ -50,21 +51,11 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             }
         }
 
-         public IEnumerable<User> GetAllUsersForDashBoard(int pageNumber, int pageSize,
-             bool? hasSubscription = null,
-            DateTime? activeSince = null, 
-            string roleName = null)
+         public IEnumerable<User> GetAllUsersForDashBoard(GetUsersListRequest query)
         {
             using (var connection = _connectionFactory.CreateConnection())
             {
-                var parameters = new
-                {
-                    PageNumber = pageNumber,
-                    PageSize = pageSize,
-                    HasSubscription= hasSubscription,
-                    ActiveSince = activeSince,
-                    RoleName = roleName
-                };
+                var parameters = FilterListDynamicParams(query);              
 
                 var results = connection.Query<dynamic>("sp_GetAllUsersForDashBoard",
                     parameters,
@@ -106,6 +97,19 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         {
             var user = _dbContext.Users.Include(p=>p.UserProfile).ThenInclude(p => p.Photos).SingleOrDefault(p => p.Id == id);
             return user;
+        }
+
+
+        private static DynamicParameters FilterListDynamicParams(GetUsersListRequest query)
+        {
+            var parameters = new DynamicParameters();
+
+            parameters.Add("@pageNumber", query.PaginationRequest.PageNumber);
+            parameters.Add("@pageSize", query.PaginationRequest.PageSize);
+            parameters.Add("@hasSubscription", query.HasSubscription);
+            parameters.Add("@activeSince", query.ActiveSince);
+            parameters.Add("@roleName", query.RoleName);
+            return parameters;
         }
 
 

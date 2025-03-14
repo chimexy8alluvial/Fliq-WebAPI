@@ -12,9 +12,9 @@ using System.Threading.Tasks;
 
 namespace Fliq.Application.DashBoard.Queries.OtherUsersCount
 {
-    public record GetAllOtherUsersCountQuery() : IRequest<ErrorOr<UserCountResult>>;
+    public record GetAllOtherUsersCountQuery() : IRequest<ErrorOr<CountResult>>;
 
-    public class GetAllOtherUsersCountQueryHandler : IRequestHandler<GetAllOtherUsersCountQuery, ErrorOr<UserCountResult>>
+    public class GetAllOtherUsersCountQueryHandler : IRequestHandler<GetAllOtherUsersCountQuery, ErrorOr<CountResult>>
     {
         private readonly IUserRepository _userRepository;
         private readonly ILoggerManager _logger;
@@ -25,14 +25,14 @@ namespace Fliq.Application.DashBoard.Queries.OtherUsersCount
             _logger = logger;
         }
 
-        public async Task<ErrorOr<UserCountResult>> Handle(GetAllOtherUsersCountQuery query, CancellationToken cancellationToken)
+        public async Task<ErrorOr<CountResult>> Handle(GetAllOtherUsersCountQuery query, CancellationToken cancellationToken)
         {
             _logger.LogInfo("Fetching all other-users count...");
 
             var count = await _userRepository.CountAllOtherUsers();
             _logger.LogInfo($"All other-users count: {count}");
 
-            return new UserCountResult(count);
+            return new CountResult(count);
         }
     }
 }

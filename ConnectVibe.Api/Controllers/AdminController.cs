@@ -39,6 +39,7 @@ namespace Fliq.Api.Controllers
             );
         }
 
+        [Authorize(Roles = "Admin,SuperAdmin")]
         [HttpPut("delete-user/{userId}")]
         public async Task<IActionResult> DeleteUserById(int userId)
         {
@@ -50,7 +51,7 @@ namespace Fliq.Api.Controllers
             _logger.LogInfo($"Delete user with Id {userId} executed. Result: {result} ");
 
             return result.Match(
-              deleteUserResult => Ok(_mapper.Map<DeleteUserResult>(result.Value)),
+              deleteUserResult => Ok(new DeleteUserResponse( $"User with ID {userId} successfully deleted")),
               errors => Problem(errors)
           );
 

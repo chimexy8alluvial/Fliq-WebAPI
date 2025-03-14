@@ -1,4 +1,5 @@
-﻿using Fliq.Domain.Entities;
+﻿using Fliq.Application.DashBoard.Common;
+using Fliq.Domain.Entities;
 
 namespace Fliq.Application.Common.Interfaces.Persistence
 {
@@ -8,10 +9,7 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         void Update(User user);
         User? GetUserByEmail(string email);
         IEnumerable<User> GetAllUsers();
-        IEnumerable<User> GetAllUsersForDashBoard(int pageNumber, int pageSize,
-            bool? hasSubscription = null,
-            DateTime? activeSince = null,
-            string roleName = null);
+        IEnumerable<User> GetAllUsersForDashBoard(GetUsersListRequest query);
         User? GetUserById(int Id);
         User? GetUserByIdIncludingProfile(int Id);
         Task<List<User>> GetInactiveUsersAsync(DateTime thresholdDate);

@@ -6,8 +6,8 @@ using MediatR;
 
 namespace Fliq.Application.DashBoard.Queries.EventsCount
 {
-    public record GetAllEventsCountQuery() : IRequest<ErrorOr<EventCountResult>>;
-    public class GetAllEventsCountQueryHandler : IRequestHandler<GetAllEventsCountQuery, ErrorOr<EventCountResult>>
+    public record GetAllEventsCountQuery() : IRequest<ErrorOr<CountResult>>;
+    public class GetAllEventsCountQueryHandler : IRequestHandler<GetAllEventsCountQuery, ErrorOr<CountResult>>
     {
         private readonly IEventRepository _eventRepository;
         private readonly ILoggerManager _logger;
@@ -17,14 +17,14 @@ namespace Fliq.Application.DashBoard.Queries.EventsCount
             _eventRepository = eventRepository;
             _logger = logger;
         }
-        public async Task<ErrorOr<EventCountResult>> Handle(GetAllEventsCountQuery request, CancellationToken cancellationToken)
+        public async Task<ErrorOr<CountResult>> Handle(GetAllEventsCountQuery request, CancellationToken cancellationToken)
         {
             _logger.LogInfo("Fetching all events count...");
 
             var count = await _eventRepository.CountAllEvents();
             _logger.LogInfo($"All events count: {count}");
 
-            return new EventCountResult(count);
+            return new CountResult(count);
         }
     }
 }

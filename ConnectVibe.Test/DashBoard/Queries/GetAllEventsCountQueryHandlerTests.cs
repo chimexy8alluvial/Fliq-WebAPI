@@ -8,9 +8,9 @@ namespace Fliq.Test.DashBoard.Queries
     [TestClass]
     public class GetAllEventsCountQueryHandlerTests
     {
-        private Mock<IEventRepository> _mockEventRepository;
-        private Mock<ILoggerManager> _mockLogger;
-        private GetAllEventsCountQueryHandler _handler;
+        private Mock<IEventRepository>? _mockEventRepository;
+        private Mock<ILoggerManager>? _mockLogger;
+        private GetAllEventsCountQueryHandler? _handler;
 
         [TestInitialize]
         public void SetUp()
@@ -26,36 +26,36 @@ namespace Fliq.Test.DashBoard.Queries
         {
             // Arrange
             int expectedCount = 100;
-            _mockEventRepository.Setup(repo => repo.CountAllEvents()).ReturnsAsync(expectedCount);
+            _mockEventRepository?.Setup(repo => repo.CountAllEvents()).ReturnsAsync(expectedCount);
             var query = new GetAllEventsCountQuery();
 
             // Act
-            var result = await _handler.Handle(query, CancellationToken.None);
+            var result = await _handler?.Handle(query, CancellationToken.None)!;
 
             // Assert
             Assert.IsFalse(result.IsError);
             Assert.AreEqual(expectedCount, result.Value.Count);
 
-            _mockLogger.Verify(logger => logger.LogInfo("Fetching all events count..."), Times.Once);
-            _mockLogger.Verify(logger => logger.LogInfo($"All events count: {expectedCount}"), Times.Once);
-            _mockEventRepository.Verify(repo => repo.CountAllEvents(), Times.Once);
+            _mockLogger?.Verify(logger => logger.LogInfo("Fetching all events count..."), Times.Once);
+            _mockLogger?.Verify(logger => logger.LogInfo($"All events count: {expectedCount}"), Times.Once);
+            _mockEventRepository?.Verify(repo => repo.CountAllEvents(), Times.Once);
         }
 
         [TestMethod]
         public async Task Handle_WhenRepositoryThrowsException_LogsErrorAndReturnsError()
         {
             // Arrange
-            _mockEventRepository.Setup(repo => repo.CountAllEvents()).ThrowsAsync(new Exception("Database error"));
+            _mockEventRepository?.Setup(repo => repo.CountAllEvents()).ThrowsAsync(new Exception("Database error"));
             var query = new GetAllEventsCountQuery();
 
             // Act & Assert
             await Assert.ThrowsExceptionAsync<Exception>(async () =>
             {
-                await _handler.Handle(query, CancellationToken.None);
+                await _handler?.Handle(query, CancellationToken.None)!;
             });
 
-            _mockLogger.Verify(logger => logger.LogInfo("Fetching all events count..."), Times.Once);
-            _mockEventRepository.Verify(repo => repo.CountAllEvents(), Times.Once);
+            _mockLogger?.Verify(logger => logger.LogInfo("Fetching all events count..."), Times.Once);
+            _mockEventRepository?.Verify(repo => repo.CountAllEvents(), Times.Once);
         }
     }
 }

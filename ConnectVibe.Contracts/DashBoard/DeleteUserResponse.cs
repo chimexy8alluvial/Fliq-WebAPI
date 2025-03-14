@@ -6,6 +6,6 @@ using System.Threading.Tasks;
 
 namespace Fliq.Application.DashBoard.Common
 {
-   public record DeleteUserResult (string Message);
+   public record DeleteUserResponse (string Message);
     
 }

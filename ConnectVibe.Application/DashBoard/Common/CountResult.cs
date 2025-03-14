@@ -1,5 +1,6 @@
 ﻿
+
 namespace Fliq.Application.DashBoard.Common
 {
-    public record EventCountResult(int Count);
+    public record CountResult(int Count);
 }

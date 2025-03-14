@@ -1,9 +1,6 @@
-﻿using Fliq.Domain.Entities;
-
-
-namespace Fliq.Application.DashBoard.Common
+﻿namespace Fliq.Application.DashBoard.Common
 {
-    public record CreateUserResult
+    public record GetUsersResult
     (
        string DisplayName,
         string Email,

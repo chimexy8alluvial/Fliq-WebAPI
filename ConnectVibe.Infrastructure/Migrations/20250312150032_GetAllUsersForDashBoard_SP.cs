@@ -37,7 +37,7 @@ namespace Fliq.Infrastructure.Migrations
                 SELECT 
                     u.DisplayName,
                     u.Email,
-                    COALESCE(s.ProductId, 'None') AS SubscriptionType,
+                    COALESCE(s.ProductId, 'Free') AS SubscriptionType,
                     u.DateCreated AS DateJoined,
                     u.LastActiveAt AS LastOnline
                 FROM 

@@ -1,31 +1,29 @@
 ﻿using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
-using Fliq.Application.DashBoard.Common;
-using MapsterMapper;
-using MediatR;
 using Fliq.Domain.Common.Errors;
+using MediatR;
 
 namespace Fliq.Application.DashBoard.Command.DeleteUser
 {
-    public record DeleteUserByIdCommand(int UserId) : IRequest<ErrorOr<DeleteUserResult>>;
+    public record DeleteUserByIdCommand(int UserId) : IRequest<ErrorOr<Unit>>;
 
-    public class DeleteUserByIdCommandHandler : IRequestHandler<DeleteUserByIdCommand, ErrorOr<DeleteUserResult>>
+    public class DeleteUserByIdCommandHandler : IRequestHandler<DeleteUserByIdCommand, ErrorOr<Unit>>
     {
         private readonly IUserRepository _userRepository;
-        private readonly IMapper _mapper;
         private readonly ILoggerManager _logger;
 
-        public DeleteUserByIdCommandHandler(IUserRepository userRepository, IMapper mapper, ILoggerManager logger)
+        public DeleteUserByIdCommandHandler(IUserRepository userRepository, ILoggerManager logger)
         {
-            _userRepository = userRepository;
-            _mapper = mapper;
+            _userRepository = userRepository;           
             _logger = logger;
         }
 
-        public async Task<ErrorOr<DeleteUserResult>> Handle(DeleteUserByIdCommand command, CancellationToken cancellationToken)
+        public async Task<ErrorOr<Unit>> Handle(DeleteUserByIdCommand command, CancellationToken cancellationToken)
         {
-            _logger.LogInfo($"Deleting user with {command.UserId} ");
+            await Task.CompletedTask;
+
+            _logger.LogInfo($"Deleting user with ID: {command.UserId} ");
 
 
             var user = _userRepository.GetUserById(command.UserId);
@@ -38,7 +36,7 @@ namespace Fliq.Application.DashBoard.Command.DeleteUser
 
             if (user.IsDeleted)
             {
-                _logger.LogError($"This user with id {user.Id} has been deleted before");
+                _logger.LogError($"This user with ID: {user.Id} has been deleted before");
                  return Errors.User.UserAlreadyDeleted;
             }
 
@@ -46,12 +44,9 @@ namespace Fliq.Application.DashBoard.Command.DeleteUser
 
             _userRepository.Update(user);
 
-            _logger.LogInfo($"User with Id {command.UserId} was deleted");     
+            _logger.LogInfo($"User with ID: {command.UserId} was deleted");     
 
-                return new DeleteUserResult(
-                   Message:( $"{user.Id} has been deleted" )
-                );
-          
+                return  Unit.Value;
             
         }
     }

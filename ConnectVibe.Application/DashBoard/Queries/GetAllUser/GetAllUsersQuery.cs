@@ -1,6 +1,7 @@
 ﻿using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.Common.Pagination;
 using Fliq.Application.DashBoard.Common;
 using MapsterMapper;
 using MediatR;
@@ -8,36 +9,42 @@ using MediatR;
 
 namespace Fliq.Application.DashBoard.Queries.GetAllUser
 {
-    public record GetAllUsersQuery(int PageNumber, int PageSize,
-                                        bool? hasSubscription = null,
-                                          DateTime? activeSince = null,
-                                            string roleName = null)          : IRequest<ErrorOr<List<CreateUserResult>>>;
+    public record GetAllUsersQuery(PaginationRequest PaginationRequest = default!,
+                                        bool? HasSubscription=null ,
+                                          DateTime? ActiveSince = null,
+                                            string? RoleName = null)          : IRequest<ErrorOr<List<GetUsersResult>>>;
 
-    public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, ErrorOr<List<CreateUserResult>>>
+    public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, ErrorOr<List<GetUsersResult>>>
     {
         private readonly IUserRepository _userRepository;
-        private readonly IMapper _mapper;
         private readonly ILoggerManager _logger;
 
         public GetAllUsersQueryHandler(IUserRepository userRepository, IMapper mapper, ILoggerManager logger)
         {
-            _userRepository = userRepository;
-            _mapper = mapper;
+            _userRepository = userRepository;          
             _logger = logger;
         }
 
-        public async Task<ErrorOr<List<CreateUserResult>>> Handle(GetAllUsersQuery query, CancellationToken cancellationToken)
+        public async Task<ErrorOr<List<GetUsersResult>>> Handle(GetAllUsersQuery query, CancellationToken cancellationToken)
         {
-            _logger.LogInfo($"Getting users for page {query.PageNumber} with page size {query.PageSize}");
+            await Task.CompletedTask;
 
+            _logger.LogInfo($"Getting users for page {query.PaginationRequest.PageNumber} with page size {query.PaginationRequest.PageSize}");
+          
 
-            var users = _userRepository.GetAllUsersForDashBoard(query.PageNumber, query.PageSize,query.hasSubscription, query.activeSince, query.roleName);
+            var request = new GetUsersListRequest
+            {
+                PaginationRequest = query.PaginationRequest,
+                HasSubscription = query.HasSubscription,
+                ActiveSince = query.ActiveSince,
+                RoleName = query.RoleName
+             
+              
+            };
+         
+            var users = _userRepository.GetAllUsersForDashBoard(request);
 
-
-            var userList = users.ToList();
-
-            _logger.LogInfo($"Got {userList.Count} users for page {query.PageNumber}");
-
+            _logger.LogInfo($"Got {users.Count()} users for page {query.PaginationRequest.PageNumber}");
 
             var results = users.Select(user =>
             {
@@ -46,10 +53,10 @@ namespace Fliq.Application.DashBoard.Queries.GetAllUser
                     .OrderByDescending(s => s.StartDate)
                     .FirstOrDefault();
 
-                return new CreateUserResult(
+                return new GetUsersResult(
                     DisplayName: user.DisplayName,
                     Email: user.Email,
-                    SubscriptionType: latestSubscription?.ProductId ?? "None",
+                    SubscriptionType: latestSubscription?.ProductId ?? "Free",
                     DateJoined: user.DateCreated,
                     LastOnline: user.LastActiveAt
                 );

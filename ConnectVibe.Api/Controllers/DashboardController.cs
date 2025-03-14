@@ -1,4 +1,5 @@
 ﻿using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.Common.Pagination;
 using Fliq.Application.DashBoard.Common;
 using Fliq.Application.DashBoard.Queries.ActiveUserCount;
 using Fliq.Application.DashBoard.Queries.EventsCount;
@@ -43,7 +44,7 @@ namespace Fliq.Api.Controllers
             var result = await _mediator.Send(query);
 
             return result.Match(
-              matchedProfileResult => Ok(_mapper.Map<UserCountResponse>(result.Value)),
+              matchedProfileResult => Ok(_mapper.Map<CountResponse>(result.Value)),
               errors => Problem(errors)
           );
         }
@@ -57,7 +58,7 @@ namespace Fliq.Api.Controllers
             var result = await _mediator.Send(query);
 
             return result.Match(
-              matchedProfileResult => Ok(_mapper.Map<UserCountResponse>(result.Value)),
+              matchedProfileResult => Ok(_mapper.Map<CountResponse>(result.Value)),
               errors => Problem(errors)
           );
         }
@@ -71,7 +72,7 @@ namespace Fliq.Api.Controllers
             var result = await _mediator.Send(query);
 
             return result.Match(
-              matchedProfileResult => Ok(_mapper.Map<UserCountResponse>(result.Value)),
+              matchedProfileResult => Ok(_mapper.Map<CountResponse>(result.Value)),
               errors => Problem(errors)
           );
         }
@@ -85,7 +86,7 @@ namespace Fliq.Api.Controllers
             var result = await _mediator.Send(query);
 
             return result.Match(
-             matchedProfileResult => Ok(_mapper.Map<UserCountResponse>(result.Value)),
+             matchedProfileResult => Ok(_mapper.Map<CountResponse>(result.Value)),
              errors => Problem(errors)
          );
         }
@@ -99,7 +100,7 @@ namespace Fliq.Api.Controllers
             var result = await _mediator.Send(query);
 
             return result.Match(
-              eventCountResult => Ok(_mapper.Map<EventCountResponse>(result.Value)),
+              eventCountResult => Ok(_mapper.Map<CountResponse>(result.Value)),
               errors => Problem(errors)
           );
         }
@@ -113,7 +114,7 @@ namespace Fliq.Api.Controllers
             var result = await _mediator.Send(query);
 
             return result.Match(
-             sponsoredEventsCountResult => Ok(_mapper.Map<EventCountResponse>(result.Value)),
+             sponsoredEventsCountResult => Ok(_mapper.Map<CountResponse>(result.Value)),
               errors => Problem(errors)
           );
         }
@@ -128,7 +129,7 @@ namespace Fliq.Api.Controllers
             var result = await _mediator.Send(query);
 
             return result.Match(
-              maleUsersCountResult => Ok(_mapper.Map<UserCountResponse>(result.Value)),
+              maleUsersCountResult => Ok(_mapper.Map<CountResponse>(result.Value)),
               errors => Problem(errors)
           );
         }
@@ -142,7 +143,7 @@ namespace Fliq.Api.Controllers
             var result = await _mediator.Send(query);
 
             return result.Match(
-             femaleUsersCountResult => Ok(_mapper.Map<UserCountResponse>(result.Value)),
+             femaleUsersCountResult => Ok(_mapper.Map<CountResponse>(result.Value)),
               errors => Problem(errors)
           );
         }
@@ -156,29 +157,27 @@ namespace Fliq.Api.Controllers
             var result = await _mediator.Send(query);
 
             return result.Match(
-             otherUsersCountResult => Ok(_mapper.Map<UserCountResponse>(result.Value)),
+             otherUsersCountResult => Ok(_mapper.Map<CountResponse>(result.Value)),
               errors => Problem(errors)
           );
         }
-        
+
         [HttpGet("get-all-users")]
-        public async Task<IActionResult> GetAllUsersForDashBoard([FromQuery] int pageNumber = 1,
-            [FromQuery] int pageSize = 10, [FromQuery] bool? hasSubscription = null,
-            [FromQuery] DateTime? activeSince = null, [FromQuery] string roleName = null)
+        public async Task<IActionResult> GetAllUsersForDashBoard([FromQuery] GetUsersListRequest request)
         {
             _logger.LogInfo("Get All Users Request Received");
 
-            var query = new GetAllUsersQuery(pageNumber, pageSize, hasSubscription, activeSince, roleName);
+            var query = _mapper.Map<GetAllUsersQuery>(request);
             var result = await _mediator.Send(query);
 
             _logger.LogInfo($"Get All Users Query Executed. Result: {result} ");
 
             return result.Match(
-              getAllUsersResult => Ok(_mapper.Map<List<CreateUserResult>>(result.Value)),
+              getAllUsersResult => Ok(_mapper.Map<List<GetUsersResponse>>(result.Value)),
               errors => Problem(errors)
           );
         }
 
-       
+
     }
 }
