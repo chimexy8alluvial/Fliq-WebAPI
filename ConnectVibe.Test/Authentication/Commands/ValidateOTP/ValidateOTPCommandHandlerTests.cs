@@ -2,7 +2,6 @@
 using Fliq.Application.Common.Interfaces.Authentication;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
-using MapsterMapper;
 using Moq;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities;
@@ -15,29 +14,20 @@ namespace Fliq.Test.Authentication.Commands.ValidateOTP
         private ValidateOTPCommandHandler? _handler;
         private Mock<IJwtTokenGenerator>? _jwtTokenGeneratorMock;
         private Mock<IUserRepository>? _userRepositoryMock;
-        private Mock<IMapper>? _mapperMock;
-        private Mock<IEmailService>? _emailServiceMock;
         private Mock<IOtpService>? _otpServiceMock;
-        private Mock<ILoggerManager>? _loggerManagerMock;
 
         [TestInitialize]
         public void Setup()
         {
             _jwtTokenGeneratorMock = new Mock<IJwtTokenGenerator>();
             _userRepositoryMock = new Mock<IUserRepository>();
-            _mapperMock = new Mock<IMapper>();
-            _emailServiceMock = new Mock<IEmailService>();
             _otpServiceMock = new Mock<IOtpService>();
-            _loggerManagerMock = new Mock<ILoggerManager>();
-            
+
 
             _handler = new ValidateOTPCommandHandler(
                 _jwtTokenGeneratorMock.Object,
                 _userRepositoryMock.Object,
-                _mapperMock.Object,
-                _emailServiceMock.Object,
-                _otpServiceMock.Object,
-                _loggerManagerMock.Object);
+                _otpServiceMock.Object);
         }
 
         [TestMethod]

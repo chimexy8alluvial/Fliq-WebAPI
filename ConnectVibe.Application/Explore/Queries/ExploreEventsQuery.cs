@@ -18,13 +18,11 @@ namespace Fliq.Application.Explore.Queries
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUserRepository _userRepository;
-        private readonly IProfileRepository _profileRepository;
         private readonly ILoggerManager _logger;
-        public ExploreEventsQueryHandler(IHttpContextAccessor httpContextAccessor, IUserRepository userRepository, IProfileRepository profileRepository, ILoggerManager logger)
+        public ExploreEventsQueryHandler(IHttpContextAccessor httpContextAccessor, IUserRepository userRepository, ILoggerManager logger)
         {
             _httpContextAccessor = httpContextAccessor;
             _userRepository = userRepository;
-            _profileRepository = profileRepository;
             _logger = logger;
         }
 

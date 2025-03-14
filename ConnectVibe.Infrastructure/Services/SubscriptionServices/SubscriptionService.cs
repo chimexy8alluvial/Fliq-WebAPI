@@ -10,13 +10,11 @@ namespace Fliq.Infrastructure.Services.SubscriptionServices
     public class SubscriptionService : ISubscriptionService
     {
         private readonly ISubscriptionRepository _subscriptionRepository;
-        private readonly IUserRepository _userRepository;
         private readonly ILoggerManager _logger;
 
-        public SubscriptionService(ISubscriptionRepository subscriptionRepository, IUserRepository userRepository, ILoggerManager logger)
+        public SubscriptionService(ISubscriptionRepository subscriptionRepository, ILoggerManager logger)
         {
             _subscriptionRepository = subscriptionRepository;
-            _userRepository = userRepository;
             _logger = logger;
         }
 

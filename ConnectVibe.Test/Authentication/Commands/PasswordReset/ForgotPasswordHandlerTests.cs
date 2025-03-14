@@ -21,14 +21,12 @@ namespace Fliq.Test.Authentication.Commands.PasswordReset
         [TestInitialize]
         public void Setup()
         {
-            _jwtTokenGeneratorMock = new Mock<IJwtTokenGenerator>();
             _userRepositoryMock = new Mock<IUserRepository>();
             _otpServiceMock = new Mock<IOtpService>();
             _emailServiceMock = new Mock<IEmailService>();
             _loggerMock = new Mock<ILoggerManager>();
 
             _handler = new ForgotPasswordHandler(
-                _jwtTokenGeneratorMock.Object,
                 _userRepositoryMock.Object,
                 _otpServiceMock.Object,
                 _emailServiceMock.Object,

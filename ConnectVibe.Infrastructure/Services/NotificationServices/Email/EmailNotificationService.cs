@@ -9,11 +9,9 @@ namespace Fliq.Infrastructure.Services.NotificationServices.Email
 {
     public class EmailNotificationService : IEmailNotificationService
     {
-        private readonly ILoggerManager _logger;
         private readonly INotificationRepository _notificationRepository;
         public EmailNotificationService(ILoggerManager logger, INotificationRepository notificationRepository)
         {
-            _logger = logger;
             _notificationRepository = notificationRepository;
         }
 

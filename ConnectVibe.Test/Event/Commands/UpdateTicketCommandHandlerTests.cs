@@ -3,7 +3,6 @@ using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Event.Commands.UpdateTicket;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Event;
-using MapsterMapper;
 using Moq;
 
 namespace Fliq.Test.Event.Commands
@@ -14,7 +13,6 @@ namespace Fliq.Test.Event.Commands
         private Mock<IEventRepository>? _eventRepositoryMock;
         private Mock<ITicketRepository>? _ticketRepositoryMock;
         private Mock<ILoggerManager>? _loggerMock;
-        private Mock<IMapper>? _mapperMock;
 
         private UpdateTicketCommandHandler? _handler;
 
@@ -24,12 +22,10 @@ namespace Fliq.Test.Event.Commands
             _eventRepositoryMock = new Mock<IEventRepository>();
             _ticketRepositoryMock = new Mock<ITicketRepository>();
             _loggerMock = new Mock<ILoggerManager>();
-            _mapperMock = new Mock<IMapper>();
 
             _handler = new UpdateTicketCommandHandler(
                 _eventRepositoryMock.Object,
                 _loggerMock.Object,
-                _mapperMock.Object,
                 _ticketRepositoryMock.Object
             );
         }
