@@ -43,15 +43,15 @@ namespace Fliq.Api.Controllers
         [HttpPut("delete-user/{userId}")]
         public async Task<IActionResult> DeleteUserById(int userId)
         {
-            _logger.LogInfo($"Delete user with Id {userId} received");
+            _logger.LogInfo($"Delete user with ID: {userId} received");
 
             var command = new DeleteUserByIdCommand(userId);
             var result = await _mediator.Send(command);
 
-            _logger.LogInfo($"Delete user with Id {userId} executed. Result: {result} ");
+            _logger.LogInfo($"Delete user with ID: {userId} executed. Result: {result} ");
 
             return result.Match(
-              deleteUserResult => Ok(new DeleteUserResponse( $"User with ID {userId} successfully deleted")),
+              deleteUserResult => Ok(new DeleteUserResponse( $"User with ID: {userId} was successfully deleted")),
               errors => Problem(errors)
           );
 
