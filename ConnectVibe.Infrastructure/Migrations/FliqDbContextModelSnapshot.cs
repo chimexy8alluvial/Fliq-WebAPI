@@ -22,6 +22,148 @@ namespace Fliq.Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Fliq.Domain.Entities.DatingEnvironment.BlindDate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BlindDateCategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CreatedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsOneOnOne")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsRecordingEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("LocationId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("NumberOfParticipants")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RecordingUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("SessionEndTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("SessionStartTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("StartDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BlindDateCategoryId");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LocationId");
+
+                    b.ToTable("BlindDates");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.DatingEnvironment.BlindDateCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CategoryName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BlindDateCategories");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.DatingEnvironment.BlindDateParticipant", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BlindDateId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsCreator")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("JoinedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BlindDateId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("BlindDatesParticipants");
+                });
+
             modelBuilder.Entity("Fliq.Domain.Entities.Event.Currency", b =>
                 {
                     b.Property<int>("Id")
@@ -2000,6 +2142,52 @@ namespace Fliq.Infrastructure.Migrations
                     b.ToTable("WalletHistories");
                 });
 
+            modelBuilder.Entity("Fliq.Domain.Entities.DatingEnvironment.BlindDate", b =>
+                {
+                    b.HasOne("Fliq.Domain.Entities.DatingEnvironment.BlindDateCategory", "BlindDateCategory")
+                        .WithMany("BlindDates")
+                        .HasForeignKey("BlindDateCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Fliq.Domain.Entities.User", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Fliq.Domain.Entities.Profile.Location", "Location")
+                        .WithMany()
+                        .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BlindDateCategory");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("Location");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.DatingEnvironment.BlindDateParticipant", b =>
+                {
+                    b.HasOne("Fliq.Domain.Entities.DatingEnvironment.BlindDate", "BlindDate")
+                        .WithMany("Participants")
+                        .HasForeignKey("BlindDateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Fliq.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BlindDate");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Fliq.Domain.Entities.Event.Discount", b =>
                 {
                     b.HasOne("Fliq.Domain.Entities.Event.Ticket", null)
@@ -2423,6 +2611,16 @@ namespace Fliq.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Wallet");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.DatingEnvironment.BlindDate", b =>
+                {
+                    b.Navigation("Participants");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.DatingEnvironment.BlindDateCategory", b =>
+                {
+                    b.Navigation("BlindDates");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Event.Events", b =>

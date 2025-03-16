@@ -67,6 +67,7 @@ var app = builder.Build();
     app.UseAuthorization();
     app.MapControllers();
     app.MapHub<GameHub>("/gamehub");
+    app.MapHub<BlindDateHub>("/blinddatehub");
 
     app.Run();
 }
