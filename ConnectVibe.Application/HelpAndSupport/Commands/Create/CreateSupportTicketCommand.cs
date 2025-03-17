@@ -39,9 +39,17 @@ namespace Fliq.Application.HelpAndSupport.Commands.Create
                 RequestType = command.RequestType,
                 RequestStatus = HelpRequestStatus.Pending
             };
-            var res = await _repository.CreateTicketAsync(ticket);
-            _logger.LogInfo($"Help request created with ID {res.TicketId}");
-            return new CreateSupportTicketResponse(res.TicketId);
+            try
+            {
+                var res = await _repository.CreateTicketAsync(ticket);
+                _logger.LogInfo($"Help request created with ID {res.TicketId}");
+                return new CreateSupportTicketResponse(res.TicketId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return Error.Failure();
+            }
         }
     }
 }

@@ -39,7 +39,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="HelpAndSupport\Common\" />
+    <Folder Include="HelpAndSupport\Queries\GetSupportTickets\" />
+    <Folder Include="LiveComms\Queries\" />
     <Folder Include="Notifications\Queries\" />
     <Folder Include="Prompts\Queries\" />
     <Folder Include="Payments\Queries\" />
