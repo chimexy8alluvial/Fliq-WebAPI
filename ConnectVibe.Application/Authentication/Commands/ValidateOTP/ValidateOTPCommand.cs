@@ -20,15 +20,13 @@ namespace Fliq.Application.Authentication.Commands.ValidateOTP
         private readonly IJwtTokenGenerator _jwtTokenGenerator;
         private readonly IUserRepository _userRepository;
         private readonly IOtpService _otpService;
-        private readonly ILoggerManager _logger;
         private readonly IStreamClientFactory _streamClientFactory;
 
-        public ValidateOTPCommandHandler(IJwtTokenGenerator jwtTokenGenerator, IUserRepository userRepository, IMapper mapper, IEmailService emailService, IOtpService otpService, ILoggerManager logger, IStreamClientFactory streamClientFactory)
+        public ValidateOTPCommandHandler(IJwtTokenGenerator jwtTokenGenerator, IUserRepository userRepository,  IOtpService otpService, IStreamClientFactory streamClientFactory)
         {
             _jwtTokenGenerator = jwtTokenGenerator;
             _userRepository = userRepository;
             _otpService = otpService;
-            _logger = logger;
             _streamClientFactory = streamClientFactory;
         }
 
