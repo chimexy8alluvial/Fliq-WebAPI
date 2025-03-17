@@ -10,9 +10,9 @@ namespace Fliq.Test.Games.Queries.GetSession
     [TestClass]
     public class GetGameSessionQueryHandlerTests
     {
-        private Mock<IGamesRepository> _mockSessionsRepository;
-        private Mock<ILoggerManager> _mockLogger;
-        private GetGameSessionQueryHandler _handler;
+        private Mock<IGamesRepository>? _mockSessionsRepository;
+        private Mock<ILoggerManager>? _mockLogger;
+        private GetGameSessionQueryHandler? _handler;
 
         [TestInitialize]
         public void Setup()
@@ -40,7 +40,7 @@ namespace Fliq.Test.Games.Queries.GetSession
                 Player2Id = 2
             };
 
-            _mockSessionsRepository.Setup(repo => repo.GetGameSessionById(sessionId)).Returns(session);
+            _mockSessionsRepository?.Setup(repo => repo.GetGameSessionById(sessionId)).Returns(session);
 
             var query = new GetGameSessionQuery(sessionId);
 
@@ -53,9 +53,9 @@ namespace Fliq.Test.Games.Queries.GetSession
             Assert.AreEqual(sessionId, result.Value.GameSession.Id);
             Assert.AreEqual(gameId, result.Value.GameSession.GameId);
 
-            _mockSessionsRepository.Verify(repo => repo.GetGameSessionById(sessionId), Times.Once);
-            _mockLogger.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains($"Getting game session with id: {sessionId}"))), Times.Once);
-            _mockLogger.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains($"Game session with id: {sessionId} found"))), Times.Once);
+            _mockSessionsRepository?.Verify(repo => repo.GetGameSessionById(sessionId), Times.Once);
+            _mockLogger?.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains($"Getting game session with id: {sessionId}"))), Times.Once);
+            _mockLogger?.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains($"Game session with id: {sessionId} found"))), Times.Once);
         }
 
         [TestMethod]
@@ -63,7 +63,7 @@ namespace Fliq.Test.Games.Queries.GetSession
         {
             // Arrange
             var sessionId = 1;
-            _mockSessionsRepository.Setup(repo => repo.GetGameSessionById(sessionId)).Returns((GameSession)null);
+            _mockSessionsRepository?.Setup(repo => repo.GetGameSessionById(sessionId)).Returns((GameSession)null);
 
             var query = new GetGameSessionQuery(sessionId);
 
@@ -74,9 +74,9 @@ namespace Fliq.Test.Games.Queries.GetSession
             Assert.IsTrue(result.IsError);
             Assert.AreEqual(Errors.Games.GameNotFound, result.FirstError);
 
-            _mockSessionsRepository.Verify(repo => repo.GetGameSessionById(sessionId), Times.Once);
-            _mockLogger.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains($"Getting game session with id: {sessionId}"))), Times.Once);
-            _mockLogger.Verify(logger => logger.LogError(It.Is<string>(msg => msg.Contains($"Game session with id: {sessionId} not found"))), Times.Once);
+            _mockSessionsRepository?.Verify(repo => repo.GetGameSessionById(sessionId), Times.Once);
+            _mockLogger?.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains($"Getting game session with id: {sessionId}"))), Times.Once);
+            _mockLogger?.Verify(logger => logger.LogError(It.Is<string>(msg => msg.Contains($"Game session with id: {sessionId} not found"))), Times.Once);
         }
 
         [TestMethod]
@@ -97,8 +97,8 @@ namespace Fliq.Test.Games.Queries.GetSession
                 new GameQuestion { Id = 1, GameId = gameId, QuestionText = "Q1", CorrectAnswer = "A" }
             };
 
-            _mockSessionsRepository.Setup(repo => repo.GetGameSessionById(sessionId)).Returns(session);
-            _mockSessionsRepository.Setup(repo => repo.GetQuestionsByGameId(gameId, int.MaxValue, int.MaxValue)).Returns(questions);
+            _mockSessionsRepository?.Setup(repo => repo.GetGameSessionById(sessionId)).Returns(session);
+            _mockSessionsRepository?.Setup(repo => repo.GetQuestionsByGameId(gameId, int.MaxValue, int.MaxValue)).Returns(questions);
 
             var query = new GetGameSessionQuery(sessionId);
 
@@ -106,8 +106,8 @@ namespace Fliq.Test.Games.Queries.GetSession
             await _handler.Handle(query, CancellationToken.None);
 
             // Assert
-            _mockLogger.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains($"Getting game session with id: {sessionId}"))), Times.Once);
-            _mockLogger.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains($"Game session with id: {sessionId} found"))), Times.Once);
+            _mockLogger?.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains($"Getting game session with id: {sessionId}"))), Times.Once);
+            _mockLogger?.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains($"Game session with id: {sessionId} found"))), Times.Once);
         }
     }
 }

@@ -13,10 +13,10 @@ namespace Fliq.Test.MatchProfile.Commands
     [TestClass]
     public class RejectMatchRequestCommandHandlerTests
     {
-        private Mock<IMatchProfileRepository> _mockMatchProfileRepository;
-        private Mock<IMediator> _mockMediator;
-        private Mock<ILoggerManager> _mockLogger;
-        private RejectMatchRequestComandHandler _handler;
+        private Mock<IMatchProfileRepository>? _mockMatchProfileRepository;
+        private Mock<IMediator>? _mockMediator;
+        private Mock<ILoggerManager>? _mockLogger;
+        private RejectMatchRequestComandHandler? _handler;
 
         [TestInitialize]
         public void Setup()
@@ -42,9 +42,9 @@ namespace Fliq.Test.MatchProfile.Commands
                 UserId = 10
             };
 
-            _mockMatchProfileRepository
+            _mockMatchProfileRepository?
                 .Setup(repo => repo.GetMatchRequestById(command.Id))
-                .Returns((MatchRequest)null);
+                .Returns((MatchRequest?)null);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -72,7 +72,7 @@ namespace Fliq.Test.MatchProfile.Commands
                 MatchRequestStatus = MatchRequestStatus.Pending
             };
 
-            _mockMatchProfileRepository
+            _mockMatchProfileRepository?
                 .Setup(repo => repo.GetMatchRequestById(command.Id))
                 .Returns(matchProfile);
 
@@ -103,7 +103,7 @@ namespace Fliq.Test.MatchProfile.Commands
                 MatchRequestStatus = MatchRequestStatus.Pending
             };
 
-            _mockMatchProfileRepository
+            _mockMatchProfileRepository?
                 .Setup(repo => repo.GetMatchRequestById(command.Id))
                 .Returns(matchProfile);
 
@@ -111,7 +111,7 @@ namespace Fliq.Test.MatchProfile.Commands
             await _handler.Handle(command, CancellationToken.None);
 
             // Assert
-            _mockMediator.Verify(mediator => mediator.Publish(
+            _mockMediator?.Verify(mediator => mediator.Publish(
                 It.Is<MatchRejectedEvent>(e =>
                     e.UserId == command.UserId),
                 It.IsAny<CancellationToken>()), Times.Once);

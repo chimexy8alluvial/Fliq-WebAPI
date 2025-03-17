@@ -4,7 +4,6 @@ using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Domain.Common.Errors;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 
 namespace Fliq.Application.Profile.Queries.Get
 {
@@ -14,15 +13,13 @@ namespace Fliq.Application.Profile.Queries.Get
     {
         private readonly IProfileRepository _profileRepository;
         private readonly IUserRepository _userRepository;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILoggerManager _logger;
         private const int UnauthorizedUserId = -1;
 
-        public GetProfileQueryHandler(IProfileRepository profileRepository, IUserRepository userRepository, IHttpContextAccessor httpContextAccessor, ILoggerManager logger)
+        public GetProfileQueryHandler(IProfileRepository profileRepository, IUserRepository userRepository, ILoggerManager logger)
         {
             _profileRepository = profileRepository;
             _userRepository = userRepository;
-            _httpContextAccessor = httpContextAccessor;
             _logger = logger;
         }
 

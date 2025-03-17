@@ -13,12 +13,12 @@ namespace Fliq.Test.Games.Commands
     [TestClass]
     public class SubmitAnswerCommandHandlerTests
     {
-        private Mock<IGamesRepository> _mockGamesRepository;
-        private Mock<ILoggerManager> _mockLogger;
-        private SubmitAnswerCommandHandler _handler;
-        private Mock<IHubContext<GameHub>> _mockHub;
-        private Mock<IWalletRepository> _mockWalletRepository;
-        private Mock<IStakeRepository> _mockStakeRepository;
+        private Mock<IGamesRepository>? _mockGamesRepository;
+        private Mock<ILoggerManager>? _mockLogger;
+        private SubmitAnswerCommandHandler? _handler;
+        private Mock<IHubContext<GameHub>>? _mockHub;
+        private Mock<IWalletRepository>? _mockWalletRepository;
+        private Mock<IStakeRepository>? _mockStakeRepository;
 
         [TestInitialize]
         public void Setup()
@@ -59,8 +59,8 @@ namespace Fliq.Test.Games.Commands
 
             var questions = new List<GameQuestion> { question };
 
-            _mockGamesRepository.Setup(repo => repo.GetGameSessionById(session.Id)).Returns(session);
-            _mockGamesRepository.Setup(repo => repo.GetQuestionsByGameId(session.GameId, It.IsAny<int>(), It.IsAny<int>()))
+            _mockGamesRepository?.Setup(repo => repo.GetGameSessionById(session.Id)).Returns(session);
+            _mockGamesRepository?.Setup(repo => repo.GetQuestionsByGameId(session.GameId, It.IsAny<int>(), It.IsAny<int>()))
                 .Returns(questions);
 
             var command = new SubmitAnswerCommand(SessionId: 1, Player1Score: 2, Player2Score: 1, true);
@@ -73,14 +73,14 @@ namespace Fliq.Test.Games.Commands
             Assert.AreEqual(1, session.Player2Score);
             Assert.AreEqual(2, session.Player1Score);
 
-            _mockGamesRepository.Verify(repo => repo.UpdateGameSession(It.IsAny<GameSession>()), Times.Once);
+            _mockGamesRepository?.Verify(repo => repo.UpdateGameSession(It.IsAny<GameSession>()), Times.Once);
         }
 
         [TestMethod]
         public async Task Handle_SessionNotFound_ReturnsGameNotFoundError()
         {
             // Arrange
-            _mockGamesRepository.Setup(repo => repo.GetGameSessionById(It.IsAny<int>())).Returns((GameSession)null);
+            _mockGamesRepository?.Setup(repo => repo.GetGameSessionById(It.IsAny<int>())).Returns((GameSession?)null);
 
             var command = new SubmitAnswerCommand(SessionId: 999, Player1Score: 2, Player2Score: 1, true);
 
@@ -91,8 +91,8 @@ namespace Fliq.Test.Games.Commands
             Assert.IsTrue(result.IsError);
             Assert.AreEqual(Errors.Games.GameNotFound.Code, result.FirstError.Code);
 
-            _mockLogger.Verify(logger => logger.LogError(It.Is<string>(msg => msg.Contains("Session 999 not found"))), Times.Once);
-            _mockGamesRepository.Verify(repo => repo.UpdateGameSession(It.IsAny<GameSession>()), Times.Never);
+            _mockLogger?.Verify(logger => logger.LogError(It.Is<string>(msg => msg.Contains("Session 999 not found"))), Times.Once);
+            _mockGamesRepository?.Verify(repo => repo.UpdateGameSession(It.IsAny<GameSession>()), Times.Never);
         }
     }
 }

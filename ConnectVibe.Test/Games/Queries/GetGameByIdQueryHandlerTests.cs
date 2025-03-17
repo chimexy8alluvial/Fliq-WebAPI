@@ -10,9 +10,9 @@ namespace Fliq.Test.Games.Queries.GetGame
     [TestClass]
     public class GetGameByIdQueryHandlerTests
     {
-        private Mock<IGamesRepository> _mockGamesRepository;
-        private Mock<ILoggerManager> _mockLogger;
-        private GetGameByIdQueryHandler _handler;
+        private Mock<IGamesRepository>? _mockGamesRepository;
+        private Mock<ILoggerManager>? _mockLogger;
+        private GetGameByIdQueryHandler? _handler;
 
         [TestInitialize]
         public void Setup()
@@ -31,7 +31,7 @@ namespace Fliq.Test.Games.Queries.GetGame
             // Arrange
             var gameId = 1;
             var game = new Game { Id = gameId, Name = "Test Game" };
-            _mockGamesRepository.Setup(repo => repo.GetGameById(gameId)).Returns(game);
+            _mockGamesRepository?.Setup(repo => repo.GetGameById(gameId)).Returns(game);
 
             var query = new GetGameByIdQuery(gameId);
 
@@ -44,9 +44,9 @@ namespace Fliq.Test.Games.Queries.GetGame
             Assert.AreEqual(gameId, result.Value.Id);
             Assert.AreEqual("Test Game", result.Value.Name);
 
-            _mockGamesRepository.Verify(repo => repo.GetGameById(gameId), Times.Once);
-            _mockLogger.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains($"Getting game with id: {gameId}"))), Times.Once);
-            _mockLogger.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains($"Got game with id: {gameId}"))), Times.Once);
+            _mockGamesRepository?.Verify(repo => repo.GetGameById(gameId), Times.Once);
+            _mockLogger?.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains($"Getting game with id: {gameId}"))), Times.Once);
+            _mockLogger?.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains($"Got game with id: {gameId}"))), Times.Once);
         }
 
         [TestMethod]
@@ -54,7 +54,7 @@ namespace Fliq.Test.Games.Queries.GetGame
         {
             // Arrange
             var gameId = 1;
-            _mockGamesRepository.Setup(repo => repo.GetGameById(gameId)).Returns((Game)null);
+            _mockGamesRepository?.Setup(repo => repo.GetGameById(gameId)).Returns((Game?)null);
 
             var query = new GetGameByIdQuery(gameId);
 
@@ -65,9 +65,9 @@ namespace Fliq.Test.Games.Queries.GetGame
             Assert.IsTrue(result.IsError);
             Assert.AreEqual(Errors.Games.GameNotFound, result.FirstError);
 
-            _mockGamesRepository.Verify(repo => repo.GetGameById(gameId), Times.Once);
-            _mockLogger.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains($"Getting game with id: {gameId}"))), Times.Once);
-            _mockLogger.Verify(logger => logger.LogError(It.Is<string>(msg => msg.Contains($"Game with id: {gameId} not found"))), Times.Once);
+            _mockGamesRepository?.Verify(repo => repo.GetGameById(gameId), Times.Once);
+            _mockLogger?.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains($"Getting game with id: {gameId}"))), Times.Once);
+            _mockLogger?.Verify(logger => logger.LogError(It.Is<string>(msg => msg.Contains($"Game with id: {gameId} not found"))), Times.Once);
         }
 
         [TestMethod]
@@ -76,7 +76,7 @@ namespace Fliq.Test.Games.Queries.GetGame
             // Arrange
             var gameId = 1;
             var game = new Game { Id = gameId, Name = "Test Game" };
-            _mockGamesRepository.Setup(repo => repo.GetGameById(gameId)).Returns(game);
+            _mockGamesRepository?.Setup(repo => repo.GetGameById(gameId)).Returns(game);
 
             var query = new GetGameByIdQuery(gameId);
 
@@ -84,8 +84,8 @@ namespace Fliq.Test.Games.Queries.GetGame
             await _handler.Handle(query, CancellationToken.None);
 
             // Assert
-            _mockLogger.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains($"Getting game with id: {gameId}"))), Times.Once);
-            _mockLogger.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains($"Got game with id: {gameId}"))), Times.Once);
+            _mockLogger?.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains($"Getting game with id: {gameId}"))), Times.Once);
+            _mockLogger?.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains($"Got game with id: {gameId}"))), Times.Once);
         }
     }
 }

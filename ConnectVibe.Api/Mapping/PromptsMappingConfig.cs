@@ -1,5 +1,4 @@
-﻿using Fliq.Application.Prompts.Commands;
-using Fliq.Application.Prompts.Common;
+﻿using Fliq.Application.Prompts.Common;
 using Fliq.Contracts.Profile;
 using Fliq.Contracts.Prompts;
 using Fliq.Domain.Entities.Prompts;

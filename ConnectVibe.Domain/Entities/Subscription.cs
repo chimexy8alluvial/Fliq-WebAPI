@@ -18,7 +18,7 @@
 
         public Environment Environment { get; set; }
 
-        public DateTime DateCreated { get; set; }
+        public DateTime? DateCreated { get; set; }
     }
 
     public enum SubscriptionStatus

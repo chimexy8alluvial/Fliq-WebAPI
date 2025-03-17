@@ -11,11 +11,11 @@ namespace Fliq.Test.Games.Commands
     [TestClass]
     public class CreateStakeCommandHandlerTests
     {
-        private Mock<IStakeRepository> _mockStakeRepository;
-        private Mock<IWalletRepository> _mockWalletRepository;
-        private Mock<ILoggerManager> _mockLogger;
-        private Mock<IGamesRepository> _mockGameRepository;
-        private CreateStakeCommandHandler _handler;
+        private Mock<IStakeRepository>? _mockStakeRepository;
+        private Mock<IWalletRepository>? _mockWalletRepository;
+        private Mock<ILoggerManager>? _mockLogger;
+        private Mock<IGamesRepository>? _mockGameRepository;
+        private CreateStakeCommandHandler? _handler;
 
         [TestInitialize]
         public void Setup()
@@ -39,18 +39,18 @@ namespace Fliq.Test.Games.Commands
             // Arrange
             var command = new CreateStakeCommand(1, 101, 102, 50m, StakeResolutionOption.WinnerTakesAll);
 
-            _mockWalletRepository
+            _mockWalletRepository?
                 .Setup(repo => repo.GetWalletByUserId(command.RequesterId))
                 .Returns(new Wallet { UserId = 101, Balance = 30m });
-            _mockGameRepository.Setup(repo => repo.GetGameSessionById(command.GameSessionId)).Returns(new GameSession());
+            _mockGameRepository?.Setup(repo => repo.GetGameSessionById(command.GameSessionId)).Returns(new GameSession());
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.IsTrue(result.IsError);
             Assert.AreEqual(Errors.Wallet.InsufficientBalance, result.FirstError);
-            _mockLogger.Verify(logger => logger.LogError(It.Is<string>(msg => msg.Contains("Insufficient balance"))), Times.Once);
-            _mockStakeRepository.Verify(repo => repo.Add(It.IsAny<Stake>()), Times.Never);
+            _mockLogger?.Verify(logger => logger.LogError(It.Is<string>(msg => msg.Contains("Insufficient balance"))), Times.Once);
+            _mockStakeRepository?.Verify(repo => repo.Add(It.IsAny<Stake>()), Times.Never);
         }
 
         [TestMethod]
@@ -59,16 +59,16 @@ namespace Fliq.Test.Games.Commands
             // Arrange
             var command = new CreateStakeCommand(1, 101, 102, 50m, StakeResolutionOption.WinnerTakesAll);
 
-            _mockWalletRepository
+            _mockWalletRepository?
                 .Setup(repo => repo.GetWalletByUserId(command.RequesterId))
                 .Returns(new Wallet { UserId = 101, Balance = 100m });
 
-            _mockWalletRepository
+            _mockWalletRepository?
                 .Setup(repo => repo.UpdateWallet(It.IsAny<Wallet>()));
 
-            _mockGameRepository.Setup(repo => repo.GetGameSessionById(command.GameSessionId)).Returns(new GameSession());
+            _mockGameRepository?.Setup(repo => repo.GetGameSessionById(command.GameSessionId)).Returns(new GameSession());
 
-            _mockStakeRepository
+            _mockStakeRepository?
                 .Setup(repo => repo.Add(It.IsAny<Stake>()));
 
             // Act
@@ -82,10 +82,10 @@ namespace Fliq.Test.Games.Commands
             Assert.AreEqual(command.RecipientId, result.Value.RecipientId);
             Assert.AreEqual(command.Amount, result.Value.Amount);
 
-            _mockLogger.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains("Creating stake"))), Times.Once);
-            _mockLogger.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains("Stake created"))), Times.Once);
-            _mockWalletRepository.Verify(repo => repo.UpdateWallet(It.Is<Wallet>(w => w.UserId == command.RequesterId && w.Balance == 50m)), Times.Once);
-            _mockStakeRepository.Verify(repo => repo.Add(It.IsAny<Stake>()), Times.Once);
+            _mockLogger?.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains("Creating stake"))), Times.Once);
+            _mockLogger?.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains("Stake created"))), Times.Once);
+            _mockWalletRepository?.Verify(repo => repo.UpdateWallet(It.Is<Wallet>(w => w.UserId == command.RequesterId && w.Balance == 50m)), Times.Once);
+            _mockStakeRepository?.Verify(repo => repo.Add(It.IsAny<Stake>()), Times.Once);
         }
 
         [TestMethod]
@@ -94,10 +94,10 @@ namespace Fliq.Test.Games.Commands
             // Arrange
             var command = new CreateStakeCommand(1, 101, 102, 50m, StakeResolutionOption.WinnerTakesAll);
 
-            _mockWalletRepository
+            _mockWalletRepository?
                 .Setup(repo => repo.GetWalletByUserId(command.RequesterId))
-                .Returns((Wallet)null);
-            _mockGameRepository.Setup(repo => repo.GetGameSessionById(command.GameSessionId)).Returns(new GameSession());
+                .Returns((Wallet?)null);
+            _mockGameRepository?.Setup(repo => repo.GetGameSessionById(command.GameSessionId)).Returns(new GameSession());
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -105,8 +105,8 @@ namespace Fliq.Test.Games.Commands
             // Assert
             Assert.IsTrue(result.IsError);
             Assert.AreEqual(Errors.Wallet.InsufficientBalance, result.FirstError);
-            _mockLogger.Verify(logger => logger.LogError(It.Is<string>(msg => msg.Contains("Insufficient balance"))), Times.Once);
-            _mockStakeRepository.Verify(repo => repo.Add(It.IsAny<Stake>()), Times.Never);
+            _mockLogger?.Verify(logger => logger.LogError(It.Is<string>(msg => msg.Contains("Insufficient balance"))), Times.Once);
+            _mockStakeRepository?.Verify(repo => repo.Add(It.IsAny<Stake>()), Times.Never);
         }
     }
 }

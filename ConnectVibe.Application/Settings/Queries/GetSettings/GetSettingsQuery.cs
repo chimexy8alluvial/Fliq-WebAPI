@@ -4,7 +4,6 @@ using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Settings.Common;
 using Fliq.Domain.Common.Errors;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 
 namespace Fliq.Application.Settings.Queries.GetSettings
 {
@@ -15,15 +14,13 @@ namespace Fliq.Application.Settings.Queries.GetSettings
         private readonly ISettingsRepository _settingsRepository;
         private readonly IProfileRepository _profileRepository;
         private readonly IUserRepository _userRepository;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILoggerManager _logger;
 
-        public GetSettingsQueryHandler(ISettingsRepository settingsRepository, IProfileRepository profileRepository, IUserRepository userRepository, IHttpContextAccessor httpContextAccessor, ILoggerManager logger)
+        public GetSettingsQueryHandler(ISettingsRepository settingsRepository, IProfileRepository profileRepository, IUserRepository userRepository, ILoggerManager logger)
         {
             _settingsRepository = settingsRepository;
             _profileRepository = profileRepository;
             _userRepository = userRepository;
-            _httpContextAccessor = httpContextAccessor;
             _logger = logger;
         }
 
