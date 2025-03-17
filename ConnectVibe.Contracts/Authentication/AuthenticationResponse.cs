@@ -6,7 +6,8 @@ public record AuthenticationResponse(
     string LastName,
     string DisplayName,
     string Email,
-    string Token
+    string Token,
+    string StreamToken
     );
 
 

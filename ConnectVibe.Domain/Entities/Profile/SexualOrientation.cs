@@ -2,6 +2,7 @@
 {
     public class SexualOrientation : Record
     {
+        public int UserProfileId { get; set; }
         public SexualOrientationType SexualOrientationType { get; set; }
         public bool IsVisible { get; set; }
     }

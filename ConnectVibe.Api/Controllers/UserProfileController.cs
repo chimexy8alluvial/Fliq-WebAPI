@@ -54,25 +54,28 @@ namespace Fliq.Api.Controllers
 
             var command = _mapper.Map<CreateProfileCommand>(request);
             command.UserId = userId;
-            command.Photos = request.Photos.Select(photo => new ProfilePhotoMapped
+            if (request.Photos != null)
             {
-                Caption = photo.Caption,
-                ImageFile = photo.ImageFile
-            }).ToList();
-
+                command.Photos = request.Photos.Select(photo => new ProfilePhotoMapped
+                {
+                    Caption = photo.Caption,
+                    ImageFile = photo.ImageFile
+                }).ToList();
+            }
             // Explicitly map PromptResponses (IFormFile)
-            command.PromptResponses = request.PromptResponses.Select(p => new PromptResponseDto
-            (
-                (int)p.PromptQuestionId,
-                p.CustomPromptQuestionText,
-                p.TextResponse,
-                p.VoiceNote,
-                p.VideoClip,
-                p.CategoryId,
-                p.IsCustomPrompt
-            )).ToList();
-            
-
+            if (request.PromptResponses != null)
+            {
+                command.PromptResponses = request.PromptResponses.Select(p => new PromptResponseDto
+                (
+                    (int)p.PromptQuestionId,
+                    p.CustomPromptQuestionText,
+                    p.TextResponse,
+                    p.VoiceNote,
+                    p.VideoClip,
+                    p.CategoryId,
+                    p.IsCustomPrompt
+                )).ToList();
+            }
             var profileResult = await _mediator.Send(command);
 
             return profileResult.Match(
