@@ -1,5 +1,4 @@
 ﻿using Fliq.Application.Authentication.Commands.Register;
-using Fliq.Application.Common.Interfaces.Authentication;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Domain.Common.Errors;
@@ -27,7 +26,6 @@ namespace Fliq.Test.Authentication.Commands.Register
             _emailServiceMock = new Mock<IEmailService>();
             _otpServiceMock = new Mock<IOtpService>();
             _loggerManagerMock = new Mock<ILoggerManager>();
-            
 
             _handler = new RegisterCommandHandler(
                 _userRepositoryMock.Object,
@@ -41,7 +39,7 @@ namespace Fliq.Test.Authentication.Commands.Register
         public async Task Handle_UserAlreadyExists_ReturnsDuplicateEmailError()
         {
             // Arrange
-            var command = new RegisterCommand("John", "Doe", "johndoe", "johndoe@example.com", "password");
+            var command = new RegisterCommand("John", "Doe", "johndoe", "johndoe@example.com", "password", "English");
             var existingUser = new User { Email = command.Email, IsEmailValidated = true };
 
             _userRepositoryMock.Setup(repo => repo.GetUserByEmail(command.Email))
@@ -59,7 +57,7 @@ namespace Fliq.Test.Authentication.Commands.Register
         public async Task Handle_NewUser_CreatesUserAndSendsOtp()
         {
             // Arrange
-            var command = new RegisterCommand("John", "Doe", "johndoe", "johndoe@example.com", "password");
+            var command = new RegisterCommand("John", "Doe", "johndoe", "johndoe@example.com", "password", "English");
             User newUser = null;
 
             _userRepositoryMock.Setup(repo => repo.GetUserByEmail(command.Email))
@@ -89,7 +87,7 @@ namespace Fliq.Test.Authentication.Commands.Register
         public async Task Handle_ExistingUserButEmailNotValidated_CreatesUserAndSendsOtp()
         {
             // Arrange
-            var command = new RegisterCommand("John", "Doe", "johndoe", "johndoe@example.com", "password");
+            var command = new RegisterCommand("John", "Doe", "johndoe", "johndoe@example.com", "password", "English");
             var existingUser = new User { Email = command.Email, IsEmailValidated = false };
 
             _userRepositoryMock.Setup(repo => repo.GetUserByEmail(command.Email))
@@ -113,4 +111,3 @@ namespace Fliq.Test.Authentication.Commands.Register
         }
     }
 }
-
