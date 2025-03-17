@@ -9,9 +9,9 @@ namespace Fliq.Test.Games.Commands
     [TestClass]
     public class CreateQuestionCommandHandlerTests
     {
-        private Mock<IGamesRepository> _mockGamesRepository;
-        private Mock<ILogger<CreateQuestionCommandHandler>> _mockLogger;
-        private CreateQuestionCommandHandler _handler;
+        private Mock<IGamesRepository>? _mockGamesRepository;
+        private Mock<ILogger<CreateQuestionCommandHandler>>? _mockLogger;
+        private CreateQuestionCommandHandler? _handler;
 
         [TestInitialize]
         public void Setup()
@@ -38,12 +38,12 @@ namespace Fliq.Test.Games.Commands
 
             var game = new Game { Id = 1, Name = "Trivia Game" };
 
-            _mockGamesRepository
+            _mockGamesRepository?
                 .Setup(repo => repo.GetGameById(command.GameId))
                 .Returns(game);
 
             GameQuestion capturedQuestion = null;
-            _mockGamesRepository
+            _mockGamesRepository?
                 .Setup(repo => repo.AddQuestion(It.IsAny<GameQuestion>()))
                 .Callback<GameQuestion>(q => capturedQuestion = q);
 
@@ -60,9 +60,9 @@ namespace Fliq.Test.Games.Commands
             Assert.AreEqual(command.GameId, capturedQuestion.GameId);
             Assert.AreEqual(command.Text, capturedQuestion.QuestionText);
             Assert.AreEqual(command.CorrectAnswer, capturedQuestion.CorrectAnswer);
-            Assert.AreEqual(command.Options.Count, capturedQuestion.Options.Count);
+            Assert.AreEqual(command.Options.Count, capturedQuestion?.Options?.Count);
 
-            _mockGamesRepository.Verify(repo => repo.AddQuestion(It.IsAny<GameQuestion>()), Times.Once);
+            _mockGamesRepository?.Verify(repo => repo.AddQuestion(It.IsAny<GameQuestion>()), Times.Once);
         }
 
         [TestMethod]
@@ -76,9 +76,9 @@ namespace Fliq.Test.Games.Commands
                 CorrectAnswer: "Paris"
             );
 
-            _mockGamesRepository
+            _mockGamesRepository?
                 .Setup(repo => repo.GetGameById(command.GameId))
-                .Returns((Game)null);
+                .Returns((Game?)null);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -87,7 +87,7 @@ namespace Fliq.Test.Games.Commands
             Assert.IsTrue(result.IsError);
             Assert.AreEqual("Game.NotFound", result.FirstError.Code);
 
-            _mockGamesRepository.Verify(repo => repo.AddQuestion(It.IsAny<GameQuestion>()), Times.Never);
+            _mockGamesRepository?.Verify(repo => repo.AddQuestion(It.IsAny<GameQuestion>()), Times.Never);
         }
     }
 }

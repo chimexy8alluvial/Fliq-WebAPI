@@ -11,10 +11,10 @@ namespace Fliq.Test.Authentication.Queries.Login
     [TestClass]
     public class LoginQueryHandlerTests
     {
-        private LoginQueryHandler _handler;
-        private Mock<IJwtTokenGenerator> _jwtTokenGeneratorMock;
-        private Mock<IUserRepository> _userRepositoryMock;
-        private Mock<ILoggerManager> _loggerManagerMock;
+        private LoginQueryHandler? _handler;
+        private Mock<IJwtTokenGenerator>? _jwtTokenGeneratorMock;
+        private Mock<IUserRepository>? _userRepositoryMock;
+        private Mock<ILoggerManager>? _loggerManagerMock;
 
         [TestInitialize]
         public void Setup()
@@ -35,8 +35,8 @@ namespace Fliq.Test.Authentication.Queries.Login
             // Arrange
             var query = new LoginQuery("johndoe@example.com", "password");
 
-            _userRepositoryMock.Setup(repo => repo.GetUserByEmail(query.Email))
-                .Returns((User)null);
+            _userRepositoryMock?.Setup(repo => repo.GetUserByEmail(query.Email))
+                .Returns((User?)null);
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
@@ -53,7 +53,7 @@ namespace Fliq.Test.Authentication.Queries.Login
             var query = new LoginQuery("johndoe@example.com", "wrongPassword");
             var user = new User { Email = query.Email, PasswordSalt = "salt", PasswordHash = PasswordHash.Create("correctPassword", "salt") };
 
-            _userRepositoryMock.Setup(repo => repo.GetUserByEmail(query.Email))
+            _userRepositoryMock?.Setup(repo => repo.GetUserByEmail(query.Email))
                 .Returns(user);
 
             // Act
@@ -72,10 +72,10 @@ namespace Fliq.Test.Authentication.Queries.Login
             var user = new User { Email = query.Email, PasswordSalt = "salt", PasswordHash = PasswordHash.Create("password", "salt") };
             var expectedToken = "valid-token";
 
-            _userRepositoryMock.Setup(repo => repo.GetUserByEmail(query.Email))
+            _userRepositoryMock?.Setup(repo => repo.GetUserByEmail(query.Email))
                 .Returns(user);
 
-            _jwtTokenGeneratorMock.Setup(generator => generator.GenerateToken(user))
+            _jwtTokenGeneratorMock?.Setup(generator => generator.GenerateToken(user))
                 .Returns(expectedToken);
 
             // Act

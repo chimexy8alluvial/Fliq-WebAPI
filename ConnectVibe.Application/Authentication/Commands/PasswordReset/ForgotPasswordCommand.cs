@@ -1,12 +1,9 @@
-﻿using Fliq.Application.Authentication.Commands.PasswordReset;
-using Fliq.Application.Authentication.Common;
-using Fliq.Application.Common.Interfaces.Authentication;
+﻿using Fliq.Application.Authentication.Common;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Domain.Common.Errors;
 using ErrorOr;
 using MediatR;
-using Newtonsoft.Json;
 
 
 namespace Fliq.Application.Authentication.Commands.PasswordReset
@@ -17,14 +14,12 @@ namespace Fliq.Application.Authentication.Commands.PasswordReset
 
     public class ForgotPasswordHandler : IRequestHandler<ForgotPasswordCommand, ErrorOr<ForgotPasswordResult>>
     {
-        private readonly IJwtTokenGenerator _jwtTokenGenerator;
         private readonly IUserRepository _userRepository;
         private readonly IOtpService _otpService;
         private readonly IEmailService _emailService;
         private readonly ILoggerManager _logger;
-        public ForgotPasswordHandler(IJwtTokenGenerator jwtTokenGenerator, IUserRepository userRepository, IOtpService otpService, IEmailService emailService, ILoggerManager logger)
+        public ForgotPasswordHandler(IUserRepository userRepository, IOtpService otpService, IEmailService emailService, ILoggerManager logger)
         {
-            _jwtTokenGenerator = jwtTokenGenerator;
             _userRepository = userRepository;
             _otpService = otpService;
             _emailService = emailService;

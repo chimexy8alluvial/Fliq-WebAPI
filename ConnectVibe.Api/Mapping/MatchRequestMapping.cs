@@ -1,5 +1,4 @@
-﻿using Fliq.Application.MatchedProfile.Commands.MatchedList;
-using Fliq.Application.MatchedProfile.Common;
+﻿using Fliq.Application.MatchedProfile.Common;
 using Fliq.Contracts.MatchedProfile;
 using Mapster;
 

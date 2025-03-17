@@ -11,24 +11,22 @@ namespace Fliq.Test.Authentication.Commands.PasswordReset
     [TestClass]
     public class ForgotPasswordHandlerTests
     {
-        private ForgotPasswordHandler _handler;
-        private Mock<IJwtTokenGenerator> _jwtTokenGeneratorMock;
-        private Mock<IUserRepository> _userRepositoryMock;
-        private Mock<IOtpService> _otpServiceMock;
-        private Mock<IEmailService> _emailServiceMock;
-        private Mock<ILoggerManager> _loggerMock;
+        private ForgotPasswordHandler? _handler;
+        private Mock<IJwtTokenGenerator>? _jwtTokenGeneratorMock;
+        private Mock<IUserRepository>? _userRepositoryMock;
+        private Mock<IOtpService>? _otpServiceMock;
+        private Mock<IEmailService>? _emailServiceMock;
+        private Mock<ILoggerManager>? _loggerMock;
 
         [TestInitialize]
         public void Setup()
         {
-            _jwtTokenGeneratorMock = new Mock<IJwtTokenGenerator>();
             _userRepositoryMock = new Mock<IUserRepository>();
             _otpServiceMock = new Mock<IOtpService>();
             _emailServiceMock = new Mock<IEmailService>();
             _loggerMock = new Mock<ILoggerManager>();
 
             _handler = new ForgotPasswordHandler(
-                _jwtTokenGeneratorMock.Object,
                 _userRepositoryMock.Object,
                 _otpServiceMock.Object,
                 _emailServiceMock.Object,
@@ -41,8 +39,8 @@ namespace Fliq.Test.Authentication.Commands.PasswordReset
             // Arrange
             var command = new ForgotPasswordCommand("johndoe@example.com");
 
-            _userRepositoryMock.Setup(repo => repo.GetUserByEmail(command.Email))
-                .Returns((User)null);
+            _userRepositoryMock?.Setup(repo => repo.GetUserByEmail(command.Email))
+                .Returns((User?)null);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -60,13 +58,13 @@ namespace Fliq.Test.Authentication.Commands.PasswordReset
             var user = new User { Email = command.Email, Id = 1 };
             var expectedOtp = "123456";
 
-            _userRepositoryMock.Setup(repo => repo.GetUserByEmail(command.Email))
+            _userRepositoryMock?.Setup(repo => repo.GetUserByEmail(command.Email))
                 .Returns(user);
 
-            _otpServiceMock.Setup(service => service.GetOtpAsync(user.Email, user.Id))
+            _otpServiceMock?.Setup(service => service.GetOtpAsync(user.Email, user.Id))
                 .ReturnsAsync(expectedOtp);
 
-            _emailServiceMock.Setup(service => service.SendEmailAsync(user.Email, "Your OTP Code", $"Your OTP is {expectedOtp}"))
+            _emailServiceMock?.Setup(service => service.SendEmailAsync(user.Email, "Your OTP Code", $"Your OTP is {expectedOtp}"))
                 .Returns(Task.CompletedTask);
 
             // Act
@@ -77,8 +75,8 @@ namespace Fliq.Test.Authentication.Commands.PasswordReset
             Assert.AreEqual(expectedOtp, result.Value.otp);
             Assert.AreEqual(user.Email, result.Value.email);
 
-            _loggerMock.Verify(logger => logger.LogInfo($"{user.Email} recieved the following otp--{expectedOtp}"), Times.Once);
-            _emailServiceMock.Verify(service => service.SendEmailAsync(user.Email, "Your OTP Code", $"Your OTP is {expectedOtp}"), Times.Once);
+            _loggerMock?.Verify(logger => logger.LogInfo($"{user.Email} recieved the following otp--{expectedOtp}"), Times.Once);
+            _emailServiceMock?.Verify(service => service.SendEmailAsync(user.Email, "Your OTP Code", $"Your OTP is {expectedOtp}"), Times.Once);
         }
     }
 }

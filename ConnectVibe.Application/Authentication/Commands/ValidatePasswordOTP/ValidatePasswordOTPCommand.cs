@@ -1,10 +1,8 @@
 ﻿using Fliq.Application.Authentication.Common;
-using Fliq.Application.Common.Interfaces.Authentication;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Domain.Common.Errors;
 using ErrorOr;
-using MapsterMapper;
 using MediatR;
 namespace Fliq.Application.Authentication.Commands.ValidatePasswordOTP
 {
@@ -15,18 +13,12 @@ namespace Fliq.Application.Authentication.Commands.ValidatePasswordOTP
 
     public class ValidatePasswordOTPCommandHandler : IRequestHandler<ValidatePasswordOTPCommand, ErrorOr<ValidatePasswordOTPResult>>
     {
-        private readonly IJwtTokenGenerator _jwtTokenGenerator;
         private readonly IUserRepository _userRepository;
-        private readonly IMapper _mapper;
-        private readonly IEmailService _emailService;
         private readonly IOtpService _otpService;
 
-        public ValidatePasswordOTPCommandHandler(IJwtTokenGenerator jwtTokenGenerator, IUserRepository userRepository, IMapper mapper, IEmailService emailService, IOtpService otpService)
+        public ValidatePasswordOTPCommandHandler(IUserRepository userRepository, IOtpService otpService)
         {
-            _jwtTokenGenerator = jwtTokenGenerator;
             _userRepository = userRepository;
-            _mapper = mapper;
-            _emailService = emailService;
             _otpService = otpService;
         }
 

@@ -1,12 +1,9 @@
-﻿using Fliq.Application.Common.Interfaces.Authentication;
-using Fliq.Application.Common.Interfaces.Persistence;
+﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Security;
 using Fliq.Domain.Common.Errors;
 using ErrorOr;
-using MapsterMapper;
 using MediatR;
-using Newtonsoft.Json;
 
 namespace Fliq.Application.Authentication.Commands.ChangePassword
 {
@@ -18,22 +15,14 @@ namespace Fliq.Application.Authentication.Commands.ChangePassword
 
     public class ChangePasswordQueryHandler : IRequestHandler<ChangePasswordCommand, ErrorOr<bool>>
     {
-        private readonly IJwtTokenGenerator _jwtTokenGenerator;
         private readonly IUserRepository _userRepository;
-        private readonly IMapper _mapper;
         private readonly IEmailService _emailService;
-        private readonly IOtpRepository _otpRepository;
-        private readonly IOtpService _otpService;
         private readonly ILoggerManager _logger;
 
-        public ChangePasswordQueryHandler(IJwtTokenGenerator jwtTokenGenerator, IUserRepository userRepository, IMapper mapper, IEmailService emailService, IOtpRepository otpRepository, IOtpService otpService, ILoggerManager logger)
+        public ChangePasswordQueryHandler(IUserRepository userRepository, IEmailService emailService, ILoggerManager logger)
         {
-            _jwtTokenGenerator = jwtTokenGenerator;
             _userRepository = userRepository;
-            _mapper = mapper;
             _emailService = emailService;
-            _otpRepository = otpRepository;
-            _otpService = otpService;
             _logger = logger;
         }
 

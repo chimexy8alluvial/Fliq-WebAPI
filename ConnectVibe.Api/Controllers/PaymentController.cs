@@ -1,5 +1,4 @@
-﻿using Fliq.Api.Controllers;
-using Fliq.Application.Common.Interfaces.Services;
+﻿using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Payments.Commands.RevenueCat;
 using Fliq.Application.Payments.Common;
 using Fliq.Contracts.Payments;

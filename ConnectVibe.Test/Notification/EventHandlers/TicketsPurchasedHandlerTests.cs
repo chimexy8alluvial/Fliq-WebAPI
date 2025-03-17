@@ -11,10 +11,10 @@ namespace Fliq.Test.Notification.EventHandlers
     public class TicketsPurchasedHandlerTests
     {
 
-        private Mock<INotificationRepository> _notificationRepositoryMock;
-        private Mock<IPushNotificationService> _firebaseServiceMock;
-        private Mock<ILoggerManager> _loggerMock;
-        private NotificationEventHandler _handler;
+        private Mock<INotificationRepository>? _notificationRepositoryMock;
+        private Mock<IPushNotificationService>? _firebaseServiceMock;
+        private Mock<ILoggerManager>? _loggerMock;
+        private NotificationEventHandler? _handler;
 
         [TestInitialize]
         public void Setup()
@@ -55,9 +55,9 @@ namespace Fliq.Test.Notification.EventHandlers
             var buyerTokens = new List<string> { buyerToken };
 
             // Mock device tokens for organizer and invitees
-            _notificationRepositoryMock.Setup(repo => repo.GetDeviceTokensByUserIdAsync(2))
+            _notificationRepositoryMock?.Setup(repo => repo.GetDeviceTokensByUserIdAsync(2))
                 .ReturnsAsync(new List<string> { organizerToken }); // Organizer tokens
-            _notificationRepositoryMock.Setup(repo => repo.GetDeviceTokensByUserIdAsync(1))
+            _notificationRepositoryMock?.Setup(repo => repo.GetDeviceTokensByUserIdAsync(1))
                 .ReturnsAsync(new List<string> { buyerToken }); // First invitee tokens
 
 
@@ -67,7 +67,7 @@ namespace Fliq.Test.Notification.EventHandlers
             // Assert
 
             // Verify notification sent to the organizer
-            _firebaseServiceMock.Verify(service => service.SendNotificationAsync(
+            _firebaseServiceMock?.Verify(service => service.SendNotificationAsync(
                "New Ticket Purchased",
                 $"JohnDoe purchased {3} ticket(s) for your event 'Test Event'.",
                 organizerTokens,
@@ -77,7 +77,7 @@ namespace Fliq.Test.Notification.EventHandlers
                 null), Times.Once);
 
             // Verify notification sent to first invitee
-            _firebaseServiceMock.Verify(service => service.SendNotificationAsync(
+            _firebaseServiceMock?.Verify(service => service.SendNotificationAsync(
                 "Ticket Purchase Successful!",
                 $"You have successfully purchased {3} " +
                 $"ticket(s) for the event 'Test Event' on {EventDate}.",

@@ -13,11 +13,11 @@ namespace Fliq.Test.Authentication.Queries.FacebookLogin
     [TestClass]
     public class FacebookLoginQueryHandlerTests
     {
-        private FacebookLoginQueryHandler _handler;
-        private Mock<IJwtTokenGenerator> _jwtTokenGeneratorMock;
-        private Mock<IUserRepository> _userRepositoryMock;
-        private Mock<ISocialAuthService> _socialAuthServiceMock;
-        private Mock<ILoggerManager> _loggerManagerMock;
+        private FacebookLoginQueryHandler? _handler;
+        private Mock<IJwtTokenGenerator>? _jwtTokenGeneratorMock;
+        private Mock<IUserRepository>? _userRepositoryMock;
+        private Mock<ISocialAuthService>? _socialAuthServiceMock;
+        private Mock<ILoggerManager>? _loggerManagerMock;
 
         [TestInitialize]
         public void Setup()
@@ -40,8 +40,8 @@ namespace Fliq.Test.Authentication.Queries.FacebookLogin
             // Arrange
             var query = new FacebookLoginQuery("invalid-code");
 
-            _socialAuthServiceMock.Setup(service => service.GetFacebookUserInformation(query.Code))
-                .ReturnsAsync((FacebookUserInfoResponse)null);
+            _socialAuthServiceMock?.Setup(service => service.GetFacebookUserInformation(query.Code))
+                .ReturnsAsync((FacebookUserInfoResponse?)null);
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
@@ -66,13 +66,13 @@ namespace Fliq.Test.Authentication.Queries.FacebookLogin
             var user = new User { Email = facebookResponse.Email };
             var expectedToken = "valid-token";
 
-            _socialAuthServiceMock.Setup(service => service.GetFacebookUserInformation(query.Code))
+            _socialAuthServiceMock?.Setup(service => service.GetFacebookUserInformation(query.Code))
                 .ReturnsAsync(facebookResponse);
 
-            _userRepositoryMock.Setup(repo => repo.GetUserByEmail(facebookResponse.Email))
+            _userRepositoryMock?.Setup(repo => repo.GetUserByEmail(facebookResponse.Email))
                 .Returns(user);
 
-            _jwtTokenGeneratorMock.Setup(generator => generator.GenerateToken(user))
+            _jwtTokenGeneratorMock?.Setup(generator => generator.GenerateToken(user))
                 .Returns(expectedToken);
 
             // Act
@@ -99,13 +99,13 @@ namespace Fliq.Test.Authentication.Queries.FacebookLogin
             };
             var expectedToken = "valid-token";
 
-            _socialAuthServiceMock.Setup(service => service.GetFacebookUserInformation(query.Code))
+            _socialAuthServiceMock?.Setup(service => service.GetFacebookUserInformation(query.Code))
                 .ReturnsAsync(facebookResponse);
 
-            _userRepositoryMock.Setup(repo => repo.GetUserByEmail(facebookResponse.Email))
-                .Returns((User)null);
+            _userRepositoryMock?.Setup(repo => repo.GetUserByEmail(facebookResponse.Email))
+                .Returns((User?)null);
 
-            _jwtTokenGeneratorMock.Setup(generator => generator.GenerateToken(It.IsAny<User>()))
+            _jwtTokenGeneratorMock?.Setup(generator => generator.GenerateToken(It.IsAny<User>()))
                 .Returns(expectedToken);
 
             // Act
@@ -117,7 +117,7 @@ namespace Fliq.Test.Authentication.Queries.FacebookLogin
             Assert.AreEqual(facebookResponse.Email, result.Value.user.Email);
             Assert.IsTrue(result.Value.IsNewUser);
 
-            _userRepositoryMock.Verify(repo => repo.Add(It.IsAny<User>()), Times.Once);
+            _userRepositoryMock?.Verify(repo => repo.Add(It.IsAny<User>()), Times.Once);
         }
     }
 }

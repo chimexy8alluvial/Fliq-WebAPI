@@ -4,7 +4,6 @@ using Fliq.Application.Authentication.Queries.FacebookLogin;
 using Fliq.Application.Authentication.Queries.GoogleLogin;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Authentication.Queries.Login;
-using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Contracts.Authentication;
 using Fliq.Domain.Common.Errors;
 using MapsterMapper;
@@ -26,14 +25,12 @@ namespace Fliq.Api.Controllers
     {
         private readonly ISender _mediator;
         private readonly IMapper _mapper;
-        private readonly IOtpRepository _otpRepository;
         private readonly ILoggerManager _logger;
 
-        public AuthenticationController(ISender mediator, IMapper mapper, IOtpRepository otpRepository, ILoggerManager logger)
+        public AuthenticationController(ISender mediator, IMapper mapper, ILoggerManager logger)
         {
             _mediator = mediator;
             _mapper = mapper;
-            _otpRepository = otpRepository;
             _logger = logger;
         }
 

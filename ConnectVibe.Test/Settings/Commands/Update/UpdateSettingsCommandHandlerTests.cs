@@ -12,11 +12,11 @@ namespace Fliq.Test.Settings.Commands.Update
     [TestClass]
     public class UpdateSettingsCommandHandlerTests
     {
-        private Mock<ISettingsRepository> _mockSettingsRepository;
-        private Mock<IUserRepository> _mockUserRepository;
-        private Mock<ILoggerManager> _mockLogger;
-        private Mock<IHttpContextAccessor> _mockHttpContextAccessor;
-        private UpdateSettingsCommandHandler _handler;
+        private Mock<ISettingsRepository>? _mockSettingsRepository;
+        private Mock<IUserRepository>? _mockUserRepository;
+        private Mock<ILoggerManager>? _mockLogger;
+        private Mock<IHttpContextAccessor>? _mockHttpContextAccessor;
+        private UpdateSettingsCommandHandler? _handler;
 
         [TestInitialize]
         public void Setup()
@@ -49,9 +49,9 @@ namespace Fliq.Test.Settings.Commands.Update
                 999
             );
 
-            _mockUserRepository
+            _mockUserRepository?
                 .Setup(repo => repo.GetUserById(It.IsAny<int>()))
-                .Returns((User)null);
+                .Returns((User?)null);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -78,13 +78,13 @@ namespace Fliq.Test.Settings.Commands.Update
                 user.Id
             );
 
-            _mockUserRepository
+            _mockUserRepository?
                 .Setup(repo => repo.GetUserById(It.IsAny<int>()))
                 .Returns(user);
 
-            _mockSettingsRepository
+            _mockSettingsRepository?
                 .Setup(repo => repo.GetSettingById(It.IsAny<int>()))
-                .Returns((Setting)null);
+                .Returns((Setting?)null);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -121,11 +121,11 @@ namespace Fliq.Test.Settings.Commands.Update
                 user.Id
             );
 
-            _mockUserRepository
+            _mockUserRepository?
                 .Setup(repo => repo.GetUserById(It.IsAny<int>()))
                 .Returns(user);
 
-            _mockSettingsRepository
+            _mockSettingsRepository?
                 .Setup(repo => repo.GetSettingById(It.IsAny<int>()))
                 .Returns(settings);
 
@@ -144,8 +144,8 @@ namespace Fliq.Test.Settings.Commands.Update
             Assert.AreEqual(user.FirstName + " " + user.LastName, updatedSettings.Name);
             Assert.AreEqual(user.Email, updatedSettings.Email);
 
-            _mockSettingsRepository.Verify(repo => repo.Update(It.IsAny<Setting>()), Times.Once);
-            _mockLogger.Verify(logger => logger.LogInfo(It.IsAny<string>()), Times.Once);
+            _mockSettingsRepository?.Verify(repo => repo.Update(It.IsAny<Setting>()), Times.Once);
+            _mockLogger?.Verify(logger => logger.LogInfo(It.IsAny<string>()), Times.Once);
         }
     }
 }

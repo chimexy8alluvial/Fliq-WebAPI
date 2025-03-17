@@ -21,19 +21,19 @@ namespace Fliq.Test.Profile.Commands.Create
     [TestClass]
     public class CreateProfileCommandHandlerTest
     {
-        private CreateProfileCommandHandler _handler;
-        private Mock<IMapper> _mapperMock;
-        private Mock<IProfileRepository> _profileRepositoryMock;
-        private Mock<ISettingsRepository> _settingsRepositoryMock;
-        private Mock<IUserRepository> _userRepositoryMock;
-        private Mock<ILocationService> _locationServiceMock;
-        private Mock<IHttpContextAccessor> _httpContextAccessorMock;
-        private Mock<ClaimsPrincipal> _claimsPrincipalMock;
-        private Mock<IPromptQuestionRepository> _promptQuestionRepositoryMock;
-        private Mock<IPromptCategoryRepository> _promptCategoryRepositoryMock;
-        private Mock<IPromptResponseRepository> _promptResponseRepositoryMock;
-        private Mock<ILoggerManager> _loggerManagerMock;
-        private Mock<IMediaServices> _mediaServicesMock;
+        private CreateProfileCommandHandler? _handler;
+        private Mock<IMapper>? _mapperMock;
+        private Mock<IProfileRepository>? _profileRepositoryMock;
+        private Mock<ISettingsRepository>? _settingsRepositoryMock;
+        private Mock<IUserRepository>? _userRepositoryMock;
+        private Mock<ILocationService>? _locationServiceMock;
+        private Mock<IHttpContextAccessor>? _httpContextAccessorMock;
+        private Mock<ClaimsPrincipal>? _claimsPrincipalMock;
+        private Mock<IPromptQuestionRepository>? _promptQuestionRepositoryMock;
+        private Mock<IPromptCategoryRepository>? _promptCategoryRepositoryMock;
+        private Mock<IPromptResponseRepository>? _promptResponseRepositoryMock;
+        private Mock<ILoggerManager>? _loggerManagerMock;
+        private Mock<IMediaServices>? _mediaServicesMock;
 
         [TestInitialize]
         public void Setup()
@@ -74,7 +74,7 @@ namespace Fliq.Test.Profile.Commands.Create
             // Arrange
             var command = new CreateProfileCommand { UserId = 1 };
 
-            _userRepositoryMock.Setup(repo => repo.GetUserById(It.IsAny<int>()))
+            _userRepositoryMock?.Setup(repo => repo.GetUserById(It.IsAny<int>()))
                 .Returns((User?)null);
 
             // Act
@@ -102,7 +102,7 @@ namespace Fliq.Test.Profile.Commands.Create
             var user = new User { Id = 1 };
             var locationResponse = new LocationQueryResponse { Status = "OK" };
 
-            _userRepositoryMock.Setup(repo => repo.GetUserById(It.IsAny<int>()))
+            _userRepositoryMock?.Setup(repo => repo.GetUserById(It.IsAny<int>()))
                 .Returns(user);
 
             _locationServiceMock.Setup(service => service.GetAddressFromCoordinatesAsync(It.IsAny<double>(), It.IsAny<double>()))
@@ -273,9 +273,11 @@ namespace Fliq.Test.Profile.Commands.Create
             _profileRepositoryMock.Setup(repo => repo.GetProfileByUserId(It.IsAny<int>()))
                 .Returns(existingProfile);
 
-            _locationServiceMock.Setup(service => service.GetAddressFromCoordinatesAsync(It.IsAny<double>(), It.IsAny<double>()))
+            _locationServiceMock?.Setup(service => service.GetAddressFromCoordinatesAsync(It.IsAny<double>(), It.IsAny<double>()))
                 .ReturnsAsync(new LocationQueryResponse { Status = "OK" });
 
+            _mediaServicesMock?.Setup(service => service.UploadImageAsync(It.IsAny<IFormFile>()))
+              .ReturnsAsync("image.jpeg");
             _mediaServicesMock.Setup(service => service.UploadImageAsync(It.IsAny<IFormFile>()))
                 .ReturnsAsync("image.jpeg");
 

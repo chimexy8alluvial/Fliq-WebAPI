@@ -1,5 +1,4 @@
 ﻿using Fliq.Application.Authentication.Commands.Register;
-using Fliq.Application.Common.Interfaces.Authentication;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Domain.Common.Errors;
@@ -12,12 +11,12 @@ namespace Fliq.Test.Authentication.Commands.Register
     [TestClass]
     public class RegisterCommandHandlerTests
     {
-        private RegisterCommandHandler _handler;
-        private Mock<IUserRepository> _userRepositoryMock;
-        private Mock<IMapper> _mapperMock;
-        private Mock<IEmailService> _emailServiceMock;
-        private Mock<IOtpService> _otpServiceMock;
-        private Mock<ILoggerManager> _loggerManagerMock;
+        private RegisterCommandHandler? _handler;
+        private Mock<IUserRepository>? _userRepositoryMock;
+        private Mock<IMapper>? _mapperMock;
+        private Mock<IEmailService>? _emailServiceMock;
+        private Mock<IOtpService>? _otpServiceMock;
+        private Mock<ILoggerManager>? _loggerManagerMock;
 
         [TestInitialize]
         public void Setup()
@@ -44,7 +43,7 @@ namespace Fliq.Test.Authentication.Commands.Register
             var command = new RegisterCommand("John", "Doe", "johndoe", "johndoe@example.com", "password");
             var existingUser = new User { Email = command.Email, IsEmailValidated = true };
 
-            _userRepositoryMock.Setup(repo => repo.GetUserByEmail(command.Email))
+            _userRepositoryMock?.Setup(repo => repo.GetUserByEmail(command.Email))
                 .Returns(existingUser);
 
             // Act
@@ -62,16 +61,16 @@ namespace Fliq.Test.Authentication.Commands.Register
             var command = new RegisterCommand("John", "Doe", "johndoe", "johndoe@example.com", "password");
             User newUser = null;
 
-            _userRepositoryMock.Setup(repo => repo.GetUserByEmail(command.Email))
-                .Returns((User)null);
+            _userRepositoryMock?.Setup(repo => repo.GetUserByEmail(command.Email))
+                .Returns((User?)null);
 
-            _mapperMock.Setup(mapper => mapper.Map<User>(command))
+            _mapperMock?.Setup(mapper => mapper.Map<User>(command))
                 .Returns(new User { Email = command.Email });
 
-            _otpServiceMock.Setup(service => service.GetOtpAsync(command.Email, It.IsAny<int>()))
+            _otpServiceMock?.Setup(service => service.GetOtpAsync(command.Email, It.IsAny<int>()))
                 .ReturnsAsync("123456");
 
-            _emailServiceMock.Setup(service => service.SendEmailAsync(command.Email, "Your OTP Code", "Your OTP is 123456"))
+            _emailServiceMock?.Setup(service => service.SendEmailAsync(command.Email, "Your OTP Code", "Your OTP is 123456"))
                 .Returns(Task.CompletedTask);
 
             // Act
@@ -81,8 +80,8 @@ namespace Fliq.Test.Authentication.Commands.Register
             Assert.IsFalse(result.IsError);
             Assert.AreEqual("123456", result.Value.otp);
 
-            _userRepositoryMock.Verify(repo => repo.Add(It.IsAny<User>()), Times.Once);
-            _emailServiceMock.Verify(service => service.SendEmailAsync(command.Email, "Your OTP Code", "Your OTP is 123456"), Times.Once);
+            _userRepositoryMock?.Verify(repo => repo.Add(It.IsAny<User>()), Times.Once);
+            _emailServiceMock?.Verify(service => service.SendEmailAsync(command.Email, "Your OTP Code", "Your OTP is 123456"), Times.Once);
         }
 
         [TestMethod]
@@ -92,13 +91,13 @@ namespace Fliq.Test.Authentication.Commands.Register
             var command = new RegisterCommand("John", "Doe", "johndoe", "johndoe@example.com", "password");
             var existingUser = new User { Email = command.Email, IsEmailValidated = false };
 
-            _userRepositoryMock.Setup(repo => repo.GetUserByEmail(command.Email))
+            _userRepositoryMock?.Setup(repo => repo.GetUserByEmail(command.Email))
                 .Returns(existingUser);
 
-            _otpServiceMock.Setup(service => service.GetOtpAsync(command.Email, It.IsAny<int>()))
+            _otpServiceMock?.Setup(service => service.GetOtpAsync(command.Email, It.IsAny<int>()))
                 .ReturnsAsync("123456");
 
-            _emailServiceMock.Setup(service => service.SendEmailAsync(command.Email, "Your OTP Code", "Your OTP is 123456"))
+            _emailServiceMock?.Setup(service => service.SendEmailAsync(command.Email, "Your OTP Code", "Your OTP is 123456"))
                 .Returns(Task.CompletedTask);
 
             // Act
@@ -108,8 +107,8 @@ namespace Fliq.Test.Authentication.Commands.Register
             Assert.IsFalse(result.IsError);
             Assert.AreEqual("123456", result.Value.otp);
 
-            _userRepositoryMock.Verify(repo => repo.Add(It.IsAny<User>()), Times.Once);
-            _emailServiceMock.Verify(service => service.SendEmailAsync(command.Email, "Your OTP Code", "Your OTP is 123456"), Times.Once);
+            _userRepositoryMock?.Verify(repo => repo.Add(It.IsAny<User>()), Times.Once);
+            _emailServiceMock?.Verify(service => service.SendEmailAsync(command.Email, "Your OTP Code", "Your OTP is 123456"), Times.Once);
         }
     }
 }
