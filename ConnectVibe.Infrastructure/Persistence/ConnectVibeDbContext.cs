@@ -1,4 +1,5 @@
 ﻿using Fliq.Domain.Entities;
+using Fliq.Domain.Entities.DatingEnvironment;
 using Fliq.Domain.Entities.Event;
 using Fliq.Domain.Entities.Games;
 using Fliq.Domain.Entities.HelpAndSupport;
@@ -65,5 +66,10 @@ namespace Fliq.Infrastructure.Persistence
 
         public DbSet<UserFeatureActivity> UserFeatureActivities { get; set; } = null!;
         public DbSet<SupportTicket> SupportTickets { get; set; } = null!;
+
+        public DbSet<BlindDateCategory> BlindDateCategories { get; set;} = null!;
+        public DbSet<BlindDate> BlindDates { get; set; } = null!;
+        public DbSet<BlindDateParticipant> BlindDatesParticipants { get; set; } = null!;
+
     }
 }
