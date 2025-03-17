@@ -2,7 +2,7 @@
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Domain.Common.Errors;
-using Fliq.Domain.Entities.DatingEnvironment;
+using Fliq.Domain.Entities.DatingEnvironment.BlindDates;
 using MediatR;
 
 

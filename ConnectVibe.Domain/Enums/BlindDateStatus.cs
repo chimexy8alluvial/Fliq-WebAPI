@@ -2,7 +2,7 @@
 
 namespace Fliq.Domain.Enums
 {
-    public enum BlindDateStatus
+    public enum DateStatus
     {
         Pending = 0, 
         Ongoing = 1, 
@@ -10,7 +10,7 @@ namespace Fliq.Domain.Enums
         Cancelled = 3  
     }
 
-    public enum BlindDateParticipantStatus
+    public enum DateParticipantStatus
     {
         Joined = 0,
         Left,
