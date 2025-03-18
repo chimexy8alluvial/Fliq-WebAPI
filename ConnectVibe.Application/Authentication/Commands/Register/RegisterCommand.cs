@@ -1,10 +1,11 @@
-﻿using Fliq.Application.Authentication.Common;
+﻿using ErrorOr;
+using Fliq.Application.Authentication.Common;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Security;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities;
-using ErrorOr;
+using Fliq.Domain.Enums;
 using MapsterMapper;
 using MediatR;
 
@@ -16,7 +17,7 @@ namespace Fliq.Application.Authentication.Commands.Register
     string DisplayName,
     string Email,
     string Password,
-    string Language
+    Language Language
     ) : IRequest<ErrorOr<RegistrationResult>>;
 
     public class RegisterCommandHandler : IRequestHandler<RegisterCommand, ErrorOr<RegistrationResult>>

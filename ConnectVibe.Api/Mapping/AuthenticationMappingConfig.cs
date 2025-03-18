@@ -5,6 +5,7 @@ using Fliq.Application.Authentication.Queries.FacebookLogin;
 using Fliq.Application.Authentication.Queries.GoogleLogin;
 using Fliq.Application.Authentication.Queries.Login;
 using Fliq.Contracts.Authentication;
+using Fliq.Domain.Enums;
 using Mapster;
 
 namespace Fliq.Api.Mapping
@@ -13,7 +14,8 @@ namespace Fliq.Api.Mapping
     {
         public void Register(TypeAdapterConfig config)
         {
-            config.NewConfig<RegisterRequest, RegisterCommand>();
+            config.NewConfig<RegisterRequest, RegisterCommand>()
+                .Map(dest => dest.Language, src => (Language)src.Language);
             config.NewConfig<RegisterRequest, CreateAdminCommand>();
             config.NewConfig<LoginRequest, LoginQuery>();
             config.NewConfig<GoogleLoginRequest, GoogleLoginQuery>();
@@ -28,7 +30,8 @@ namespace Fliq.Api.Mapping
                Map(dest => dest, src => src.user);
             config.NewConfig<RegistrationResult, RegisterResponse>().
                 Map(dest => dest.Otp, src => src.otp).
-                Map(dest => dest, src => src.user);
+                Map(dest => dest, src => src.user).
+                Map(dest => dest.Language, src => src.user.Language.ToString());
             config.NewConfig<RegistrationResult, RegisterResponse>().
                Map(dest => dest.Otp, src => src.otp).
                Map(dest => dest, src => src.user);
@@ -37,8 +40,7 @@ namespace Fliq.Api.Mapping
        Map(dest => dest, src => src.user);
             config.NewConfig<ForgotPasswordResult, ForgotPasswordResponse>().
        Map(dest => dest.otp, src => src.otp).
-       Map(dest=>dest.email,src=>src.email);
-
+       Map(dest => dest.email, src => src.email);
         }
     }
 }
