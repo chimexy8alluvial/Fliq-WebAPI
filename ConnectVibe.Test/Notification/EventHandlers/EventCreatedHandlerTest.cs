@@ -12,10 +12,10 @@ namespace Fliq.Test.Notification.EventHandlers
         [TestClass]
         public class EventCreatedEventHandlerTest
         {
-            private NotificationEventHandler _handler;
-            private Mock<INotificationRepository> _notificationRepositoryMock;
-            private Mock<IPushNotificationService> _firebaseServiceMock;
-            private Mock<ILoggerManager> _loggerManagerMock;
+            private NotificationEventHandler? _handler;
+            private Mock<INotificationRepository>? _notificationRepositoryMock;
+            private Mock<IPushNotificationService>? _firebaseServiceMock;
+            private Mock<ILoggerManager>? _loggerManagerMock;
 
             [TestInitialize]
             public void Setup()
@@ -53,7 +53,7 @@ namespace Fliq.Test.Notification.EventHandlers
                 var Invitee2Tokens = new List<string> { inviteeToken2 };
 
                 // Mock device tokens for organizer and invitees
-                _notificationRepositoryMock.Setup(repo => repo.GetDeviceTokensByUserIdAsync(1))
+                _notificationRepositoryMock?.Setup(repo => repo.GetDeviceTokensByUserIdAsync(1))
                     .ReturnsAsync(new List<string> { organizerToken }); // Organizer tokens
                 _notificationRepositoryMock.Setup(repo => repo.GetDeviceTokensByUserIdAsync(2))
                     .ReturnsAsync(new List<string> { inviteeToken1 }); // First invitee tokens
@@ -66,7 +66,7 @@ namespace Fliq.Test.Notification.EventHandlers
                 // Assert
 
                 // Verify notification sent to the organizer
-                _firebaseServiceMock.Verify(service => service.SendNotificationAsync(
+                _firebaseServiceMock?.Verify(service => service.SendNotificationAsync(
                     "Birthday Party",
                     "Your event 'Birthday Party' has been successfully created!",
                     organizerTokens,
@@ -76,7 +76,7 @@ namespace Fliq.Test.Notification.EventHandlers
                     "View Event"), Times.Once);
 
                 // Verify notification sent to first invitee
-                _firebaseServiceMock.Verify(service => service.SendNotificationAsync(
+                _firebaseServiceMock?.Verify(service => service.SendNotificationAsync(
                     "You're Invited!",
                     "John Doe has invited you to the event 'Birthday Party'.",
                     Invitee1Tokens,
@@ -86,7 +86,7 @@ namespace Fliq.Test.Notification.EventHandlers
                     "View Invitation"), Times.Once);
 
                 // Verify notification sent to second invitee
-                _firebaseServiceMock.Verify(service => service.SendNotificationAsync(
+                _firebaseServiceMock?.Verify(service => service.SendNotificationAsync(
                     "You're Invited!",
                     "John Doe has invited you to the event 'Birthday Party'.",
                     Invitee2Tokens,
@@ -111,14 +111,14 @@ namespace Fliq.Test.Notification.EventHandlers
                 );
 
                 // Mock no tokens for organizer or invitees
-                _notificationRepositoryMock.Setup(repo => repo.GetDeviceTokensByUserIdAsync(It.IsAny<int>()))
+                _notificationRepositoryMock?.Setup(repo => repo.GetDeviceTokensByUserIdAsync(It.IsAny<int>()))
                     .ReturnsAsync(new List<string>()); // Empty list for all users
 
                 // Act
                 await _handler.Handle(eventCreatedEvent, CancellationToken.None);
 
                 // Assert
-                _firebaseServiceMock.Verify(service => service.SendNotificationAsync(
+                _firebaseServiceMock?.Verify(service => service.SendNotificationAsync(
                     It.IsAny<string>(),
                     It.IsAny<string>(),
                     It.IsAny<List<string>>(),

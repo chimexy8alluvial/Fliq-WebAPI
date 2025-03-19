@@ -75,9 +75,12 @@ namespace Fliq.Infrastructure
             services.AddScoped<IWalletRepository, WalletRepository>();
             services.AddScoped<IStakeRepository, StakeRepository>();
             services.AddScoped<IUserFeatureActivityRepository, UserFeatureActivityRepository>();
+            services.AddScoped<ISupportTicketRepository, SupportTicketRepository>();
             services.AddScoped<IBlindDateCategoryRepository, BlindDateCategoryRepository>();
             services.AddScoped<IBlindDateParticipantRepository, BlindDateParticipantRepository>();
             services.AddScoped<IBlindDateRepository, BlindDateRepository>();
+            services.AddScoped<ISpeedDateParticipantRepository, SpeedDateParticipantRepository>();
+            services.AddScoped<ISpeedDatingEventRepository, SpeedDatingEventRepository>();
             services.AddSingleton<ICustomProfileMapper, CustomProfileMapper>();
             services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
             services.AddDbContext<FliqDbContext>(options =>
@@ -130,18 +133,18 @@ namespace Fliq.Infrastructure
         // Register Quartz
         public static IServiceCollection AddQuartz(this IServiceCollection services, ConfigurationManager configurationManager)
         {
-             services.AddQuartz(q =>
-            {
-                var inactivityJobKey = new JobKey("InactivityCheckJob");
+            services.AddQuartz(q =>
+           {
+               var inactivityJobKey = new JobKey("InactivityCheckJob");
 
-                q.AddJob<InactivityCheckJob>(opts => opts.WithIdentity(inactivityJobKey));
+               q.AddJob<InactivityCheckJob>(opts => opts.WithIdentity(inactivityJobKey));
 
-                q.AddTrigger(opts => opts
-                    .ForJob(inactivityJobKey)
-                    .WithIdentity("InactivityCheckTrigger")
-                    .WithCronSchedule("0 0 12 * * ?") // Runs daily at 12 PM UTC
-                );
-            });
+               q.AddTrigger(opts => opts
+                   .ForJob(inactivityJobKey)
+                   .WithIdentity("InactivityCheckTrigger")
+                   .WithCronSchedule("0 0 12 * * ?") // Runs daily at 12 PM UTC
+               );
+           });
             return services;
         }
 

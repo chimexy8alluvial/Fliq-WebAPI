@@ -4,7 +4,7 @@ namespace Fliq.Domain.Entities.Event
 {
     public class Discount : Record
     {
-        public string Name { get; set; }
+        public string? Name { get; set; }
         public DiscountType Type { get; set; }
         public double Percentage { get; set; }
 

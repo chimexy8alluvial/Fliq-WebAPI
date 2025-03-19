@@ -5,7 +5,6 @@ using Fliq.Application.Event.Common;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Event;
 using Mapster;
-using MapsterMapper;
 using MediatR;
 
 namespace Fliq.Application.Event.Commands.UpdateTicket
@@ -29,14 +28,12 @@ namespace Fliq.Application.Event.Commands.UpdateTicket
     {
         private readonly IEventRepository _eventRepository;
         private readonly ILoggerManager _logger;
-        private readonly IMapper _mapper;
         private readonly ITicketRepository _ticketRepository;
 
-        public UpdateTicketCommandHandler(IEventRepository eventRepository, ILoggerManager logger, IMapper mapper, ITicketRepository ticketRepository)
+        public UpdateTicketCommandHandler(IEventRepository eventRepository, ILoggerManager logger, ITicketRepository ticketRepository)
         {
             _eventRepository = eventRepository;
             _logger = logger;
-            _mapper = mapper;
             _ticketRepository = ticketRepository;
         }
 

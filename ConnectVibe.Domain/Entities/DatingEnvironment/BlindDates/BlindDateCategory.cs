@@ -1,6 +1,4 @@
-﻿
-
-namespace Fliq.Domain.Entities.DatingEnvironment
+﻿namespace Fliq.Domain.Entities.DatingEnvironment.BlindDates
 {
     public class BlindDateCategory : Record
     {

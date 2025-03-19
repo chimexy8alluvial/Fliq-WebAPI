@@ -11,9 +11,9 @@ namespace Fliq.Test.Games.Commands
     [TestClass]
     public class SendGameRequestCommandHandlerTests
     {
-        private Mock<IGamesRepository> _mockGamesRepository;
-        private Mock<ILoggerManager> _mockLogger;
-        private Mock<IUserRepository> _mockUserRepository;
+        private Mock<IGamesRepository>? _mockGamesRepository;
+        private Mock<ILoggerManager>? _mockLogger;
+        private Mock<IUserRepository>? _mockUserRepository;
 
         private SendGameRequestCommandHandler _handler;
 
@@ -35,7 +35,7 @@ namespace Fliq.Test.Games.Commands
         {
             // Arrange
             var recipient = new User { Id = 2, FirstName = "Recipient" };
-            _mockUserRepository.Setup(repo => repo.GetUserById(2)).Returns(recipient);
+            _mockUserRepository?.Setup(repo => repo.GetUserById(2)).Returns(recipient);
 
             var command = new SendGameRequestCommand(GameId: 1, RequesterId: 1, ReceiverUserId: 2);
 
@@ -49,15 +49,15 @@ namespace Fliq.Test.Games.Commands
             Assert.AreEqual(command.RequesterId, result.Value.GameRequest.RequesterId);
             Assert.AreEqual(command.ReceiverUserId, result.Value.GameRequest.RecipientId);
 
-            _mockGamesRepository.Verify(repo => repo.AddGameRequest(It.IsAny<GameRequest>()), Times.Once);
-            _mockLogger.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains("Game request sent"))), Times.Once);
+            _mockGamesRepository?.Verify(repo => repo.AddGameRequest(It.IsAny<GameRequest>()), Times.Once);
+            _mockLogger?.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains("Game request sent"))), Times.Once);
         }
 
         [TestMethod]
         public async Task Handle_RecipientNotFound_ReturnsUserNotFoundError()
         {
             // Arrange
-            _mockUserRepository.Setup(repo => repo.GetUserById(It.IsAny<int>())).Returns((User)null);
+            _mockUserRepository?.Setup(repo => repo.GetUserById(It.IsAny<int>())).Returns((User?)null);
 
             var command = new SendGameRequestCommand(GameId: 1, RequesterId: 1, ReceiverUserId: 999);
 
@@ -68,8 +68,8 @@ namespace Fliq.Test.Games.Commands
             Assert.IsTrue(result.IsError);
             Assert.AreEqual(Errors.User.UserNotFound.Code, result.FirstError.Code);
 
-            _mockGamesRepository.Verify(repo => repo.AddGameRequest(It.IsAny<GameRequest>()), Times.Never);
-            _mockLogger.Verify(logger => logger.LogError(It.Is<string>(msg => msg.Contains("not found"))), Times.Once);
+            _mockGamesRepository?.Verify(repo => repo.AddGameRequest(It.IsAny<GameRequest>()), Times.Never);
+            _mockLogger?.Verify(logger => logger.LogError(It.Is<string>(msg => msg.Contains("not found"))), Times.Once);
         }
 
         [TestMethod]
@@ -77,7 +77,7 @@ namespace Fliq.Test.Games.Commands
         {
             // Arrange
             var recipient = new User { Id = 2, FirstName = "Recipient" };
-            _mockUserRepository.Setup(repo => repo.GetUserById(2)).Returns(recipient);
+            _mockUserRepository?.Setup(repo => repo.GetUserById(2)).Returns(recipient);
 
             var command = new SendGameRequestCommand(GameId: 1, RequesterId: 1, ReceiverUserId: 2);
 
@@ -85,8 +85,8 @@ namespace Fliq.Test.Games.Commands
             await _handler.Handle(command, CancellationToken.None);
 
             // Assert
-            _mockLogger.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains("Sending game request"))), Times.Once);
-            _mockLogger.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains("Game request sent"))), Times.Once);
+            _mockLogger?.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains("Sending game request"))), Times.Once);
+            _mockLogger?.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains("Game request sent"))), Times.Once);
         }
     }
 }

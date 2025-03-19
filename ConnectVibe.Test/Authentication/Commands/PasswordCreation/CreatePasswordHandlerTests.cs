@@ -10,11 +10,11 @@ namespace Fliq.Test.Authentication.Commands.PasswordCreation
     [TestClass]
     public class CreatePasswordHandlerTests
     {
-        private CreatePasswordHandler _handler;
-        private Mock<IUserRepository> _userRepositoryMock;
-        private Mock<IEmailService> _emailServiceMock;
-        private Mock<IOtpService> _otpServiceMock;
-        private Mock<ILoggerManager> _loggerManagerMock;
+        private CreatePasswordHandler? _handler;
+        private Mock<IUserRepository>? _userRepositoryMock;
+        private Mock<IEmailService>? _emailServiceMock;
+        private Mock<IOtpService>? _otpServiceMock;
+        private Mock<ILoggerManager>? _loggerManagerMock;
 
         [TestInitialize]
         public void Setup()
@@ -37,8 +37,8 @@ namespace Fliq.Test.Authentication.Commands.PasswordCreation
             // Arrange
             var command = new CreatePasswordCommand(1, "newPassword", "confirmPassword", "otp");
 
-            _userRepositoryMock.Setup(repo => repo.GetUserById(command.Id))
-                .Returns((User)null);
+            _userRepositoryMock?.Setup(repo => repo.GetUserById(command.Id))
+                .Returns((User?)null);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -55,10 +55,10 @@ namespace Fliq.Test.Authentication.Commands.PasswordCreation
             var command = new CreatePasswordCommand(1, "newPassword", "confirmPassword", "invalidOtp");
             var user = new User { Id = command.Id, Email = "test@example.com" };
 
-            _userRepositoryMock.Setup(repo => repo.GetUserById(command.Id))
+            _userRepositoryMock?.Setup(repo => repo.GetUserById(command.Id))
                 .Returns(user);
 
-            _otpServiceMock.Setup(service => service.OtpExistAsync(user.Email, command.Otp))
+            _otpServiceMock?.Setup(service => service.OtpExistAsync(user.Email, command.Otp))
                 .ReturnsAsync(false);
 
             // Act
@@ -76,13 +76,13 @@ namespace Fliq.Test.Authentication.Commands.PasswordCreation
             var command = new CreatePasswordCommand(1, "newPassword", "confirmPassword", "validOtp");
             var user = new User { Id = command.Id, Email = "test@example.com" };
 
-            _userRepositoryMock.Setup(repo => repo.GetUserById(command.Id))
+            _userRepositoryMock?.Setup(repo => repo.GetUserById(command.Id))
                 .Returns(user);
 
-            _otpServiceMock.Setup(service => service.OtpExistAsync(user.Email, command.Otp))
+            _otpServiceMock?.Setup(service => service.OtpExistAsync(user.Email, command.Otp))
                 .ReturnsAsync(true);
 
-            _emailServiceMock.Setup(service => service.SendEmailAsync(user.Email, "Password Creation", "Successfully created Password!"))
+            _emailServiceMock?.Setup(service => service.SendEmailAsync(user.Email, "Password Creation", "Successfully created Password!"))
                 .Returns(Task.CompletedTask);
 
             // Act
@@ -92,8 +92,8 @@ namespace Fliq.Test.Authentication.Commands.PasswordCreation
             Assert.IsFalse(result.IsError);
             Assert.IsTrue(result.Value);
 
-            _userRepositoryMock.Verify(repo => repo.Update(It.IsAny<User>()), Times.Once);
-            _emailServiceMock.Verify(service => service.SendEmailAsync(user.Email, "Password Creation", "Successfully created Password!"), Times.Once);
+            _userRepositoryMock?.Verify(repo => repo.Update(It.IsAny<User>()), Times.Once);
+            _emailServiceMock?.Verify(service => service.SendEmailAsync(user.Email, "Password Creation", "Successfully created Password!"), Times.Once);
         }
     }
 }

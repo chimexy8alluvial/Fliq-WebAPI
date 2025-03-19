@@ -2,7 +2,6 @@
 using Fliq.Application.Common.Interfaces.Authentication;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
-using MapsterMapper;
 using Moq;
 using Fliq.Domain.Common.Errors;
 using StreamChat.Clients;
@@ -13,13 +12,10 @@ namespace Fliq.Test.Authentication.Commands.ValidateOTP
     [TestClass]
     public class ValidateOTPCommandHandlerTests
     {
-        private ValidateOTPCommandHandler _handler;
-        private Mock<IJwtTokenGenerator> _jwtTokenGeneratorMock;
-        private Mock<IUserRepository> _userRepositoryMock;
-        private Mock<IMapper> _mapperMock;
-        private Mock<IEmailService> _emailServiceMock;
-        private Mock<IOtpService> _otpServiceMock;
-        private Mock<ILoggerManager> _loggerManagerMock;
+        private ValidateOTPCommandHandler? _handler;
+        private Mock<IJwtTokenGenerator>? _jwtTokenGeneratorMock;
+        private Mock<IUserRepository>? _userRepositoryMock;
+        private Mock<IOtpService>? _otpServiceMock;
         private Mock<IStreamClientFactory> _streamClientFactoryMock;
 
         [TestInitialize]
@@ -30,10 +26,7 @@ namespace Fliq.Test.Authentication.Commands.ValidateOTP
 
             _jwtTokenGeneratorMock = new Mock<IJwtTokenGenerator>();
             _userRepositoryMock = new Mock<IUserRepository>();
-            _mapperMock = new Mock<IMapper>();
-            _emailServiceMock = new Mock<IEmailService>();
             _otpServiceMock = new Mock<IOtpService>();
-            _loggerManagerMock = new Mock<ILoggerManager>();
             _streamClientFactoryMock = new Mock<IStreamClientFactory>();
 
             // Mock Stream API behavior
@@ -53,10 +46,7 @@ namespace Fliq.Test.Authentication.Commands.ValidateOTP
             _handler = new ValidateOTPCommandHandler(
                 _jwtTokenGeneratorMock.Object,
                 _userRepositoryMock.Object,
-                _mapperMock.Object,
-                _emailServiceMock.Object,
                 _otpServiceMock.Object,
-                _loggerManagerMock.Object,
                 _streamClientFactoryMock.Object);
 
             
@@ -68,7 +58,7 @@ namespace Fliq.Test.Authentication.Commands.ValidateOTP
             // Arrange
             var command = new ValidateOTPCommand("johndoe@example.com", "123456");
 
-            _otpServiceMock.Setup(service => service.ValidateOtpAsync(command.Email, command.Otp))
+            _otpServiceMock?.Setup(service => service.ValidateOtpAsync(command.Email, command.Otp))
                 .ReturnsAsync(false);
 
             // Act
@@ -87,13 +77,13 @@ namespace Fliq.Test.Authentication.Commands.ValidateOTP
             var user = new Domain.Entities.User { Email = command.Email, Id = 1, IsEmailValidated = false, Role = new Domain.Entities.Role { Name = "User", Id = 1} };
             var expectedToken = "valid-token";
 
-            _otpServiceMock.Setup(service => service.ValidateOtpAsync(command.Email, command.Otp))
+            _otpServiceMock?.Setup(service => service.ValidateOtpAsync(command.Email, command.Otp))
                 .ReturnsAsync(true);
 
-            _userRepositoryMock.Setup(repo => repo.GetUserByEmail(command.Email))
+            _userRepositoryMock?.Setup(repo => repo.GetUserByEmail(command.Email))
                 .Returns(user);
 
-            _jwtTokenGeneratorMock.Setup(generator => generator.GenerateToken(user))
+            _jwtTokenGeneratorMock?.Setup(generator => generator.GenerateToken(user))
                 .Returns(expectedToken);
 
             // Act
@@ -106,7 +96,7 @@ namespace Fliq.Test.Authentication.Commands.ValidateOTP
             Assert.AreEqual(user.Email, result.Value.user.Email);
             Assert.IsTrue(user.IsEmailValidated);
 
-            _userRepositoryMock.Verify(repo => repo.Update(user), Times.Once);
+            _userRepositoryMock?.Verify(repo => repo.Update(user), Times.Once);
         }
     }
 }

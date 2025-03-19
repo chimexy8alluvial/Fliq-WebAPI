@@ -10,9 +10,9 @@ namespace Fliq.Test.Notification.Commands
     [TestClass]
     public class SaveDeviceTokensCommandHandlerTest
     {
-        private SaveDeviceTokenCommandHandler _handler;
-        private Mock<IUserRepository> _userRepositoryMock;
-        private Mock<INotificationRepository> _notificationRepositoryMock;
+        private SaveDeviceTokenCommandHandler? _handler;
+        private Mock<IUserRepository>? _userRepositoryMock;
+        private Mock<INotificationRepository>? _notificationRepositoryMock;
 
         [TestInitialize]
         public void Setup()
@@ -30,7 +30,7 @@ namespace Fliq.Test.Notification.Commands
         {
             // Arrange
             var command = new SaveDeviceTokenCommand(123,"test-token");
-            _userRepositoryMock.Setup(repo => repo.GetUserById(It.IsAny<int>())).Returns((User?)null);
+            _userRepositoryMock?.Setup(repo => repo.GetUserById(It.IsAny<int>())).Returns((User?)null);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -46,14 +46,14 @@ namespace Fliq.Test.Notification.Commands
             // Arrange
             var command = new SaveDeviceTokenCommand(123, "test-token");
             var user = new User { Id = 123 };
-            _userRepositoryMock.Setup(repo => repo.GetUserById(It.IsAny<int>())).Returns(user);
+            _userRepositoryMock?.Setup(repo => repo.GetUserById(It.IsAny<int>())).Returns(user);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.IsFalse(result.IsError);
-            _notificationRepositoryMock.Verify(repo => repo.RegisterDeviceToken(It.Is<UserDeviceToken>(
+            _notificationRepositoryMock?.Verify(repo => repo.RegisterDeviceToken(It.Is<UserDeviceToken>(
                 token => token.UserId == 123 && token.DeviceToken == "test-token")), Times.Once);
         }
     }

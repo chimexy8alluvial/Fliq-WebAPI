@@ -1,7 +1,7 @@
 ﻿
 
 using Fliq.Application.Common.Interfaces.Persistence;
-using Fliq.Domain.Entities.DatingEnvironment;
+using Fliq.Domain.Entities.DatingEnvironment.BlindDates;
 using Microsoft.EntityFrameworkCore;
 
 namespace Fliq.Infrastructure.Persistence.Repositories

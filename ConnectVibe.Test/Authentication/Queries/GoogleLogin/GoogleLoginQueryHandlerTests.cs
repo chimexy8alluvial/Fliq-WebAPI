@@ -12,11 +12,11 @@ namespace Fliq.Test.Authentication.Queries.GoogleLogin
     [TestClass]
     public class GoogleLoginQueryHandlerTests
     {
-        private GoogleLoginQueryHandler _handler;
-        private Mock<IJwtTokenGenerator> _jwtTokenGeneratorMock;
-        private Mock<IUserRepository> _userRepositoryMock;
-        private Mock<ISocialAuthService> _socialAuthServiceMock;
-        private Mock<ILoggerManager> _loggerManagerMock;
+        private GoogleLoginQueryHandler? _handler;
+        private Mock<IJwtTokenGenerator>? _jwtTokenGeneratorMock;
+        private Mock<IUserRepository>? _userRepositoryMock;
+        private Mock<ISocialAuthService>? _socialAuthServiceMock;
+        private Mock<ILoggerManager>? _loggerManagerMock;
 
         [TestInitialize]
         public void Setup()
@@ -49,13 +49,13 @@ namespace Fliq.Test.Authentication.Queries.GoogleLogin
             var user = new User { Email = googleResponse.Email };
             var expectedToken = "valid-token";
 
-            _socialAuthServiceMock.Setup(service => service.ExchangeCodeForTokenAsync(query.Code))
+            _socialAuthServiceMock?.Setup(service => service.ExchangeCodeForTokenAsync(query.Code))
                 .ReturnsAsync(googleResponse);
 
-            _userRepositoryMock.Setup(repo => repo.GetUserByEmail(googleResponse.Email))
+            _userRepositoryMock?.Setup(repo => repo.GetUserByEmail(googleResponse.Email))
                 .Returns(user);
 
-            _jwtTokenGeneratorMock.Setup(generator => generator.GenerateToken(user))
+            _jwtTokenGeneratorMock?.Setup(generator => generator.GenerateToken(user))
                 .Returns(expectedToken);
 
             // Act
@@ -83,13 +83,13 @@ namespace Fliq.Test.Authentication.Queries.GoogleLogin
             };
             var expectedToken = "valid-token";
 
-            _socialAuthServiceMock.Setup(service => service.ExchangeCodeForTokenAsync(query.Code))
+            _socialAuthServiceMock?.Setup(service => service.ExchangeCodeForTokenAsync(query.Code))
                 .ReturnsAsync(googleResponse);
 
-            _userRepositoryMock.Setup(repo => repo.GetUserByEmail(googleResponse.Email))
-                .Returns((User)null);
+            _userRepositoryMock?.Setup(repo => repo.GetUserByEmail(googleResponse.Email))
+                .Returns((User?)null);
 
-            _jwtTokenGeneratorMock.Setup(generator => generator.GenerateToken(It.IsAny<User>()))
+            _jwtTokenGeneratorMock?.Setup(generator => generator.GenerateToken(It.IsAny<User>()))
                 .Returns(expectedToken);
 
             // Act
@@ -101,7 +101,7 @@ namespace Fliq.Test.Authentication.Queries.GoogleLogin
             Assert.AreEqual(googleResponse.Email, result.Value.user.Email);
             Assert.IsTrue(result.Value.IsNewUser);
 
-            _userRepositoryMock.Verify(repo => repo.Add(It.IsAny<User>()), Times.Once);
+            _userRepositoryMock?.Verify(repo => repo.Add(It.IsAny<User>()), Times.Once);
         }
     }
 }

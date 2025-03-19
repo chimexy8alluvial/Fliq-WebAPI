@@ -10,13 +10,11 @@ namespace Fliq.Infrastructure.Services.PaymentServices
     public class RevenueCatServices : IRevenueCatServices
     {
         private readonly IPaymentRepository _paymentRepository;
-        private readonly ISubscriptionRepository _subscriptionRepository;
         private readonly ILoggerManager _logger;
 
-        public RevenueCatServices(IPaymentRepository paymentRepository, ISubscriptionRepository subscriptionRepository, ILoggerManager logger)
+        public RevenueCatServices(IPaymentRepository paymentRepository, ILoggerManager logger)
         {
             _paymentRepository = paymentRepository;
-            _subscriptionRepository = subscriptionRepository;
             _logger = logger;
         }
 

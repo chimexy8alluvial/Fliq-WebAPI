@@ -29,14 +29,14 @@ namespace Fliq.Api.Mapping
             config.NewConfig<UpdateDiscountDto, DiscountDto>();
             config.NewConfig<UpdateEventDto, UpdateEventCommand>()
                  .Map(dest => dest.EventId, src => src.Id)
-                     .Map(dest => dest.EventType, src => (EventType)src.EventType)
-                   .Map(dest => dest.EventCategory, src => (EventCategory)src.EventCategory)
+                     .Map(dest => dest.EventType, src => (EventType?)src.EventType)
+                   .Map(dest => dest.EventCategory, src => (EventCategory?)src.EventCategory)
                    .Ignore(dest => dest.MediaDocuments);
                    
             config.NewConfig<UpdateTicketDto, UpdateTicketCommand>().IgnoreNullValues(true);
 
             config.NewConfig<UpdateDiscountDto, Discount>().IgnoreNullValues(true)
-                .Map(dest => dest.Type, src => (DiscountType)src.Type);
+                .Map(dest => dest.Type, src => (DiscountType?)src.Type);
 
             config.NewConfig<AddTicketDto, AddTicketCommand>();
             config.NewConfig<PurchaseTicketDto, AddEventTicketCommand>();

@@ -10,9 +10,9 @@ namespace Fliq.Test.Games.Commands
     [TestClass]
     public class RejectStakeCommandHandlerTests
     {
-        private Mock<IStakeRepository> _mockStakeRepository;
-        private Mock<ILoggerManager> _mockLogger;
-        private RejectStakeCommandHandler _handler;
+        private Mock<IStakeRepository>? _mockStakeRepository;
+        private Mock<ILoggerManager>? _mockLogger;
+        private RejectStakeCommandHandler? _handler;
 
         [TestInitialize]
         public void Setup()
@@ -27,7 +27,7 @@ namespace Fliq.Test.Games.Commands
         {
             // Arrange
             var command = new RejectStakeCommand(1, 101);
-            _mockStakeRepository.Setup(repo => repo.GetStakeById(It.IsAny<int>())).Returns((Stake)null);
+            _mockStakeRepository?.Setup(repo => repo.GetStakeById(It.IsAny<int>())).Returns((Stake)null);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -43,7 +43,7 @@ namespace Fliq.Test.Games.Commands
             // Arrange
             var command = new RejectStakeCommand(1, 101);
             var stake = new Stake { Id = 1, RecipientId = 102 };
-            _mockStakeRepository.Setup(repo => repo.GetStakeById(It.IsAny<int>())).Returns(stake);
+            _mockStakeRepository?.Setup(repo => repo.GetStakeById(It.IsAny<int>())).Returns(stake);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -59,7 +59,7 @@ namespace Fliq.Test.Games.Commands
             // Arrange
             var command = new RejectStakeCommand(1, 101);
             var stake = new Stake { Id = 1, RecipientId = 101, IsAccepted = true };
-            _mockStakeRepository.Setup(repo => repo.GetStakeById(It.IsAny<int>())).Returns(stake);
+            _mockStakeRepository?.Setup(repo => repo.GetStakeById(It.IsAny<int>())).Returns(stake);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -75,7 +75,7 @@ namespace Fliq.Test.Games.Commands
             // Arrange
             var command = new RejectStakeCommand(1, 101);
             var stake = new Stake { Id = 1, RecipientId = 101, IsAccepted = false };
-            _mockStakeRepository.Setup(repo => repo.GetStakeById(It.IsAny<int>())).Returns(stake);
+            _mockStakeRepository?.Setup(repo => repo.GetStakeById(It.IsAny<int>())).Returns(stake);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -83,7 +83,7 @@ namespace Fliq.Test.Games.Commands
             // Assert
             Assert.IsFalse(result.IsError);
             Assert.AreEqual(stake, result.Value);
-            _mockStakeRepository.Verify(repo => repo.UpdateStake(It.IsAny<Stake>()), Times.Once);
+            _mockStakeRepository?.Verify(repo => repo.UpdateStake(It.IsAny<Stake>()), Times.Once);
         }
     }
 }

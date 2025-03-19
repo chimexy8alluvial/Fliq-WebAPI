@@ -30,10 +30,10 @@ namespace Fliq.Test.Event.Commands
         private Mock<ILocationService>? _locationServiceMock;
         private Mock<IEventService>? _eventServiceMock;
         private Mock<IEmailService>? _emailServiceMock;
-        private Mock<IMediator> _mediatorMock;
-        private Mock<ICurrencyRepository> _currencyRepositoryMock;
+        private Mock<IMediator>? _mediatorMock;
+        private Mock<ICurrencyRepository>? _currencyRepositoryMock;
 
-        private CreateEventCommandHandler _handler;
+        private CreateEventCommandHandler? _handler;
 
         [TestInitialize]
         public void Setup()
