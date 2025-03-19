@@ -178,6 +178,54 @@ namespace Fliq.Api.Controllers
           );
         }
 
+  [HttpGet("get-all-events")]
+ public async Task<IActionResult> GetAllEventsForDashBoard([FromQuery] GetEventsListRequest request)
+ {
+     _logger.LogInfo("Get all events request received");
+
+     var query = _mapper.Map<GetAllEventsQuery>(request);
+     var result = await _mediator.Send(query);
+
+     _logger.LogInfo($"Get all events query executed. Result: {result} ");
+
+     return result.Match(
+       getAllUsersResult => Ok(_mapper.Map<List<GetEventsResponse>>(result.Value)),
+       errors => Problem(errors)
+   );
+ } 
+ 
+ 
+ [HttpGet("get-all-cancelled-events")]
+ public async Task<IActionResult> GetAllCancelledEventsForDashBoard([FromQuery] GetEventsListRequest request)
+ {
+     _logger.LogInfo("Get all events request received");
+
+     var query = _mapper.Map<GetAllCancelledEventsQuery>(request);
+     var result = await _mediator.Send(query);
+
+     _logger.LogInfo($"Get all events query executed. Result: {result} ");
+
+     return result.Match(
+       getAllUsersResult => Ok(_mapper.Map<List<GetEventsResponse>>(result.Value)),
+       errors => Problem(errors)
+   );
+ }
+ 
+ [HttpGet("get-all-flaggged-events")]
+ public async Task<IActionResult> GetAllFlaggedEventsForDashBoard([FromQuery] GetEventsListRequest request)
+ {
+     _logger.LogInfo("Get all events request received");
+
+     var query = _mapper.Map<GetAllFlaggedEventsQuery>(request);
+     var result = await _mediator.Send(query);
+
+     _logger.LogInfo($"Get all events query executed. Result: {result} ");
+
+     return result.Match(
+       getAllUsersResult => Ok(_mapper.Map<List<GetEventsResponse>>(result.Value)),
+       errors => Problem(errors)
+   );
+ }
 
     }
 }

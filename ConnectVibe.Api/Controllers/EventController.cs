@@ -168,5 +168,23 @@ namespace Fliq.Api.Controllers
                 errors => Problem(errors)
             );
         }
+
+        [Authorize(Roles = "Admin,SuperAdmin")]
+[HttpPut("flag-event/{eventId}")]
+public async Task<IActionResult> DeleteUserById(int eventId)
+{
+    _logger.LogInfo($"Flag event with ID: {eventId} received");
+
+    var command = new FlagEventCommand(eventId);
+    var result = await _mediator.Send(command);
+
+    _logger.LogInfo($"Fag event with ID: {eventId} executed. Result: {result} ");
+
+    return result.Match(
+      deleteUserResult => Ok(new EventCommandResponse($"Event with ID: {eventId} was successfully flagged")),
+      errors => Problem(errors)
+  );
+
+}
     }
 }
