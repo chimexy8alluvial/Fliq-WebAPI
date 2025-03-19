@@ -1,6 +1,8 @@
 ﻿using Dapper;
 using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.DashBoard.Common;
 using Fliq.Domain.Entities.Event;
+using Fliq.Domain.Entities.Event.Enums;
 using System.Data;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
@@ -52,6 +54,86 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                 return results.ToList();
             }
         }
+        public async Task<IEnumerable<Events>> GetAllEventsForDashBoardAsync(GetEventsListRequest query)
+        {
+            using var connection = _connectionFactory.CreateConnection();
+            var parameters = FilterListDynamicParams(query);
+
+            var results = await connection.QueryAsync<dynamic>(
+                "sp_GetAllEventsForDashBoard",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
+
+            return results.Select(r => new Events
+            {
+                EventTitle = r.EventTitle,
+                UserId = r.UserId,
+                StartDate = r.StartDate,
+                EndDate = r.EndDate,
+                EventCategory = Enum.Parse<EventCategory>(r.EventCategory),
+                DateCreated = r.DateCreated,
+                Tickets = new List<Ticket> { new Ticket { Id = r.TicketCount } } 
+            });
+        }
+        public async Task<IEnumerable<Events>> GetAllCancelledEventsForDashBoardAsync(GetEventsListRequest query)
+        {
+            using var connection = _connectionFactory.CreateConnection();
+            var parameters = FilterListDynamicParams(query);
+
+            var results = await connection.QueryAsync<dynamic>(
+                "sp_GetAllCancelledEventsForDashBoard",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
+
+            return results.Select(r => new Events
+            {
+                EventTitle = r.EventTitle,
+                UserId = r.UserId,
+                StartDate = r.StartDate,
+                EndDate = r.EndDate,
+                EventCategory = Enum.Parse<EventCategory>(r.EventCategory),
+                DateCreated = r.DateCreated,
+                Tickets = new List<Ticket> { new Ticket { Id = r.TicketCount } } 
+            });
+        }
+        public async Task<IEnumerable<Events>> GetAllFlaggedEventsForDashBoardAsync(GetEventsListRequest query)
+        {
+            using var connection = _connectionFactory.CreateConnection();
+            var parameters = FilterListDynamicParams(query);
+
+            var results = await connection.QueryAsync<dynamic>(
+                "sp_GetAllFlaggedEventsForDashBoard",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
+
+            return results.Select(r => new Events
+            {
+                EventTitle = r.EventTitle,
+                UserId = r.UserId,
+                StartDate = r.StartDate,
+                EndDate = r.EndDate,
+                EventCategory = Enum.Parse<EventCategory>(r.EventCategory),
+                DateCreated = r.DateCreated,
+                Tickets = new List<Ticket> { new Ticket { Id = r.TicketCount } } 
+            });
+        }
+
+        private static DynamicParameters FilterListDynamicParams(GetEventsListRequest query)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@pageNumber", query.PaginationRequest!.PageNumber);
+            parameters.Add("@pageSize", query.PaginationRequest.PageSize);
+            parameters.Add("@category", query.Category);
+            parameters.Add("@startDate", query.StartDate);
+            parameters.Add("@endDate", query.EndDate);
+            parameters.Add("@location", query.Location);
+            return parameters;
+        }
+
+        #region Count Queries
 
         public async Task<int> CountAllEvents()
         {
@@ -70,5 +152,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                 return count;
             }
         }
+
+        #endregion
     }
 }
