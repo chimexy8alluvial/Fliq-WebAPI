@@ -3,8 +3,10 @@ using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Pagination;
 using Fliq.Application.DashBoard.Common;
+using Fliq.Domain.Common.Errors;
 using MapsterMapper;
 using MediatR;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 namespace Fliq.Application.DashBoard.Queries.GetAllUser
@@ -28,10 +30,7 @@ namespace Fliq.Application.DashBoard.Queries.GetAllUser
         public async Task<ErrorOr<List<GetUsersResult>>> Handle(GetAllUsersQuery query, CancellationToken cancellationToken)
         {
             await Task.CompletedTask;
-
-            _logger.LogInfo($"Getting users for page {query.PaginationRequest.PageNumber} with page size {query.PaginationRequest.PageSize}");
-          
-
+           
             var request = new GetUsersListRequest
             {
                 PaginationRequest = query.PaginationRequest,
@@ -41,10 +40,13 @@ namespace Fliq.Application.DashBoard.Queries.GetAllUser
              
               
             };
-         
+            
+
+            _logger.LogInfo($"Getting users for page {request.PaginationRequest.PageNumber} with page size {request.PaginationRequest.PageSize}");
+
             var users = _userRepository.GetAllUsersForDashBoard(request);
 
-            _logger.LogInfo($"Got {users.Count()} users for page {query.PaginationRequest.PageNumber}");
+            _logger.LogInfo($"Got {users.Count()} users for page {request.PaginationRequest.PageNumber}");
 
             var results = users.Select(user =>
             {

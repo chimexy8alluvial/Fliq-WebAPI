@@ -3,6 +3,7 @@ using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Pagination;
 using Fliq.Application.DashBoard.Common;
+using Fliq.Domain.Common.Errors;
 using MediatR;
 
 namespace Fliq.Application.DashBoard.Queries.GetAllEvents
@@ -27,11 +28,10 @@ namespace Fliq.Application.DashBoard.Queries.GetAllEvents
         }
 
         public async Task<ErrorOr<List<GetEventsResult>>> Handle(GetAllCancelledEventsQuery query, CancellationToken cancellationToken)
-        {
-            await Task.CompletedTask;
-
+        {       
+            
             _logger.LogInfo($"Getting events for page {query.PaginationRequest.PageNumber} with page size {query.PaginationRequest.PageSize}");
-
+           
             var request = new GetEventsListRequest
             {
                 PaginationRequest = query.PaginationRequest,
