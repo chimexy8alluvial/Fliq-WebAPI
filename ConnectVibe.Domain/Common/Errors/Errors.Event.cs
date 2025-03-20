@@ -21,6 +21,15 @@ namespace Fliq.Domain.Common.Errors
             public static Error EventFlaggedAlready => Error.Failure(
                 code: "Event.EventFlaggedAlready",
                 description: "Event with given id has been flagged already.");
+
+
+            public static Error EventCancelledAlready => Error.Failure(
+                code: "Event.EventCancelledAlready",
+                description: "Event with given id has been cancelled already.");
+            
+            public static Error EventDeletedAlready => Error.Failure(
+                code: "Event.EventDeletedAlready",
+                description: "Event with given id has been deleted already.");
         }
     }
 }

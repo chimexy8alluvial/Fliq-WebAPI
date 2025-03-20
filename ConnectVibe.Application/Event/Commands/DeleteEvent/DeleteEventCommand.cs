@@ -1,4 +1,4 @@
-using ErrorOr;
+﻿using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Interfaces.Services.EventServices;
@@ -9,10 +9,10 @@ using Fliq.Domain.Common.Errors;
 using MapsterMapper;
 using MediatR;
 
-namespace Fliq.Application.Event.Commands.FlagEvent
+namespace Fliq.Application.Event.Commands.DeleteEvent
 {
-    public record FlagEventCommand(int EventId) : IRequest<ErrorOr<Unit>>;
-    public class FlagEventCommandHandler : IRequestHandler<FlagEventCommand, ErrorOr<Unit>>
+    public record DeleteEventCommand(int EventId) : IRequest<ErrorOr<Unit>>;
+    public class DeleteEventCommandHandler : IRequestHandler<DeleteEventCommand, ErrorOr<Unit>>
     {
         private readonly IMapper _mapper;
         private readonly ILoggerManager _logger;
@@ -25,7 +25,7 @@ namespace Fliq.Application.Event.Commands.FlagEvent
         private readonly IEventService _eventService;
         private const string _eventDocument = "Event Documents";
 
-        public FlagEventCommandHandler(
+        public DeleteEventCommandHandler(
             IMapper mapper,
             ILoggerManager logger,
             IUserRepository userRepository,
@@ -47,9 +47,10 @@ namespace Fliq.Application.Event.Commands.FlagEvent
             _eventService = eventService;
         }
 
-        public async Task<ErrorOr<Unit>> Handle(FlagEventCommand command, CancellationToken cancellationToken)
+        public async Task<ErrorOr<Unit>> Handle(DeleteEventCommand command, CancellationToken cancellationToken)
         {
-            _logger.LogInfo($"Flagging Event with ID: {command.EventId}");
+            _logger.LogInfo($"Deleting event with ID: {command.EventId}");
+
             var eventFromDb = _eventRepository.GetEventById(command.EventId);
             if (eventFromDb == null)
             {
@@ -57,10 +58,10 @@ namespace Fliq.Application.Event.Commands.FlagEvent
                 return Errors.Event.EventNotFound;
             }
 
-            if (eventFromDb.IsFlagged)
+            if (eventFromDb.IsDeleted)
             {
-                _logger.LogError($"Event with ID: {command.EventId} has been flagged already.");
-                return Errors.Event.EventFlaggedAlready;
+                _logger.LogError($"Event with ID: {command.EventId} has been deleted already.");
+                return Errors.Event.EventDeletedAlready;
             }
 
             var user = _userRepository.GetUserById(eventFromDb.UserId);
@@ -74,7 +75,7 @@ namespace Fliq.Application.Event.Commands.FlagEvent
 
             _eventRepository.Update(eventFromDb);
 
-            _logger.LogInfo($"Event with ID: {command.EventId} was flagged");
+            _logger.LogInfo($"Event with ID: {command.EventId} was deleted");
 
 
             var organizerName = $"{user.FirstName} {user.LastName}";
@@ -85,8 +86,8 @@ namespace Fliq.Application.Event.Commands.FlagEvent
                 user.Id,
                 organizerName,
                 Enumerable.Empty<int>(), // Organizer-only notification
-                "Event Flagged",
-                $"Your event '{eventFromDb.EventTitle}' has been flagged!",
+                "Event Deleted",
+                $"Your event '{eventFromDb.EventTitle}' has been deleted!",
                 false,
                 null,
                 null

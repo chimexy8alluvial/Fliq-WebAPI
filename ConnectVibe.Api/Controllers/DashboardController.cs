@@ -189,7 +189,7 @@ namespace Fliq.Api.Controllers
              _logger.LogInfo($"Get all events query executed. Result: {result} ");
 
              return result.Match(
-               getAllUsersResult => Ok(_mapper.Map<List<GetEventsResponse>>(result.Value)),
+               getAllEventsResult => Ok(_mapper.Map<List<GetEventsResponse>>(result.Value)),
                errors => Problem(errors)
            );
          } 
@@ -206,7 +206,7 @@ namespace Fliq.Api.Controllers
              _logger.LogInfo($"Get all events query executed. Result: {result} ");
 
              return result.Match(
-               getAllUsersResult => Ok(_mapper.Map<List<GetEventsResponse>>(result.Value)),
+               getAllCancelledEventsResult => Ok(_mapper.Map<List<GetEventsResponse>>(result.Value)),
                errors => Problem(errors)
            );
          }
@@ -222,7 +222,7 @@ namespace Fliq.Api.Controllers
              _logger.LogInfo($"Get all events query executed. Result: {result} ");
 
              return result.Match(
-               getAllUsersResult => Ok(_mapper.Map<List<GetEventsResponse>>(result.Value)),
+               getAllFlaggedEventsResult => Ok(_mapper.Map<List<GetEventsResponse>>(result.Value)),
                errors => Problem(errors)
            );
          }

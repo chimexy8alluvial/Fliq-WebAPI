@@ -1,4 +1,4 @@
-using ErrorOr;
+﻿using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Interfaces.Services.EventServices;
@@ -9,10 +9,10 @@ using Fliq.Domain.Common.Errors;
 using MapsterMapper;
 using MediatR;
 
-namespace Fliq.Application.Event.Commands.FlagEvent
+namespace Fliq.Application.Event.Commands.CancelEvent
 {
-    public record FlagEventCommand(int EventId) : IRequest<ErrorOr<Unit>>;
-    public class FlagEventCommandHandler : IRequestHandler<FlagEventCommand, ErrorOr<Unit>>
+    public record CancelEventCommand(int EventId) : IRequest<ErrorOr<Unit>>;
+    public class CancelEventCommandHandler : IRequestHandler<CancelEventCommand, ErrorOr<Unit>>
     {
         private readonly IMapper _mapper;
         private readonly ILoggerManager _logger;
@@ -25,7 +25,7 @@ namespace Fliq.Application.Event.Commands.FlagEvent
         private readonly IEventService _eventService;
         private const string _eventDocument = "Event Documents";
 
-        public FlagEventCommandHandler(
+        public CancelEventCommandHandler(
             IMapper mapper,
             ILoggerManager logger,
             IUserRepository userRepository,
@@ -47,9 +47,9 @@ namespace Fliq.Application.Event.Commands.FlagEvent
             _eventService = eventService;
         }
 
-        public async Task<ErrorOr<Unit>> Handle(FlagEventCommand command, CancellationToken cancellationToken)
+        public async Task<ErrorOr<Unit>> Handle(CancelEventCommand command, CancellationToken cancellationToken)
         {
-            _logger.LogInfo($"Flagging Event with ID: {command.EventId}");
+            _logger.LogInfo($"Cancelling Event with ID: {command.EventId}");
             var eventFromDb = _eventRepository.GetEventById(command.EventId);
             if (eventFromDb == null)
             {
@@ -57,10 +57,10 @@ namespace Fliq.Application.Event.Commands.FlagEvent
                 return Errors.Event.EventNotFound;
             }
 
-            if (eventFromDb.IsFlagged)
+            if (eventFromDb.IsCancelled)
             {
-                _logger.LogError($"Event with ID: {command.EventId} has been flagged already.");
-                return Errors.Event.EventFlaggedAlready;
+                _logger.LogError($"Event with ID: {command.EventId} has been cancelled already.");
+                return Errors.Event.EventCancelledAlready;
             }
 
             var user = _userRepository.GetUserById(eventFromDb.UserId);
@@ -74,7 +74,7 @@ namespace Fliq.Application.Event.Commands.FlagEvent
 
             _eventRepository.Update(eventFromDb);
 
-            _logger.LogInfo($"Event with ID: {command.EventId} was flagged");
+            _logger.LogInfo($"Event with ID: {command.EventId} was cancelled");
 
 
             var organizerName = $"{user.FirstName} {user.LastName}";
@@ -85,15 +85,18 @@ namespace Fliq.Application.Event.Commands.FlagEvent
                 user.Id,
                 organizerName,
                 Enumerable.Empty<int>(), // Organizer-only notification
-                "Event Flagged",
-                $"Your event '{eventFromDb.EventTitle}' has been flagged!",
+                "Event Cancelled",
+                $"Your event '{eventFromDb.EventTitle}' has been Cancelled!",
                 false,
                 null,
                 null
 
-            ), cancellationToken);
+            ), cancellationToken);            
 
             return Unit.Value;
         }
+
+
+       
     }
 }
