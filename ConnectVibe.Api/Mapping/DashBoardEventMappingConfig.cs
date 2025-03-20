@@ -1,3 +1,6 @@
+using Fliq.Application.DashBoard.Common;
+using Fliq.Contracts.DashBoard;
+using Mapster;
 using System;
 using System.Collections.Generic;
 using System.Linq;

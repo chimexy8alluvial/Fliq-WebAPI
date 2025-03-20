@@ -49,7 +49,7 @@ namespace Fliq.Application.DashBoard.Queries.GetAllEvents.Tests
                     IsFlagged = true
                 }
             };
-            var user = new User { Id = 1, DisplayName = "Test User" };
+            var user = new User { Id = 1, DisplayName = "Test User", FirstName = "Test", LastName = "User" };
 
             _eventRepositoryMock?
                 .Setup(r => r.GetAllFlaggedEventsForDashBoardAsync(It.IsAny<GetEventsListRequest>()))

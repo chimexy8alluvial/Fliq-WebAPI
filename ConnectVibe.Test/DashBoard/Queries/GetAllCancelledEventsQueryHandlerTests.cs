@@ -49,8 +49,8 @@ namespace Fliq.Application.DashBoard.Queries.GetAllEvents.Tests
                     IsCancelled = true
                 }
             };
-            var user = new User { Id = 1, DisplayName = "Test User" };
-
+            var user = new User { Id = 1, DisplayName = "Test User", FirstName = "Test", LastName = "User"};
+            
             _eventRepositoryMock?
                 .Setup(r => r.GetAllCancelledEventsForDashBoardAsync(It.IsAny<GetEventsListRequest>()))
                 .ReturnsAsync(events);
@@ -58,6 +58,8 @@ namespace Fliq.Application.DashBoard.Queries.GetAllEvents.Tests
                 .Setup(r => r.GetUserById(1))
                 .Returns(user);
             _loggerMock?.Setup(l => l.LogInfo(It.IsAny<string>()));
+
+            
 
             // Act
             var result = await _handler?.Handle(query, CancellationToken.None)!;

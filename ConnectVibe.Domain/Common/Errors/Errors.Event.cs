@@ -17,6 +17,10 @@ namespace Fliq.Domain.Common.Errors
             public static Error NoAvailableSeats => Error.Failure(
                 code: "Event.NoAvailableSeats",
                 description: "No available seats left for the event.");
+            
+            public static Error EventFlaggedAlready => Error.Failure(
+                code: "Event.EventFlaggedAlready",
+                description: "Event with given id has been flagged already.");
         }
     }
 }

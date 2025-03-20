@@ -1,9 +1,9 @@
 ﻿using Fliq.Application.Common.Interfaces.Services;
-using Fliq.Application.Common.Pagination;
 using Fliq.Application.DashBoard.Common;
 using Fliq.Application.DashBoard.Queries.ActiveUserCount;
 using Fliq.Application.DashBoard.Queries.EventsCount;
 using Fliq.Application.DashBoard.Queries.FemaleUsersCount;
+using Fliq.Application.DashBoard.Queries.GetAllEvents;
 using Fliq.Application.DashBoard.Queries.GetAllUser;
 using Fliq.Application.DashBoard.Queries.InActiveUserCount;
 using Fliq.Application.DashBoard.Queries.MaleUsersCount;
@@ -178,54 +178,54 @@ namespace Fliq.Api.Controllers
           );
         }
 
-  [HttpGet("get-all-events")]
- public async Task<IActionResult> GetAllEventsForDashBoard([FromQuery] GetEventsListRequest request)
- {
-     _logger.LogInfo("Get all events request received");
+          [HttpGet("get-all-events")]
+         public async Task<IActionResult> GetAllEventsForDashBoard([FromQuery] GetEventsListRequest request)
+         {
+             _logger.LogInfo("Get all events request received");
 
-     var query = _mapper.Map<GetAllEventsQuery>(request);
-     var result = await _mediator.Send(query);
+             var query = _mapper.Map<GetAllEventsQuery>(request);
+             var result = await _mediator.Send(query);
 
-     _logger.LogInfo($"Get all events query executed. Result: {result} ");
+             _logger.LogInfo($"Get all events query executed. Result: {result} ");
 
-     return result.Match(
-       getAllUsersResult => Ok(_mapper.Map<List<GetEventsResponse>>(result.Value)),
-       errors => Problem(errors)
-   );
- } 
+             return result.Match(
+               getAllUsersResult => Ok(_mapper.Map<List<GetEventsResponse>>(result.Value)),
+               errors => Problem(errors)
+           );
+         } 
  
  
- [HttpGet("get-all-cancelled-events")]
- public async Task<IActionResult> GetAllCancelledEventsForDashBoard([FromQuery] GetEventsListRequest request)
- {
-     _logger.LogInfo("Get all events request received");
+         [HttpGet("get-all-cancelled-events")]
+         public async Task<IActionResult> GetAllCancelledEventsForDashBoard([FromQuery] GetEventsListRequest request)
+         {
+             _logger.LogInfo("Get all events request received");
 
-     var query = _mapper.Map<GetAllCancelledEventsQuery>(request);
-     var result = await _mediator.Send(query);
+             var query = _mapper.Map<GetAllCancelledEventsQuery>(request);
+             var result = await _mediator.Send(query);
 
-     _logger.LogInfo($"Get all events query executed. Result: {result} ");
+             _logger.LogInfo($"Get all events query executed. Result: {result} ");
 
-     return result.Match(
-       getAllUsersResult => Ok(_mapper.Map<List<GetEventsResponse>>(result.Value)),
-       errors => Problem(errors)
-   );
- }
+             return result.Match(
+               getAllUsersResult => Ok(_mapper.Map<List<GetEventsResponse>>(result.Value)),
+               errors => Problem(errors)
+           );
+         }
  
- [HttpGet("get-all-flaggged-events")]
- public async Task<IActionResult> GetAllFlaggedEventsForDashBoard([FromQuery] GetEventsListRequest request)
- {
-     _logger.LogInfo("Get all events request received");
+         [HttpGet("get-all-flaggged-events")]
+         public async Task<IActionResult> GetAllFlaggedEventsForDashBoard([FromQuery] GetEventsListRequest request)
+         {
+             _logger.LogInfo("Get all events request received");
 
-     var query = _mapper.Map<GetAllFlaggedEventsQuery>(request);
-     var result = await _mediator.Send(query);
+             var query = _mapper.Map<GetAllFlaggedEventsQuery>(request);
+             var result = await _mediator.Send(query);
 
-     _logger.LogInfo($"Get all events query executed. Result: {result} ");
+             _logger.LogInfo($"Get all events query executed. Result: {result} ");
 
-     return result.Match(
-       getAllUsersResult => Ok(_mapper.Map<List<GetEventsResponse>>(result.Value)),
-       errors => Problem(errors)
-   );
- }
+             return result.Match(
+               getAllUsersResult => Ok(_mapper.Map<List<GetEventsResponse>>(result.Value)),
+               errors => Problem(errors)
+           );
+         }
 
     }
 }

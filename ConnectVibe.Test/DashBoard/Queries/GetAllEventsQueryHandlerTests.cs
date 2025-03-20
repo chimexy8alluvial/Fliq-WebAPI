@@ -48,7 +48,7 @@ namespace Fliq.Application.DashBoard.Queries.GetAllEvents.Tests
                     Tickets = new List<Ticket> { new Ticket() }
                 }
             };
-            var user = new User { Id = 1, DisplayName = "Test User" };
+            var user = new User { Id = 1, DisplayName = "Test User", FirstName = "Test", LastName = "User" };
 
             _eventRepositoryMock?
                 .Setup(r => r.GetAllEventsForDashBoardAsync(It.IsAny<GetEventsListRequest>()))

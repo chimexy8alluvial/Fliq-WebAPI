@@ -3,6 +3,7 @@ using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Event.Commands.AddEventReview;
 using Fliq.Application.Event.Commands.AddEventTicket;
 using Fliq.Application.Event.Commands.EventCreation;
+using Fliq.Application.Event.Commands.FlagEvent;
 using Fliq.Application.Event.Commands.Tickets;
 using Fliq.Application.Event.Commands.UpdateEvent;
 using Fliq.Application.Event.Commands.UpdateTicket;
@@ -15,6 +16,7 @@ using Fliq.Contracts.Event.ResponseDtos;
 using Fliq.Contracts.Event.UpdateDtos;
 using MapsterMapper;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Fliq.Api.Controllers
@@ -170,21 +172,21 @@ namespace Fliq.Api.Controllers
         }
 
         [Authorize(Roles = "Admin,SuperAdmin")]
-[HttpPut("flag-event/{eventId}")]
-public async Task<IActionResult> DeleteUserById(int eventId)
-{
-    _logger.LogInfo($"Flag event with ID: {eventId} received");
+        [HttpPut("flag-event/{eventId}")]
+        public async Task<IActionResult> FlagEventById(int eventId)
+        {
+            _logger.LogInfo($"Flag event with ID: {eventId} received");
 
-    var command = new FlagEventCommand(eventId);
-    var result = await _mediator.Send(command);
+            var command = new FlagEventCommand(eventId);
+            var result = await _mediator.Send(command);
 
-    _logger.LogInfo($"Fag event with ID: {eventId} executed. Result: {result} ");
+            _logger.LogInfo($"Fag event with ID: {eventId} executed. Result: {result} ");
 
-    return result.Match(
-      deleteUserResult => Ok(new EventCommandResponse($"Event with ID: {eventId} was successfully flagged")),
-      errors => Problem(errors)
-  );
+            return result.Match(
+              deleteUserResult => Ok(new EventCommandResponse($"Event with ID: {eventId} was successfully flagged")),
+              errors => Problem(errors)
+          );
 
-}
+        }
     }
 }

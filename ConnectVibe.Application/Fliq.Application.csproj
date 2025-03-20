@@ -46,6 +46,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Event\Commands\CancelEvent\" />
     <Folder Include="LiveComms\Queries\" />
     <Folder Include="Notifications\Queries\" />
     <Folder Include="Prompts\Queries\" />
