@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 
 appsettings.json
+/ConnectVibe.Api/appsettings.Development.json
