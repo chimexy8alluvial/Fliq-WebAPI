@@ -31,6 +31,8 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
         public void Update(Events request)
         {
+            request.DateModified = DateTime.Now;
+
             _dbContext.Update(request);
             _dbContext.SaveChanges();
         }

@@ -41,6 +41,7 @@ namespace Fliq.Infrastructure.Migrations
                     AND (@location IS NULL OR ld.Status LIKE '%' + @location + '%')
                     AND e.IsCancelled = 0
                     AND e.IsFlagged = 0
+                    AND e.IsDeleted = 0
                     GROUP BY 
                         e.EventTitle,
                         e.UserId,

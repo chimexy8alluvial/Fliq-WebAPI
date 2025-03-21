@@ -40,6 +40,7 @@ namespace Fliq.Infrastructure.Migrations
                     AND (@endDate IS NULL OR e.EndDate <= @endDate)
                     AND (@location IS NULL OR ld.Status LIKE '%' + @location + '%')
                     AND e.IsCancelled = 1
+                    AND e.IsDeleted = 0
                    
                     GROUP BY 
                         e.EventTitle,
