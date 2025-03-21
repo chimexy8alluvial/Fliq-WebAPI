@@ -39,7 +39,7 @@ namespace Fliq.Test.DashBoard.Queries
 
             _mockLogger!.Verify(logger => logger.LogInfo("Fetching all users count..."), Times.Once);
             _mockLogger.Verify(logger => logger.LogInfo($"All Users Count: {expectedCount}"), Times.Once);
-            _mockUserRepository.Verify(repo => repo.CountAllUsers(), Times.Once);
+            _mockUserRepository!.Verify(repo => repo.CountAllUsers(), Times.Once);
             _mockLogger?.Verify(logger => logger.LogInfo("Fetching all users count..."), Times.Once);
             _mockLogger?.Verify(logger => logger.LogInfo($"All Users Count: {expectedCount}"), Times.Once);
             _mockUserRepository?.Verify(repo => repo.CountAllUsers(), Times.Once);

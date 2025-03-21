@@ -22,7 +22,6 @@ namespace Fliq.Application.Tests.DashBoard.Queries
             _loggerMock = new Mock<ILoggerManager>();
             _handler = new GetAllUsersQueryHandler(
                 _userRepositoryMock.Object,
-                null!, // Mapper not used in current implementation
                 _loggerMock.Object
             );
         }
