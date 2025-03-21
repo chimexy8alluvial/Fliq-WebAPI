@@ -1,13 +1,9 @@
 ﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
-using Fliq.Application.Common.Interfaces.Services.EventServices;
-using Fliq.Application.Common.Interfaces.Services.LocationServices;
-using Fliq.Application.Common.Interfaces.Services.MeidaServices;
 using Fliq.Application.Notifications.Common.EventCreatedEvents;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities;
 using Fliq.Domain.Entities.Event;
-using MapsterMapper;
 using MediatR;
 using Moq;
 
@@ -15,41 +11,27 @@ namespace Fliq.Application.Event.Commands.FlagEvent.Tests
 {
     [TestClass]
     public class FlagEventCommandHandlerTests
-    {
-        private Mock<IMapper>? _mapperMock;
+    {        
         private Mock<ILoggerManager>? _loggerMock;
         private Mock<IUserRepository>? _userRepositoryMock;
-        private Mock<IMediaServices>? _mediaServicesMock;
         private Mock<IEventRepository>? _eventRepositoryMock;
-        private Mock<ILocationService>? _locationServiceMock;
         private Mock<IMediator>? _mediatorMock;
-        private Mock<IEmailService>? _emailServiceMock;
-        private Mock<IEventService>? _eventServiceMock;
         private FlagEventCommandHandler? _handler;
 
         [TestInitialize]
         public void Setup()
         {
-            _mapperMock = new Mock<IMapper>();
             _loggerMock = new Mock<ILoggerManager>();
-            _userRepositoryMock = new Mock<IUserRepository>();
-            _mediaServicesMock = new Mock<IMediaServices>();
-            _eventRepositoryMock = new Mock<IEventRepository>();
-            _locationServiceMock = new Mock<ILocationService>();
+            _userRepositoryMock = new Mock<IUserRepository>();           
+            _eventRepositoryMock = new Mock<IEventRepository>();           
             _mediatorMock = new Mock<IMediator>();
-            _emailServiceMock = new Mock<IEmailService>();
-            _eventServiceMock = new Mock<IEventService>();
+           
 
-            _handler = new FlagEventCommandHandler(
-                _mapperMock.Object,
+            _handler = new FlagEventCommandHandler( 
                 _loggerMock.Object,
-                _userRepositoryMock.Object,
-                _mediaServicesMock.Object,
-                _eventRepositoryMock.Object,
-                _locationServiceMock.Object,
-                _mediatorMock.Object,
-                _emailServiceMock.Object,
-                _eventServiceMock.Object);
+                _userRepositoryMock.Object,             
+                _eventRepositoryMock.Object,           
+                _mediatorMock.Object);
         }
 
         [TestMethod]
