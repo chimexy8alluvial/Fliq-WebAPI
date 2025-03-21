@@ -1,50 +1,33 @@
 ﻿using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
-using Fliq.Application.Common.Interfaces.Services.EventServices;
-using Fliq.Application.Common.Interfaces.Services.LocationServices;
-using Fliq.Application.Common.Interfaces.Services.MeidaServices;
 using Fliq.Application.Notifications.Common.EventCreatedEvents;
 using Fliq.Domain.Common.Errors;
-using MapsterMapper;
 using MediatR;
 
 namespace Fliq.Application.Event.Commands.DeleteEvent
 {
     public record DeleteEventCommand(int EventId) : IRequest<ErrorOr<Unit>>;
     public class DeleteEventCommandHandler : IRequestHandler<DeleteEventCommand, ErrorOr<Unit>>
-    {
-        private readonly IMapper _mapper;
+    { 
         private readonly ILoggerManager _logger;
-        private readonly IUserRepository _userRepository;
-        private readonly IMediaServices _mediaServices;
+        private readonly IUserRepository _userRepository;        
         private readonly IEventRepository _eventRepository;
-        private readonly ILocationService _locationService;
         private readonly IMediator _mediator;
-        private readonly IEmailService _emailService;
-        private readonly IEventService _eventService;
         private const string _eventDocument = "Event Documents";
 
-        public DeleteEventCommandHandler(
-            IMapper mapper,
+        public DeleteEventCommandHandler(           
             ILoggerManager logger,
             IUserRepository userRepository,
-            IMediaServices mediaServices,
-            IEventRepository eventRepository,
-            ILocationService locationService,
-            IMediator mediator,
-            IEmailService emailService,
-            IEventService eventService)
+            IEventRepository eventRepository,         
+            IMediator mediator)
         {
-            _mapper = mapper;
+           
             _logger = logger;
-            _userRepository = userRepository;
-            _mediaServices = mediaServices;
-            _eventRepository = eventRepository;
-            _locationService = locationService;
+            _userRepository = userRepository;       
+            _eventRepository = eventRepository;          
             _mediator = mediator;
-            _emailService = emailService;
-            _eventService = eventService;
+            
         }
 
         public async Task<ErrorOr<Unit>> Handle(DeleteEventCommand command, CancellationToken cancellationToken)

@@ -1,12 +1,8 @@
 ﻿using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
-using Fliq.Application.Common.Interfaces.Services.EventServices;
-using Fliq.Application.Common.Interfaces.Services.LocationServices;
-using Fliq.Application.Common.Interfaces.Services.MeidaServices;
 using Fliq.Application.Notifications.Common.EventCreatedEvents;
 using Fliq.Domain.Common.Errors;
-using MapsterMapper;
 using MediatR;
 
 namespace Fliq.Application.Event.Commands.CancelEvent
@@ -14,37 +10,24 @@ namespace Fliq.Application.Event.Commands.CancelEvent
     public record CancelEventCommand(int EventId) : IRequest<ErrorOr<Unit>>;
     public class CancelEventCommandHandler : IRequestHandler<CancelEventCommand, ErrorOr<Unit>>
     {
-        private readonly IMapper _mapper;
         private readonly ILoggerManager _logger;
         private readonly IUserRepository _userRepository;
-        private readonly IMediaServices _mediaServices;
         private readonly IEventRepository _eventRepository;
-        private readonly ILocationService _locationService;
         private readonly IMediator _mediator;
-        private readonly IEmailService _emailService;
-        private readonly IEventService _eventService;
         private const string _eventDocument = "Event Documents";
 
         public CancelEventCommandHandler(
-            IMapper mapper,
             ILoggerManager logger,
             IUserRepository userRepository,
-            IMediaServices mediaServices,
             IEventRepository eventRepository,
-            ILocationService locationService,
-            IMediator mediator,
-            IEmailService emailService,
-            IEventService eventService)
+            IMediator mediator)
         {
-            _mapper = mapper;
+
             _logger = logger;
             _userRepository = userRepository;
-            _mediaServices = mediaServices;
             _eventRepository = eventRepository;
-            _locationService = locationService;
             _mediator = mediator;
-            _emailService = emailService;
-            _eventService = eventService;
+
         }
 
         public async Task<ErrorOr<Unit>> Handle(CancelEventCommand command, CancellationToken cancellationToken)
