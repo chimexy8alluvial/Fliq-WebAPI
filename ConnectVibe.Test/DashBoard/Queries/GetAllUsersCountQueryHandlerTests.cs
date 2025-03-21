@@ -8,9 +8,9 @@ namespace Fliq.Test.DashBoard.Queries
     [TestClass]
     public class GetAllUsersCountQueryHandlerTests
     {
-        private Mock<IUserRepository> _mockUserRepository;
-        private Mock<ILoggerManager> _mockLogger;
-        private GetAllUsersCountQueryHandler _handler;
+        private Mock<IUserRepository>? _mockUserRepository;
+        private Mock<ILoggerManager>? _mockLogger;
+        private GetAllUsersCountQueryHandler? _handler;
 
         [TestInitialize]
         public void SetUp()
@@ -26,17 +26,17 @@ namespace Fliq.Test.DashBoard.Queries
         {
             // Arrange
             int expectedCount = 100;
-            _mockUserRepository.Setup(repo => repo.CountAllUsers()).ReturnsAsync(expectedCount);
+            _mockUserRepository!.Setup(repo => repo.CountAllUsers()).ReturnsAsync(expectedCount);
             var query = new GetAllUsersCountQuery();
 
             // Act
-            var result = await _handler.Handle(query, CancellationToken.None);
+            var result = await _handler!.Handle(query, CancellationToken.None);
 
             // Assert
             Assert.IsFalse(result.IsError);
             Assert.AreEqual(expectedCount, result.Value.Count);
 
-            _mockLogger.Verify(logger => logger.LogInfo("Fetching all users count..."), Times.Once);
+            _mockLogger!.Verify(logger => logger.LogInfo("Fetching all users count..."), Times.Once);
             _mockLogger.Verify(logger => logger.LogInfo($"All Users Count: {expectedCount}"), Times.Once);
             _mockUserRepository.Verify(repo => repo.CountAllUsers(), Times.Once);
         }
@@ -45,16 +45,16 @@ namespace Fliq.Test.DashBoard.Queries
         public async Task Handle_WhenRepositoryThrowsException_LogsErrorAndReturnsError()
         {
             // Arrange
-            _mockUserRepository.Setup(repo => repo.CountAllUsers()).ThrowsAsync(new Exception("Database error"));
+            _mockUserRepository!.Setup(repo => repo.CountAllUsers()).ThrowsAsync(new Exception("Database error"));
             var query = new GetAllUsersCountQuery();
 
             // Act & Assert
             await Assert.ThrowsExceptionAsync<Exception>(async () =>
             {
-                await _handler.Handle(query, CancellationToken.None);
+                await _handler!.Handle(query, CancellationToken.None);
             });
 
-            _mockLogger.Verify(logger => logger.LogInfo("Fetching all users count..."), Times.Once);
+            _mockLogger!.Verify(logger => logger.LogInfo("Fetching all users count..."), Times.Once);
             _mockUserRepository.Verify(repo => repo.CountAllUsers(), Times.Once);
         }
     }

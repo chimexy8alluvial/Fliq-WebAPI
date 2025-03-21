@@ -17,7 +17,9 @@ namespace Fliq.Infrastructure.Migrations
             AS
             BEGIN
                 SET NOCOUNT ON;
-                 SELECT COUNT(*) AS TotalEvents FROM Events;
+                 SELECT COUNT(*) AS TotalEvents FROM Events
+            WHERE 
+                IsDeleted = 0;
             END;
             ");
         }

@@ -20,7 +20,9 @@ namespace Fliq.Infrastructure.Migrations
                 FROM Users u
                 LEFT JOIN UserProfiles up ON u.Id = up.UserId
                 LEFT JOIN Gender g ON up.Id = g.UserProfileId
-                WHERE g.GenderType = 1 ;
+                WHERE 
+                    u.IsDeleted = 0
+                    g.GenderType = 1 ;
             END;
             ");
         }

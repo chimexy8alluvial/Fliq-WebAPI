@@ -16,10 +16,10 @@ namespace Fliq.Application.LiveComms.Commands.Chats
 
     public class CreateChatChannelHandler : IRequestHandler<CreateChatChannelCommand, ErrorOr<CreateChatChannelResult>>
     {
-        private readonly StreamClientFactory _streamClientFactory;
+        private readonly IStreamClientFactory _streamClientFactory;
         private readonly ILoggerManager _logger;
 
-        public CreateChatChannelHandler(StreamClientFactory streamClientFactory, ILoggerManager logger)
+        public CreateChatChannelHandler(IStreamClientFactory streamClientFactory, ILoggerManager logger)
         {
             _streamClientFactory = streamClientFactory;
             _logger = logger;

@@ -1,7 +1,6 @@
 ﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.DashBoard.Queries.FemaleUsersCount;
-using Fliq.Application.DashBoard.Queries.MaleUsersCount;
 using Moq;
 
 namespace Fliq.Test.DashBoard.Queries
