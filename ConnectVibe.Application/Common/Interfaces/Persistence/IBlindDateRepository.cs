@@ -10,5 +10,6 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         Task AddAsync(BlindDate blindDate);
         Task UpdateAsync(BlindDate blindDate);
         Task DeleteAsync(BlindDate blindDate);
+        Task<int> GetBlindDateCountAsync();
     }
 }

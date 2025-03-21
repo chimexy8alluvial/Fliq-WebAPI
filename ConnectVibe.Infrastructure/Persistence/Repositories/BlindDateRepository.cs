@@ -1,8 +1,10 @@
 ﻿
 
+using Dapper;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Domain.Entities.DatingEnvironment.BlindDates;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {
@@ -72,6 +74,15 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             blindDate.IsDeleted = true;
             _dbContext.BlindDates.Update(blindDate);
             await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<int> GetBlindDateCountAsync()
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_BlindDatingCount", commandType: CommandType.StoredProcedure);
+                return count;
+            }
         }
     }
 }

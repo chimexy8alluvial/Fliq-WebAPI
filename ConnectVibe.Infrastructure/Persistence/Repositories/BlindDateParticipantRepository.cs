@@ -1,16 +1,19 @@
 ﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Domain.Entities.DatingEnvironment.BlindDates;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {
     public class BlindDateParticipantRepository : IBlindDateParticipantRepository
     {
         private readonly FliqDbContext _dbContext;
+        private readonly IDbConnectionFactory _connectionFactory;
 
-        public BlindDateParticipantRepository(FliqDbContext dbContext)
+        public BlindDateParticipantRepository(FliqDbContext dbContext, IDbConnectionFactory connectionFactory)
         {
             _dbContext = dbContext;
+            _connectionFactory = connectionFactory; 
         }
 
         public async Task<BlindDateParticipant?> GetByIdAsync(int id)

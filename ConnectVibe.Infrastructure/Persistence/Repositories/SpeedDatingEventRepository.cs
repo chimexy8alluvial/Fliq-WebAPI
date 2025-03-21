@@ -1,7 +1,9 @@
-﻿using Fliq.Application.Common.Interfaces.Persistence;
+﻿using Dapper;
+using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Domain.Entities.DatingEnvironment.SpeedDates;
 using Fliq.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {
@@ -68,6 +70,15 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             speedDate.IsDeleted = true;
             _dbContext.SpeedDatingEvents.Update(speedDate);
             await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<int> GetSpeedDateCountAsync()
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_SpeedDatingCount", commandType: CommandType.StoredProcedure);
+                return count;
+            }
         }
     }
 }

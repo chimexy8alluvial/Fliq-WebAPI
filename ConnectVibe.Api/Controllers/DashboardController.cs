@@ -1,4 +1,5 @@
-﻿using Fliq.Application.Common.Interfaces.Services;
+﻿using ErrorOr;
+using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.DashBoard.Queries.ActiveUserCount;
 using Fliq.Application.DashBoard.Queries.InActiveUserCount;
 using Fliq.Application.DashBoard.Queries.NewSignUpsCount;
@@ -82,5 +83,6 @@ namespace Fliq.Api.Controllers
              errors => Problem(errors)
          );
         }
+
     }
 }
