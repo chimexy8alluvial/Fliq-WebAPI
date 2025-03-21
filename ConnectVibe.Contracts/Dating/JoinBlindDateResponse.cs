@@ -1,6 +1,6 @@
 ﻿
 namespace Fliq.Contracts.Dating
 {
-    public record JoinBlindDateResponse();
+    public record JoinBlindDateResponse(string msg);
 
 }

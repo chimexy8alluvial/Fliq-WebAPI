@@ -11,7 +11,7 @@ namespace Fliq.Contracts.Dating
        bool IsRecordingEnabled,
        DateTime? SessionStartTime,
        DateTime? SessionEndTime,
-       BlindDatePhotoDto? BlindDateImage,
+       DatePhotoDto? BlindDateImage,
        LocationDto Location
         );
 }

@@ -1,6 +1,7 @@
 ﻿using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.DatingEnvironment.Commands.BlindDateCategory;
 using Fliq.Application.DatingEnvironment.Commands.BlindDates;
+using Fliq.Application.DatingEnvironment.Commands.SpeedDating;
 using Fliq.Application.DatingEnvironment.Common;
 using Fliq.Application.DatingEnvironment.Queries.BlindDateCategory;
 using Fliq.Contracts.Dating;
@@ -88,7 +89,7 @@ namespace Fliq.Api.Controllers
             var command = _mapper.Map<CreateBlindDateCommand>(request) with
             {
                 BlindDateImage = request.BlindDateImage is not null
-                ? new BlindDatePhotoMapped ( request.BlindDateImage.BlindDateSessionImageFile): null
+                ? new DatePhotoMapped ( request.BlindDateImage.DateSessionImageFile): null
             };
 
             var result = await _mediator.Send(command);
@@ -133,7 +134,7 @@ namespace Fliq.Api.Controllers
             _logger.LogInfo($"Join Blind Date Command Executed. Result: {result}");
 
             return result.Match(
-                result => Ok(new JoinBlindDateResponse()),
+                result => Ok(new JoinBlindDateResponse($"User {userId} joined session at {DateTime.UtcNow}")),
                 errors => Problem(string.Join("; ", errors.Select(e => e.Description)))
             );
         }
@@ -158,5 +159,88 @@ namespace Fliq.Api.Controllers
             );
         }
 
+        
+        //-------speed--dating------\\
+
+        [HttpPost("SpeedDate")] 
+        [Produces(typeof(CreateSpeedDatingEventResponse))]
+        public async Task<IActionResult> CreateSpeedDateEvent([FromForm] CreateSpeedDatingEventRequest request)
+        {
+            _logger.LogInfo($"Create Speed Dating request received: {request}");
+            var userId = GetAuthUserId();
+            _logger.LogInfo($"Authenticated user ID: {userId}");
+
+            var command = _mapper.Map<CreateSpeedDatingEventCommand>(request) with
+            {
+                SpeedDateImage = request.SpeedDatingImage is not null
+                ? new DatePhotoMapped(request.SpeedDatingImage.DateSessionImageFile) : null
+            };
+
+            var result = await _mediator.Send(command);
+            _logger.LogInfo($"Create Speed Date Command Executed. Result: {result}");
+
+            return result.Match(
+                result => Ok(_mapper.Map<CreateSpeedDatingEventResponse>(result)),
+                errors => Problem(string.Join("; ", errors.Select(e => e.Description)))
+            );
+        }
+
+        [HttpPost("SpeedDate/start")]
+        [Produces(typeof(StartSpeedDatingEventResponse))]
+        [Authorize]
+        public async Task<IActionResult> StartSpeedDate([FromBody] StartSpeedDatingEventRequest request)
+        {
+            _logger.LogInfo($"Start Speed Date request received: {request}");
+            var userId = GetAuthUserId();
+
+            var command = new StartSpeedDatingEventCommand(userId, request.SpeedDateId);
+            var result = await _mediator.Send(command);
+
+            _logger.LogInfo($"Start Speed Date Command Executed. Result: {result}");
+
+            return result.Match(
+                result => Ok(_mapper.Map<StartSpeedDatingEventResponse>(result)),
+                errors => Problem(string.Join("; ", errors.Select(e => e.Description)))
+            );
+        }
+
+        [HttpPost("SpeedDate/join")]
+        [Produces(typeof(JoinSpeedDatingEventResponse))]
+        [Authorize]
+        public async Task<IActionResult> JoinSpeedDate([FromBody] JoinSpeedDatingEventRequest request)
+        {
+            _logger.LogInfo($"Join Speed Date request received: {request}");
+            var userId = GetAuthUserId();
+
+            var command = new JoinSpeedDatingEventCommand(userId, request.SpeedDateId);
+            var result = await _mediator.Send(command);
+
+            _logger.LogInfo($"Join Speed Date Command Executed. Result: {result}");
+
+            return result.Match(
+                result => Ok(new JoinSpeedDatingEventResponse($"User {userId} joined session at {DateTime.UtcNow}")),
+                errors => Problem(string.Join("; ", errors.Select(e => e.Description)))
+            );
+        }
+
+
+        [HttpPost("SpeedDate/end")]
+        [Produces(typeof(EndSpeedDatingEventResponse))]
+        [Authorize]
+        public async Task<IActionResult> EndSpeedDate([FromBody] EndSpeedDatingEventRequest request)
+        {
+            _logger.LogInfo($"End Speed Date request received: {request}");
+            var userId = GetAuthUserId();
+
+            var command = new EndSpeedDatingEventCommand(userId, request.SpeedDateId);
+            var result = await _mediator.Send(command);
+
+            _logger.LogInfo($"End Speed Date Command Executed. Result: {result}");
+
+            return result.Match(
+                result => Ok(_mapper.Map<EndSpeedDatingEventResponse>(result)),
+                errors => Problem(string.Join("; ", errors.Select(e => e.Description)))
+            );
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Fliq.Domain.Entities.DatingEnvironment;
+﻿using Fliq.Domain.Entities.DatingEnvironment.BlindDates;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Fliq.Application.Common.Interfaces.Persistence

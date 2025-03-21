@@ -19,7 +19,7 @@ namespace Fliq.Test.Event.Commands
         private Mock<IUserRepository>? _userRepositoryMock;
         private Mock<IMediator>? _mediatorMock;
 
-        private AddEventTicketCommandHandler _handler;
+        private AddEventTicketCommandHandler? _handler;
 
         [TestInitialize]
         public void Setup()

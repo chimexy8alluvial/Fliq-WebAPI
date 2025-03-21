@@ -1,5 +1,4 @@
-﻿
-using Fliq.Domain.Entities.DatingEnvironment;
+﻿using Fliq.Domain.Entities.DatingEnvironment.BlindDates;
 
 namespace Fliq.Application.Common.Interfaces.Persistence
 {

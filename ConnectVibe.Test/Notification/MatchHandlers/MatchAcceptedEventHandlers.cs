@@ -10,11 +10,11 @@ namespace Fliq.Test.Notification.MatchHandlers
     [TestClass]
     public class MatchAcceptedEventHandlers
     {
-        private NotificationEventHandler _handler;
-        private Mock<IUserRepository> _userRepositoryMock;
-        private Mock<INotificationRepository> _notificationRepositoryMock;
-        private Mock<IPushNotificationService> _firebaseServiceMock;
-        private Mock<ILoggerManager> _loggerManagerMock;
+        private NotificationEventHandler? _handler;
+        private Mock<IUserRepository>? _userRepositoryMock;
+        private Mock<INotificationRepository>? _notificationRepositoryMock;
+        private Mock<IPushNotificationService>? _firebaseServiceMock;
+        private Mock<ILoggerManager>? _loggerManagerMock;
 
         [TestInitialize]
         public void Setup()
@@ -45,9 +45,9 @@ namespace Fliq.Test.Notification.MatchHandlers
             var token2 = "accepter-token";
 
             // Mock the repository to return tokens for both users
-            _notificationRepositoryMock.Setup(repo => repo.GetDeviceTokensByUserIdAsync(1))
+            _notificationRepositoryMock?.Setup(repo => repo.GetDeviceTokensByUserIdAsync(1))
                 .ReturnsAsync(new List<string> { token1 }); // Tokens for initiator
-            _notificationRepositoryMock.Setup(repo => repo.GetDeviceTokensByUserIdAsync(2))
+            _notificationRepositoryMock?.Setup(repo => repo.GetDeviceTokensByUserIdAsync(2))
                 .ReturnsAsync(new List<string> { token2 }); // Tokens for accepter
 
             // Act
@@ -56,7 +56,7 @@ namespace Fliq.Test.Notification.MatchHandlers
             // Assert
 
             // Verify notification sent to the match initiator
-            _firebaseServiceMock.Verify(service => service.SendNotificationAsync(
+            _firebaseServiceMock?.Verify(service => service.SendNotificationAsync(
                 "Match Accepted!",
                 "Your match request has been accepted.",
                 It.Is<List<string>>(tokens => tokens.Contains(token1)),
@@ -66,7 +66,7 @@ namespace Fliq.Test.Notification.MatchHandlers
                 "View Profile"), Times.Once);
 
             // Verify notification sent to the accepter
-            _firebaseServiceMock.Verify(service => service.SendNotificationAsync(
+            _firebaseServiceMock?.Verify(service => service.SendNotificationAsync(
                 "Match Accepted!",
                 "You have a new connection",
                 It.Is<List<string>>(tokens => tokens.Contains(token2)),
@@ -76,7 +76,7 @@ namespace Fliq.Test.Notification.MatchHandlers
                 "View Profile"), Times.Once);
 
             // Optionally, verify the log was written
-            _loggerManagerMock.Verify(logger => logger.LogInfo(
+            _loggerManagerMock?.Verify(logger => logger.LogInfo(
                 "Notification sent for match acceptance to AccepterUserId: 2 and InitiatorUserId: 1"), Times.Once);
         }
     }

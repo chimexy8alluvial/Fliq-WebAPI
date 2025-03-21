@@ -8,9 +8,9 @@ namespace Fliq.Test.DashBoard.Queries
     [TestClass]
     public class GetActiveUsersCountQueryHandlerTests
     {
-        private Mock<IUserRepository> _mockUserRepository;
-        private Mock<ILoggerManager> _mockLogger;
-        private GetActiveUsersCountQueryHandler _handler;
+        private Mock<IUserRepository>? _mockUserRepository;
+        private Mock<ILoggerManager>? _mockLogger;
+        private GetActiveUsersCountQueryHandler? _handler;
 
         [TestInitialize]
         public void Setup()
@@ -26,7 +26,7 @@ namespace Fliq.Test.DashBoard.Queries
         {
             // Arrange
             var activeUserCount = 10;
-            _mockUserRepository.Setup(repo => repo.CountActiveUsers()).ReturnsAsync(activeUserCount);
+            _mockUserRepository?.Setup(repo => repo.CountActiveUsers()).ReturnsAsync(activeUserCount);
 
             var query = new GetActiveUsersCountQuery();
 
@@ -38,16 +38,16 @@ namespace Fliq.Test.DashBoard.Queries
             Assert.IsNotNull(result.Value);
             Assert.AreEqual(activeUserCount, result.Value.Count);
 
-            _mockLogger.Verify(logger => logger.LogInfo("Fetching active users count..."), Times.Once);
-            _mockLogger.Verify(logger => logger.LogInfo($"Active Users Count: {activeUserCount}"), Times.Once);
-            _mockUserRepository.Verify(repo => repo.CountActiveUsers(), Times.Once);
+            _mockLogger?.Verify(logger => logger.LogInfo("Fetching active users count..."), Times.Once);
+            _mockLogger?.Verify(logger => logger.LogInfo($"Active Users Count: {activeUserCount}"), Times.Once);
+            _mockUserRepository?.Verify(repo => repo.CountActiveUsers(), Times.Once);
         }
 
         [TestMethod]
         public async Task Handle_WhenRepositoryThrowsException_ThrowsException()
         {
             // Arrange
-            _mockUserRepository
+            _mockUserRepository?
                 .Setup(repo => repo.CountActiveUsers())
                 .ThrowsAsync(new Exception("Database error"));
 
@@ -59,8 +59,8 @@ namespace Fliq.Test.DashBoard.Queries
                 await _handler.Handle(query, CancellationToken.None);
             });
 
-            _mockLogger.Verify(logger => logger.LogInfo("Fetching active users count..."), Times.Once);
-            _mockUserRepository.Verify(repo => repo.CountActiveUsers(), Times.Once);
+            _mockLogger?.Verify(logger => logger.LogInfo("Fetching active users count..."), Times.Once);
+            _mockUserRepository?.Verify(repo => repo.CountActiveUsers(), Times.Once);
         }
     }
 }

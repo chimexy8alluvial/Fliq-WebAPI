@@ -12,12 +12,11 @@ namespace Fliq.Test.Settings.Queries.Get
     [TestClass]
     public class GetSettingsQueryHandlerTests
     {
-        private Mock<ISettingsRepository> _mockSettingsRepository;
-        private Mock<IProfileRepository> _mockProfileRepository;
-        private Mock<IUserRepository> _mockUserRepository;
-        private Mock<IHttpContextAccessor> _mockHttpContextAccessor;
-        private Mock<ILoggerManager> _mockLoggerManager;
-        private GetSettingsQueryHandler _handler;
+        private Mock<ISettingsRepository>? _mockSettingsRepository;
+        private Mock<IProfileRepository>? _mockProfileRepository;
+        private Mock<IUserRepository>? _mockUserRepository;
+        private Mock<ILoggerManager>? _mockLoggerManager;
+        private GetSettingsQueryHandler? _handler;
 
         [TestInitialize]
         public void Setup()
@@ -25,14 +24,12 @@ namespace Fliq.Test.Settings.Queries.Get
             _mockSettingsRepository = new Mock<ISettingsRepository>();
             _mockProfileRepository = new Mock<IProfileRepository>();
             _mockUserRepository = new Mock<IUserRepository>();
-            _mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
             _mockLoggerManager = new Mock<ILoggerManager>();
 
             _handler = new GetSettingsQueryHandler(
                 _mockSettingsRepository.Object,
                 _mockProfileRepository.Object,
                 _mockUserRepository.Object,
-                _mockHttpContextAccessor.Object,
                 _mockLoggerManager.Object
             );
         }
@@ -43,9 +40,9 @@ namespace Fliq.Test.Settings.Queries.Get
             // Arrange
             var query = new GetSettingsQuery(999);
 
-            _mockUserRepository
+            _mockUserRepository?
                 .Setup(repo => repo.GetUserById(It.IsAny<int>()))
-                .Returns((User)null);
+                .Returns((User?)null);
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
@@ -63,13 +60,13 @@ namespace Fliq.Test.Settings.Queries.Get
 
             var query = new GetSettingsQuery(user.Id);
 
-            _mockUserRepository
+            _mockUserRepository?
                 .Setup(repo => repo.GetUserById(It.IsAny<int>()))
                 .Returns(user);
 
-            _mockSettingsRepository
+            _mockSettingsRepository?
                 .Setup(repo => repo.GetSettingByUserId(It.IsAny<int>()))
-                .Returns((Setting)null);
+                .Returns((Setting?)null);
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
@@ -97,11 +94,11 @@ namespace Fliq.Test.Settings.Queries.Get
 
             var query = new GetSettingsQuery(user.Id);
 
-            _mockUserRepository
+            _mockUserRepository?
                 .Setup(repo => repo.GetUserById(It.IsAny<int>()))
                 .Returns(user);
 
-            _mockSettingsRepository
+            _mockSettingsRepository?
                 .Setup(repo => repo.GetSettingByUserId(It.IsAny<int>()))
                 .Returns(settings);
 

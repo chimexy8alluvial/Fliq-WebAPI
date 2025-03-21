@@ -2,7 +2,7 @@
 {
     public class WalletHistory : Record
     {
-        public int Id { get; set; }
+        public int? Id { get; set; }
         public int WalletId { get; set; }
         public Wallet Wallet { get; set; } = default!;
         public decimal Amount { get; set; }

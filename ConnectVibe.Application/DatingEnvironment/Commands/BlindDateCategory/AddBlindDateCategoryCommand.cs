@@ -31,7 +31,7 @@ namespace Fliq.Application.DatingEnvironment.Commands.BlindDateCategory
             }
 
             //Create new blind date category object
-            var category = new Domain.Entities.DatingEnvironment.BlindDateCategory
+            var category = new Domain.Entities.DatingEnvironment.BlindDates.BlindDateCategory
             {
                 CategoryName = request.CategoryName,
                 Description = request.Description,

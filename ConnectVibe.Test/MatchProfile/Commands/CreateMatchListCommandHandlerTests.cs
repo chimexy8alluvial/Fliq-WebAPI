@@ -12,10 +12,10 @@ namespace Fliq.Test.MatchProfile.Commands
     [TestClass]
     public class CreateMatchListCommandHandlerTests
     {
-        private Mock<IMatchProfileRepository> _mockMatchProfileRepository;
-        private Mock<ILoggerManager> _mockLogger;
+        private Mock<IMatchProfileRepository>? _mockMatchProfileRepository;
+        private Mock<ILoggerManager>? _mockLogger;
 
-        private CreateMatchListCommandHandler _handler;
+        private CreateMatchListCommandHandler? _handler;
 
         [TestInitialize]
         public void Setup()
@@ -31,7 +31,7 @@ namespace Fliq.Test.MatchProfile.Commands
             // Arrange
             var command = new GetMatchRequestListCommand(1, new PaginationRequest(1, 10), MatchRequestStatus.Pending);
 
-            _mockMatchProfileRepository
+            _mockMatchProfileRepository?
                 .Setup(repo => repo.GetMatchListById(It.IsAny<GetMatchListRequest>()))
                 .ReturnsAsync(new List<MatchRequestDto>());
 
@@ -55,7 +55,7 @@ namespace Fliq.Test.MatchProfile.Commands
                 new MatchRequestDto { MatchInitiatorUserId = 3, MatchReceiverUserId = 1}
             };
 
-            _mockMatchProfileRepository
+            _mockMatchProfileRepository?
                 .Setup(repo => repo.GetMatchListById(It.IsAny<GetMatchListRequest>()))
                 .ReturnsAsync(matchRequestList);
 
@@ -74,7 +74,7 @@ namespace Fliq.Test.MatchProfile.Commands
             var paginationRequest = new PaginationRequest(1, 5);
             var command = new GetMatchRequestListCommand(1, paginationRequest, MatchRequestStatus.Rejected);
 
-            _mockMatchProfileRepository
+            _mockMatchProfileRepository?
                 .Setup(repo => repo.GetMatchListById(It.IsAny<GetMatchListRequest>()))
                 .ReturnsAsync(new List<MatchRequestDto>());
 
@@ -82,7 +82,7 @@ namespace Fliq.Test.MatchProfile.Commands
             await _handler.Handle(command, CancellationToken.None);
 
             // Assert
-            _mockMatchProfileRepository.Verify(repo =>
+            _mockMatchProfileRepository?.Verify(repo =>
                 repo.GetMatchListById(It.Is<GetMatchListRequest>(r =>
                     r.UserId == 1 &&
                     r.PaginationRequest.PageNumber == 1 &&

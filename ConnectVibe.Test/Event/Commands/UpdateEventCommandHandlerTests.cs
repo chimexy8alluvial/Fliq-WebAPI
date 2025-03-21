@@ -34,7 +34,7 @@ namespace Fliq.Test.Event.Commands
         
        
 
-        private UpdateEventCommandHandler _handler;
+        private UpdateEventCommandHandler? _handler;
 
         [TestInitialize]
         public void Setup()
