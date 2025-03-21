@@ -1,9 +1,11 @@
 ﻿using Fliq.Application.Authentication.Commands.CreateAdmin;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Users.Commands;
+using Fliq.Application.Users.Queries;
 using Fliq.Contracts.Authentication;
 using Fliq.Contracts.Common;
 using Fliq.Contracts.Users;
+using Fliq.Contracts.Users.UserFeatureActivities;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -41,7 +43,7 @@ namespace Fliq.Api.Controllers
         }
 
 
-        [Authorize(Roles = "SuperAdmin")]
+        [Authorize(Roles = "SuperAdmin,Admin")]
         [HttpPost("deactivate-user/{UserId}")]
         public async Task<IActionResult> DeactivateUser(int UserId)
         {
@@ -52,6 +54,25 @@ namespace Fliq.Api.Controllers
 
             return result.Match(
                 result => Ok(new BasicActionResponse($"User with ID {UserId} deactivated successfully")),
+                errors => Problem(errors)
+            );
+        }
+
+        [Authorize(Roles = "SuperAdmin,Admin")]
+        [HttpPost("get-recent-user-activity")]
+        public async Task<IActionResult> GetRecentUserFeatureActivity(GetRecentUserFeatureActivityRequest request)
+        {
+            _logger.LogInfo($"Executing Request for Recent FeatureActivity for User with Id: {request.UserId}");
+
+            var userId = GetAuthUserId();
+            _logger.LogInfo($"Authenticated user ID: {userId}");
+
+            var query = new GetRecentUserFeatureActivitiesQuery(userId, request.UserId, request.Limit);
+            var result = await _mediator.Send(query);
+            _logger.LogInfo($"User Recent Feature Activities Query Executed. Result:  {result}");
+
+            return result.Match(
+                result => Ok(_mapper.Map<List<GetRecentUserFeatureActivityResponse>>(result)),
                 errors => Problem(errors)
             );
         }
