@@ -76,5 +76,7 @@ namespace Fliq.Application.DashBoard.Queries.GetAllEvents
                 return "Ongoing";
             return "Past";
         }
+
+       
     }
 }

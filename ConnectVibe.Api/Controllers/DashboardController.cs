@@ -16,6 +16,7 @@ using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Text;
 
 namespace Fliq.Api.Controllers
 {
@@ -192,10 +193,68 @@ namespace Fliq.Api.Controllers
                getAllEventsResult => Ok(_mapper.Map<List<GetEventsResponse>>(result.Value)),
                errors => Problem(errors)
            );
-         } 
- 
- 
-         [HttpGet("get-all-cancelled-events")]
+         }
+
+        [HttpGet("export-events-csv")]
+        public async Task<IActionResult> ExportEventsToCsv([FromQuery] GetEventsListRequest request)
+        {           
+                _logger.LogInfo("Export events to CSV request received");
+               
+                var query = _mapper.Map<GetAllEventsQuery>(request);
+                var result = await _mediator.Send(query);
+
+                 return await result.MatchAsync<IActionResult>(
+                      async eventsResult =>
+                      {
+                          var csvContent = await GenerateCsvContent(eventsResult);
+                          var fileName = $"Events_Export_{DateTime.Now:yyyyMMdd_HHmmss}.csv";
+                          _logger.LogInfo($"Successfully generated CSV with {eventsResult.Count} events");
+                          return File(
+                              Encoding.UTF8.GetBytes(csvContent),
+                              "text/csv",
+                              fileName
+                          );
+                      },
+
+                      errors => Task.FromResult(Problem(errors))
+                 );
+            
+        }
+
+        // Helper method to generate CSV content
+        private async Task<string> GenerateCsvContent(List<GetEventsResult> events)
+        {
+            await Task.CompletedTask; 
+
+            var sb = new StringBuilder();
+
+            // Add CSV header
+            sb.AppendLine("EventTitle,CreatedBy,Status,Attendees,EventCategory,CreatedOn");
+
+            // Add data rows
+            foreach (var eventItem in events)
+            {
+                // Escape values that might contain commas or quotes
+                string eventTitle = $"\"{eventItem.EventTitle.Replace("\"", "\"\"")}\"";
+                string createdBy = $"\"{eventItem.CreatedBy.Replace("\"", "\"\"")}\"";
+                string status = $"\"{eventItem.Status.Replace("\"", "\"\"")}\"";
+                string eventCategory = $"\"{eventItem.EventCategory.Replace("\"", "\"\"")}\"";
+
+                sb.AppendLine(
+                    $"{eventTitle}," +
+                    $"{createdBy}," +
+                    $"{status}," +
+                    $"{eventItem.Attendees}," +
+                    $"{eventCategory}," +
+                    $"{eventItem.CreatedOn:yyyy-MM-dd HH:mm:ss}"
+                );
+            }
+
+            return sb.ToString();
+        }
+
+
+        [HttpGet("get-all-cancelled-events")]
          public async Task<IActionResult> GetAllCancelledEventsForDashBoard([FromQuery] GetEventsListRequest request)
          {
              _logger.LogInfo("Get all events request received");
