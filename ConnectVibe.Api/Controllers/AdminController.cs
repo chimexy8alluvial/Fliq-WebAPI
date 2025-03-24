@@ -6,6 +6,7 @@ using Fliq.Contracts.Authentication;
 using Fliq.Contracts.Common;
 using Fliq.Contracts.Users;
 using Fliq.Contracts.Users.UserFeatureActivities;
+using Fliq.Domain.Common.Errors;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -75,6 +76,28 @@ namespace Fliq.Api.Controllers
                 result => Ok(_mapper.Map<List<GetRecentUserFeatureActivityResponse>>(result)),
                 errors => Problem(errors)
             );
+        }
+
+        [Authorize(Roles = "SuperAdmin,Admin")]
+        [HttpGet("export/users")]
+        public async Task<IActionResult> ExportUsers([FromQuery] int roleId)
+        {
+            var userId = GetAuthUserId();
+            _logger.LogInfo($"Authenticated user ID: {userId}");
+
+            var query = new ExportUsersToCsvQuery(userId, roleId);
+
+            var result = await _mediator.Send(query);
+
+            if (result.IsError)
+            {
+                return result.FirstError switch
+                {
+                    _ => StatusCode(500, "An unexpected error occurred.")
+                };
+            }
+
+            return File(new MemoryStream(result.Value), "text/csv", "users_export.csv");
         }
     }
 }

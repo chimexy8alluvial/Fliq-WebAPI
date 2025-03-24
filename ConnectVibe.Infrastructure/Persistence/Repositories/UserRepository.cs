@@ -3,6 +3,7 @@ using Fliq.Domain.Entities;
 using Dapper;
 using System.Data;
 using Microsoft.EntityFrameworkCore;
+using Fliq.Application.Users.Common;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {
@@ -59,6 +60,27 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
                 var users = await connection.QueryAsync<User>(sql, parameter, commandType: CommandType.StoredProcedure);
                 return users.ToList();
+            }
+        }
+
+        public async Task<IEnumerable<UsersTableListResult>> GetAllUsersByRoleIdAsync(int roleId)
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var sql = "sPGetAllUsersWithLatestSub";
+                var parameter = new { RoleId = roleId };
+
+                var results = await connection.QueryAsync<dynamic>(sql, parameter, commandType: CommandType.StoredProcedure);
+
+                return results.Select(x => new UsersTableListResult
+                {
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
+                    Email = x.Email,
+                    Subscription = x.SubscriptionType,
+                    DateCreated = x.DateCreated,
+                    LastActiveAt = x.LastActiveAt,
+                });
             }
         }
 
