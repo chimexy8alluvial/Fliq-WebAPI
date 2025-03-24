@@ -7,9 +7,7 @@ using Fliq.Application.Users.Common;
 using Fliq.Domain.Common.Errors;
 using MapsterMapper;
 using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Azure;
-using System.Net.WebSockets;
+
 
 namespace Fliq.Application.Users.Queries
 {
