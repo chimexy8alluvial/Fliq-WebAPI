@@ -67,7 +67,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         {
             using (var connection = _connectionFactory.CreateConnection())
             {
-                var sql = "sPGetAllUsersWithLatestSub";
+                var sql = "sp_GetUsersWithLatestSubscription";
                 var parameter = new { RoleId = roleId };
 
                 var results = await connection.QueryAsync<dynamic>(sql, parameter, commandType: CommandType.StoredProcedure);

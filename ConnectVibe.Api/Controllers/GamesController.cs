@@ -1,5 +1,6 @@
 ﻿using Fliq.Application.Common.Hubs;
 using Fliq.Application.Common.Interfaces.UserFeatureActivities;
+using Fliq.Application.DashBoard.Queries.UsersCount;
 using Fliq.Application.Games.Commands.AcceptGameRequest;
 using Fliq.Application.Games.Commands.AcceptStake;
 using Fliq.Application.Games.Commands.CreateGame;
@@ -14,6 +15,8 @@ using Fliq.Application.Games.Queries.GetGameHistory;
 using Fliq.Application.Games.Queries.GetGames;
 using Fliq.Application.Games.Queries.GetQuestions;
 using Fliq.Application.Games.Queries.GetSession;
+using Fliq.Application.Games.Queries.StakeCount;
+using Fliq.Contracts.DashBoard;
 using Fliq.Contracts.Games;
 using Mapster;
 using MapsterMapper;
@@ -255,5 +258,22 @@ namespace Fliq.Api.Controllers
                 errors => Problem(errors.First().Description)
             );
         }
+
+        /*---Admin fxns ----------*/
+        [HttpGet("users-count")]
+        public async Task<IActionResult> GetUsersCount([FromQuery] int userId)
+        {
+            _logger.LogInformation("Received request for inactive users count.");
+         
+            var query = new GetUserStakeCountQuery(userId);
+      
+            var result = await _mediator.Send(query);
+
+            return result.Match(
+              matchedProfileResult => Ok(_mapper.Map<UserCountResponse>(result.Value)),
+              errors => Problem(errors)
+          );
+        }
+
     }
 }

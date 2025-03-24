@@ -97,7 +97,7 @@ namespace Fliq.Api.Controllers
                 };
             }
 
-            return File(new MemoryStream(result.Value), "text/csv", "users_export.csv");
+            return File(new MemoryStream(result.Value), "text/csv", "fliq_users_export.csv");
         }
     }
 }
