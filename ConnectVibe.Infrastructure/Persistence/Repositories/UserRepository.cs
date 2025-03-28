@@ -63,12 +63,15 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             }
         }
 
-        public async Task<IEnumerable<UsersTableListResult>> GetAllUsersByRoleIdAsync(int roleId)
+        public async Task<IEnumerable<UsersTableListResult>> GetAllUsersByRoleIdAsync(int roleId, int pageNumber, int pageSize)
         {
             using (var connection = _connectionFactory.CreateConnection())
             {
                 var sql = "sp_GetUsersWithLatestSubscription";
-                var parameter = new { RoleId = roleId };
+                var parameter = new { RoleId = roleId,
+                    Offset = (pageNumber - 1) * pageSize,
+                    Fetch = pageSize
+                };
 
                 var results = await connection.QueryAsync<dynamic>(sql, parameter, commandType: CommandType.StoredProcedure);
 

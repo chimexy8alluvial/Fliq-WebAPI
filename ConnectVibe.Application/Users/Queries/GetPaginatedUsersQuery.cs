@@ -1,28 +1,29 @@
-﻿
-using ErrorOr;
+﻿using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using MediatR;
-using System.Text;
 using Fliq.Domain.Common.Errors;
 using Fliq.Application.Users.Common;
+using Fliq.Application.Common.Pagination;
 
 namespace Fliq.Application.Users.Queries
 {
-    public record ExportUsersToCsvQuery(int AdminUserId, int RoleId) : IRequest<ErrorOr<byte[]>>;
+    public record GetPaginatedUsersQuery(int AdminUserId, int RoleId, int PageNumber, int PageSize) : IRequest<ErrorOr<PaginationResponse<UsersTableListResult>>>;
 
-    public class ExportUsersToCsvQueryHandler : IRequestHandler<ExportUsersToCsvQuery, ErrorOr<byte[]>>
+    public class GetPaginatedUsersQueryHandler : IRequestHandler<GetPaginatedUsersQuery, ErrorOr<PaginationResponse<UsersTableListResult>>>
     {
         private readonly IUserRepository _userRepository;
         private readonly ILoggerManager _logger;
+        private const int MaxUsersPerPage = 1000; // Limit to prevent large loads
 
-        public ExportUsersToCsvQueryHandler(IUserRepository userRepository, ILoggerManager logger)
+
+        public GetPaginatedUsersQueryHandler(IUserRepository userRepository, ILoggerManager logger)
         {
             _userRepository = userRepository;
             _logger = logger;
         }
 
-        public async Task<ErrorOr<byte[]>> Handle(ExportUsersToCsvQuery query, CancellationToken cancellationToken)
+        public async Task<ErrorOr<PaginationResponse<UsersTableListResult>>> Handle(GetPaginatedUsersQuery query, CancellationToken cancellationToken)
         {
             _logger.LogInfo($"Exporting users with Role ID {query.RoleId} requested by Admin ID {query.AdminUserId}");
 
@@ -44,31 +45,19 @@ namespace Fliq.Application.Users.Queries
                 return Errors.User.UnauthorizedUser;
             }
 
-            // Fetch users based on role
-            var users = await _userRepository.GetAllUsersByRoleIdAsync(query.RoleId);
+            // Enforce max page size
+            var pageSize = Math.Min(query.PageSize, MaxUsersPerPage);
+
+            // Fetch paginated users
+            var users = await _userRepository.GetAllUsersByRoleIdAsync(query.RoleId, query.PageNumber, pageSize);
             if (!users.Any())
             {
                 return Errors.User.UserNotFound;
             }
 
-            // Generate CSV
-            var csvData = GenerateCsv(users);
-            return csvData;
+            return new PaginationResponse<UsersTableListResult>(users, users.Count(), query.PageNumber, pageSize);
         }
 
-        private byte[] GenerateCsv(IEnumerable<UsersTableListResult> users)
-        {
-            var sb = new StringBuilder();
-            sb.AppendLine("Name,Email,Subscription,Date Joined,Last Active");
-
-            foreach (var user in users)
-            {
-                var FullName = $"{user.FirstName} { user.LastName}";
-                sb.AppendLine($"{FullName},{user.Email},{user.Subscription},{user.DateCreated:yyyy-MM-dd},{user.LastActiveAt:yyyy-MM-dd}");
-            }
-
-            return Encoding.UTF8.GetBytes(sb.ToString());
-        }
     }
 
 }

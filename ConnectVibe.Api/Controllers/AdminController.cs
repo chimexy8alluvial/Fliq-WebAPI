@@ -78,26 +78,56 @@ namespace Fliq.Api.Controllers
             );
         }
 
+        //[Authorize(Roles = "SuperAdmin,Admin")]
+        //[HttpGet("export/users")]
+        //public async Task<IActionResult> ExportUsers([FromQuery] int roleId)
+        //{
+        //    var userId = GetAuthUserId();
+        //    _logger.LogInfo($"Authenticated user ID: {userId}");
+
+        //    var query = new ExportUsersToCsvQuery(userId, roleId);
+
+        //    var result = await _mediator.Send(query);
+
+        //    if (result.IsError)
+        //    {
+        //        return result.FirstError switch
+        //        {
+        //            _ => StatusCode(500, "An unexpected error occurred.")
+        //        };
+        //    }
+
+        //    return File(new MemoryStream(result.Value), "text/csv", "fliq_users_export.csv");
+        //}
         [Authorize(Roles = "SuperAdmin,Admin")]
-        [HttpGet("export/users")]
-        public async Task<IActionResult> ExportUsers([FromQuery] int roleId)
+        [HttpGet("users-export")]
+        public async Task<IActionResult> ExportUsersToCsv([FromQuery] int roleId,
+                                                    [FromQuery] int pageNumber, [FromQuery] int pageSize,
+                                                    [FromQuery] bool exportAsBackgroundTask)
         {
-            var userId = GetAuthUserId();
-            _logger.LogInfo($"Authenticated user ID: {userId}");
+            if (pageSize > 1000) exportAsBackgroundTask = true;
 
-            var query = new ExportUsersToCsvQuery(userId, roleId);
+            var adminUserId = GetAuthUserId();
+            _logger.LogInfo($"Authenticated user ID: {adminUserId}");
 
-            var result = await _mediator.Send(query);
-
-            if (result.IsError)
+            if (exportAsBackgroundTask)
             {
-                return result.FirstError switch
-                {
-                    _ => StatusCode(500, "An unexpected error occurred.")
-                };
-            }
+                var result = await _mediator.Send(new ExportUsersToCsvCommand(adminUserId, roleId, pageNumber, pageSize));
 
-            return File(new MemoryStream(result.Value), "text/csv", "fliq_users_export.csv");
+                if (result.IsError)
+                    return BadRequest(result.FirstError.Description);
+
+                return Accepted(new { message = "Export is being processed. You will be notified when it's ready." });
+            }
+            else
+            {
+                var result = await _mediator.Send(new GetPaginatedUsersQuery(adminUserId, roleId, pageNumber, pageSize));
+
+                if (result.IsError)
+                    return BadRequest(result.FirstError.Description);
+
+                return Ok(result.Value);
+            }
         }
     }
 }

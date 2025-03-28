@@ -12,7 +12,7 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         User? GetUserById(int Id);
         User? GetUserByIdIncludingProfile(int Id);
         Task<List<User>> GetInactiveUsersAsync(DateTime thresholdDate);
-        Task<IEnumerable<UsersTableListResult>> GetAllUsersByRoleIdAsync(int roleId);
+        Task<IEnumerable<UsersTableListResult>> GetAllUsersByRoleIdAsync(int roleId, int pageNumber, int pageSize);
 
         //Count Queries
         Task<int> CountActiveUsers();
