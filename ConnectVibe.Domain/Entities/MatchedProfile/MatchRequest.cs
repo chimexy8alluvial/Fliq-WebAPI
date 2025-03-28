@@ -8,4 +8,4 @@ namespace Fliq.Domain.Entities.MatchedProfile
         public int MatchInitiatorUserId { get; set; }
         public MatchRequestStatus MatchRequestStatus { get; set; }
     }
-}
+} 

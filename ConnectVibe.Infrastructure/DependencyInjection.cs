@@ -10,6 +10,7 @@ using Fliq.Application.Common.Interfaces.Services.NotificationServices;
 using Fliq.Application.Common.Interfaces.Services.PaymentServices;
 using Fliq.Application.Common.Interfaces.Services.SubscriptionServices;
 using Fliq.Application.Explore.Common.Services;
+using Fliq.Application.SchedulingServices.QuartzJobs;
 using Fliq.Infrastructure.Authentication;
 using Fliq.Infrastructure.Event;
 using Fliq.Infrastructure.Persistence;
@@ -23,7 +24,6 @@ using Fliq.Infrastructure.Services.MediaService;
 using Fliq.Infrastructure.Services.NotificationServices.Email;
 using Fliq.Infrastructure.Services.NotificationServices.Firebase;
 using Fliq.Infrastructure.Services.PaymentServices;
-using Fliq.Infrastructure.Services.SchedulingServices.QuartzJobs;
 using Fliq.Infrastructure.Services.SubscriptionServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -144,6 +144,10 @@ namespace Fliq.Infrastructure
                    .WithIdentity("InactivityCheckTrigger")
                    .WithCronSchedule("0 0 12 * * ?") // Runs daily at 12 PM UTC
                );
+
+               // Register ExportUsersJob (no trigger)
+               var exportJobKey = new JobKey("ExportUsersJob");
+               q.AddJob<ExportUsersJob>(opts => opts.WithIdentity(exportJobKey));
            });
             return services;
         }

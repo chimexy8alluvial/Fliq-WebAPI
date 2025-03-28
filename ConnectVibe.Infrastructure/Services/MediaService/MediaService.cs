@@ -16,6 +16,7 @@ namespace Fliq.Infrastructure.Services.MediaService
         private readonly string _uploadPath;
         private readonly FaceApi _faceApi;
         private readonly ILoggerManager _logger;
+        private readonly string _documentPath;
 
         public MediaService(IOptions<FaceApi> faceApiOptions, ILoggerManager logger)
         {
@@ -23,6 +24,7 @@ namespace Fliq.Infrastructure.Services.MediaService
             _logger = logger;
             // Get the base directory of the application and combine it with "Uploads"
             _uploadPath = Path.Combine(AppContext.BaseDirectory, "Uploads");
+            _documentPath = Path.Combine(_uploadPath, "Documents");
 
             // Ensure the directory exists
             if (!Directory.Exists(_uploadPath))
@@ -90,6 +92,44 @@ namespace Fliq.Infrastructure.Services.MediaService
             }
         }
 
+        public async Task<string?> UploadDocumentAsync(byte[] fileBytes, string fileName, string containerName)
+        {
+            if (fileBytes == null || fileBytes.Length == 0)
+            {
+                return null;
+            }
+
+            //// Check if the app is in Debug Mode
+            //if (Debugger.IsAttached)
+            //{
+            //    // In Debug mode, save the file to a local directory instead of uploading to the server
+            //    return await UploadDocToLocal(documentToUpload);
+            //}
+
+
+            try
+            {
+                BlobServiceClient blobServiceClient = AzureConnectionString.GetConnectionString();
+                BlobContainerClient blobContainerClient = blobServiceClient.GetBlobContainerClient(containerName);
+                await blobContainerClient.CreateIfNotExistsAsync();
+
+                BlobClient blobClient = blobContainerClient.GetBlobClient(fileName);
+
+                using (var stream = new MemoryStream(fileBytes))
+                {
+                    await blobClient.UploadAsync(stream, true);
+                }
+
+                return blobClient.Uri.ToString();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Document upload failed: {ex.Message}");
+                return null;
+            }
+        }
+
+
         public async Task<string> StartFaceLivelinessSession()
         {
             var endpoint = new Uri(_faceApi.Endpoint);
@@ -128,6 +168,7 @@ namespace Fliq.Infrastructure.Services.MediaService
             return (isVerified, confidenceLevel, sessionResult);
         }
 
+        //Local storage methods
         private async Task<string?> UploadMediaToLocal(IFormFile mediaUpload)
         {
             // Saving the Media to a Local Directory
@@ -140,6 +181,24 @@ namespace Fliq.Infrastructure.Services.MediaService
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 await mediaUpload.CopyToAsync(stream);
+            }
+
+            var fileUrl = filePath;
+            return fileUrl;
+        }
+
+        private async Task<string?> UploadDocToLocal(IFormFile docUpload)
+        {
+            // Saving the Media to a Local Directory
+            if (docUpload == null || docUpload.Length == 0)
+            {
+                return null;
+            }
+
+            var filePath = Path.Combine(_documentPath, docUpload.FileName);
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await docUpload.CopyToAsync(stream);
             }
 
             var fileUrl = filePath;

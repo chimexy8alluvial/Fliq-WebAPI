@@ -307,7 +307,6 @@ namespace Fliq.Infrastructure.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("NumberOfTickets")
@@ -912,6 +911,90 @@ namespace Fliq.Infrastructure.Migrations
                     b.ToTable("Stakes");
                 });
 
+            modelBuilder.Entity("Fliq.Domain.Entities.HelpAndSupport.HelpMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("SenderId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SenderName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SupportTicketId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SupportTicketId");
+
+                    b.ToTable("HelpMessage");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.HelpAndSupport.SupportTicket", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("RequestStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RequestType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RequesterId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RequesterName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TicketId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SupportTickets");
+                });
+
             modelBuilder.Entity("Fliq.Domain.Entities.MatchedProfile.MatchRequest", b =>
                 {
                     b.Property<int>("Id")
@@ -1077,7 +1160,7 @@ namespace Fliq.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("DateCreated")
+                    b.Property<DateTime?>("DateCreated")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("DateModified")
@@ -1834,21 +1917,21 @@ namespace Fliq.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            DateCreated = new DateTime(2025, 3, 14, 12, 55, 49, 912, DateTimeKind.Utc).AddTicks(8001),
+                            DateCreated = new DateTime(2025, 3, 28, 8, 18, 48, 936, DateTimeKind.Utc).AddTicks(2421),
                             IsDeleted = false,
                             Name = "SuperAdmin"
                         },
                         new
                         {
                             Id = 2,
-                            DateCreated = new DateTime(2025, 3, 14, 12, 55, 49, 912, DateTimeKind.Utc).AddTicks(8012),
+                            DateCreated = new DateTime(2025, 3, 28, 8, 18, 48, 936, DateTimeKind.Utc).AddTicks(2435),
                             IsDeleted = false,
                             Name = "Admin"
                         },
                         new
                         {
                             Id = 3,
-                            DateCreated = new DateTime(2025, 3, 14, 12, 55, 49, 912, DateTimeKind.Utc).AddTicks(8014),
+                            DateCreated = new DateTime(2025, 3, 28, 8, 18, 48, 936, DateTimeKind.Utc).AddTicks(2437),
                             IsDeleted = false,
                             Name = "User"
                         });
@@ -2033,7 +2116,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("DateCreated")
+                    b.Property<DateTime?>("DateCreated")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("DateModified")
@@ -2201,11 +2284,11 @@ namespace Fliq.Infrastructure.Migrations
 
             modelBuilder.Entity("Fliq.Domain.Entities.WalletHistory", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int?>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"));
 
                     b.Property<int>("ActivityType")
                         .HasColumnType("int");
@@ -2450,6 +2533,15 @@ namespace Fliq.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("GameSession");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.HelpAndSupport.HelpMessage", b =>
+                {
+                    b.HasOne("Fliq.Domain.Entities.HelpAndSupport.SupportTicket", null)
+                        .WithMany("Messages")
+                        .HasForeignKey("SupportTicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.MatchedProfile.MatchRequest", b =>
@@ -2774,6 +2866,11 @@ namespace Fliq.Infrastructure.Migrations
             modelBuilder.Entity("Fliq.Domain.Entities.Games.GameSession", b =>
                 {
                     b.Navigation("Stake");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.HelpAndSupport.SupportTicket", b =>
+                {
+                    b.Navigation("Messages");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.Location", b =>
