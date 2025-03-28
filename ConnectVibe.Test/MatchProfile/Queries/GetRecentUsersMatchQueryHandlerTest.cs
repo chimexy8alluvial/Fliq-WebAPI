@@ -1,6 +1,4 @@
-﻿
-
-using Fliq.Application.Common.Interfaces.Persistence;
+﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.MatchedProfile.Common;
 using Fliq.Application.MatchedProfile.Queries;
@@ -13,10 +11,10 @@ namespace Fliq.Test.MatchProfile.Queries
     [TestClass]
     public class GetRecentUsersMatchQueryHandlerTest
     {
-        private Mock<IMatchProfileRepository> _mockMatchRepository;
-        private Mock<IUserRepository> _mockUserRepository;
-        private Mock<ILoggerManager> _mockLoggerManager;
-        private GetRecentUsersMatchQueryHandler _handler;
+        private Mock<IMatchProfileRepository>? _mockMatchRepository;
+        private Mock<IUserRepository>? _mockUserRepository;
+        private Mock<ILoggerManager>? _mockLoggerManager;
+        private GetRecentUsersMatchQueryHandler? _handler;
 
         [TestInitialize]
         public void Setup()
@@ -37,7 +35,7 @@ namespace Fliq.Test.MatchProfile.Queries
         {
             // Arrange
             var query = new GetRecentUsersMatchQuery(1, 2, 5);
-            _mockUserRepository.Setup(repo => repo.GetUserById(1)).Returns((User)null);
+            _mockUserRepository?.Setup(repo => repo.GetUserById(1)).Returns((User)null);
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
@@ -52,7 +50,7 @@ namespace Fliq.Test.MatchProfile.Queries
         {
             // Arrange
             var adminUser = new User { Id = 1, RoleId = 3 }; // Not an Admin (1 or 2)
-            _mockUserRepository.Setup(repo => repo.GetUserById(1)).Returns(adminUser);
+            _mockUserRepository?.Setup(repo => repo.GetUserById(1)).Returns(adminUser);
             var query = new GetRecentUsersMatchQuery(1, 2, 5);
 
             // Act
@@ -68,8 +66,8 @@ namespace Fliq.Test.MatchProfile.Queries
         {
             // Arrange
             var adminUser = new User { Id = 1, RoleId = 1 };
-            _mockUserRepository.Setup(repo => repo.GetUserById(1)).Returns(adminUser);
-            _mockUserRepository.Setup(repo => repo.GetUserById(2)).Returns((User)null);
+            _mockUserRepository?.Setup(repo => repo.GetUserById(1)).Returns(adminUser);
+            _mockUserRepository?.Setup(repo => repo.GetUserById(2)).Returns((User)null);
             var query = new GetRecentUsersMatchQuery(1, 2, 5);
 
             // Act
@@ -103,9 +101,9 @@ namespace Fliq.Test.MatchProfile.Queries
             // More than limit
         };
 
-            _mockUserRepository.Setup(repo => repo.GetUserById(1)).Returns(adminUser);
-            _mockUserRepository.Setup(repo => repo.GetUserById(2)).Returns(user);
-            _mockMatchRepository.Setup(repo => repo.GetRecentMatchesAsync(2, 10))
+            _mockUserRepository?.Setup(repo => repo.GetUserById(1)).Returns(adminUser);
+            _mockUserRepository?.Setup(repo => repo.GetUserById(2)).Returns(user);
+            _mockMatchRepository?.Setup(repo => repo.GetRecentMatchesAsync(2, 10))
                 .ReturnsAsync(matches.Take(10).ToList());
 
             var query = new GetRecentUsersMatchQuery(1, 2, 15); // Exceeding max limit
@@ -131,9 +129,9 @@ namespace Fliq.Test.MatchProfile.Queries
             new GetRecentUserMatchResult(35,"Frank", "Bellion", "image/url")
         };
 
-            _mockUserRepository.Setup(repo => repo.GetUserById(1)).Returns(adminUser);
-            _mockUserRepository.Setup(repo => repo.GetUserById(2)).Returns(user);
-            _mockMatchRepository.Setup(repo => repo.GetRecentMatchesAsync(2, 3))
+            _mockUserRepository?.Setup(repo => repo.GetUserById(1)).Returns(adminUser);
+            _mockUserRepository?.Setup(repo => repo.GetUserById(2)).Returns(user);
+            _mockMatchRepository?.Setup(repo => repo.GetRecentMatchesAsync(2, 3))
                 .ReturnsAsync(matches);
 
             var query = new GetRecentUsersMatchQuery(1, 2, 3);
@@ -153,9 +151,9 @@ namespace Fliq.Test.MatchProfile.Queries
             var adminUser = new User { Id = 1, RoleId = 1 };
             var user = new User { Id = 2, RoleId = 2 };
 
-            _mockUserRepository.Setup(repo => repo.GetUserById(1)).Returns(adminUser);
-            _mockUserRepository.Setup(repo => repo.GetUserById(2)).Returns(user);
-            _mockMatchRepository.Setup(repo => repo.GetRecentMatchesAsync(2, 5))
+            _mockUserRepository?.Setup(repo => repo.GetUserById(1)).Returns(adminUser);
+            _mockUserRepository?.Setup(repo => repo.GetUserById(2)).Returns(user);
+            _mockMatchRepository?.Setup(repo => repo.GetRecentMatchesAsync(2, 5))
                 .ReturnsAsync([]);
 
             var query = new GetRecentUsersMatchQuery(1, 2, 5);

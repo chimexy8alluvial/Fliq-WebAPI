@@ -1,6 +1,5 @@
 ﻿using Fliq.Application.Common.Hubs;
 using Fliq.Application.Common.Interfaces.UserFeatureActivities;
-using Fliq.Application.DashBoard.Queries.UsersCount;
 using Fliq.Application.Games.Commands.AcceptGameRequest;
 using Fliq.Application.Games.Commands.AcceptStake;
 using Fliq.Application.Games.Commands.CreateGame;
@@ -258,15 +257,15 @@ namespace Fliq.Api.Controllers
                 errors => Problem(errors.First().Description)
             );
         }
-
         /*---Admin fxns ----------*/
+        [Authorize(Roles = "SuperAdmin,Admin")]
         [HttpGet("users-count")]
         public async Task<IActionResult> GetUsersCount([FromQuery] int userId)
         {
             _logger.LogInformation("Received request for inactive users count.");
-         
+
             var query = new GetUserStakeCountQuery(userId);
-      
+
             var result = await _mediator.Send(query);
 
             return result.Match(

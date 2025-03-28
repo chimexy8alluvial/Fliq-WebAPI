@@ -50,21 +50,6 @@ namespace Fliq.Test.Users.Queries
             Assert.AreEqual(Errors.User.UserNotFound, result.FirstError);
         }
 
-        [TestMethod]
-        public async Task Handle_AdminUserNotAuthorized_ReturnsUnauthorizedError()
-        {
-            // Arrange
-            var adminUser = new User { Id = 1, RoleId = 3 };
-            _mockUserRepository.Setup(repo => repo.GetUserById(1)).Returns(adminUser);
-            var query = new GetRecentUserFeatureActivitiesQuery(1, 2, 5);
-
-            // Act
-            var result = await _handler.Handle(query, CancellationToken.None);
-
-            // Assert
-            Assert.IsTrue(result.IsError);
-            Assert.AreEqual(Errors.User.UnauthorizedUser, result.FirstError);
-        }
 
         [TestMethod]
         public async Task Handle_FeatureUserNotFound_ReturnsUserNotFoundError()

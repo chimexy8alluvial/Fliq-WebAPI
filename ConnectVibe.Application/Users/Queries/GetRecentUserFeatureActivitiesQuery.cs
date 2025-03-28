@@ -1,6 +1,4 @@
-﻿
-
-using ErrorOr;
+﻿using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Users.Common;
@@ -37,11 +35,6 @@ namespace Fliq.Application.Users.Queries
             {
                 _logger.LogError($"Admin user with ID {query.AdminUserId} not found");
                 return Errors.User.UserNotFound;
-            }
-            if(adminUser.RoleId is not (1 or 2))
-            {
-                _logger.LogError($"User with ID {query.AdminUserId} is not an Admin");
-                return Errors.User.UnauthorizedUser;
             }
 
             var featureUser = _userRepository.GetUserById(query.UserId);
