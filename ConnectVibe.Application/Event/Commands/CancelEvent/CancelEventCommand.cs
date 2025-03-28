@@ -1,7 +1,6 @@
 ﻿using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
-using Fliq.Application.Notifications.Common.EventCreatedEvents;
 using Fliq.Domain.Common.Errors;
 using MediatR;
 
@@ -32,6 +31,8 @@ namespace Fliq.Application.Event.Commands.CancelEvent
 
         public async Task<ErrorOr<Unit>> Handle(CancelEventCommand command, CancellationToken cancellationToken)
         {
+            await Task.CompletedTask;
+
             _logger.LogInfo($"Cancelling Event with ID: {command.EventId}");
             var eventFromDb = _eventRepository.GetEventById(command.EventId);
             if (eventFromDb == null)
@@ -53,28 +54,11 @@ namespace Fliq.Application.Event.Commands.CancelEvent
                 return Errors.User.UserNotFound;
             }
 
-            eventFromDb.IsFlagged = true;
+            eventFromDb.IsCancelled = true;
 
             _eventRepository.Update(eventFromDb);
 
-            _logger.LogInfo($"Event with ID: {command.EventId} was cancelled");
-
-
-            var organizerName = $"{user.FirstName} {user.LastName}";
-
-            await _mediator.Publish(new EventCreatedEvent(
-                user.Id,
-                eventFromDb.Id,
-                user.Id,
-                organizerName,
-                Enumerable.Empty<int>(), // Organizer-only notification
-                "Event Cancelled",
-                $"Your event '{eventFromDb.EventTitle}' has been Cancelled!",
-                false,
-                null,
-                null
-
-            ), cancellationToken);            
+            _logger.LogInfo($"Event with ID: {command.EventId} was cancelled");           
 
             return Unit.Value;
         }

@@ -1,7 +1,6 @@
 using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
-using Fliq.Application.Notifications.Common.EventCreatedEvents;
 using Fliq.Domain.Common.Errors;
 using MediatR;
 
@@ -32,6 +31,8 @@ namespace Fliq.Application.Event.Commands.FlagEvent
 
         public async Task<ErrorOr<Unit>> Handle(FlagEventCommand command, CancellationToken cancellationToken)
         {
+            await Task.CompletedTask;
+
             _logger.LogInfo($"Flagging Event with ID: {command.EventId}");
             var eventFromDb = _eventRepository.GetEventById(command.EventId);
             if (eventFromDb == null)
@@ -59,22 +60,6 @@ namespace Fliq.Application.Event.Commands.FlagEvent
 
             _logger.LogInfo($"Event with ID: {command.EventId} was flagged");
 
-
-            var organizerName = $"{user.FirstName} {user.LastName}";
-
-            await _mediator.Publish(new EventCreatedEvent(
-                user.Id,
-                eventFromDb.Id,
-                user.Id,
-                organizerName,
-                Enumerable.Empty<int>(), // Organizer-only notification
-                "Event Flagged",
-                $"Your event '{eventFromDb.EventTitle}' has been flagged!",
-                false,
-                null,
-                null
-
-            ), cancellationToken);
 
             return Unit.Value;
         }

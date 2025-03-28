@@ -73,7 +73,9 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                 UserId = r.UserId,
                 StartDate = r.StartDate,
                 EndDate = r.EndDate,
-                EventCategory = Enum.Parse<EventCategory>(r.EventCategory),
+                EventCategory = Enum.TryParse<EventCategory>(r.EventCategory?.ToString(), true, out EventCategory category)
+                                        ? category
+                                        : EventCategory.Free,
                 DateCreated = r.DateCreated,
                 Tickets = new List<Ticket> { new Ticket { Id = r.TicketCount } } 
             });
@@ -95,7 +97,9 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                 UserId = r.UserId,
                 StartDate = r.StartDate,
                 EndDate = r.EndDate,
-                EventCategory = Enum.Parse<EventCategory>(r.EventCategory),
+                EventCategory = Enum.TryParse<EventCategory>(r.EventCategory?.ToString(), true, out EventCategory category)
+                                        ? category
+                                        : EventCategory.Free,
                 DateCreated = r.DateCreated,
                 Tickets = new List<Ticket> { new Ticket { Id = r.TicketCount } } 
             });
@@ -117,7 +121,9 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                 UserId = r.UserId,
                 StartDate = r.StartDate,
                 EndDate = r.EndDate,
-                EventCategory = Enum.Parse<EventCategory>(r.EventCategory),
+                EventCategory = Enum.TryParse<EventCategory>(r.EventCategory?.ToString(), true, out EventCategory category)
+                                        ? category
+                                        : EventCategory.Free,
                 DateCreated = r.DateCreated,
                 Tickets = new List<Ticket> { new Ticket { Id = r.TicketCount } } 
             });

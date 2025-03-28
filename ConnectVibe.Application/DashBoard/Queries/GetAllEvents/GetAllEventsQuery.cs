@@ -28,7 +28,6 @@ namespace Fliq.Application.DashBoard.Queries.GetAllEvents
 
         public async Task<ErrorOr<List<GetEventsResult>>> Handle(GetAllEventsQuery query, CancellationToken cancellationToken)
         {
-            await Task.CompletedTask;
 
             _logger.LogInfo($"Getting events for page {query.PaginationRequest.PageNumber} with page size {query.PaginationRequest.PageSize}");
 

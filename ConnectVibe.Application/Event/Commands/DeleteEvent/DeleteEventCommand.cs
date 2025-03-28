@@ -1,7 +1,6 @@
 ﻿using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
-using Fliq.Application.Notifications.Common.EventCreatedEvents;
 using Fliq.Domain.Common.Errors;
 using MediatR;
 
@@ -32,6 +31,8 @@ namespace Fliq.Application.Event.Commands.DeleteEvent
 
         public async Task<ErrorOr<Unit>> Handle(DeleteEventCommand command, CancellationToken cancellationToken)
         {
+            await Task.CompletedTask;
+
             _logger.LogInfo($"Deleting event with ID: {command.EventId}");
 
             var eventFromDb = _eventRepository.GetEventById(command.EventId);
@@ -54,28 +55,12 @@ namespace Fliq.Application.Event.Commands.DeleteEvent
                 return Errors.User.UserNotFound;
             }
 
-            eventFromDb.IsFlagged = true;
+            eventFromDb.IsDeleted = true;
 
             _eventRepository.Update(eventFromDb);
 
             _logger.LogInfo($"Event with ID: {command.EventId} was deleted");
 
-
-            var organizerName = $"{user.FirstName} {user.LastName}";
-
-            await _mediator.Publish(new EventCreatedEvent(
-                user.Id,
-                eventFromDb.Id,
-                user.Id,
-                organizerName,
-                Enumerable.Empty<int>(), // Organizer-only notification
-                "Event Deleted",
-                $"Your event '{eventFromDb.EventTitle}' has been deleted!",
-                false,
-                null,
-                null
-
-            ), cancellationToken);
 
             return Unit.Value;
         }

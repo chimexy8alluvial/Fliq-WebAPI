@@ -46,8 +46,5 @@
     <ProjectReference Include="..\ConnectVibe.Contracts\Fliq.Contracts.csproj" />
     <ProjectReference Include="..\ConnectVibe.Domain\Fliq.Domain.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Migrations\" />
-  </ItemGroup>
 
 </Project>
