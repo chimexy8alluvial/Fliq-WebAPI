@@ -4,7 +4,7 @@ using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.DashBoard.Common;
 using MediatR;
 
-namespace Fliq.Application.DatingEnvironment.Queries.DatingDashboard
+namespace Fliq.Application.DatingEnvironment.Queries.DatingDashboard.BlindDte
 {
     public record BlindDateCountQuery() : IRequest<ErrorOr<UserCountResult>>;
     public class BlindDateCountQueryHandler : IRequestHandler<BlindDateCountQuery, ErrorOr<UserCountResult>>

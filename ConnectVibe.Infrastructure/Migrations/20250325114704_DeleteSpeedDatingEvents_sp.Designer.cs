@@ -4,6 +4,7 @@ using Fliq.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fliq.Infrastructure.Migrations
 {
     [DbContext(typeof(FliqDbContext))]
-    partial class FliqDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250325114704_DeleteSpeedDatingEvents_sp")]
+    partial class DeleteSpeedDatingEvents_sp
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -175,9 +178,6 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<int>("Category")
                         .HasColumnType("int");
 
-                    b.Property<int>("CreatedByUserId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
 
@@ -222,8 +222,6 @@ namespace Fliq.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CreatedByUserId");
 
                     b.HasIndex("LocationId");
 
@@ -1922,21 +1920,21 @@ namespace Fliq.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            DateCreated = new DateTime(2025, 3, 29, 10, 25, 18, 121, DateTimeKind.Utc).AddTicks(3539),
+                            DateCreated = new DateTime(2025, 3, 25, 11, 47, 3, 740, DateTimeKind.Utc).AddTicks(6774),
                             IsDeleted = false,
                             Name = "SuperAdmin"
                         },
                         new
                         {
                             Id = 2,
-                            DateCreated = new DateTime(2025, 3, 29, 10, 25, 18, 121, DateTimeKind.Utc).AddTicks(3550),
+                            DateCreated = new DateTime(2025, 3, 25, 11, 47, 3, 740, DateTimeKind.Utc).AddTicks(6778),
                             IsDeleted = false,
                             Name = "Admin"
                         },
                         new
                         {
                             Id = 3,
-                            DateCreated = new DateTime(2025, 3, 29, 10, 25, 18, 121, DateTimeKind.Utc).AddTicks(3551),
+                            DateCreated = new DateTime(2025, 3, 25, 11, 47, 3, 740, DateTimeKind.Utc).AddTicks(6779),
                             IsDeleted = false,
                             Name = "User"
                         });
@@ -2377,19 +2375,11 @@ namespace Fliq.Infrastructure.Migrations
 
             modelBuilder.Entity("Fliq.Domain.Entities.DatingEnvironment.SpeedDates.SpeedDatingEvent", b =>
                 {
-                    b.HasOne("Fliq.Domain.Entities.User", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Fliq.Domain.Entities.Profile.Location", "Location")
                         .WithMany()
                         .HasForeignKey("LocationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("CreatedByUser");
 
                     b.Navigation("Location");
                 });

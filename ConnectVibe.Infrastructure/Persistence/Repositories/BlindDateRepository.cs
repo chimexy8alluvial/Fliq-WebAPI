@@ -2,9 +2,14 @@
 
 using Dapper;
 using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.DatingEnvironment.Common;
+using Fliq.Contracts.Dating;
 using Fliq.Domain.Entities.DatingEnvironment.BlindDates;
+using Fliq.Domain.Entities.Event.Enums;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using System.Data.Common;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {
@@ -82,6 +87,71 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             {
                 var count = await connection.QueryFirstOrDefaultAsync<int>("sp_BlindDatingCount", commandType: CommandType.StoredProcedure);
                 return count;
+            }
+        }
+
+        public async Task<int> DeleteMultipleAsync(List<int> blindDatingId)
+        {
+            using (var connection = _connectionFactory.CreateConnection() as DbConnection ?? throw new InvalidOperationException("Connection must be a DbConnection"))
+            {
+                await connection.OpenAsync();
+                using (var transaction = connection.BeginTransaction())
+                {
+                    try
+                    {
+                        var blindDatingEventIdsTable = new DataTable();
+                        blindDatingEventIdsTable.Columns.Add("Id", typeof(int));
+                        foreach (var id in blindDatingId)
+                        {
+                            blindDatingEventIdsTable.Rows.Add(id);
+                        }
+
+                        var parameters = new
+                        {
+                            BlindDateIds = blindDatingEventIdsTable.AsTableValuedParameter("dbo.BlindDatesIdTableType")
+                        };
+
+                        var deletedCount = await connection.ExecuteScalarAsync<int>(
+                            "sp_DeleteBlindDatingEvents", parameters, commandType: CommandType.StoredProcedure,
+                            transaction: transaction
+                        );
+
+                        transaction.Commit();
+                        return deletedCount;
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                }
+            }
+        }
+
+        public async Task<(List<DatingListItem> List, int blindCount)> GetAllFilteredListAsync(string title, DatingType? type, TimeSpan? duration, string subscriptionType, DateTime? dateCreated, string createdBy, int page, int pageSize)
+        {
+            using (var connection = _connectionFactory.CreateConnection() as DbConnection ?? throw new InvalidOperationException("Connection must be a DbConnection"))
+            {
+                await connection.OpenAsync();
+
+                var parameters = new
+                {
+                    Page = page,
+                    PageSize = pageSize,
+                    Title = title,
+                    Type = type.HasValue ? (int)type.Value : (int?)null,
+                    CreatedBy = createdBy,
+                    SubsctiptionType = subscriptionType,
+                    Duration = duration,
+                    Date = dateCreated,
+                };
+
+                using (var multi = await connection.QueryMultipleAsync("sp_GetAllFilteredBlindDatingList", parameters, commandType: CommandType.StoredProcedure))
+                {
+                    var list = (await multi.ReadAsync<DatingListItem>()).AsList();
+                    var totalCount = await multi.ReadSingleAsync<int>();
+                    return (list, totalCount);
+                }
             }
         }
     }

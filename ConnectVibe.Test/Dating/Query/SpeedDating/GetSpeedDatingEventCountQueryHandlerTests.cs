@@ -1,5 +1,5 @@
 ﻿using Fliq.Application.Common.Interfaces.Services;
-using Fliq.Application.DatingEnvironment.Queries.DatingDashboard;
+using Fliq.Application.DatingEnvironment.Queries.DatingDashboard.SpeedDate;
 using Fliq.Infrastructure.Persistence.Repositories;
 using Moq;
 

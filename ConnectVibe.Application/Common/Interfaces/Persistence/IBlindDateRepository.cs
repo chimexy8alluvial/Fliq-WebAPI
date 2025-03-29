@@ -1,4 +1,7 @@
-﻿using Fliq.Domain.Entities.DatingEnvironment.BlindDates;
+﻿using Fliq.Application.DatingEnvironment.Common;
+using Fliq.Contracts.Dating;
+using Fliq.Domain.Entities.DatingEnvironment.BlindDates;
+using Fliq.Domain.Entities.Event.Enums;
 
 namespace Fliq.Application.Common.Interfaces.Persistence
 {
@@ -11,5 +14,7 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         Task UpdateAsync(BlindDate blindDate);
         Task DeleteAsync(BlindDate blindDate);
         Task<int> GetBlindDateCountAsync();
+        Task<int> DeleteMultipleAsync(List<int> blindDatingId);
+        Task<(List<DatingListItem> List, int blindCount)> GetAllFilteredListAsync(string Title, DatingType? Type, TimeSpan? Duration, string SubscriptionType, DateTime? DateCreated, string CreatedBy, int Page, int PageSize);
     }
 }

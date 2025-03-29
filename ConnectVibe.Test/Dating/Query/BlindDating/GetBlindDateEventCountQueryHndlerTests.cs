@@ -1,6 +1,6 @@
 ﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
-using Fliq.Application.DatingEnvironment.Queries.DatingDashboard;
+using Fliq.Application.DatingEnvironment.Queries.DatingDashboard.BlindDte;
 using Moq;
 
 namespace Fliq.Test.Dating.Query.BlindDating

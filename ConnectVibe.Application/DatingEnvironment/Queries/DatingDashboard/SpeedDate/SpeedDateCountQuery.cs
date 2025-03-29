@@ -5,10 +5,10 @@ using Fliq.Application.DashBoard.Common;
 using Fliq.Infrastructure.Persistence.Repositories;
 using MediatR;
 
-namespace Fliq.Application.DatingEnvironment.Queries.DatingDashboard
+namespace Fliq.Application.DatingEnvironment.Queries.DatingDashboard.SpeedDate
 {
     public record SpeedDateCountQuery() : IRequest<ErrorOr<UserCountResult>>;
-    public class SpeedDateCountQueryHandler : IRequestHandler <SpeedDateCountQuery, ErrorOr<UserCountResult>>
+    public class SpeedDateCountQueryHandler : IRequestHandler<SpeedDateCountQuery, ErrorOr<UserCountResult>>
     {
         private readonly ILoggerManager _logger;
         private readonly ISpeedDatingEventRepository _speedDatingEventRepository;

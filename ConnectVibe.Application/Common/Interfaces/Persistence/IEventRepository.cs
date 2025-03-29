@@ -11,5 +11,7 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         void Update(Events request);
 
         List<Events> GetAllEvents();
+
+
     }
 }
