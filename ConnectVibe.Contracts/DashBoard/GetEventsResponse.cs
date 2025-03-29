@@ -6,7 +6,7 @@ namespace Fliq.Contracts.DashBoard
         string CreatedBy,
         string Status,
         int Attendees,
-        string EventCategory,
+        string Type,
         DateTime CreatedOn
     );
 }

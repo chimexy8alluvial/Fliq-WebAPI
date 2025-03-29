@@ -1,10 +1,6 @@
 using Fliq.Application.DashBoard.Common;
 using Fliq.Contracts.DashBoard;
 using Mapster;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Fliq.Api.Mapping
 {
@@ -16,7 +12,7 @@ namespace Fliq.Api.Mapping
                                                                 .Map(dest => dest.CreatedBy, src => src.CreatedBy)
                                                                 .Map(dest => dest.Status, src => src.Status)
                                                                 .Map(dest => dest.Attendees, src => src.Attendees)
-                                                                .Map(dest => dest.EventCategory, src => src.EventCategory)
+                                                                .Map(dest => dest.Type, src => src.Type)
                                                                 .Map(dest => dest.CreatedOn, src => src.CreatedOn);
         }
     }

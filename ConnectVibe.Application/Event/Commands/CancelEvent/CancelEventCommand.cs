@@ -12,20 +12,17 @@ namespace Fliq.Application.Event.Commands.CancelEvent
         private readonly ILoggerManager _logger;
         private readonly IUserRepository _userRepository;
         private readonly IEventRepository _eventRepository;
-        private readonly IMediator _mediator;
-        private const string _eventDocument = "Event Documents";
 
         public CancelEventCommandHandler(
             ILoggerManager logger,
             IUserRepository userRepository,
-            IEventRepository eventRepository,
-            IMediator mediator)
+            IEventRepository eventRepository)
         {
 
             _logger = logger;
             _userRepository = userRepository;
             _eventRepository = eventRepository;
-            _mediator = mediator;
+
 
         }
 

@@ -16,13 +16,11 @@ namespace Fliq.Application.DashBoard.Queries.GetAllEvents
     public class GetAllCancelledEventsQueryHandler : IRequestHandler<GetAllCancelledEventsQuery, ErrorOr<List<GetEventsResult>>>
     {
         private readonly IEventRepository _eventRepository;
-        private readonly IUserRepository _userRepository;
         private readonly ILoggerManager _logger;
 
-        public GetAllCancelledEventsQueryHandler(IEventRepository eventRepository, IUserRepository userRepository, ILoggerManager logger)
+        public GetAllCancelledEventsQueryHandler(IEventRepository eventRepository, ILoggerManager logger)
         {
             _eventRepository = eventRepository;
-            _userRepository = userRepository;
             _logger = logger;
         }
 
@@ -45,21 +43,20 @@ namespace Fliq.Application.DashBoard.Queries.GetAllEvents
 
             _logger.LogInfo($"Got {events.Count()} events for page {query.PaginationRequest.PageNumber}");
 
-            var results = events.Select(eventArgs =>
+            var eventWithUsernames = await _eventRepository.GetAllEventsForDashBoardAsync(request);
+
+            _logger.LogInfo($"Got {eventWithUsernames.Count()} events for page {query.PaginationRequest.PageNumber}");
+
+            var results = eventWithUsernames.Select(eu =>
             {
-                var user = _userRepository.GetUserById(eventArgs.UserId)!;
-
-                var userName = $"{user.FirstName} {user.LastName}";
-
-                string status = DetermineEventStatus(eventArgs.StartDate, eventArgs.EndDate);
-
+                string status = DetermineEventStatus(eu.Event!.StartDate, eu.Event.EndDate);
                 return new GetEventsResult(
-                   EventTitle: eventArgs.EventTitle,
-                    CreatedBy: userName,
+                    EventTitle: eu.Event.EventTitle,
+                    CreatedBy: eu.Username,
                     Status: status,
-                    Attendees: eventArgs.Tickets?.Count ?? 0,
-                    EventCategory: eventArgs.EventCategory.ToString(),
-                    CreatedOn: eventArgs.DateCreated
+                    Attendees: eu.Event.Tickets?.Count ?? 0,
+                    Type: eu.Event.SponsoredEvent ? "sponsored" : "free",
+                    CreatedOn: eu.Event.DateCreated
                 );
             }).ToList();
 

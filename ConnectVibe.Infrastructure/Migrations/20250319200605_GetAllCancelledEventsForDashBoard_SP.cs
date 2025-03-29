@@ -22,33 +22,38 @@ namespace Fliq.Infrastructure.Migrations
                 BEGIN
                     SET NOCOUNT ON;
 
-                    SELECT 
-                        e.EventTitle,
-                        e.UserId,
-                        e.StartDate,
-                        e.EndDate,
-                        e.EventCategory,
-                        e.DateCreated,
-                        COUNT(t.Id) as TicketCount
-                       
-                        FROM Events e
-                    INNER JOIN Users u ON e.UserId = u.Id
-                    LEFT JOIN Tickets t ON e.Id = t.EventId
-	                LEFT JOIN LocationDetails ld on e.LocationId = ld.LocationId
-                    WHERE (@category IS NULL OR e.EventCategory = @category)
-                    AND (@startDate IS NULL OR e.StartDate >= @startDate)
-                    AND (@endDate IS NULL OR e.EndDate <= @endDate)
-                    AND (@location IS NULL OR ld.Status LIKE '%' + @location + '%')
-                    AND e.IsCancelled = 1
-                    AND e.IsDeleted = 0
-                   
-                    GROUP BY 
-                        e.EventTitle,
-                        e.UserId,
-                        e.StartDate,
-                        e.EndDate,
-                        e.EventCategory,
-                        e.DateCreated
+                     SELECT 
+					e.Id,
+					e.EventTitle,
+					e.UserId,
+					e.StartDate,
+					e.EndDate,
+					e.SponsoredEvent,
+					e.DateCreated,
+					u.FirstName,
+					u.LastName,
+					COUNT(t.Id) AS TicketCount
+				FROM Events e
+				INNER JOIN Users u ON e.UserId = u.Id
+				LEFT JOIN Tickets t ON e.Id = t.EventId
+				LEFT JOIN LocationDetails ld ON e.LocationId = ld.LocationId
+				WHERE 
+					(@category IS NULL OR e.EventCategory = @category) 
+					AND (@startDate IS NULL OR e.StartDate >= @startDate)
+					AND (@endDate IS NULL OR e.EndDate <= @endDate)
+					AND (@location IS NULL OR ld.Status LIKE '%' + @location + '%')
+					AND e.IsCancelled = 1
+			
+				GROUP BY 
+					e.Id,
+					e.EventTitle,
+					e.UserId,
+					e.StartDate,
+					e.EndDate,
+					e.SponsoredEvent,
+					e.DateCreated,
+					u.FirstName,
+					u.LastName
                         
                     ORDER BY e.StartDate DESC
                     OFFSET (@pageNumber - 1) * @pageSize ROWS

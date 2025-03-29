@@ -2,7 +2,6 @@
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.DashBoard.Common;
 using Fliq.Domain.Entities.Event;
-using Fliq.Domain.Entities.Event.Enums;
 using System.Data;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
@@ -56,7 +55,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                 return results.ToList();
             }
         }
-        public async Task<IEnumerable<Events>> GetAllEventsForDashBoardAsync(GetEventsListRequest query)
+        public async Task<IEnumerable<EventWithUsername>> GetAllEventsForDashBoardAsync(GetEventsListRequest query)
         {
             using var connection = _connectionFactory.CreateConnection();
             var parameters = FilterListDynamicParams(query);
@@ -67,20 +66,24 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                 commandType: CommandType.StoredProcedure
             );
 
-            return results.Select(r => new Events
+            var eventWithUsernames = results.Select(r => new EventWithUsername
             {
-                EventTitle = r.EventTitle,
-                UserId = r.UserId,
-                StartDate = r.StartDate,
-                EndDate = r.EndDate,
-                EventCategory = Enum.TryParse<EventCategory>(r.EventCategory?.ToString(), true, out EventCategory category)
-                                        ? category
-                                        : EventCategory.Free,
-                DateCreated = r.DateCreated,
-                Tickets = new List<Ticket> { new Ticket { Id = r.TicketCount } } 
-            });
+                Event = new Events
+                {
+                    EventTitle = r.EventTitle,
+                    UserId = r.UserId,
+                    StartDate = r.StartDate,
+                    EndDate = r.EndDate,
+                    SponsoredEvent = (bool)r.SponsoredEvent,
+                    DateCreated = r.DateCreated,
+                    Tickets = new List<Ticket> { new Ticket { Id = r.TicketCount } }
+                },
+                Username = string.Concat(r.FirstName ?? "", " ", r.LastName ?? "")
+            }).ToList();
+
+            return eventWithUsernames;
         }
-        public async Task<IEnumerable<Events>> GetAllCancelledEventsForDashBoardAsync(GetEventsListRequest query)
+        public async Task<IEnumerable<EventWithUsername>> GetAllCancelledEventsForDashBoardAsync(GetEventsListRequest query)
         {
             using var connection = _connectionFactory.CreateConnection();
             var parameters = FilterListDynamicParams(query);
@@ -91,20 +94,24 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                 commandType: CommandType.StoredProcedure
             );
 
-            return results.Select(r => new Events
+            var eventWithUsernames = results.Select(r => new EventWithUsername
             {
-                EventTitle = r.EventTitle,
-                UserId = r.UserId,
-                StartDate = r.StartDate,
-                EndDate = r.EndDate,
-                EventCategory = Enum.TryParse<EventCategory>(r.EventCategory?.ToString(), true, out EventCategory category)
-                                        ? category
-                                        : EventCategory.Free,
-                DateCreated = r.DateCreated,
-                Tickets = new List<Ticket> { new Ticket { Id = r.TicketCount } } 
-            });
+                Event = new Events
+                {
+                    EventTitle = r.EventTitle,
+                    UserId = r.UserId,
+                    StartDate = r.StartDate,
+                    EndDate = r.EndDate,
+                    SponsoredEvent = (bool)r.SponsoredEvent,
+                    DateCreated = r.DateCreated,
+                    Tickets = new List<Ticket> { new Ticket { Id = r.TicketCount } }
+                },
+                Username = string.Concat(r.FirstName ?? "", " ", r.LastName ?? "")
+            }).ToList();
+
+            return eventWithUsernames;
         }
-        public async Task<IEnumerable<Events>> GetAllFlaggedEventsForDashBoardAsync(GetEventsListRequest query)
+        public async Task<IEnumerable<EventWithUsername>> GetAllFlaggedEventsForDashBoardAsync(GetEventsListRequest query)
         {
             using var connection = _connectionFactory.CreateConnection();
             var parameters = FilterListDynamicParams(query);
@@ -115,18 +122,22 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                 commandType: CommandType.StoredProcedure
             );
 
-            return results.Select(r => new Events
+            var eventWithUsernames = results.Select(r => new EventWithUsername
             {
-                EventTitle = r.EventTitle,
-                UserId = r.UserId,
-                StartDate = r.StartDate,
-                EndDate = r.EndDate,
-                EventCategory = Enum.TryParse<EventCategory>(r.EventCategory?.ToString(), true, out EventCategory category)
-                                        ? category
-                                        : EventCategory.Free,
-                DateCreated = r.DateCreated,
-                Tickets = new List<Ticket> { new Ticket { Id = r.TicketCount } } 
-            });
+                Event = new Events
+                {
+                    EventTitle = r.EventTitle,
+                    UserId = r.UserId,
+                    StartDate = r.StartDate,
+                    EndDate = r.EndDate,
+                    SponsoredEvent = (bool)r.SponsoredEvent,
+                    DateCreated = r.DateCreated,
+                    Tickets = new List<Ticket> { new Ticket { Id = r.TicketCount } }
+                },
+                Username = string.Concat(r.FirstName ?? "", " ", r.LastName ?? "")
+            }).ToList();
+
+            return eventWithUsernames;
         }
 
         private static DynamicParameters FilterListDynamicParams(GetEventsListRequest query)

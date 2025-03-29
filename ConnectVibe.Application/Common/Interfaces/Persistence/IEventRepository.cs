@@ -12,9 +12,9 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         void Update(Events request);
 
         List<Events> GetAllEvents();
-        Task<IEnumerable<Events>> GetAllEventsForDashBoardAsync(GetEventsListRequest query);
-        Task<IEnumerable<Events>> GetAllFlaggedEventsForDashBoardAsync(GetEventsListRequest query);
-        Task<IEnumerable<Events>> GetAllCancelledEventsForDashBoardAsync(GetEventsListRequest query);
+        Task<IEnumerable<EventWithUsername>> GetAllEventsForDashBoardAsync(GetEventsListRequest query);
+        Task<IEnumerable<EventWithUsername>> GetAllFlaggedEventsForDashBoardAsync(GetEventsListRequest query);
+        Task<IEnumerable<EventWithUsername>> GetAllCancelledEventsForDashBoardAsync(GetEventsListRequest query);
         
 
         //Count Queries
