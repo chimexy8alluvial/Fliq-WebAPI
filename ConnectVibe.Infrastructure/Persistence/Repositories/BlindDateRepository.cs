@@ -128,7 +128,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             }
         }
 
-        public async Task<(List<DatingListItem> List, int blindCount)> GetAllFilteredListAsync(string title, DatingType? type, TimeSpan? duration, string subscriptionType, DateTime? dateCreated, string createdBy, int page, int pageSize)
+        public async Task<(List<DatingListItem> List, int blindCount)> GetAllFilteredListAsync(string title, DatingType? type, TimeSpan? duration, string subscriptionType, DateTime? dateCreatedFrom, DateTime? dateCreatedTo, string createdBy, int page, int pageSize)
         {
             using (var connection = _connectionFactory.CreateConnection() as DbConnection ?? throw new InvalidOperationException("Connection must be a DbConnection"))
             {
@@ -141,9 +141,10 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                     Title = title,
                     Type = type.HasValue ? (int)type.Value : (int?)null,
                     CreatedBy = createdBy,
-                    SubsctiptionType = subscriptionType,
+                    SubscriptionType = subscriptionType,
                     Duration = duration,
-                    Date = dateCreated,
+                    DateCreatedFrom = dateCreatedFrom,
+                    DateCreatedTo = dateCreatedTo
                 };
 
                 using (var multi = await connection.QueryMultipleAsync("sp_GetAllFilteredBlindDatingList", parameters, commandType: CommandType.StoredProcedure))

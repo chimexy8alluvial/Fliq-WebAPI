@@ -310,7 +310,8 @@ namespace Fliq.Api.Controllers
             request.CreatedBy,
             request.SubscriptionType,
             request.Duration,
-            request.DateCreated          
+            request.DateCreatedFrom,
+            request.DateCreatedTo
             );
             var result = await _mediator.Send(query);
 

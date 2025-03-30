@@ -18,6 +18,6 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         Task DeleteAsync(SpeedDatingEvent speedDate);
         Task<int> GetSpeedDateCountAsync();
         Task<int> DeleteMultipleAsync(List<int> speedDatingId);
-        Task<(List<DatingListItem> List, int speedCount)> GetAllFilteredListAsync(string Title, DatingType? Type, TimeSpan? Duration, string SubscriptionType, DateTime? DateCreated, string CreatedBy, int Page, int PageSize);
+        Task<(List<DatingListItem> List, int speedCount)> GetAllFilteredListAsync(string Title, DatingType? Type, TimeSpan? Duration, string SubscriptionType, DateTime? dateCreatedFrom, DateTime? dateCreatedTo, string CreatedBy, int Page, int PageSize);
     }
 }
