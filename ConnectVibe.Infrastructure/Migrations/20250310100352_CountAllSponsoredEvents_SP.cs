@@ -20,7 +20,7 @@ namespace Fliq.Infrastructure.Migrations
 
                 WHERE 
                 IsDeleted = 0
-                SponsoredEvent = 1;
+               AND SponsoredEvent = 1;
             END;
             ");
         }

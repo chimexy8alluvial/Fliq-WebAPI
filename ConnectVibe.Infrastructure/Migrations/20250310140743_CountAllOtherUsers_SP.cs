@@ -22,7 +22,7 @@ namespace Fliq.Infrastructure.Migrations
                 LEFT JOIN Gender g ON up.Id = g.UserProfileId
                 WHERE
                     g.GenderType = 2 
-                    u.IsDeleted = 0;
+               AND     u.IsDeleted = 0;
             END;
             ");
         }
