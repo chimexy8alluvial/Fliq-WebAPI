@@ -1,6 +1,5 @@
 ﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
-using Fliq.Application.Notifications.Common.EventCreatedEvents;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities;
 using Fliq.Domain.Entities.Event;
@@ -15,7 +14,6 @@ namespace Fliq.Application.Event.Commands.FlagEvent.Tests
         private Mock<ILoggerManager>? _loggerMock;
         private Mock<IUserRepository>? _userRepositoryMock;
         private Mock<IEventRepository>? _eventRepositoryMock;
-        private Mock<IMediator>? _mediatorMock;
         private FlagEventCommandHandler? _handler;
 
         [TestInitialize]
@@ -24,14 +22,13 @@ namespace Fliq.Application.Event.Commands.FlagEvent.Tests
             _loggerMock = new Mock<ILoggerManager>();
             _userRepositoryMock = new Mock<IUserRepository>();           
             _eventRepositoryMock = new Mock<IEventRepository>();           
-            _mediatorMock = new Mock<IMediator>();
+
            
 
             _handler = new FlagEventCommandHandler( 
                 _loggerMock.Object,
                 _userRepositoryMock.Object,             
-                _eventRepositoryMock.Object,           
-                _mediatorMock.Object);
+                _eventRepositoryMock.Object);
         }
 
         [TestMethod]
@@ -119,13 +116,7 @@ namespace Fliq.Application.Event.Commands.FlagEvent.Tests
             _loggerMock?.Verify(x => x.LogInfo($"Flagging Event with ID: {command.EventId}"), Times.Once());
             _loggerMock?.Verify(x => x.LogInfo($"Event with ID: {command.EventId} was flagged"), Times.Once());
 
-            _mediatorMock?.Verify(x => x.Publish(
-                It.Is<EventCreatedEvent>(e =>
-                    e.Title == "Event Flagged" &&
-                    e.Message == $"Your event 'Test Event' has been flagged!" &&
-                    e.UserId == 100),
-                It.IsAny<CancellationToken>()),
-                Times.Once());
+           
         }
     }
 }

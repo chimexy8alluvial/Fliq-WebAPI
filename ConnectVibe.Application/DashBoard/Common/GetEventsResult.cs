@@ -14,9 +14,8 @@ namespace Fliq.Application.DashBoard.Common
 
     public class EventWithUsername
     {
-
-
         public Events? Event { get; set; }
         public string Username { get; set; } = string.Empty;
+        public string CalculatedStatus { get; set; } = string.Empty ;
     }
 }

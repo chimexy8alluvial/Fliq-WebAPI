@@ -74,43 +74,19 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                     UserId = r.UserId,
                     StartDate = r.StartDate,
                     EndDate = r.EndDate,
-                    SponsoredEvent = (bool)r.SponsoredEvent,
+                    SponsoredEvent = r.SponsoredEvent,
                     DateCreated = r.DateCreated,
                     Tickets = new List<Ticket> { new Ticket { Id = r.TicketCount } }
                 },
-                Username = string.Concat(r.FirstName ?? "", " ", r.LastName ?? "")
+
+                Username = string.Concat(r.FirstName ?? "", " ", r.LastName ?? ""),
+
+                 CalculatedStatus = r.CalculatedStatus
             }).ToList();
 
             return eventWithUsernames;
         }
-        public async Task<IEnumerable<EventWithUsername>> GetAllCancelledEventsForDashBoardAsync(GetEventsListRequest query)
-        {
-            using var connection = _connectionFactory.CreateConnection();
-            var parameters = FilterListDynamicParams(query);
-
-            var results = await connection.QueryAsync<dynamic>(
-                "sp_GetAllCancelledEventsForDashBoard",
-                parameters,
-                commandType: CommandType.StoredProcedure
-            );
-
-            var eventWithUsernames = results.Select(r => new EventWithUsername
-            {
-                Event = new Events
-                {
-                    EventTitle = r.EventTitle,
-                    UserId = r.UserId,
-                    StartDate = r.StartDate,
-                    EndDate = r.EndDate,
-                    SponsoredEvent = (bool)r.SponsoredEvent,
-                    DateCreated = r.DateCreated,
-                    Tickets = new List<Ticket> { new Ticket { Id = r.TicketCount } }
-                },
-                Username = string.Concat(r.FirstName ?? "", " ", r.LastName ?? "")
-            }).ToList();
-
-            return eventWithUsernames;
-        }
+       
         public async Task<IEnumerable<EventWithUsername>> GetAllFlaggedEventsForDashBoardAsync(GetEventsListRequest query)
         {
             using var connection = _connectionFactory.CreateConnection();
@@ -134,7 +110,8 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                     DateCreated = r.DateCreated,
                     Tickets = new List<Ticket> { new Ticket { Id = r.TicketCount } }
                 },
-                Username = string.Concat(r.FirstName ?? "", " ", r.LastName ?? "")
+                Username = string.Concat(r.FirstName ?? "", " ", r.LastName ?? ""),
+                CalculatedStatus = r.CalculatedStatus
             }).ToList();
 
             return eventWithUsernames;
@@ -146,6 +123,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             parameters.Add("@pageNumber", query.PaginationRequest!.PageNumber);
             parameters.Add("@pageSize", query.PaginationRequest.PageSize);
             parameters.Add("@category", query.Category);
+            parameters.Add("@status", query.Status);
             parameters.Add("@startDate", query.StartDate);
             parameters.Add("@endDate", query.EndDate);
             parameters.Add("@location", query.Location);
@@ -159,6 +137,15 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             using (var connection = _connectionFactory.CreateConnection())
             {
                 var count = await connection.QueryFirstOrDefaultAsync<int>("sp_CountAllEvents", commandType: CommandType.StoredProcedure);
+                return count;
+            }
+        }
+        
+        public async Task<int> CountAllEventsWithPendingApproval()
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_CountAllEventsWithPendingApproval", commandType: CommandType.StoredProcedure);
                 return count;
             }
         }

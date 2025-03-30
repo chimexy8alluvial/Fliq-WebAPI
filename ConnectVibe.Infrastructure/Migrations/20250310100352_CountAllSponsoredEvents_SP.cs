@@ -15,7 +15,8 @@ namespace Fliq.Infrastructure.Migrations
             AS
             BEGIN
                 SET NOCOUNT ON;
-                 SELECT COUNT(*) AS SponsoredEvents FROM Events WHERE SponsoredEvent = 1;
+                 SELECT COUNT(*) AS SponsoredEvents FROM Events WHERE SponsoredEvent = 1
+                  AND (IsDeleted IS NULL OR IsDeleted = 0)  ;
             END;
             ");
         }

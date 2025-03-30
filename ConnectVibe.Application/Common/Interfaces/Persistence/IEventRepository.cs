@@ -14,12 +14,11 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         List<Events> GetAllEvents();
         Task<IEnumerable<EventWithUsername>> GetAllEventsForDashBoardAsync(GetEventsListRequest query);
         Task<IEnumerable<EventWithUsername>> GetAllFlaggedEventsForDashBoardAsync(GetEventsListRequest query);
-        Task<IEnumerable<EventWithUsername>> GetAllCancelledEventsForDashBoardAsync(GetEventsListRequest query);
-        
+         
 
         //Count Queries
         Task<int> CountAllEvents();
-
+        Task<int> CountAllEventsWithPendingApproval();
         Task<int> CountAllSponsoredEvents();
     }
 }

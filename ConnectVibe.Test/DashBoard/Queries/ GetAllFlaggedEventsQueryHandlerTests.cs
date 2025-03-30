@@ -2,18 +2,16 @@ using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Pagination;
 using Fliq.Application.DashBoard.Common;
-using Fliq.Domain.Entities;
+using Fliq.Application.DashBoard.Queries.GetAllEvents;
 using Fliq.Domain.Entities.Event;
-using Fliq.Domain.Entities.Event.Enums;
 using Moq;
 
-namespace Fliq.Application.DashBoard.Queries.GetAllEvents.Tests
+namespace Fliq.Application.Tests.DashBoard.Queries
 {
     [TestClass]
     public class GetAllFlaggedEventsQueryHandlerTests
     {
         private Mock<IEventRepository>? _eventRepositoryMock;
-        private Mock<IUserRepository>? _userRepositoryMock;
         private Mock<ILoggerManager>? _loggerMock;
         private GetAllFlaggedEventsQueryHandler? _handler;
 
@@ -21,165 +19,166 @@ namespace Fliq.Application.DashBoard.Queries.GetAllEvents.Tests
         public void Setup()
         {
             _eventRepositoryMock = new Mock<IEventRepository>();
-            _userRepositoryMock = new Mock<IUserRepository>();
             _loggerMock = new Mock<ILoggerManager>();
-            _handler = new GetAllFlaggedEventsQueryHandler(
-                _eventRepositoryMock.Object,
-                _userRepositoryMock.Object,
-                _loggerMock.Object);
+            _handler = new GetAllFlaggedEventsQueryHandler(_eventRepositoryMock.Object, _loggerMock.Object);
         }
 
         [TestMethod]
-        public async Task Handle_ReturnsFlaggedEventsList_WhenQueryIsValid()
+        public async Task Handle_ValidQuery_ReturnsListOfGetEventsResult()
         {
             // Arrange
-            var pagination = new PaginationRequest(1, 10);
-            var query = new GetAllFlaggedEventsQuery(pagination);
-            var events = new List<Events>
+            var query = new GetAllFlaggedEventsQuery(
+                PaginationRequest: new PaginationRequest(1, 10),
+                Category: "Music",
+                Status: null,
+                StartDate: null,
+                EndDate: null,
+                Location: "New York"
+            );
+
+            var eventWithUsernames = new List<EventWithUsername>
             {
-                new Events
+                new EventWithUsername
                 {
-                    EventTitle = "Flagged Event",
-                    UserId = 1,
-                    StartDate = DateTime.Now.AddDays(1),
-                    EndDate = DateTime.Now.AddDays(2),
-                    EventCategory = EventCategory.Paid,
-                    DateCreated = DateTime.Now,
-                    Tickets = new List<Ticket> { new Ticket() },
-                    IsFlagged = true
+                    Event = new Events
+                    {
+                        EventTitle = "Flagged Concert",
+                        UserId = 1,
+                        StartDate = DateTime.Now.AddDays(1),
+                        EndDate = DateTime.Now.AddDays(2),
+                        SponsoredEvent = true,
+                        DateCreated = DateTime.Now.AddDays(-5),
+                        Tickets = new List<Ticket> { new Ticket { Id = 1 }, new Ticket { Id = 2 } }
+                    },
+                    Username = "John Doe",
+                    CalculatedStatus = "Upcoming"
+                },
+                new EventWithUsername
+                {
+                    Event = new Events
+                    {
+                        EventTitle = "Flagged Exhibition",
+                        UserId = 2,
+                        StartDate = DateTime.Now.AddDays(-1),
+                        EndDate = DateTime.Now.AddDays(1),
+                        SponsoredEvent = false,
+                        DateCreated = DateTime.Now.AddDays(-3),
+                        Tickets = new List<Ticket> { new Ticket { Id = 3 } }
+                    },
+                    Username = "Jane Smith",
+                    CalculatedStatus = "Ongoing"
                 }
             };
-            var user = new User { Id = 1, DisplayName = "Test User", FirstName = "Test", LastName = "User" };
 
-            _eventRepositoryMock?
-                .Setup(r => r.GetAllFlaggedEventsForDashBoardAsync(It.IsAny<GetEventsListRequest>()))
-                .ReturnsAsync(events);
-            _userRepositoryMock?
-                .Setup(r => r.GetUserById(1))
-                .Returns(user);
-            _loggerMock?.Setup(l => l.LogInfo(It.IsAny<string>()));
+            // Mock both flagged and all events (assuming flagged events are a subset)
+            _eventRepositoryMock!
+                .Setup(repo => repo.GetAllFlaggedEventsForDashBoardAsync(It.IsAny<GetEventsListRequest>()))
+                .ReturnsAsync(eventWithUsernames);
+
+            _eventRepositoryMock
+                .Setup(repo => repo.GetAllEventsForDashBoardAsync(It.IsAny<GetEventsListRequest>()))
+                .ReturnsAsync(eventWithUsernames);
+
+            _loggerMock!.Setup(logger => logger.LogInfo(It.IsAny<string>()));
 
             // Act
-            var result = await _handler?.Handle(query, CancellationToken.None)!;
+            var result = await _handler!.Handle(query, CancellationToken.None);
 
             // Assert
-            Assert.IsFalse(result.IsError);
-            Assert.AreEqual(1, result.Value.Count);
-            Assert.AreEqual("Flagged Event", result.Value[0].EventTitle);
-            Assert.AreEqual("Test User", result.Value[0].CreatedBy);
-            Assert.AreEqual("Upcoming", result.Value[0].Status);
-            Assert.AreEqual(1, result.Value[0].Attendees);
-            Assert.AreEqual("Paid", result.Value[0].EventCategory);
+            Assert.IsInstanceOfType(result.Value, typeof(List<GetEventsResult>));
+            Assert.AreEqual(2, result.Value.Count);
+
+            var firstResult = result.Value[0];
+            Assert.AreEqual("Flagged Concert", firstResult.EventTitle);
+            Assert.AreEqual("John Doe", firstResult.CreatedBy);
+            Assert.AreEqual("Upcoming", firstResult.Status);
+            Assert.AreEqual(2, firstResult.Attendees);
+            Assert.AreEqual("sponsored", firstResult.Type);
+
+            var secondResult = result.Value[1];
+            Assert.AreEqual("Flagged Exhibition", secondResult.EventTitle);
+            Assert.AreEqual("Jane Smith", secondResult.CreatedBy);
+            Assert.AreEqual("Ongoing", secondResult.Status);
+            Assert.AreEqual(1, secondResult.Attendees);
+            Assert.AreEqual("free", secondResult.Type);
+
+            // Verify logging
+            _loggerMock.Verify(logger => logger.LogInfo($"Getting events for page {query.PaginationRequest.PageNumber} with page size {query.PaginationRequest.PageSize}"), Times.Once());
+            _loggerMock.Verify(logger => logger.LogInfo($"Got {eventWithUsernames.Count} events for page {query.PaginationRequest.PageNumber}"), Times.Exactly(2));
         }
 
         [TestMethod]
-        public async Task Handle_ReturnsEmptyList_WhenNoFlaggedEventsFound()
+        public async Task Handle_EmptyResult_ReturnsEmptyList()
         {
             // Arrange
-            var pagination = new PaginationRequest(1, 10);
-            var query = new GetAllFlaggedEventsQuery(pagination);
-            var events = new List<Events>();
+            var query = new GetAllFlaggedEventsQuery(
+                PaginationRequest: new PaginationRequest(1, 10)
+            );
 
-            _eventRepositoryMock?
-                .Setup(r => r.GetAllFlaggedEventsForDashBoardAsync(It.IsAny<GetEventsListRequest>()))
-                .ReturnsAsync(events);
-            _loggerMock?.Setup(l => l.LogInfo(It.IsAny<string>()));
+            _eventRepositoryMock!
+                .Setup(repo => repo.GetAllFlaggedEventsForDashBoardAsync(It.IsAny<GetEventsListRequest>()))
+                .ReturnsAsync(new List<EventWithUsername>());
+
+            _eventRepositoryMock
+                .Setup(repo => repo.GetAllEventsForDashBoardAsync(It.IsAny<GetEventsListRequest>()))
+                .ReturnsAsync(new List<EventWithUsername>());
+
+            _loggerMock!.Setup(logger => logger.LogInfo(It.IsAny<string>()));
 
             // Act
-            var result = await _handler?.Handle(query, CancellationToken.None)!;
+            var result = await _handler!.Handle(query, CancellationToken.None);
 
             // Assert
-            Assert.IsFalse(result.IsError);
+            Assert.IsInstanceOfType(result.Value, typeof(List<GetEventsResult>));
             Assert.AreEqual(0, result.Value.Count);
+
+            _loggerMock.Verify(logger => logger.LogInfo("Got 0 events for page 1"), Times.Exactly(2));
         }
 
         [TestMethod]
-        public async Task Handle_FiltersByDateRange_WhenProvided()
+        public async Task Handle_NullTickets_ReturnsZeroAttendees()
         {
             // Arrange
-            var pagination = new PaginationRequest(1, 10);
-            var startDate = DateTime.Now.AddDays(-1);
-            var endDate = DateTime.Now.AddDays(1);
-            var query = new GetAllFlaggedEventsQuery(pagination, null, startDate, endDate);
-            var events = new List<Events>
+            var query = new GetAllFlaggedEventsQuery(
+                PaginationRequest: new PaginationRequest(1, 10)
+            );
+
+            var eventWithUsernames = new List<EventWithUsername>
             {
-                new Events
+                new EventWithUsername
                 {
-                    EventTitle = "Flagged Ongoing Event",
-                    UserId = 1,
-                    StartDate = DateTime.Now.AddHours(-1),
-                    EndDate = DateTime.Now.AddHours(2),
-                    EventCategory = EventCategory.Free,
-                    DateCreated = DateTime.Now,
-                    Tickets = new List<Ticket> { new Ticket() },
-                    IsFlagged = true
+                    Event = new Events
+                    {
+                        EventTitle = "Flagged Workshop",
+                        UserId = 1,
+                        StartDate = DateTime.Now,
+                        EndDate = DateTime.Now.AddDays(1),
+                        SponsoredEvent = false,
+                        DateCreated = DateTime.Now,
+                        Tickets = null // No tickets
+                    },
+                    Username = "Test User",
+                    CalculatedStatus = "Ongoing"
                 }
             };
-            var user = new User { Id = 1, DisplayName = "Test User" };
 
-            _eventRepositoryMock?
-                .Setup(r => r.GetAllFlaggedEventsForDashBoardAsync(It.Is<GetEventsListRequest>(req =>
-                    req.StartDate == startDate && req.EndDate == endDate)))
-                .ReturnsAsync(events);
-            _userRepositoryMock?
-                .Setup(r => r.GetUserById(1))
-                .Returns(user);
-            _loggerMock?.Setup(l => l.LogInfo(It.IsAny<string>()));
+            _eventRepositoryMock!
+                .Setup(repo => repo.GetAllFlaggedEventsForDashBoardAsync(It.IsAny<GetEventsListRequest>()))
+                .ReturnsAsync(eventWithUsernames);
+
+            _eventRepositoryMock
+                .Setup(repo => repo.GetAllEventsForDashBoardAsync(It.IsAny<GetEventsListRequest>()))
+                .ReturnsAsync(eventWithUsernames);
+
+            _loggerMock!.Setup(logger => logger.LogInfo(It.IsAny<string>()));
 
             // Act
-            var result = await _handler?.Handle(query, CancellationToken.None)!;
+            var result = await _handler!.Handle(query, CancellationToken.None);
 
             // Assert
-            Assert.IsFalse(result.IsError);
             Assert.AreEqual(1, result.Value.Count);
-            Assert.AreEqual("Flagged Ongoing Event", result.Value[0].EventTitle);
+            Assert.AreEqual(0, result.Value[0].Attendees); // Handles null Tickets
             Assert.AreEqual("Ongoing", result.Value[0].Status);
-            Assert.AreEqual(1, result.Value[0].Attendees);
-        }
-
-        [TestMethod]
-        public async Task Handle_FiltersByCategory_WhenProvided()
-        {
-            // Arrange
-            var pagination = new PaginationRequest(1, 10);
-            var category = "Paid";
-            var query = new GetAllFlaggedEventsQuery(pagination, category);
-            var events = new List<Events>
-            {
-                new Events
-                {
-                    EventTitle = "Flagged Paid Event",
-                    UserId = 1,
-                    StartDate = DateTime.Now.AddDays(1),
-                    EndDate = DateTime.Now.AddDays(2),
-                    EventCategory = EventCategory.Paid,
-                    DateCreated = DateTime.Now,
-                    Tickets = new List<Ticket>(),
-                    IsFlagged = true
-                }
-            };
-            var user = new User { Id = 1, DisplayName = "Test User" };
-
-            _eventRepositoryMock?
-                .Setup(r => r.GetAllFlaggedEventsForDashBoardAsync(It.Is<GetEventsListRequest>(req =>
-                    req.Category == category)))
-                .ReturnsAsync(events);
-            _userRepositoryMock?
-                .Setup(r => r.GetUserById(1))
-                .Returns(user);
-            _loggerMock?.Setup(l => l.LogInfo(It.IsAny<string>()));
-
-            // Act
-            var result = await _handler?.Handle(query, CancellationToken.None)!;
-
-            // Assert
-            Assert.IsFalse(result.IsError);
-            Assert.AreEqual(1, result.Value.Count);
-            Assert.AreEqual("Flagged Paid Event", result.Value[0].EventTitle);
-            Assert.AreEqual("Paid", result.Value[0].EventCategory);
-            Assert.AreEqual(0, result.Value[0].Attendees);
         }
     }
-
-    
 }

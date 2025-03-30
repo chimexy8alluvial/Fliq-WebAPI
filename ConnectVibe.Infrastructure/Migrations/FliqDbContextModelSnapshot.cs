@@ -455,9 +455,6 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<bool>("InviteesException")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsCancelled")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -485,6 +482,9 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -1741,21 +1741,21 @@ namespace Fliq.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            DateCreated = new DateTime(2025, 3, 28, 11, 21, 34, 889, DateTimeKind.Utc).AddTicks(6706),
+                            DateCreated = new DateTime(2025, 3, 30, 14, 6, 31, 700, DateTimeKind.Utc).AddTicks(5612),
                             IsDeleted = false,
                             Name = "SuperAdmin"
                         },
                         new
                         {
                             Id = 2,
-                            DateCreated = new DateTime(2025, 3, 28, 11, 21, 34, 889, DateTimeKind.Utc).AddTicks(6913),
+                            DateCreated = new DateTime(2025, 3, 30, 14, 6, 31, 700, DateTimeKind.Utc).AddTicks(5624),
                             IsDeleted = false,
                             Name = "Admin"
                         },
                         new
                         {
                             Id = 3,
-                            DateCreated = new DateTime(2025, 3, 28, 11, 21, 34, 889, DateTimeKind.Utc).AddTicks(6916),
+                            DateCreated = new DateTime(2025, 3, 30, 14, 6, 31, 700, DateTimeKind.Utc).AddTicks(5627),
                             IsDeleted = false,
                             Name = "User"
                         });

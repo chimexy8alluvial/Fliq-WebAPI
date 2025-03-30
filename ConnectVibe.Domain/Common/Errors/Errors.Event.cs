@@ -27,6 +27,10 @@ namespace Fliq.Domain.Common.Errors
                 code: "Event.EventCancelledAlready",
                 description: "Event with given id has been cancelled already.");
             
+            public static Error EventApprovedAlready => Error.Failure(
+                code: "Event.EventApprovedAlready",
+                description: "Event with given id has been approved already.");
+            
             public static Error EventDeletedAlready => Error.Failure(
                 code: "Event.EventDeletedAlready",
                 description: "Event with given id has been deleted already.");

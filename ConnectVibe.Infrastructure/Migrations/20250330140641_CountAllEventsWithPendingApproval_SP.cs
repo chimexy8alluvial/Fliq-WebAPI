@@ -5,22 +5,18 @@
 namespace Fliq.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class CountAllFemaleUsers_SP : Migration
+    public partial class CountAllEventsWithPendingApproval_SP : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@"
-            CREATE PROCEDURE sp_CountAllFemaleUsers
+            CREATE PROCEDURE sp_CountAllEventsWithPendingApproval
             AS
             BEGIN
                 SET NOCOUNT ON;
-               SELECT COUNT(DISTINCT u.Id) AS FemaleUserCount
-                FROM Users u
-                LEFT JOIN UserProfiles up ON u.Id = up.UserId
-                LEFT JOIN Gender g ON up.Id = g.UserProfileId
-                WHERE g.GenderType = 1
-                        AND (IsDeleted IS NULL OR IsDeleted = 0);
+                 SELECT COUNT(*) AS PendingApproval FROM Events WHERE Status = 0
+                    AND (IsDeleted IS NULL OR IsDeleted = 0);
             END;
             ");
         }
@@ -28,7 +24,7 @@ namespace Fliq.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql("DROP PROCEDURE IF EXISTS sp_CountAllFemaleUsers;");
+            migrationBuilder.Sql("DROP PROCEDURE IF EXISTS sp_CountAllEventsWithPendingApproval;");
         }
     }
 }

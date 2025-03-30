@@ -5,16 +5,16 @@ using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Event.Enums;
 using MediatR;
 
-namespace Fliq.Application.Event.Commands.CancelEvent
+namespace Fliq.Application.Event.Commands.ApproveEvent
 {
-    public record CancelEventCommand(int EventId) : IRequest<ErrorOr<Unit>>;
-    public class CancelEventCommandHandler : IRequestHandler<CancelEventCommand, ErrorOr<Unit>>
+    public record ApproveEventCommand(int EventId) : IRequest<ErrorOr<Unit>>;
+    public class ApproveEventCommandHandler : IRequestHandler<ApproveEventCommand, ErrorOr<Unit>>
     {
         private readonly ILoggerManager _logger;
         private readonly IUserRepository _userRepository;
         private readonly IEventRepository _eventRepository;
 
-        public CancelEventCommandHandler(
+        public ApproveEventCommandHandler(
             ILoggerManager logger,
             IUserRepository userRepository,
             IEventRepository eventRepository)
@@ -27,11 +27,11 @@ namespace Fliq.Application.Event.Commands.CancelEvent
 
         }
 
-        public async Task<ErrorOr<Unit>> Handle(CancelEventCommand command, CancellationToken cancellationToken)
+        public async Task<ErrorOr<Unit>> Handle(ApproveEventCommand command, CancellationToken cancellationToken)
         {
             await Task.CompletedTask;
 
-            _logger.LogInfo($"Cancelling Event with ID: {command.EventId}");
+            _logger.LogInfo($"Approving event with ID: {command.EventId}");
             var eventFromDb = _eventRepository.GetEventById(command.EventId);
             if (eventFromDb == null)
             {
@@ -39,10 +39,10 @@ namespace Fliq.Application.Event.Commands.CancelEvent
                 return Errors.Event.EventNotFound;
             }
 
-            if (eventFromDb.Status == EventStatus.Cancelled)
+            if (eventFromDb.Status != EventStatus.PendingApproval)
             {
-                _logger.LogError($"Event with ID: {command.EventId} has been cancelled already.");
-                return Errors.Event.EventCancelledAlready;
+                _logger.LogError($"Event with ID: {command.EventId} has been approved already.");
+                return Errors.Event.EventApprovedAlready;
             }
 
             var user = _userRepository.GetUserById(eventFromDb.UserId);
@@ -52,16 +52,14 @@ namespace Fliq.Application.Event.Commands.CancelEvent
                 return Errors.User.UserNotFound;
             }
 
-            eventFromDb.Status = EventStatus.Cancelled ;
+            eventFromDb.Status = EventStatus.Upcoming;
 
             _eventRepository.Update(eventFromDb);
 
-            _logger.LogInfo($"Event with ID: {command.EventId} was cancelled");           
+            _logger.LogInfo($"Event with ID: {command.EventId} was approved");
 
             return Unit.Value;
         }
 
-
-       
     }
 }

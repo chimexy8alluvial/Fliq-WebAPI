@@ -3,6 +3,7 @@ using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Pagination;
 using Fliq.Application.DashBoard.Common;
+using Fliq.Domain.Entities.Event.Enums;
 using MediatR;
 
 namespace Fliq.Application.DashBoard.Queries.GetAllEvents
@@ -10,6 +11,7 @@ namespace Fliq.Application.DashBoard.Queries.GetAllEvents
     public record GetAllFlaggedEventsQuery(
                                     PaginationRequest PaginationRequest = default!,
                                     string? Category = null,
+                                     EventStatus? Status = null,
                                     DateTime? StartDate = null,
                                     DateTime? EndDate = null,
                                     string? Location = null) : IRequest<ErrorOr<List<GetEventsResult>>>;
@@ -34,6 +36,7 @@ namespace Fliq.Application.DashBoard.Queries.GetAllEvents
             {
                 PaginationRequest = query.PaginationRequest,
                 Category = query.Category,
+                Status = query.Status,
                 StartDate = query.StartDate,
                 EndDate = query.EndDate,
                 Location = query.Location
@@ -47,32 +50,16 @@ namespace Fliq.Application.DashBoard.Queries.GetAllEvents
 
             _logger.LogInfo($"Got {eventWithUsernames.Count()} events for page {query.PaginationRequest.PageNumber}");
 
-            var results = eventWithUsernames.Select(eu =>
-            {
-                string status = DetermineEventStatus(eu.Event!.StartDate, eu.Event.EndDate);
-                return new GetEventsResult(
-                    EventTitle: eu.Event.EventTitle,
-                    CreatedBy: eu.Username,
-                    Status: status,
-                    Attendees: eu.Event.Tickets?.Count ?? 0,
-                    Type: eu.Event.SponsoredEvent ? "sponsored" : "free",
-                    CreatedOn: eu.Event.DateCreated
-                );
-            }).ToList();
+            var results = eventWithUsernames.Select(eu => new GetEventsResult(
+               EventTitle: eu.Event!.EventTitle,
+               CreatedBy: eu.Username,
+               Status: eu.CalculatedStatus, 
+               Attendees: eu.Event.Tickets?.Count ?? 0,
+               Type: eu.Event.SponsoredEvent ? "sponsored" : "free",
+               CreatedOn: eu.Event.DateCreated
+           )).ToList();
 
             return results;
         }
-
-        private string DetermineEventStatus(DateTime startDate, DateTime endDate)
-        {
-            var now = DateTime.Now;
-
-            if (startDate > now)
-                return "Upcoming";
-            if (startDate <= now && endDate >= now)
-                return "Ongoing";
-            return "Past";
-        }
     }
 }
-

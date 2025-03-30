@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fliq.Infrastructure.Migrations
 {
     [DbContext(typeof(FliqDbContext))]
-    [Migration("20250321203613_AddIsFlaggedToEvents")]
-    partial class AddIsFlaggedToEvents
+    [Migration("20250330140641_CountAllEventsWithPendingApproval_SP")]
+    partial class CountAllEventsWithPendingApproval_SP
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -458,9 +458,6 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<bool>("InviteesException")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsCancelled")
-                        .HasColumnType("bit");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -488,6 +485,9 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -528,7 +528,7 @@ namespace Fliq.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ContactInfromation")
+                    b.Property<string>("ContactInformation")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -1744,21 +1744,21 @@ namespace Fliq.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            DateCreated = new DateTime(2025, 3, 21, 20, 36, 9, 449, DateTimeKind.Utc).AddTicks(6864),
+                            DateCreated = new DateTime(2025, 3, 30, 14, 6, 31, 700, DateTimeKind.Utc).AddTicks(5612),
                             IsDeleted = false,
                             Name = "SuperAdmin"
                         },
                         new
                         {
                             Id = 2,
-                            DateCreated = new DateTime(2025, 3, 21, 20, 36, 9, 449, DateTimeKind.Utc).AddTicks(6873),
+                            DateCreated = new DateTime(2025, 3, 30, 14, 6, 31, 700, DateTimeKind.Utc).AddTicks(5624),
                             IsDeleted = false,
                             Name = "Admin"
                         },
                         new
                         {
                             Id = 3,
-                            DateCreated = new DateTime(2025, 3, 21, 20, 36, 9, 449, DateTimeKind.Utc).AddTicks(6877),
+                            DateCreated = new DateTime(2025, 3, 30, 14, 6, 31, 700, DateTimeKind.Utc).AddTicks(5627),
                             IsDeleted = false,
                             Name = "User"
                         });

@@ -22,6 +22,7 @@ namespace Fliq.Application.Event.Commands.EventCreation
         public string EventTitle { get; set; } = default!;
         public string EventDescription { get; set; } = default!;
         public EventCategory EventCategory { get; set; }
+        public EventStatus Status { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public Location Location { get; set; } = default!;
@@ -97,6 +98,8 @@ namespace Fliq.Application.Event.Commands.EventCreation
                 }
             }
 
+            command.Status = EventStatus.PendingApproval;
+
             var locationResponse = await _locationService.GetAddressFromCoordinatesAsync(command.Location.Lat, command.Location.Lng);
             if (locationResponse is not null)
             {
@@ -112,7 +115,7 @@ namespace Fliq.Application.Event.Commands.EventCreation
                 newEvent.Location = location;
             }
 
-            _eventRepository.Add(newEvent);
+            _eventRepository.Add(newEvent);            
 
             if (command.Tickets is not null)
             {

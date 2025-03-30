@@ -2,6 +2,7 @@
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Event.Commands.AddEventReview;
 using Fliq.Application.Event.Commands.AddEventTicket;
+using Fliq.Application.Event.Commands.ApproveEvent;
 using Fliq.Application.Event.Commands.CancelEvent;
 using Fliq.Application.Event.Commands.DeleteEvent;
 using Fliq.Application.Event.Commands.EventCreation;
@@ -204,6 +205,24 @@ namespace Fliq.Api.Controllers
 
             return result.Match(
               cancelEventResult => Ok(new EventCommandResponse($"Event with ID: {eventId} was successfully cancelled")),
+              errors => Problem(errors)
+          );
+
+        }
+        
+        [Authorize(Roles = "Admin,SuperAdmin")]
+        [HttpPut("approve-event/{eventId}")]
+        public async Task<IActionResult> ApproveEventById(int eventId)
+        {
+            _logger.LogInfo($"Approve event with ID: {eventId} received");
+
+            var command = new ApproveEventCommand(eventId);
+            var result = await _mediator.Send(command);
+
+            _logger.LogInfo($"Approve event with ID: {eventId} executed. Result: {result} ");
+
+            return result.Match(
+              cancelEventResult => Ok(new EventCommandResponse($"Event with ID: {eventId} was successfully approved")),
               errors => Problem(errors)
           );
 

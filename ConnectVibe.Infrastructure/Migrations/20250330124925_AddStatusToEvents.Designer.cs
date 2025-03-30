@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fliq.Infrastructure.Migrations
 {
     [DbContext(typeof(FliqDbContext))]
-    [Migration("20250319200605_GetAllCancelledEventsForDashBoard_SP")]
-    partial class GetAllCancelledEventsForDashBoard_SP
+    [Migration("20250330124925_AddStatusToEvents")]
+    partial class AddStatusToEvents
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -489,6 +489,9 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
@@ -528,7 +531,7 @@ namespace Fliq.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ContactInfromation")
+                    b.Property<string>("ContactInformation")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -1744,21 +1747,21 @@ namespace Fliq.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            DateCreated = new DateTime(2025, 3, 19, 20, 6, 2, 180, DateTimeKind.Utc).AddTicks(7396),
+                            DateCreated = new DateTime(2025, 3, 30, 12, 49, 19, 856, DateTimeKind.Utc).AddTicks(8809),
                             IsDeleted = false,
                             Name = "SuperAdmin"
                         },
                         new
                         {
                             Id = 2,
-                            DateCreated = new DateTime(2025, 3, 19, 20, 6, 2, 180, DateTimeKind.Utc).AddTicks(7405),
+                            DateCreated = new DateTime(2025, 3, 30, 12, 49, 19, 856, DateTimeKind.Utc).AddTicks(8814),
                             IsDeleted = false,
                             Name = "Admin"
                         },
                         new
                         {
                             Id = 3,
-                            DateCreated = new DateTime(2025, 3, 19, 20, 6, 2, 180, DateTimeKind.Utc).AddTicks(7407),
+                            DateCreated = new DateTime(2025, 3, 30, 12, 49, 19, 856, DateTimeKind.Utc).AddTicks(8816),
                             IsDeleted = false,
                             Name = "User"
                         });
