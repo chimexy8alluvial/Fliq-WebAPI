@@ -12,11 +12,11 @@ namespace Fliq.Test.Notification.MatchHandlers
     [TestClass]
     public class MatchRejectedEventHandlerTest
     {
-        private NotificationEventHandler _handler;
-        private Mock<IUserRepository> _userRepositoryMock;
-        private Mock<INotificationRepository> _notificationRepositoryMock;
-        private Mock<IPushNotificationService> _firebaseServiceMock;
-        private Mock<ILoggerManager> _loggerManagerMock;
+        private NotificationEventHandler? _handler;
+        private Mock<IUserRepository>? _userRepositoryMock;
+        private Mock<INotificationRepository>? _notificationRepositoryMock;
+        private Mock<IPushNotificationService>? _firebaseServiceMock;
+        private Mock<ILoggerManager>? _loggerManagerMock;
 
         [TestInitialize]
         public void Setup()
@@ -39,14 +39,14 @@ namespace Fliq.Test.Notification.MatchHandlers
             var matchRejectedEvent = new MatchRejectedEvent(userId: 1);
             var token = "deviceToken1";
 
-            _notificationRepositoryMock.Setup(repo => repo.GetDeviceTokensByUserIdAsync(1))
+            _notificationRepositoryMock?.Setup(repo => repo.GetDeviceTokensByUserIdAsync(1))
                 .ReturnsAsync(new List<string> { token }); // User has tokens
 
             // Act
             await _handler.Handle(matchRejectedEvent, CancellationToken.None);
 
             // Assert
-            _firebaseServiceMock.Verify(service => service.SendNotificationAsync(
+            _firebaseServiceMock?.Verify(service => service.SendNotificationAsync(
                 "Match Rejected",
                 "You have rejected a match.",
                 It.Is<List<string>>(tokens => tokens.Contains(token)),
@@ -55,7 +55,7 @@ namespace Fliq.Test.Notification.MatchHandlers
                 null, // No action URL
                 null), Times.Once);
 
-            _loggerManagerMock.Verify(logger => logger.LogInfo(
+            _loggerManagerMock?.Verify(logger => logger.LogInfo(
                 It.Is<string>(msg => msg.Contains("Notification sent for match rejection to UserId: 1"))), Times.Once);
         }
     }

@@ -13,7 +13,6 @@ using Fliq.Domain.Entities.Profile;
 using Mapster;
 using MapsterMapper;
 using MediatR;
-using System.Diagnostics;
 
 namespace Fliq.Application.Event.Commands.UpdateEvent
 {

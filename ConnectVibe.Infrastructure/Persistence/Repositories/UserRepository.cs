@@ -3,6 +3,7 @@ using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.DashBoard.Common;
 using Fliq.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Fliq.Application.Users.Common;
 using System.Data;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
@@ -31,6 +32,8 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         }
         public void Update(User user)
         {
+            user.DateModified = DateTime.Now;
+
             _dbContext.Update(user);
 
             _dbContext.SaveChanges();
@@ -83,6 +86,30 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
                 var users = await connection.QueryAsync<User>(sql, parameter, commandType: CommandType.StoredProcedure);
                 return users.ToList();
+            }
+        }
+
+        public async Task<IEnumerable<UsersTableListResult>> GetAllUsersByRoleIdAsync(int roleId, int pageNumber, int pageSize)
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var sql = "sp_GetUsersWithLatestSubscription";
+                var parameter = new { RoleId = roleId,
+                    Offset = (pageNumber - 1) * pageSize,
+                    Fetch = pageSize
+                };
+
+                var results = await connection.QueryAsync<dynamic>(sql, parameter, commandType: CommandType.StoredProcedure);
+
+                return results.Select(x => new UsersTableListResult
+                {
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
+                    Email = x.Email,
+                    Subscription = x.SubscriptionType,
+                    DateCreated = x.DateCreated,
+                    LastActiveAt = x.LastActiveAt,
+                });
             }
         }
 

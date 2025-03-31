@@ -19,7 +19,9 @@ namespace Fliq.Infrastructure.Migrations
             
                 SELECT * 
                 FROM Users
-                WHERE LastActiveAt < @ThresholdDate;
+                WHERE  
+                IsDeleted = 0
+                LastActiveAt < @ThresholdDate;
             END;");
         }
 

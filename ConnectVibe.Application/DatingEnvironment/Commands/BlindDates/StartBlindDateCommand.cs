@@ -48,19 +48,19 @@ namespace Fliq.Application.DatingEnvironment.Commands.BlindDates
             }
 
             // Step 3: Ensure the session hasn't started or ended
-            if (blindDate.SessionStartTime.HasValue && blindDate.Status is BlindDateStatus.Ongoing)
+            if (blindDate.SessionStartTime.HasValue && blindDate.Status is DateStatus.Ongoing)
             {
                 _loggerManager.LogWarn($"Blind date session {command.BlindDateId} has already started.");
                 return Errors.Dating.BlindDateAlreadyStarted;
             }
 
-            if (blindDate.SessionStartTime.HasValue && (blindDate.Status is BlindDateStatus.Completed || blindDate.Status is BlindDateStatus.Cancelled))
+            if (blindDate.SessionStartTime.HasValue && (blindDate.Status is DateStatus.Completed || blindDate.Status is DateStatus.Cancelled))
             {
                 _loggerManager.LogWarn($"Blind date session {command.BlindDateId} has already ended.");
                 return Errors.Dating.BlindDateAlreadyEnded;
             }
 
-            if (blindDate.Status == BlindDateStatus.Cancelled)
+            if (blindDate.Status == DateStatus.Cancelled)
             {
                 _loggerManager.LogWarn($"Blind date session {command.BlindDateId} is cancelled and cannot be started.");
                 return Errors.Dating.BlindDateCancelled;
@@ -68,7 +68,7 @@ namespace Fliq.Application.DatingEnvironment.Commands.BlindDates
             // Step 4: Start the session
             var sessionStartTime = DateTime.UtcNow;
             blindDate.SessionStartTime = sessionStartTime;
-            blindDate.Status = BlindDateStatus.Ongoing;
+            blindDate.Status = DateStatus.Ongoing;
             await _blindDateRepository.UpdateAsync(blindDate);
 
             _loggerManager.LogInfo($"Blind date session {command.BlindDateId} started successfully by user {command.UserId}.");

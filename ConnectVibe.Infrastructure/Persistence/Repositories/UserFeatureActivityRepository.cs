@@ -1,8 +1,8 @@
 ﻿using Dapper;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Domain.Entities.UserFeatureActivities;
-using Microsoft.AspNetCore.Connections;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Data;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
@@ -57,6 +57,21 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
                 var users = await connection.QueryAsync<UserFeatureActivity>(sql, parameter, commandType: CommandType.StoredProcedure);
                 return users.ToList();
+            }
+        }
+
+        public async Task<List<UserFeatureActivity>> GetRecentUserFeatureActivitiesAsync(int userId, int limit)
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                // Enforce a max limit of 10
+                var maxLimit = Math.Min(limit, 10);
+
+                var sql = "sp_GetUserFeatureActivities";
+                var parameters = new { UserId = userId, Limit = maxLimit };
+
+                var activities = await connection.QueryAsync<UserFeatureActivity>(sql, parameters, commandType: CommandType.StoredProcedure);
+                return activities.ToList();
             }
         }
     }

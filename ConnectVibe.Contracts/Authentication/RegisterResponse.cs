@@ -6,6 +6,7 @@
     string LastName,
     string DisplayName,
     string Email,
-    string Otp
+    string Otp,
+    string Language
     );
 }

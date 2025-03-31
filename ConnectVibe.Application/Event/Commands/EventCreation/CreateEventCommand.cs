@@ -132,7 +132,7 @@ namespace Fliq.Application.Event.Commands.EventCreation
                     newTicket.Currency = currency;
                     newTicket.EventId = newEvent.Id;
                     newTicket.EventDate = newEvent.StartDate;
-                    newEvent.Tickets.Add(newTicket);
+                    newEvent.Tickets?.Add(newTicket);
                 }
             }
             _eventRepository.Update(newEvent);

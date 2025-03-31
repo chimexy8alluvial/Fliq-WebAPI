@@ -41,7 +41,7 @@ namespace Fliq.Application.DatingEnvironment.Commands.BlindDates
             }
 
             // Step 2: Ensure the session is ongoing
-            if (blindDate.Status != BlindDateStatus.Ongoing)
+            if (blindDate.Status != DateStatus.Ongoing)
             {
                 _loggerManager.LogWarn($"Blind date session {command.BlindDateId} is not currently ongoing.");
                 return Errors.Dating.BlindDateNotOngoing;
@@ -58,7 +58,7 @@ namespace Fliq.Application.DatingEnvironment.Commands.BlindDates
             // Step 4: End the session
            var sessionEndTime = DateTime.UtcNow;
             blindDate.SessionEndTime = sessionEndTime;
-           blindDate.Status = BlindDateStatus.Completed;
+           blindDate.Status = DateStatus.Completed;
             await _blindDateRepository.UpdateAsync(blindDate);
 
             _loggerManager.LogInfo($"Blind date session {command.BlindDateId} ended successfully by user {command.UserId}.");

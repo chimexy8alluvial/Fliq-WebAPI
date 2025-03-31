@@ -13,13 +13,11 @@ namespace Fliq.Application.Event.Queries.GetTicket
     public class GetTicketQueryHandler : IRequestHandler<GetTicketQuery, ErrorOr<CreateTicketResult>>
     {
         private readonly ITicketRepository _ticketRepository;
-        private readonly IMapper _mapper;
         private readonly ILoggerManager _logger;
 
-        public GetTicketQueryHandler(ITicketRepository ticketRepository, IMapper mapper, ILoggerManager logger)
+        public GetTicketQueryHandler(ITicketRepository ticketRepository, ILoggerManager logger)
         {
             _ticketRepository = ticketRepository;
-            _mapper = mapper;
             _logger = logger;
         }
 

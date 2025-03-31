@@ -21,6 +21,10 @@ namespace Fliq.Domain.Common.Errors
             public static Error DocumentUnverified => Error.Conflict(
             code: "User.DocumentUnverified",
             description: "User's Document is Unverified");
+
+            public static Error UnauthorizedUser => Error.Unauthorized(
+         code: "User.IsUnauthorized",
+         description: "User is Unauthorized");
         }
     }
 }

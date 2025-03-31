@@ -86,20 +86,20 @@ namespace Fliq.Api.Mapping
                 .Map(dest => dest.ProfileTypes, src => src.ProfileTypes);
 
             config.NewConfig<UpdateEthnicityDto, Ethnicity>().IgnoreNullValues(true)
-                .Map(dest => dest.EthnicityType, src => (EthnicityType)src.EthnicityType);
+                .Map(dest => dest.EthnicityType, src => (EthnicityType?)src.EthnicityType);
             config.NewConfig<UpdateGenderDto, Gender>()
                 .IgnoreNullValues(true)
-                .Map(dest => dest.GenderType, src => (GenderType)src.GenderType);
+                .Map(dest => dest.GenderType, src => (GenderType?)src.GenderType);
             config.NewConfig<UpdateHaveKidsDto, HaveKids>().IgnoreNullValues(true)
-                .Map(dest => dest.HaveKidsType, src => (HaveKidsType)src.HaveKidsType);
+                .Map(dest => dest.HaveKidsType, src => (HaveKidsType?)src.HaveKidsType);
             config.NewConfig<UpdateWantKidsDto, WantKids>().IgnoreNullValues(true)
-                .Map(dest => dest.WantKidsType, src => (WantKidsType)src.WantKidsType);
+                .Map(dest => dest.WantKidsType, src => (WantKidsType?)src.WantKidsType);
             config.NewConfig<UpdateReligionDto, Religion>().IgnoreNullValues(true)
-                .Map(dest => dest.ReligionType, src => (ReligionType)src.ReligionType);
+                .Map(dest => dest.ReligionType, src => (ReligionType?)src.ReligionType);
             config.NewConfig<UpdateSexualOrientationDto, SexualOrientation>().IgnoreNullValues(true)
-                .Map(dest => dest.SexualOrientationType, src => (SexualOrientationType)src.SexualOrientationType);
+                .Map(dest => dest.SexualOrientationType, src => (SexualOrientationType?)src.SexualOrientationType);
             config.NewConfig<UpdateEducationStatusDto, EducationStatus>().IgnoreNullValues(true)
-                .Map(dest => dest.EducationLevel, src => (EducationLevel)src.EducationLevel);
+                .Map(dest => dest.EducationLevel, src => (EducationLevel?)src.EducationLevel);
             config.NewConfig<UpdateOccupationDto, OccupationDto>().IgnoreNullValues(true)
                 .Map(dest => dest.OccupationName, src => src.OccupationName);
             config.NewConfig<ProfilePhoto, ProfilePhotoResponse>();

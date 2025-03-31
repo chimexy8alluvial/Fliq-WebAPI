@@ -3,7 +3,6 @@ using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Event.Common;
 using Fliq.Domain.Common.Errors;
-using MapsterMapper;
 using MediatR;
 
 namespace Fliq.Application.Event.Queries.GetEvent
@@ -13,13 +12,11 @@ namespace Fliq.Application.Event.Queries.GetEvent
     public class GetEventQueryHandler : IRequestHandler<GetEventQuery, ErrorOr<CreateEventResult>>
     {
         private readonly IEventRepository _eventRepository;
-        private readonly IMapper _mapper;
         private readonly ILoggerManager _logger;
 
-        public GetEventQueryHandler(IEventRepository eventRepository, IMapper mapper, ILoggerManager logger)
+        public GetEventQueryHandler(IEventRepository eventRepository, ILoggerManager logger)
         {
             _eventRepository = eventRepository;
-            _mapper = mapper;
             _logger = logger;
         }
 

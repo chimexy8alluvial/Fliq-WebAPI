@@ -9,9 +9,9 @@ namespace Fliq.Test.DashBoard.Queries
     public class GetNewSignUpsCountQueryHandlerTests
     {
 
-        private Mock<IUserRepository> _mockUserRepository;
-        private Mock<ILoggerManager> _mockLogger;
-        private GetNewSignUpsCountQueryHandler _handler;
+        private Mock<IUserRepository>? _mockUserRepository;
+        private Mock<ILoggerManager>? _mockLogger;
+        private GetNewSignUpsCountQueryHandler? _handler;
 
         [TestInitialize]
         public void SetUp()
@@ -30,7 +30,7 @@ namespace Fliq.Test.DashBoard.Queries
             int expectedCount = 50;
             var query = new GetNewSignUpsCountQuery(days);
 
-            _mockUserRepository.Setup(repo => repo.CountNewSignups(days)).ReturnsAsync(expectedCount);
+            _mockUserRepository?.Setup(repo => repo.CountNewSignups(days)).ReturnsAsync(expectedCount);
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);
@@ -39,9 +39,9 @@ namespace Fliq.Test.DashBoard.Queries
             Assert.IsFalse(result.IsError);
             Assert.AreEqual(expectedCount, result.Value.Count);
 
-            _mockLogger.Verify(logger => logger.LogInfo($"Fetching new signups count in the last {days} days..."), Times.Once);
-            _mockLogger.Verify(logger => logger.LogInfo($"New Signups Count: {expectedCount}"), Times.Once);
-            _mockUserRepository.Verify(repo => repo.CountNewSignups(days), Times.Once);
+            _mockLogger?.Verify(logger => logger.LogInfo($"Fetching new signups count in the last {days} days..."), Times.Once);
+            _mockLogger?.Verify(logger => logger.LogInfo($"New Signups Count: {expectedCount}"), Times.Once);
+            _mockUserRepository?.Verify(repo => repo.CountNewSignups(days), Times.Once);
         }
 
         [TestMethod]
@@ -51,7 +51,7 @@ namespace Fliq.Test.DashBoard.Queries
             int days = 7;
             var query = new GetNewSignUpsCountQuery(days);
 
-            _mockUserRepository.Setup(repo => repo.CountNewSignups(days)).ThrowsAsync(new Exception("Database error"));
+            _mockUserRepository?.Setup(repo => repo.CountNewSignups(days)).ThrowsAsync(new Exception("Database error"));
 
              // Act & Assert
             await Assert.ThrowsExceptionAsync<Exception>(async () =>
@@ -59,8 +59,8 @@ namespace Fliq.Test.DashBoard.Queries
                 await _handler.Handle(query, CancellationToken.None);
             });
 
-            _mockLogger.Verify(logger => logger.LogInfo($"Fetching new signups count in the last {days} days..."), Times.Once);
-            _mockUserRepository.Verify(repo => repo.CountNewSignups(days), Times.Once);
+            _mockLogger?.Verify(logger => logger.LogInfo($"Fetching new signups count in the last {days} days..."), Times.Once);
+            _mockUserRepository?.Verify(repo => repo.CountNewSignups(days), Times.Once);
         }
     }
 }

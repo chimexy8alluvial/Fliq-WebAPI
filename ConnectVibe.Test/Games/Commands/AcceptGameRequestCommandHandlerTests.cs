@@ -13,10 +13,10 @@ namespace Fliq.Test.Games.Commands
     [TestClass]
     public class AcceptGameRequestCommandHandlerTests
     {
-        private Mock<IGamesRepository> _mockGamesRepository;
-        private Mock<ILoggerManager> _mockLogger;
-        private Mock<IHubContext<GameHub>> _mockHub;
-        private AcceptGameRequestCommandHandler _handler;
+        private Mock<IGamesRepository>? _mockGamesRepository;
+        private Mock<ILoggerManager>? _mockLogger;
+        private Mock<IHubContext<GameHub>>? _mockHub;
+        private AcceptGameRequestCommandHandler? _handler;
 
         [TestInitialize]
         public void Setup()
@@ -42,9 +42,9 @@ namespace Fliq.Test.Games.Commands
         {
             // Arrange
             var command = new AcceptGameRequestCommand(1, 101);
-            _mockGamesRepository
+            _mockGamesRepository?
                 .Setup(repo => repo.GetGameRequestById(It.IsAny<int>()))
-                .Returns((GameRequest)null);
+                .Returns((GameRequest?)null);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -65,7 +65,7 @@ namespace Fliq.Test.Games.Commands
                 Status = GameStatus.Rejected
             };
 
-            _mockGamesRepository
+            _mockGamesRepository?
                 .Setup(repo => repo.GetGameRequestById(It.IsAny<int>()))
                 .Returns(gameRequest);
 
@@ -90,7 +90,7 @@ namespace Fliq.Test.Games.Commands
                 Status = GameStatus.Pending
             };
 
-            _mockGamesRepository
+            _mockGamesRepository?
                 .Setup(repo => repo.GetGameRequestById(It.IsAny<int>()))
                 .Returns(gameRequest);
 
@@ -104,8 +104,8 @@ namespace Fliq.Test.Games.Commands
             Assert.AreEqual(gameRequest.RequesterId, result.Value.GameSession.Player1Id);
             Assert.AreEqual(command.UserId, result.Value.GameSession.Player2Id);
 
-            _mockGamesRepository.Verify(repo => repo.UpdateGameRequest(It.Is<GameRequest>(gr => gr.Status == GameStatus.Accepted)), Times.Once);
-            _mockGamesRepository.Verify(repo => repo.CreateGameSession(It.IsAny<GameSession>()), Times.Once);
+            _mockGamesRepository?.Verify(repo => repo.UpdateGameRequest(It.Is<GameRequest>(gr => gr.Status == GameStatus.Accepted)), Times.Once);
+            _mockGamesRepository?.Verify(repo => repo.CreateGameSession(It.IsAny<GameSession>()), Times.Once);
         }
 
         [TestMethod]
@@ -128,7 +128,7 @@ namespace Fliq.Test.Games.Commands
                 Player1Id = 100,
                 Player2Id = 101
             };
-            _mockGamesRepository
+            _mockGamesRepository?
                 .Setup(repo => repo.GetGameRequestById(It.IsAny<int>()))
                 .Returns(gameRequest);
 
@@ -136,8 +136,8 @@ namespace Fliq.Test.Games.Commands
             await _handler.Handle(command, CancellationToken.None);
 
             // Assert
-            _mockLogger.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains("Accepting game request"))), Times.Once);
-            _mockLogger.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains("Accepted game request"))), Times.Once);
+            _mockLogger?.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains("Accepting game request"))), Times.Once);
+            _mockLogger?.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains("Accepted game request"))), Times.Once);
         }
     }
 }

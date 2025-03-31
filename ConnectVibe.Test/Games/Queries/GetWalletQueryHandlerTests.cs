@@ -9,8 +9,8 @@ namespace Fliq.Test.Games.Queries
     [TestClass]
     public class GetWalletQueryHandlerTests
     {
-        private Mock<IWalletRepository> _walletRepositoryMock;
-        private GetWalletQueryHandler _handler;
+        private Mock<IWalletRepository>? _walletRepositoryMock;
+        private GetWalletQueryHandler? _handler;
 
         [TestInitialize]
         public void Setup()
@@ -24,7 +24,7 @@ namespace Fliq.Test.Games.Queries
         {
             // Arrange
             var command = new GetWalletQuery(1);
-            _walletRepositoryMock.Setup(repo => repo.GetWalletByUserId(It.IsAny<int>())).Returns((Wallet)null);
+            _walletRepositoryMock?.Setup(repo => repo.GetWalletByUserId(It.IsAny<int>())).Returns((Wallet?)null);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -40,7 +40,7 @@ namespace Fliq.Test.Games.Queries
             // Arrange
             var command = new GetWalletQuery(1);
             var wallet = new Wallet { UserId = 1, Balance = 100m };
-            _walletRepositoryMock.Setup(repo => repo.GetWalletByUserId(It.IsAny<int>())).Returns(wallet);
+            _walletRepositoryMock?.Setup(repo => repo.GetWalletByUserId(It.IsAny<int>())).Returns(wallet);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);

@@ -3,7 +3,6 @@ using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Pagination;
 using Fliq.Application.DashBoard.Common;
-using MapsterMapper;
 using MediatR;
 
 
@@ -19,7 +18,7 @@ namespace Fliq.Application.DashBoard.Queries.GetAllUser
         private readonly IUserRepository _userRepository;
         private readonly ILoggerManager _logger;
 
-        public GetAllUsersQueryHandler(IUserRepository userRepository, IMapper mapper, ILoggerManager logger)
+        public GetAllUsersQueryHandler(IUserRepository userRepository, ILoggerManager logger)
         {
             _userRepository = userRepository;          
             _logger = logger;

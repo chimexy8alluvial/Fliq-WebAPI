@@ -18,7 +18,6 @@ namespace Fliq.Test.DashBoard.Queries
         {
             _mockUserRepository = new Mock<IUserRepository>();
             _mockLogger = new Mock<ILoggerManager>();
-
             _handler = new GetAllMaleUsersCountQueryHandler(_mockUserRepository.Object, _mockLogger.Object);
         }
 

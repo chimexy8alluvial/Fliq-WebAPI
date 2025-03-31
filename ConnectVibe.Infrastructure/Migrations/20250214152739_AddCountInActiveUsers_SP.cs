@@ -19,8 +19,8 @@ namespace Fliq.Infrastructure.Migrations
             	SET NOCOUNT ON;
             
             	   SELECT COUNT(*) AS ActiveUsers FROM Users 
-                            WHERE IsActive = 0
-                            AND (IsDeleted IS NULL OR IsDeleted = 0)  ;
+                WHERE IsActive = 0
+                    AND IsDeleted = 0;
             END
             ");
         }

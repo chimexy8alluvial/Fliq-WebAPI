@@ -29,6 +29,10 @@ namespace Fliq.Domain.Common.Errors
             code: "BlindDate.NotFound",
             description: "Blind Date not found");
 
+            public static Error SpeedDateNotFound => Error.NotFound(
+        code: "SpeedDate.NotFound",
+        description: "Speed Date not found");
+
             public static Error BlindDateFull => Error.Forbidden(
             code: "BlindDate.AlreadyFull",
             description: "Blind Date already full");

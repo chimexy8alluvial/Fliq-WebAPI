@@ -45,5 +45,7 @@ namespace Fliq.Application.Common.UserFeatureActivities
              await _userFeatureActivityRepository.AddAsync(existingActivity);
             _logger.LogInfo($"[TrackUserFeatureActivity] Successfully tracked feature activity for UserId: {userId}, Feature: {featureName}");
         }
+
+
     }
 }
