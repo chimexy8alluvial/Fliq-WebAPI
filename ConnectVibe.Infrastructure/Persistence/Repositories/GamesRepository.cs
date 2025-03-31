@@ -76,6 +76,18 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             return session;
         }
 
+        public async Task<int> GetStakeCountByUserId(int userId)
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var sql = "sp_GetSingleUserTotalStakeCount";
+                var parameter = new { UserId = userId };
+                
+                var count = await connection.QueryFirstOrDefaultAsync<int>(sql, commandType: CommandType.StoredProcedure); // Using IsActive flag
+                return count;
+            }
+        }
+
         public List<GetGameHistoryResult> GetGameHistoryByTwoPlayers(int player1Id, int player2Id)
         {
             using (var connection = _connectionFactory.CreateConnection())

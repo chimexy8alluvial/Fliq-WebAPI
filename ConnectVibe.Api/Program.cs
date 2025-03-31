@@ -6,6 +6,8 @@ using Fliq.Infrastructure;
 using Fliq.Infrastructure.Persistence;
 using Microsoft.OpenApi.Models;
 using NLog;
+using Quartz;
+using Quartz.Impl;
 
 var builder = WebApplication.CreateBuilder(args);
 {
@@ -14,6 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddPresentation();
     builder.Services.AddInfrastructure(builder.Configuration);
     builder.Services.AddScoped<SuperAdminSeeder>();
+    builder.Services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
     // Configure NLog
     LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
 
