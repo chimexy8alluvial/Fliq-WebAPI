@@ -25,7 +25,7 @@ public class GetAllFlaggedEventsQueryHandlerTests
     public async Task Handle_ValidRequest_ReturnsSuccessResult()
     {
         // Arrange
-        var paginationRequest = new PaginationRequest(1, 10);
+        var paginationRequest = new PaginationRequest(1, 5);
         var query = new GetAllFlaggedEventsQuery(paginationRequest);
 
         var request = new GetEventsListRequest
@@ -38,20 +38,21 @@ public class GetAllFlaggedEventsQueryHandlerTests
             Location = null
         };
 
+        var createdOn = DateTime.UtcNow;
         var expectedResults = new List<GetEventsResult>
         {
-            new GetEventsResult("Test Flagged Event", "John Doe", "Upcoming", 5, "free", DateTime.UtcNow)
+            new GetEventsResult("Flagged Event", "Jane Doe", EventStatus.Upcoming.ToString(), 10, "paid", createdOn)
         };
 
         _eventRepositoryMock!
             .Setup(x => x.GetAllFlaggedEventsForDashBoardAsync(It.Is<GetEventsListRequest>(
-                r => r.PaginationRequest!.PageNumber == 1 &&
-                     r.PaginationRequest.PageSize == 10 &&
-                     r.Category == null &&
-                     r.Status == null &&
-                     r.StartDate == null &&
-                     r.EndDate == null &&
-                     r.Location == null)))
+                r => r.PaginationRequest!.PageNumber == paginationRequest.PageNumber &&
+                     r.PaginationRequest.PageSize == paginationRequest.PageSize &&
+                     r.Category == query.Category &&
+                     r.Status == query.Status &&
+                     r.StartDate == query.StartDate &&
+                     r.EndDate == query.EndDate &&
+                     r.Location == query.Location)))
             .ReturnsAsync(expectedResults);
 
         _loggerMock!.Setup(x => x.LogInfo(It.IsAny<string>()));
@@ -61,10 +62,18 @@ public class GetAllFlaggedEventsQueryHandlerTests
 
         // Assert
         Assert.IsFalse(result.IsError);
-        Assert.AreEqual(expectedResults, result.Value);
-        Assert.AreEqual(1, result.Value.Count);
+        Assert.AreEqual(expectedResults.Count, result.Value.Count);
 
-        _loggerMock.Verify(x => x.LogInfo($"Getting flagged events for page 1 with page size 10"), Times.Once());
+        var expected = expectedResults[0];
+        var actual = result.Value[0];
+        Assert.AreEqual(expected.EventTitle, actual.EventTitle);
+        Assert.AreEqual(expected.CreatedBy, actual.CreatedBy);
+        Assert.AreEqual(expected.Status, actual.Status);
+        Assert.AreEqual(expected.Attendees, actual.Attendees);
+        Assert.AreEqual(expected.Type, actual.Type);
+        Assert.IsTrue(Math.Abs((expected.CreatedOn - actual.CreatedOn).TotalSeconds) < 1);
+
+        _loggerMock.Verify(x => x.LogInfo($"Getting flagged events for page 1 with page size 5"), Times.Once());
         _loggerMock.Verify(x => x.LogInfo($"Got 1 flagged events for page 1"), Times.Once());
         _eventRepositoryMock.Verify(x => x.GetAllFlaggedEventsForDashBoardAsync(It.IsAny<GetEventsListRequest>()), Times.Once());
     }
@@ -74,38 +83,35 @@ public class GetAllFlaggedEventsQueryHandlerTests
     {
         // Arrange
         var paginationRequest = new PaginationRequest(2, 5);
-        var query = new GetAllFlaggedEventsQuery(
-            paginationRequest,
-            "Music",
-            EventStatus.Ongoing,
-            DateTime.UtcNow.AddDays(-1),
-            DateTime.UtcNow.AddDays(1),
-            "New York");
+        var startDate = DateTime.UtcNow.AddDays(-1);
+        var endDate = DateTime.UtcNow.AddDays(1);
+        var query = new GetAllFlaggedEventsQuery(paginationRequest, "Concert", EventStatus.Ongoing, startDate, endDate, "London");
 
         var request = new GetEventsListRequest
         {
             PaginationRequest = paginationRequest,
-            Category = "Music",
+            Category = "Concert",
             Status = EventStatus.Ongoing,
-            StartDate = query.StartDate,
-            EndDate = query.EndDate,
-            Location = "New York"
+            StartDate = startDate,
+            EndDate = endDate,
+            Location = "London"
         };
 
+        var createdOn = DateTime.UtcNow;
         var expectedResults = new List<GetEventsResult>
         {
-            new GetEventsResult("Flagged Music Fest", "Jane Doe", "Ongoing", 100, "sponsored", DateTime.UtcNow)
+            new GetEventsResult("Flagged Concert", "John Smith", EventStatus.Ongoing.ToString(), 50, "sponsored", createdOn)
         };
 
         _eventRepositoryMock!
             .Setup(x => x.GetAllFlaggedEventsForDashBoardAsync(It.Is<GetEventsListRequest>(
-                r => r.PaginationRequest!.PageNumber == 2 &&
-                     r.PaginationRequest.PageSize == 5 &&
-                     r.Category == "Music" &&
-                     r.Status == EventStatus.Ongoing &&
+                r => r.PaginationRequest!.PageNumber == paginationRequest.PageNumber &&
+                     r.PaginationRequest.PageSize == paginationRequest.PageSize &&
+                     r.Category == query.Category &&
+                     r.Status == query.Status &&
                      r.StartDate == query.StartDate &&
                      r.EndDate == query.EndDate &&
-                     r.Location == "New York")))
+                     r.Location == query.Location)))
             .ReturnsAsync(expectedResults);
 
         _loggerMock!.Setup(x => x.LogInfo(It.IsAny<string>()));
@@ -115,8 +121,16 @@ public class GetAllFlaggedEventsQueryHandlerTests
 
         // Assert
         Assert.IsFalse(result.IsError);
-        Assert.AreEqual(expectedResults, result.Value);
-        Assert.AreEqual(1, result.Value.Count);
+        Assert.AreEqual(expectedResults.Count, result.Value.Count);
+
+        var expected = expectedResults[0];
+        var actual = result.Value[0];
+        Assert.AreEqual(expected.EventTitle, actual.EventTitle);
+        Assert.AreEqual(expected.CreatedBy, actual.CreatedBy);
+        Assert.AreEqual(expected.Status, actual.Status);
+        Assert.AreEqual(expected.Attendees, actual.Attendees);
+        Assert.AreEqual(expected.Type, actual.Type);
+        Assert.IsTrue(Math.Abs((expected.CreatedOn - actual.CreatedOn).TotalSeconds) < 1);
 
         _loggerMock.Verify(x => x.LogInfo($"Getting flagged events for page 2 with page size 5"), Times.Once());
         _loggerMock.Verify(x => x.LogInfo($"Got 1 flagged events for page 2"), Times.Once());
@@ -127,7 +141,7 @@ public class GetAllFlaggedEventsQueryHandlerTests
     public async Task Handle_RepositoryThrowsException_ReturnsError()
     {
         // Arrange
-        var paginationRequest = new PaginationRequest(1, 10);
+        var paginationRequest = new PaginationRequest(1, 5);
         var query = new GetAllFlaggedEventsQuery(paginationRequest);
 
         var request = new GetEventsListRequest
@@ -146,8 +160,8 @@ public class GetAllFlaggedEventsQueryHandlerTests
             .Setup(x => x.GetAllFlaggedEventsForDashBoardAsync(It.IsAny<GetEventsListRequest>()))
             .ThrowsAsync(exception);
 
-        _loggerMock!.Setup(x => x.LogInfo(It.IsAny<string>()));
-        _loggerMock.Setup(x => x.LogError(It.IsAny<string>()));
+        _loggerMock!.Setup(x => x.LogInfo($"Getting flagged events for page 1 with page size 5"));
+        _loggerMock.Setup(x => x.LogError($"Error fetching flagged events: {exception.Message}"));
 
         // Act
         var result = await _handler!.Handle(query, CancellationToken.None);
@@ -155,11 +169,11 @@ public class GetAllFlaggedEventsQueryHandlerTests
         // Assert
         Assert.IsTrue(result.IsError);
         Assert.AreEqual(1, result.Errors.Count);
-        Assert.AreEqual("GetEventsFailed", result.Errors[0].Code);
-        Assert.IsTrue(result.Errors[0].Description.Contains("Database connection failed"));
+        Assert.AreEqual("GetFlaggedEventsFailed", result.FirstError.Code);
+        Assert.IsTrue(result.FirstError.Description.Contains("Database connection failed"));
 
-        _loggerMock.Verify(x => x.LogInfo($"Getting flagged events for page 1 with page size 10"), Times.Once());
-        _loggerMock.Verify(x => x.LogError($"Error fetching events: {exception.Message}"), Times.Once());
+        _loggerMock.Verify(x => x.LogInfo($"Getting flagged events for page 1 with page size 5"), Times.Once());
+        _loggerMock.Verify(x => x.LogError($"Error fetching flagged events: {exception.Message}"), Times.Once());
         _eventRepositoryMock.Verify(x => x.GetAllFlaggedEventsForDashBoardAsync(It.IsAny<GetEventsListRequest>()), Times.Once());
     }
 }

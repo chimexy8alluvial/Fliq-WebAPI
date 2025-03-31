@@ -28,9 +28,10 @@ namespace Fliq.Application.DashBoard.Queries.GetAllEvents
 
         public async Task<ErrorOr<List<GetEventsResult>>> Handle(GetAllFlaggedEventsQuery query, CancellationToken cancellationToken)
         {
-            await Task.CompletedTask;
+            try 
+            { 
 
-            _logger.LogInfo($"Getting flagged events for page {query.PaginationRequest.PageNumber} with page size {query.PaginationRequest.PageSize}");
+             _logger.LogInfo($"Getting flagged events for page {query.PaginationRequest.PageNumber} with page size {query.PaginationRequest.PageSize}");
 
             var request = new GetEventsListRequest
             {
@@ -48,6 +49,15 @@ namespace Fliq.Application.DashBoard.Queries.GetAllEvents
 
 
             return results.ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error fetching flagged events: {ex.Message}");
+                return new List<Error> // Implicit conversion to ErrorOr error case
+                {
+                    Error.Failure("GetFlaggedEventsFailed", $"Failed to fetch events: {ex.Message}")
+                };
+            }
         }
     }
 }
