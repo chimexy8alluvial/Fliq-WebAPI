@@ -9,7 +9,6 @@ using Fliq.Application.DatingEnvironment.Queries.DatingDashboard.BlindDte;
 using Fliq.Application.DatingEnvironment.Queries.DatingDashboard.SpeedDate;
 using Fliq.Contracts.DashBoard;
 using Fliq.Contracts.Dating;
-using Fliq.Domain.Entities.Event.Enums;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

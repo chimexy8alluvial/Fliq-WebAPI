@@ -2,14 +2,12 @@
 
 using Dapper;
 using Fliq.Application.Common.Interfaces.Persistence;
-using Fliq.Application.DatingEnvironment.Common;
 using Fliq.Contracts.Dating;
 using Fliq.Domain.Entities.DatingEnvironment.BlindDates;
 using Fliq.Domain.Entities.Event.Enums;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Data.Common;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {

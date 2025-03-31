@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fliq.Infrastructure.Migrations
 {
     [DbContext(typeof(FliqDbContext))]
-    [Migration("20250329102439_GetAllFilteredBlindDatingList_sp")]
-    partial class GetAllFilteredBlindDatingList_sp
+    [Migration("20250331215133_AddLanguageToDatabase")]
+    partial class AddLanguageToDatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1925,21 +1925,21 @@ namespace Fliq.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            DateCreated = new DateTime(2025, 3, 29, 10, 24, 36, 911, DateTimeKind.Utc).AddTicks(1977),
+                            DateCreated = new DateTime(2025, 3, 31, 21, 51, 31, 131, DateTimeKind.Utc).AddTicks(6607),
                             IsDeleted = false,
                             Name = "SuperAdmin"
                         },
                         new
                         {
                             Id = 2,
-                            DateCreated = new DateTime(2025, 3, 29, 10, 24, 36, 911, DateTimeKind.Utc).AddTicks(1985),
+                            DateCreated = new DateTime(2025, 3, 31, 21, 51, 31, 131, DateTimeKind.Utc).AddTicks(6613),
                             IsDeleted = false,
                             Name = "Admin"
                         },
                         new
                         {
                             Id = 3,
-                            DateCreated = new DateTime(2025, 3, 29, 10, 24, 36, 911, DateTimeKind.Utc).AddTicks(1987),
+                            DateCreated = new DateTime(2025, 3, 31, 21, 51, 31, 131, DateTimeKind.Utc).AddTicks(6614),
                             IsDeleted = false,
                             Name = "User"
                         });
@@ -2202,6 +2202,9 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.Property<bool>("IsEmailValidated")
                         .HasColumnType("bit");
+
+                    b.Property<int>("Language")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("LastActiveAt")
                         .HasColumnType("datetime2");

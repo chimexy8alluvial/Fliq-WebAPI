@@ -6,25 +6,26 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Fliq.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class AddDurationToBlindDates : Migration
+    public partial class AddLanguageToDatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "Duration",
-                table: "BlindDates");
+            migrationBuilder.AddColumn<TimeSpan?>(
+                name: "Language",
+                table: "Users",
+                type: "Int",
+                nullable: true,
+                defaultValue: 0
+            );
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<TimeSpan?>(
-                name: "Duration",
-                table: "BlindDates",
-                type: "Time",
-                nullable: true,
-                defaultValue: 0);
+            migrationBuilder.DropColumn(
+                name: "Language",
+                table: "Users");
         }
     }
 }
