@@ -4,6 +4,7 @@ using Fliq.Application.DashBoard.Common;
 using Fliq.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Fliq.Application.Users.Common;
+using System.Data;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {
