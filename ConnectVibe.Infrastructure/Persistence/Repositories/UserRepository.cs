@@ -122,7 +122,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         //To be changed to stored procedure
         public User? GetUserByIdIncludingProfile(int id)
         {
-            var user = _dbContext.Users.Include(p=>p.UserProfile).ThenInclude(p => p.Photos).SingleOrDefault(p => p.Id == id);
+            var user = _dbContext.Users.Include(p=>p.UserProfile).ThenInclude(p => p!.Photos).SingleOrDefault(p => p.Id == id);
             return user;
         }
 
@@ -131,7 +131,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         {
             var parameters = new DynamicParameters();
 
-            parameters.Add("@pageNumber", query.PaginationRequest.PageNumber);
+            parameters.Add("@pageNumber", query.PaginationRequest!.PageNumber);
             parameters.Add("@pageSize", query.PaginationRequest.PageSize);
             parameters.Add("@hasSubscription", query.HasSubscription);
             parameters.Add("@activeSince", query.ActiveSince);
