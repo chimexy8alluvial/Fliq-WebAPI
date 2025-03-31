@@ -18,7 +18,7 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         void UpdateGameSession(GameSession gameSession);
 
         GameSession? GetGameSessionById(int id);
-
+        Task<int> GetStakeCountByUserId(int userId);         
         void AddGameRequest(GameRequest gameRequest);
 
         void UpdateGameRequest(GameRequest gameRequest);

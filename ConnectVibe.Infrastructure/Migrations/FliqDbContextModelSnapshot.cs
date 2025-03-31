@@ -1922,21 +1922,21 @@ namespace Fliq.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            DateCreated = new DateTime(2025, 3, 29, 10, 25, 18, 121, DateTimeKind.Utc).AddTicks(3539),
+                            DateCreated = new DateTime(2025, 3, 28, 8, 18, 48, 936, DateTimeKind.Utc).AddTicks(2421),
                             IsDeleted = false,
                             Name = "SuperAdmin"
                         },
                         new
                         {
                             Id = 2,
-                            DateCreated = new DateTime(2025, 3, 29, 10, 25, 18, 121, DateTimeKind.Utc).AddTicks(3550),
+                            DateCreated = new DateTime(2025, 3, 28, 8, 18, 48, 936, DateTimeKind.Utc).AddTicks(2435),
                             IsDeleted = false,
                             Name = "Admin"
                         },
                         new
                         {
                             Id = 3,
-                            DateCreated = new DateTime(2025, 3, 29, 10, 25, 18, 121, DateTimeKind.Utc).AddTicks(3551),
+                            DateCreated = new DateTime(2025, 3, 28, 8, 18, 48, 936, DateTimeKind.Utc).AddTicks(2437),
                             IsDeleted = false,
                             Name = "User"
                         });

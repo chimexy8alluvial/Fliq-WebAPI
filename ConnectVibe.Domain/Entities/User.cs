@@ -1,6 +1,7 @@
 ﻿using Fliq.Domain.Entities.MatchedProfile;
 using Fliq.Domain.Entities.Notifications;
 using Fliq.Domain.Entities.Profile;
+using Fliq.Domain.Enums;
 
 namespace Fliq.Domain.Entities
 {
@@ -15,9 +16,9 @@ namespace Fliq.Domain.Entities
         public bool IsEmailValidated { get; set; }
         public bool IsDocumentVerified { get; set; }
         public bool IsActive { get; set; }
-        public DateTime LastActiveAt { get; set; } = DateTime.UtcNow; 
+        public DateTime LastActiveAt { get; set; } = DateTime.UtcNow;
         public int RoleId { get; set; }
-
+        public Language Language { get; set; }
 
         public UserProfile? UserProfile { get; set; }
         public Role? Role { get; set; }

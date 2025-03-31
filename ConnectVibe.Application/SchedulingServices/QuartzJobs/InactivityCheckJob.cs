@@ -5,7 +5,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Quartz;
 
-namespace Fliq.Infrastructure.Services.SchedulingServices.QuartzJobs
+namespace Fliq.Application.SchedulingServices.QuartzJobs
 {
     public class InactivityCheckJob : IJob
     {
