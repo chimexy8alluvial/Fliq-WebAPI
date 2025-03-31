@@ -17,7 +17,7 @@ namespace Fliq.Application.DashBoard.Queries.GetAllEvents
                                     string? Location = null) : IRequest<ErrorOr<List<GetEventsResult>>>;
     public class GetAllEventsQueryHandler : IRequestHandler<GetAllEventsQuery, ErrorOr<List<GetEventsResult>>>
     {
-        private readonly IEventRepository _eventRepository;      
+        private readonly IEventRepository _eventRepository;
         private readonly ILoggerManager _logger;
 
         public GetAllEventsQueryHandler(IEventRepository eventRepository, ILoggerManager logger)
@@ -29,32 +29,36 @@ namespace Fliq.Application.DashBoard.Queries.GetAllEvents
         public async Task<ErrorOr<List<GetEventsResult>>> Handle(GetAllEventsQuery query, CancellationToken cancellationToken)
         {
 
-            _logger.LogInfo($"Getting events for page {query.PaginationRequest.PageNumber} with page size {query.PaginationRequest.PageSize}");
-
-            var request = new GetEventsListRequest
+            try
             {
-                PaginationRequest = query.PaginationRequest,
-                Category = query.Category,
-                Status = query.Status,
-                StartDate = query.StartDate,
-                EndDate = query.EndDate,
-                Location = query.Location
-            };
+                _logger.LogInfo($"Getting events for page {query.PaginationRequest.PageNumber} with page size {query.PaginationRequest.PageSize}");
 
-            var eventWithUsernames = await _eventRepository.GetAllEventsForDashBoardAsync(request);
+                var request = new GetEventsListRequest
+                {
+                    PaginationRequest = query.PaginationRequest,
+                    Category = query.Category,
+                    Status = query.Status,
+                    StartDate = query.StartDate,
+                    EndDate = query.EndDate,
+                    Location = query.Location
+                };
 
-            _logger.LogInfo($"Got {eventWithUsernames.Count()} events for page {query.PaginationRequest.PageNumber}");
+                var results = await _eventRepository.GetAllEventsForDashBoardAsync(request);
 
-            var results = eventWithUsernames.Select(eu => new GetEventsResult(
-                EventTitle: eu.Event!.EventTitle,
-                CreatedBy: eu.Username,
-                Status: eu.CalculatedStatus, 
-                Attendees: eu.Event.Tickets?.Count ?? 0,
-                Type: eu.Event.SponsoredEvent ? "sponsored" : "free",
-                CreatedOn: eu.Event.DateCreated
-            )).ToList();
+                _logger.LogInfo($"Got {results.Count()} events for page {query.PaginationRequest.PageNumber}");
 
-            return results;
+                return results.ToList(); // Implicit conversion to ErrorOr success case
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error fetching events: {ex.Message}");
+                return new List<Error> // Implicit conversion to ErrorOr error case
+                {
+                    Error.Failure("GetEventsFailed", $"Failed to fetch events: {ex.Message}")
+                };
+            }
         }
     }
 }
+            
+    

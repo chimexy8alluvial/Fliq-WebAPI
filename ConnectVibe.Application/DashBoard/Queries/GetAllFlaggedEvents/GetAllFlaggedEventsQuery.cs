@@ -30,7 +30,7 @@ namespace Fliq.Application.DashBoard.Queries.GetAllEvents
         {
             await Task.CompletedTask;
 
-            _logger.LogInfo($"Getting events for page {query.PaginationRequest.PageNumber} with page size {query.PaginationRequest.PageSize}");
+            _logger.LogInfo($"Getting flagged events for page {query.PaginationRequest.PageNumber} with page size {query.PaginationRequest.PageSize}");
 
             var request = new GetEventsListRequest
             {
@@ -42,24 +42,12 @@ namespace Fliq.Application.DashBoard.Queries.GetAllEvents
                 Location = query.Location
             };
 
-            var events = await _eventRepository.GetAllFlaggedEventsForDashBoardAsync(request);
+            var results = await _eventRepository.GetAllFlaggedEventsForDashBoardAsync(request);
 
-            _logger.LogInfo($"Got {events.Count()} events for page {query.PaginationRequest.PageNumber}");
+            _logger.LogInfo($"Got {results.Count()} flagged events for page {query.PaginationRequest.PageNumber}");
 
-            var eventWithUsernames = await _eventRepository.GetAllEventsForDashBoardAsync(request);
 
-            _logger.LogInfo($"Got {eventWithUsernames.Count()} events for page {query.PaginationRequest.PageNumber}");
-
-            var results = eventWithUsernames.Select(eu => new GetEventsResult(
-               EventTitle: eu.Event!.EventTitle,
-               CreatedBy: eu.Username,
-               Status: eu.CalculatedStatus, 
-               Attendees: eu.Event.Tickets?.Count ?? 0,
-               Type: eu.Event.SponsoredEvent ? "sponsored" : "free",
-               CreatedOn: eu.Event.DateCreated
-           )).ToList();
-
-            return results;
+            return results.ToList();
         }
     }
 }

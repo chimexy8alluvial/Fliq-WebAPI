@@ -1,5 +1,3 @@
-using Fliq.Domain.Entities.Event;
-
 namespace Fliq.Application.DashBoard.Common
 {
     public record GetEventsResult
@@ -12,10 +10,5 @@ namespace Fliq.Application.DashBoard.Common
         DateTime CreatedOn
     );
 
-    public class EventWithUsername
-    {
-        public Events? Event { get; set; }
-        public string Username { get; set; } = string.Empty;
-        public string CalculatedStatus { get; set; } = string.Empty ;
-    }
+   
 }

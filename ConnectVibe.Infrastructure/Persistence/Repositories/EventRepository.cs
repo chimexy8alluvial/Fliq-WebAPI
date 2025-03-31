@@ -55,66 +55,32 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                 return results.ToList();
             }
         }
-        public async Task<IEnumerable<EventWithUsername>> GetAllEventsForDashBoardAsync(GetEventsListRequest query)
+        public async Task<IEnumerable<GetEventsResult>> GetAllEventsForDashBoardAsync(GetEventsListRequest query)
         {
             using var connection = _connectionFactory.CreateConnection();
             var parameters = FilterListDynamicParams(query);
 
-            var results = await connection.QueryAsync<dynamic>(
+            var results = await connection.QueryAsync<GetEventsResult>(
                 "sp_GetAllEventsForDashBoard",
                 parameters,
                 commandType: CommandType.StoredProcedure
             );
 
-            var eventWithUsernames = results.Select(r => new EventWithUsername
-            {
-                Event = new Events
-                {
-                    EventTitle = r.EventTitle,
-                    UserId = r.UserId,
-                    StartDate = r.StartDate,
-                    EndDate = r.EndDate,
-                    SponsoredEvent = r.SponsoredEvent,
-                    DateCreated = r.DateCreated,
-                    Tickets = new List<Ticket> { new Ticket { Id = r.TicketCount } }
-                },
-
-                Username = string.Concat(r.FirstName ?? "", " ", r.LastName ?? ""),
-
-                 CalculatedStatus = r.CalculatedStatus
-            }).ToList();
-
-            return eventWithUsernames;
+            return results.ToList();
         }
        
-        public async Task<IEnumerable<EventWithUsername>> GetAllFlaggedEventsForDashBoardAsync(GetEventsListRequest query)
+        public async Task<IEnumerable<GetEventsResult>> GetAllFlaggedEventsForDashBoardAsync(GetEventsListRequest query)
         {
             using var connection = _connectionFactory.CreateConnection();
             var parameters = FilterListDynamicParams(query);
 
-            var results = await connection.QueryAsync<dynamic>(
+            var results = await connection.QueryAsync<GetEventsResult>(
                 "sp_GetAllFlaggedEventsForDashBoard",
                 parameters,
                 commandType: CommandType.StoredProcedure
             );
 
-            var eventWithUsernames = results.Select(r => new EventWithUsername
-            {
-                Event = new Events
-                {
-                    EventTitle = r.EventTitle,
-                    UserId = r.UserId,
-                    StartDate = r.StartDate,
-                    EndDate = r.EndDate,
-                    SponsoredEvent = (bool)r.SponsoredEvent,
-                    DateCreated = r.DateCreated,
-                    Tickets = new List<Ticket> { new Ticket { Id = r.TicketCount } }
-                },
-                Username = string.Concat(r.FirstName ?? "", " ", r.LastName ?? ""),
-                CalculatedStatus = r.CalculatedStatus
-            }).ToList();
-
-            return eventWithUsernames;
+            return results.ToList();
         }
 
         private static DynamicParameters FilterListDynamicParams(GetEventsListRequest query)

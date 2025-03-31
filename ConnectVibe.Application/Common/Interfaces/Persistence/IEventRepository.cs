@@ -12,8 +12,8 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         void Update(Events request);
 
         List<Events> GetAllEvents();
-        Task<IEnumerable<EventWithUsername>> GetAllEventsForDashBoardAsync(GetEventsListRequest query);
-        Task<IEnumerable<EventWithUsername>> GetAllFlaggedEventsForDashBoardAsync(GetEventsListRequest query);
+        Task<IEnumerable<GetEventsResult>> GetAllEventsForDashBoardAsync(GetEventsListRequest query);
+        Task<IEnumerable<GetEventsResult>> GetAllFlaggedEventsForDashBoardAsync(GetEventsListRequest query);
          
 
         //Count Queries

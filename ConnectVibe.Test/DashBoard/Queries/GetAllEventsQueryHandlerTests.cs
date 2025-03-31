@@ -1,171 +1,185 @@
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Pagination;
 using Fliq.Application.DashBoard.Common;
 using Fliq.Application.DashBoard.Queries.GetAllEvents;
-using Fliq.Domain.Entities.Event;
-using Moq;
+using Fliq.Domain.Entities.Event.Enums;
+using ErrorOr;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace Fliq.Application.Tests.DashBoard.Queries
+[TestClass]
+public class GetAllEventsQueryHandlerTests
 {
-    [TestClass]
-    public class GetAllEventsQueryHandlerTests
+    private Mock<IEventRepository> _eventRepositoryMock;
+    private Mock<ILoggerManager> _loggerMock;
+    private GetAllEventsQueryHandler _handler;
+
+    [TestInitialize]
+    public void Setup()
     {
-        private Mock<IEventRepository>? _eventRepositoryMock;
-        private Mock<ILoggerManager>? _loggerMock;
-        private GetAllEventsQueryHandler? _handler;
+        _eventRepositoryMock = new Mock<IEventRepository>();
+        _loggerMock = new Mock<ILoggerManager>();
+        _handler = new GetAllEventsQueryHandler(_eventRepositoryMock.Object, _loggerMock.Object);
+    }
 
-        [TestInitialize]
-        public void Setup()
+    [TestMethod]
+    public async Task Handle_ValidRequest_ReturnsSuccessResult()
+    {
+        // Arrange
+        var paginationRequest = new PaginationRequest(1, 10);
+        var query = new GetAllEventsQuery(paginationRequest);
+
+        var request = new GetEventsListRequest
         {
-            _eventRepositoryMock = new Mock<IEventRepository>();
-            _loggerMock = new Mock<ILoggerManager>();
-            _handler = new GetAllEventsQueryHandler(_eventRepositoryMock.Object, _loggerMock.Object);
-        }
+            PaginationRequest = paginationRequest,
+            Category = null,
+            Status = null,
+            StartDate = null,
+            EndDate = null,
+            Location = null
+        };
 
-        [TestMethod]
-        public async Task Handle_ValidQuery_ReturnsListOfGetEventsResult()
+        var createdOn = DateTime.UtcNow;
+        var expectedResults = new List<GetEventsResult>
         {
-            // Arrange
-            var query = new GetAllEventsQuery(
-                PaginationRequest: new PaginationRequest(1, 10),
-                Category: "Music",
-                Status: null,
-                StartDate: null,
-                EndDate: null,
-                Location: "New York"
-            );
+            new GetEventsResult("Test Event", "John Doe", EventStatus.Upcoming.ToString(), 5, "free", createdOn)
+        };
 
-            var eventWithUsernames = new List<EventWithUsername>
-            {
-                new EventWithUsername
-                {
-                    Event = new Events
-                    {
-                        EventTitle = "Concert Night",
-                        UserId = 1,
-                        StartDate = DateTime.Now.AddDays(1),
-                        EndDate = DateTime.Now.AddDays(2),
-                        SponsoredEvent = true,
-                        DateCreated = DateTime.Now.AddDays(-5),
-                        Tickets = new List<Ticket> { new Ticket { Id = 1 }, new Ticket { Id = 2 } }
-                    },
-                    Username = "John Doe",
-                    CalculatedStatus = "Upcoming"
-                },
-                new EventWithUsername
-                {
-                    Event = new Events
-                    {
-                        EventTitle = "Art Exhibition",
-                        UserId = 2,
-                        StartDate = DateTime.Now.AddDays(-1),
-                        EndDate = DateTime.Now.AddDays(1),
-                        SponsoredEvent = false,
-                        DateCreated = DateTime.Now.AddDays(-3),
-                        Tickets = new List<Ticket> { new Ticket { Id = 3 } }
-                    },
-                    Username = "Jane Smith",
-                    CalculatedStatus = "Ongoing"
-                }
-            };
+        _eventRepositoryMock
+            .Setup(x => x.GetAllEventsForDashBoardAsync(It.Is<GetEventsListRequest>(
+                r => r.PaginationRequest.PageNumber == 1 &&
+                     r.PaginationRequest.PageSize == 10 &&
+                     r.Category == null &&
+                     r.Status == null &&
+                     r.StartDate == null &&
+                     r.EndDate == null &&
+                     r.Location == null)))
+            .ReturnsAsync(expectedResults);
 
-            _eventRepositoryMock!
-                .Setup(repo => repo.GetAllEventsForDashBoardAsync(It.IsAny<GetEventsListRequest>()))
-                .ReturnsAsync(eventWithUsernames);
+        _loggerMock.Setup(x => x.LogInfo(It.IsAny<string>()));
 
-            _loggerMock!.Setup(logger => logger.LogInfo(It.IsAny<string>()));
+        // Act
+        var result = await _handler.Handle(query, CancellationToken.None);
 
-            // Act
-            var result = await _handler!.Handle(query, CancellationToken.None);
+        // Assert
+        Assert.IsFalse(result.IsError);
+        Assert.AreEqual(expectedResults.Count, result.Value.Count);
 
-            // Assert
-            Assert.IsInstanceOfType(result.Value, typeof(List<GetEventsResult>)); // Check return type
-            Assert.AreEqual(2, result.Value.Count); // Check number of results
+        var expected = expectedResults[0];
+        var actual = result.Value[0];
+        Assert.AreEqual(expected.EventTitle, actual.EventTitle);
+        Assert.AreEqual(expected.CreatedBy, actual.CreatedBy);
+        Assert.AreEqual(expected.Status, actual.Status);
+        Assert.AreEqual(expected.Attendees, actual.Attendees);
+        Assert.AreEqual(expected.Type, actual.Type);
+        Assert.IsTrue(Math.Abs((expected.CreatedOn - actual.CreatedOn).TotalSeconds) < 1);
 
-            var firstResult = result.Value[0];
-            Assert.AreEqual("Concert Night", firstResult.EventTitle);
-            Assert.AreEqual("John Doe", firstResult.CreatedBy);
-            Assert.AreEqual("Upcoming", firstResult.Status);
-            Assert.AreEqual(2, firstResult.Attendees);
-            Assert.AreEqual("sponsored", firstResult.Type);
+        _loggerMock.Verify(x => x.LogInfo($"Getting events for page 1 with page size 10"), Times.Once());
+        _loggerMock.Verify(x => x.LogInfo($"Got 1 events for page 1"), Times.Once());
+        _eventRepositoryMock.Verify(x => x.GetAllEventsForDashBoardAsync(It.IsAny<GetEventsListRequest>()), Times.Once());
+    }
 
-            var secondResult = result.Value[1];
-            Assert.AreEqual("Art Exhibition", secondResult.EventTitle);
-            Assert.AreEqual("Jane Smith", secondResult.CreatedBy);
-            Assert.AreEqual("Ongoing", secondResult.Status);
-            Assert.AreEqual(1, secondResult.Attendees);
-            Assert.AreEqual("free", secondResult.Type);
+    [TestMethod]
+    public async Task Handle_WithFilters_ReturnsFilteredResults()
+    {
+        // Arrange
+        var paginationRequest = new PaginationRequest(2, 5);
+        var startDate = DateTime.UtcNow.AddDays(-1);
+        var endDate = DateTime.UtcNow.AddDays(1);
+        var query = new GetAllEventsQuery(paginationRequest, "Music", EventStatus.Ongoing, startDate, endDate, "New York");
 
-            // Verify logging
-            _loggerMock.Verify(logger => logger.LogInfo($"Getting events for page {query.PaginationRequest.PageNumber} with page size {query.PaginationRequest.PageSize}"), Times.Once());
-            _loggerMock.Verify(logger => logger.LogInfo($"Got {eventWithUsernames.Count} events for page {query.PaginationRequest.PageNumber}"), Times.Once());
-        }
-
-        [TestMethod]
-        public async Task Handle_EmptyResult_ReturnsEmptyList()
+        var request = new GetEventsListRequest
         {
-            // Arrange
-            var query = new GetAllEventsQuery(
-                PaginationRequest: new PaginationRequest(1, 10)
-            );
+            PaginationRequest = paginationRequest,
+            Category = "Music",
+            Status = EventStatus.Ongoing,
+            StartDate = startDate,
+            EndDate = endDate,
+            Location = "New York"
+        };
 
-            _eventRepositoryMock!
-                .Setup(repo => repo.GetAllEventsForDashBoardAsync(It.IsAny<GetEventsListRequest>()))
-                .ReturnsAsync(new List<EventWithUsername>());
-
-            _loggerMock!.Setup(logger => logger.LogInfo(It.IsAny<string>()));
-
-            // Act
-            var result = await _handler!.Handle(query, CancellationToken.None);
-
-            // Assert
-            Assert.IsInstanceOfType(result.Value, typeof(List<GetEventsResult>));
-            Assert.AreEqual(0, result.Value.Count);
-
-            _loggerMock.Verify(logger => logger.LogInfo("Got 0 events for page 1"), Times.Once());
-        }
-
-        [TestMethod]
-        public async Task Handle_NullTickets_ReturnsZeroAttendees()
+        var createdOn = DateTime.UtcNow;
+        var expectedResults = new List<GetEventsResult>
         {
-            // Arrange
-            var query = new GetAllEventsQuery(
-                PaginationRequest: new PaginationRequest(1, 10)
-            );
+            new GetEventsResult("Music Fest", "Jane Doe", EventStatus.Ongoing.ToString(), 100, "sponsored", createdOn)
+        };
 
-            var eventWithUsernames = new List<EventWithUsername>
-            {
-                new EventWithUsername
-                {
-                    Event = new Events
-                    {
-                        EventTitle = "Workshop",
-                        UserId = 1,
-                        StartDate = DateTime.Now,
-                        EndDate = DateTime.Now.AddDays(1),
-                        SponsoredEvent = false,
-                        DateCreated = DateTime.Now,
-                        Tickets = null // No tickets
-                    },
-                    Username = "Test User",
-                    CalculatedStatus = "Ongoing"
-                }
-            };
+        _eventRepositoryMock
+            .Setup(x => x.GetAllEventsForDashBoardAsync(It.Is<GetEventsListRequest>(
+                r => r.PaginationRequest.PageNumber == 2 &&
+                     r.PaginationRequest.PageSize == 5 &&
+                     r.Category == "Music" &&
+                     r.Status == EventStatus.Ongoing &&
+                     r.StartDate == startDate &&
+                     r.EndDate == endDate &&
+                     r.Location == "New York")))
+            .ReturnsAsync(expectedResults);
 
-            _eventRepositoryMock!
-                .Setup(repo => repo.GetAllEventsForDashBoardAsync(It.IsAny<GetEventsListRequest>()))
-                .ReturnsAsync(eventWithUsernames);
+        _loggerMock.Setup(x => x.LogInfo(It.IsAny<string>()));
 
-            _loggerMock!.Setup(logger => logger.LogInfo(It.IsAny<string>()));
+        // Act
+        var result = await _handler.Handle(query, CancellationToken.None);
 
-            // Act
-            var result = await _handler!.Handle(query, CancellationToken.None);
+        // Assert
+        Assert.IsFalse(result.IsError);
+        Assert.AreEqual(expectedResults.Count, result.Value.Count);
 
-            // Assert        
-            Assert.AreEqual(1, result.Value.Count);
-            Assert.AreEqual(0, result.Value[0].Attendees); // Should handle null Tickets
-            Assert.AreEqual("Ongoing", result.Value[0].Status);
-        }
+        var expected = expectedResults[0];
+        var actual = result.Value[0];
+        Assert.AreEqual(expected.EventTitle, actual.EventTitle);
+        Assert.AreEqual(expected.CreatedBy, actual.CreatedBy);
+        Assert.AreEqual(expected.Status, actual.Status);
+        Assert.AreEqual(expected.Attendees, actual.Attendees);
+        Assert.AreEqual(expected.Type, actual.Type);
+        Assert.IsTrue(Math.Abs((expected.CreatedOn - actual.CreatedOn).TotalSeconds) < 1);
+
+        _loggerMock.Verify(x => x.LogInfo($"Getting events for page 2 with page size 5"), Times.Once());
+        _loggerMock.Verify(x => x.LogInfo($"Got 1 events for page 2"), Times.Once());
+        _eventRepositoryMock.Verify(x => x.GetAllEventsForDashBoardAsync(It.IsAny<GetEventsListRequest>()), Times.Once());
+    }
+
+    [TestMethod]
+    public async Task Handle_RepositoryThrowsException_ReturnsError()
+    {
+        // Arrange
+        var paginationRequest = new PaginationRequest(1, 10);
+        var query = new GetAllEventsQuery(paginationRequest);
+
+        var request = new GetEventsListRequest
+        {
+            PaginationRequest = paginationRequest,
+            Category = null,
+            Status = null,
+            StartDate = null,
+            EndDate = null,
+            Location = null
+        };
+
+        var exception = new Exception("Database connection failed");
+
+        _eventRepositoryMock
+            .Setup(x => x.GetAllEventsForDashBoardAsync(It.IsAny<GetEventsListRequest>()))
+            .ThrowsAsync(exception);
+
+        _loggerMock.Setup(x => x.LogInfo(It.IsAny<string>()));
+        _loggerMock.Setup(x => x.LogError(It.IsAny<string>()));
+
+        // Act
+        var result = await _handler.Handle(query, CancellationToken.None);
+
+        // Assert
+        Assert.IsTrue(result.IsError);
+        Assert.AreEqual(1, result.Errors.Count);
+        Assert.AreEqual("GetEventsFailed", result.FirstError.Code);
+        Assert.IsTrue(result.FirstError.Description.Contains("Database connection failed"));
+
+        _loggerMock.Verify(x => x.LogInfo($"Getting events for page 1 with page size 10"), Times.Once());
+        _loggerMock.Verify(x => x.LogError($"Error fetching events: {exception.Message}"), Times.Once());
+        _eventRepositoryMock.Verify(x => x.GetAllEventsForDashBoardAsync(It.IsAny<GetEventsListRequest>()), Times.Once());
     }
 }
