@@ -6,9 +6,9 @@ using MediatR;
 
 namespace Fliq.Application.Games.Queries.StakeCount
 {
-    public record GetUserStakeCountQuery(int UserId) : IRequest<ErrorOr<UserCountResult>>;
+    public record GetUserStakeCountQuery(int UserId) : IRequest<ErrorOr<CountResult>>;
 
-    public class GetUserStakeCountQueryHandler : IRequestHandler<GetUserStakeCountQuery, ErrorOr<UserCountResult>>
+    public class GetUserStakeCountQueryHandler : IRequestHandler<GetUserStakeCountQuery, ErrorOr<CountResult>>
     {
         private readonly IGamesRepository _gamesRepository;
         private readonly ILoggerManager _logger;
@@ -19,7 +19,7 @@ namespace Fliq.Application.Games.Queries.StakeCount
             _logger = logger;
         }
 
-        public async Task<ErrorOr<UserCountResult>> Handle(GetUserStakeCountQuery request, CancellationToken cancellationToken)
+        public async Task<ErrorOr<CountResult>> Handle(GetUserStakeCountQuery request, CancellationToken cancellationToken)
         {
             _logger.LogInfo($"Fetching stake count for user with ID --> {request.UserId}");
 
@@ -29,7 +29,7 @@ namespace Fliq.Application.Games.Queries.StakeCount
 
             _logger.LogInfo($"User {request.UserId} Stake Count: {actualStakeInUserGameSessions}");
 
-            return new UserCountResult(actualStakeInUserGameSessions);
+            return new CountResult(actualStakeInUserGameSessions);
        
         }
     }

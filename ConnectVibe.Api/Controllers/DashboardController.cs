@@ -1,5 +1,8 @@
 ﻿using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.Common.Pagination;
+using Fliq.Application.DashBoard.Common;
 using Fliq.Application.DashBoard.Queries.ActiveUserCount;
+using Fliq.Application.DashBoard.Queries.GetAllEvents;
 using Fliq.Application.DashBoard.Queries.InActiveUserCount;
 using Fliq.Application.DashBoard.Queries.NewSignUpsCount;
 using Fliq.Application.DashBoard.Queries.UsersCount;
@@ -36,7 +39,7 @@ namespace Fliq.Api.Controllers
             var result = await _mediator.Send(query);
 
             return result.Match(
-              matchedProfileResult => Ok(_mapper.Map<UserCountResponse>(result.Value)),
+              matchedProfileResult => Ok(_mapper.Map<CountResponse>(result.Value)),
               errors => Problem(errors)
           );
         }
@@ -50,7 +53,7 @@ namespace Fliq.Api.Controllers
             var result = await _mediator.Send(query);
 
             return result.Match(
-              matchedProfileResult => Ok(_mapper.Map<UserCountResponse>(result.Value)),
+              matchedProfileResult => Ok(_mapper.Map<CountResponse>(result.Value)),
               errors => Problem(errors)
           );
         }
@@ -64,7 +67,7 @@ namespace Fliq.Api.Controllers
             var result = await _mediator.Send(query);
 
             return result.Match(
-              matchedProfileResult => Ok(_mapper.Map<UserCountResponse>(result.Value)),
+              matchedProfileResult => Ok(_mapper.Map<CountResponse>(result.Value)),
               errors => Problem(errors)
           );
         }
@@ -78,11 +81,29 @@ namespace Fliq.Api.Controllers
             var result = await _mediator.Send(query);
 
             return result.Match(
-             matchedProfileResult => Ok(_mapper.Map<UserCountResponse>(result.Value)),
+             matchedProfileResult => Ok(_mapper.Map<CountResponse>(result.Value)),
              errors => Problem(errors)
          );
         }
 
+        [HttpGet("dashboard-tickets")]
+        public async Task<IActionResult> GetEventsTicketsForDashboard([FromQuery] GetEventsTicketsListRequest request)
+        {
+            _logger.LogInfo($"Get Events Tickets Request Received: {request}");
 
+            var query = new GetAllEventsTicketsQuery(request);
+
+            var result = await _mediator.Send(query);
+            _logger.LogInfo($"Query Executed. Result: {result}");
+
+            return result.Match(
+                events => Ok(_mapper.Map<List<GetEventsTicketsResponse>>(events)),
+                errors => Problem(errors)
+            );
+        }
     }
+
+
+
 }
+

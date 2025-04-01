@@ -1,5 +1,8 @@
-﻿using Fliq.Application.Common.Interfaces.Persistence;
+﻿using Dapper;
+using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.DashBoard.Common;
 using Fliq.Domain.Entities.Event;
+using System.Data;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {
@@ -60,6 +63,34 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         {
             var result = _dbContext.EventTickets.SingleOrDefault(p => p.Id == id);
             return result;
+        }
+
+        public async Task<List<GetEventsTicketsResult>> GetAllEventsTicketsForDashBoardAsync(GetEventsTicketsListRequest request)
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var parameters = FilterEventsTicketsDynamicParams(request);
+                var results = await connection.QueryAsync<GetEventsTicketsResult>(
+                    "GetAllEventsTicketsForDashBoard",
+                    parameters,
+                    commandType: CommandType.StoredProcedure);
+                return results.ToList();
+            }
+        }
+
+        private static DynamicParameters FilterEventsTicketsDynamicParams(GetEventsTicketsListRequest request)
+        {
+            var parameters = new DynamicParameters();
+
+            parameters.Add("@PageNumber", request.PaginationRequest.PageNumber);
+            parameters.Add("@PageSize", request.PaginationRequest.PageSize);
+            parameters.Add("@Category", request.Category);
+            parameters.Add("@StatusFilter", request.StatusFilter);
+            parameters.Add("@StartDate", request.StartDate);
+            parameters.Add("@EndDate", request.EndDate);
+            parameters.Add("@Location", request.Location);
+
+            return parameters;
         }
     }
 }

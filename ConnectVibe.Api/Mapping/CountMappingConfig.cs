@@ -4,11 +4,11 @@ using Mapster;
 
 namespace Fliq.Api.Mapping
 {
-    public class UserCountMappingConfig : IRegister
+    public class CountMappingConfig : IRegister
     {
         public void Register(TypeAdapterConfig config)
         {
-            config.NewConfig<UserCountResult, UserCountResponse>().Map(dest => dest.Count, src => src.Count);
+            config.NewConfig<CountResult, CountResponse>().Map(dest => dest.Count, src => src.Count);
         }
     }
 }

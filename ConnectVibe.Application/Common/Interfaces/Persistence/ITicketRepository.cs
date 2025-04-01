@@ -1,4 +1,5 @@
-﻿using Fliq.Domain.Entities.Event;
+﻿using Fliq.Application.DashBoard.Common;
+using Fliq.Domain.Entities.Event;
 
 namespace Fliq.Application.Common.Interfaces.Persistence
 {
@@ -17,5 +18,7 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         void UpdateEventTicket(EventTicket request);
 
         EventTicket? GetEventTicketById(int id);
+
+        Task<List<GetEventsTicketsResult>> GetAllEventsTicketsForDashBoardAsync(GetEventsTicketsListRequest request);
     }
 }
