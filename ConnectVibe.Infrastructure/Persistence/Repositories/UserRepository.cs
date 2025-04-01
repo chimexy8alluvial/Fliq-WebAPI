@@ -5,6 +5,7 @@ using Fliq.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Fliq.Application.Users.Common;
 using System.Data;
+using System.Data.Common;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {
@@ -54,26 +55,16 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             }
         }
 
-         public IEnumerable<User> GetAllUsersForDashBoard(GetUsersListRequest query)
+         public async Task<IEnumerable<GetUsersResult>> GetAllUsersForDashBoardAsync(GetUsersListRequest query)
         {
             using (var connection = _connectionFactory.CreateConnection())
             {
-                var parameters = FilterListDynamicParams(query);              
+                var parameters = FilterListDynamicParams(query);
 
-                var results = connection.Query<dynamic>("sp_GetAllUsersForDashBoard",
+                return await connection.QueryAsync<GetUsersResult>("sp_GetAllUsersForDashBoard",
                     parameters,
                     commandType: CommandType.StoredProcedure);
-               
-                return   results.Select(r => new User
-                {
-                    DisplayName = r.DisplayName,
-                    Email = r.Email,
-                    DateCreated = r.DateJoined,
-                    LastActiveAt = r.LastOnline,
-                    Subscriptions = r.SubscriptionType != "None"
-                        ? new List<Subscription> { new Subscription { ProductId = r.SubscriptionType } }
-                        : null
-                });
+                       
             }
         }
 

@@ -10,7 +10,7 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         void Update(User user);
         User? GetUserByEmail(string email);
         IEnumerable<User> GetAllUsers();
-        IEnumerable<User> GetAllUsersForDashBoard(GetUsersListRequest query);
+       Task<IEnumerable<GetUsersResult>> GetAllUsersForDashBoardAsync(GetUsersListRequest query);
         User? GetUserById(int Id);
         User? GetUserByIdIncludingProfile(int Id);
         Task<List<User>> GetInactiveUsersAsync(DateTime thresholdDate);
