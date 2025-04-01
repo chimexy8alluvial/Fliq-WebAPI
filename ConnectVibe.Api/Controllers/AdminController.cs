@@ -27,7 +27,7 @@ namespace Fliq.Api.Controllers
             _logger = logger;
         }
 
-        [Authorize(Roles = "SuperAdmin")]
+        //[Authorize(Roles = "SuperAdmin")]
         [HttpPost("create-admin")]
         public async Task<IActionResult> CreateAdmin([FromBody] RegisterRequest request)
         {
