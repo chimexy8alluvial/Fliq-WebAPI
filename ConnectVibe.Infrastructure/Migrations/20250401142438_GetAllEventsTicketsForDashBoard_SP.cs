@@ -27,7 +27,7 @@ namespace Fliq.Infrastructure.Migrations
                     SELECT 
                         e.EventTitle,
                         CreatedBy = u.FirstName + ' ' + u.LastName,
-                        EventStatus = CASE e.EventStatus
+                        EventStatus = CASE e.Status
                             WHEN 0 THEN 'PendingApproval'
                             WHEN 1 THEN 'Upcoming'
                             WHEN 2 THEN 'Ongoing'
@@ -43,7 +43,7 @@ namespace Fliq.Infrastructure.Migrations
                             SELECT COUNT(*) 
                             FROM [dbo].[Tickets] t 
                             WHERE t.EventId = e.Id 
-                            AND t.IsRefund = 0 -- Exclude refunded tickets
+                            AND t.IsRefunded = 0 -- Exclude refunded tickets
                         ), 0),
                         e.DateCreated AS CreatedOn,
                         ROW_NUMBER() OVER (ORDER BY e.DateCreated DESC) AS RowNum
@@ -63,9 +63,9 @@ namespace Fliq.Infrastructure.Migrations
                                 FROM [dbo].[Tickets] t 
                                 WHERE t.EventId = e.Id 
                                 AND t.SoldOut = 1 
-                                AND t.IsRefund = 0 -- Exclude refunded tickets in filter too
+                                AND t.IsRefunded = 0 -- Exclude refunded tickets in filter too
                             ))
-                            OR (@StatusFilter = 'Cancelled' AND e.EventStatus = 4)
+                            OR (@StatusFilter = 'Cancelled' AND e.Status = 4)
                         )
                 )
                 SELECT 

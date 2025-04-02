@@ -22,7 +22,7 @@ namespace Fliq.Infrastructure.Migrations
                 SELECT COUNT(*)
                 FROM [dbo].[Tickets]
                 WHERE EventId = @EventId
-                AND DATEPART(WEEKDAY, DateSold) = 2 -- Monday (Sunday = 1 in SQL Server default)
+                AND DATEPART(WEEKDAY, DateCreated) = 2 -- Monday (Sunday = 1 in SQL Server default)
                 AND IsRefunded = 0
                 AND (@TicketType IS NULL OR TicketType = @TicketType);
             END
