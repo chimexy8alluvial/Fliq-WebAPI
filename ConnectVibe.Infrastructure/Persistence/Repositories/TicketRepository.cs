@@ -92,5 +92,163 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
             return parameters;
         }
+
+        #region Count Queries
+        public async Task<int> GetRegularTicketCountAsync(int eventId)
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.ExecuteScalarAsync<int>(
+                    "GetEventRegularTicketCount",
+                    new { EventId = eventId },
+                    commandType: CommandType.StoredProcedure);
+
+                return count;
+
+            }            
+        }
+
+        public async Task<int> GetVipTicketCountAsync(int eventId)
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.ExecuteScalarAsync<int>(
+                    "GetEventVipTicketCount",
+                    new { EventId = eventId },
+                    commandType: CommandType.StoredProcedure);
+
+                return count;
+            }
+        }
+
+        public async Task<int> GetVVipTicketCountAsync(int eventId)
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.ExecuteScalarAsync<int>(
+                    "GetEventVVipTicketCount",
+                    new { EventId = eventId }, 
+                    commandType: CommandType.StoredProcedure);
+
+                return count;
+            }
+        }
+
+        public async Task<int> GetOtherTicketCountAsync(int eventId)
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.ExecuteScalarAsync<int>(
+                    "GetEventOtherTicketCount",
+                    new { EventId = eventId }, 
+                    commandType: CommandType.StoredProcedure);
+
+                return count;
+            }
+        }
+
+        public async Task<int> GetTotalTicketCountAsync(int eventId)
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.ExecuteScalarAsync<int>(
+                    "GetEventTotalTicketCount",
+                    new { EventId = eventId },
+                    commandType: CommandType.StoredProcedure);
+
+                return count;
+            }
+        }
+
+        public async Task<int> GetMondayTicketCountAsync(int eventId, TicketType? ticketType)
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.ExecuteScalarAsync<int>(
+                    "GetEventMondayTicketCount",
+                    new
+                    {
+                        EventId = eventId,
+                        TicketType = ticketType // Nullable int, maps to INT NULL in SQL
+                    },
+                    commandType: CommandType.StoredProcedure);
+                return count;
+            }
+        }
+
+        public async Task<int> GetTuesdayTicketCountAsync(int eventId, TicketType? ticketType)
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.ExecuteScalarAsync<int>(
+                    "GetEventTuesdayTicketCount",
+                    new { EventId = eventId, TicketType = ticketType },
+                    commandType: CommandType.StoredProcedure);
+                return count;
+            }
+        }
+
+        public async Task<int> GetWednesdayTicketCountAsync(int eventId, TicketType? ticketType)
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.ExecuteScalarAsync<int>(
+                    "GetEventWednesdayTicketCount",
+                    new { EventId = eventId, TicketType = ticketType },
+                    commandType: CommandType.StoredProcedure);
+                return count;
+            }
+        }
+
+        public async Task<int> GetThursdayTicketCountAsync(int eventId, TicketType? ticketType)
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.ExecuteScalarAsync<int>(
+                    "GetEventThursdayTicketCount",
+                    new { EventId = eventId, TicketType = ticketType },
+                    commandType: CommandType.StoredProcedure);
+                return count;
+            }
+        }
+
+        public async Task<int> GetFridayTicketCountAsync(int eventId, TicketType? ticketType)
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.ExecuteScalarAsync<int>(
+                    "GetEventFridayTicketCount",
+                    new { EventId = eventId, TicketType = ticketType },
+                    commandType: CommandType.StoredProcedure);
+                return count;
+            }
+        }
+
+        public async Task<int> GetSaturdayTicketCountAsync(int eventId, TicketType? ticketType)
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.ExecuteScalarAsync<int>(
+                    "GetEventSaturdayTicketCount",
+                    new { EventId = eventId, TicketType = ticketType },
+                    commandType: CommandType.StoredProcedure);
+                return count;
+            }
+        }
+
+        public async Task<int> GetSundayTicketCountAsync(int eventId, TicketType? ticketType)
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.ExecuteScalarAsync<int>(
+                    "GetEventSundayTicketCount",
+                    new { EventId = eventId, TicketType = ticketType },
+                    commandType: CommandType.StoredProcedure);
+                return count;
+            }
+        }
+
+        #endregion
+
     }
 }

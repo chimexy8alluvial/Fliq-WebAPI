@@ -4,7 +4,7 @@
       string EventTitle,
       string CreatedBy,
       string EventStatus,
-      string Type,
+      string NatureOfEvent,
       int NumOfSoldTickets,
       DateTime CreatedOn);
 }

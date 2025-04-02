@@ -4,6 +4,7 @@ using Fliq.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fliq.Infrastructure.Migrations
 {
     [DbContext(typeof(FliqDbContext))]
-    partial class FliqDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250402095844_GetEventMondayTicketCount_SP")]
+    partial class GetEventMondayTicketCount_SP
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1917,21 +1920,21 @@ namespace Fliq.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            DateCreated = new DateTime(2025, 4, 2, 11, 9, 56, 704, DateTimeKind.Utc).AddTicks(5892),
+                            DateCreated = new DateTime(2025, 4, 2, 9, 58, 39, 822, DateTimeKind.Utc).AddTicks(9764),
                             IsDeleted = false,
                             Name = "SuperAdmin"
                         },
                         new
                         {
                             Id = 2,
-                            DateCreated = new DateTime(2025, 4, 2, 11, 9, 56, 704, DateTimeKind.Utc).AddTicks(5901),
+                            DateCreated = new DateTime(2025, 4, 2, 9, 58, 39, 822, DateTimeKind.Utc).AddTicks(9771),
                             IsDeleted = false,
                             Name = "Admin"
                         },
                         new
                         {
                             Id = 3,
-                            DateCreated = new DateTime(2025, 4, 2, 11, 9, 56, 704, DateTimeKind.Utc).AddTicks(5902),
+                            DateCreated = new DateTime(2025, 4, 2, 9, 58, 39, 822, DateTimeKind.Utc).AddTicks(9772),
                             IsDeleted = false,
                             Name = "User"
                         });

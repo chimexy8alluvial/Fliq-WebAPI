@@ -1,15 +1,20 @@
 ﻿using Fliq.Application.Common.Interfaces.Services;
-using Fliq.Application.Common.Pagination;
 using Fliq.Application.DashBoard.Common;
 using Fliq.Application.DashBoard.Queries.ActiveUserCount;
+using Fliq.Application.DashBoard.Queries.DailyTicketCount;
 using Fliq.Application.DashBoard.Queries.GetAllEvents;
 using Fliq.Application.DashBoard.Queries.InActiveUserCount;
 using Fliq.Application.DashBoard.Queries.NewSignUpsCount;
+using Fliq.Application.DashBoard.Queries.OtherTicketCount;
+using Fliq.Application.DashBoard.Queries.RegularTicketCount;
+using Fliq.Application.DashBoard.Queries.TotalTicketCount;
 using Fliq.Application.DashBoard.Queries.UsersCount;
+using Fliq.Application.DashBoard.Queries.VipTicketCount;
+using Fliq.Application.DashBoard.Queries.VVipTicketCount;
 using Fliq.Contracts.DashBoard;
+using Fliq.Domain.Entities.Event;
 using MapsterMapper;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Fliq.Api.Controllers
@@ -91,7 +96,7 @@ namespace Fliq.Api.Controllers
         {
             _logger.LogInfo($"Get Events Tickets Request Received: {request}");
 
-            var query = new GetAllEventsTicketsQuery(request);
+            var query = _mapper .Map<GetAllEventsTicketsQuery>(request);
 
             var result = await _mediator.Send(query);
             _logger.LogInfo($"Query Executed. Result: {result}");
@@ -101,9 +106,167 @@ namespace Fliq.Api.Controllers
                 errors => Problem(errors)
             );
         }
+
+        [HttpGet("regular-ticket-count")]
+        public async Task<IActionResult> GetRegularTicketCount([FromQuery] int eventId)
+        {
+            _logger.LogInfo($"Received request for regular ticket count for EventId: {eventId}");
+
+            var query = new GetEventRegularTicketCountQuery(eventId);
+            var result = await _mediator.Send(query);
+
+            return result.Match(
+                matchedResult => Ok(_mapper.Map<CountResponse>(result.Value)),
+                errors => Problem(errors)
+            );
+        }
+
+        [HttpGet("vip-ticket-count")]
+        public async Task<IActionResult> GetVipTicketCount([FromQuery] int eventId)
+        {
+            _logger.LogInfo($"Received request for VIP ticket count for EventId: {eventId}");
+
+            var query = new GetEventVipTicketCountQuery(eventId);
+            var result = await _mediator.Send(query);
+
+            return result.Match(
+                matchedResult => Ok(_mapper.Map<CountResponse>(result.Value)),
+                errors => Problem(errors)
+            );
+        }
+
+        [HttpGet("vvip-ticket-count")]
+        public async Task<IActionResult> GetVVipTicketCount([FromQuery] int eventId)
+        {
+            _logger.LogInfo($"Received request for VVIP ticket count for EventId: {eventId}");
+
+            var query = new GetEventVVipTicketCountQuery(eventId);
+            var result = await _mediator.Send(query);
+
+            return result.Match(
+                matchedResult => Ok(_mapper.Map<CountResponse>(result.Value)),
+                errors => Problem(errors)
+            );
+        }
+
+        [HttpGet("other-ticket-count")]
+        public async Task<IActionResult> GetOtherTicketCount([FromQuery] int eventId)
+        {
+            _logger.LogInfo($"Received request for Other ticket count for EventId: {eventId}");
+
+            var query = new GetEventOtherTicketCountQuery(eventId);
+            var result = await _mediator.Send(query);
+
+            return result.Match(
+                matchedResult => Ok(_mapper.Map<CountResponse>(result.Value)),
+                errors => Problem(errors)
+            );
+        }
+
+        [HttpGet("total-ticket-count")]
+        public async Task<IActionResult> GetTotalTicketCount([FromQuery] int eventId)
+        {
+            _logger.LogInfo($"Received request for total ticket count for EventId: {eventId}");
+
+            var query = new GetEventTotalTicketCountQuery(eventId);
+            var result = await _mediator.Send(query);
+
+            return result.Match(
+                matchedResult => Ok(_mapper.Map<CountResponse>(result.Value)),
+                errors => Problem(errors)
+            );
+        }
+
+        [HttpGet("monday-ticket-count")]
+        public async Task<IActionResult> GetMondayTicketCount([FromQuery] int eventId, [FromQuery] TicketType? ticketType = null)
+        {
+            _logger.LogInfo($"Received request for Monday ticket count for EventId: {eventId}, TicketType: {ticketType?.ToString() ?? "All"}");
+
+            var query = new GetMondayEventTicketCountQuery(eventId, ticketType);
+            var result = await _mediator.Send(query);
+
+            return result.Match(
+                matchedResult => Ok(_mapper.Map<CountResponse>(result.Value)),
+                errors => Problem(errors)
+            );
+        }
+
+        [HttpGet("tuesday-ticket-count")]
+        public async Task<IActionResult> GetTuesdayTicketCount([FromQuery] int eventId, [FromQuery] TicketType? ticketType = null)
+        {
+            _logger.LogInfo($"Received request for Tuesday ticket count for EventId: {eventId}, TicketType: {ticketType?.ToString() ?? "All"}");
+            var query = new GetTuesdayEventTicketCountQuery(eventId, ticketType);
+            var result = await _mediator.Send(query);
+            return result.Match(
+                matchedResult => Ok(_mapper.Map<CountResponse>(result.Value)),
+                errors => Problem(errors)
+            );
+        }
+
+        [HttpGet("wednesday-ticket-count")]
+        public async Task<IActionResult> GetWednesdayTicketCount([FromQuery] int eventId, [FromQuery] TicketType? ticketType = null)
+        {
+            _logger.LogInfo($"Received request for Wednesday ticket count for EventId: {eventId}, TicketType: {ticketType?.ToString() ?? "All"}");
+            var query = new GetWednesdayEventTicketCountQuery(eventId, ticketType);
+            var result = await _mediator.Send(query);
+            return result.Match(
+                matchedResult => Ok(_mapper.Map<CountResponse>(result.Value)),
+                errors => Problem(errors)
+            );
+        }
+
+        [HttpGet("thursday-ticket-count")]
+        public async Task<IActionResult> GetThursdayTicketCount([FromQuery] int eventId, [FromQuery] TicketType? ticketType = null)
+        {
+            _logger.LogInfo($"Received request for Thursday ticket count for EventId: {eventId}, TicketType: {ticketType?.ToString() ?? "All"}");
+            var query = new GetThursdayEventTicketCountQuery(eventId, ticketType);
+            var result = await _mediator.Send(query);
+            return result.Match(
+                matchedResult => Ok(_mapper.Map<CountResponse>(result.Value)),
+                errors => Problem(errors)
+            );
+        }
+
+        [HttpGet("friday-ticket-count")]
+        public async Task<IActionResult> GetFridayTicketCount([FromQuery] int eventId, [FromQuery] TicketType? ticketType = null)
+        {
+            _logger.LogInfo($"Received request for Friday ticket count for EventId: {eventId}, TicketType: {ticketType?.ToString() ?? "All"}");
+            var query = new GetFridayEventTicketCountQuery(eventId, ticketType);
+            var result = await _mediator.Send(query);
+            return result.Match(
+                matchedResult => Ok(_mapper.Map<CountResponse>(result.Value)),
+                errors => Problem(errors)
+            );
+        }
+
+        [HttpGet("saturday-ticket-count")]
+        public async Task<IActionResult> GetSaturdayTicketCount([FromQuery] int eventId, [FromQuery] TicketType? ticketType = null)
+        {
+            _logger.LogInfo($"Received request for Saturday ticket count for EventId: {eventId}, TicketType: {ticketType?.ToString() ?? "All"}");
+            var query = new GetSaturdayEventTicketCountQuery(eventId, ticketType);
+            var result = await _mediator.Send(query);
+            return result.Match(
+                matchedResult => Ok(_mapper.Map<CountResponse>(result.Value)),
+                errors => Problem(errors)
+            );
+        }
+
+        [HttpGet("sunday-ticket-count")]
+        public async Task<IActionResult> GetSundayTicketCount([FromQuery] int eventId, [FromQuery] TicketType? ticketType = null)
+        {
+            _logger.LogInfo($"Received request for Sunday ticket count for EventId: {eventId}, TicketType: {ticketType?.ToString() ?? "All"}");
+            var query = new GetSundayEventTicketCountQuery(eventId, ticketType);
+            var result = await _mediator.Send(query);
+            return result.Match(
+                matchedResult => Ok(_mapper.Map<CountResponse>(result.Value)),
+                errors => Problem(errors)
+            );
+        }
+
     }
-
-
-
 }
+
+
+
+
 

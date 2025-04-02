@@ -45,11 +45,12 @@ namespace Fliq.Infrastructure.Migrations
                     FROM 
                         [dbo].[Events] e
                         INNER JOIN [dbo].[Users] u ON e.UserId = u.Id
+                        LEFT JOIN LocationDetails ld ON e.LocationId = ld.LocationId
                     WHERE 
                         (@Category IS NULL OR e.EventCategory = @Category)
                         AND (@StartDate IS NULL OR e.StartDate >= @StartDate)
                         AND (@EndDate IS NULL OR e.EndDate <= @EndDate)
-                        AND (@Location IS NULL OR e.Location = @Location)
+                        AND (@location IS NULL OR ld.Status LIKE '%' + @location + '%')
                         AND (
                             @StatusFilter IS NULL 
                             OR (@StatusFilter = 'SoldOut' AND EXISTS (SELECT 1 FROM [dbo].[Tickets] t WHERE t.EventId = e.Id AND t.SoldOut = 1))
