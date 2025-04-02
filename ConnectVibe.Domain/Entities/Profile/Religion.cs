@@ -2,15 +2,7 @@
 {
     public class Religion : Record
     {
-        public int UserProfileId { get; set; }
-        public ReligionType ReligionType { get; set; }
-        public bool IsVisible { get; set; }
+        public string ReligionType { get; set; } = default!;
     }
 
-    public enum ReligionType
-    {
-        Christianity,
-        Islam,
-        Others
-    }
 }

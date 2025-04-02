@@ -16,7 +16,7 @@ namespace Fliq.Test.Authentication.Commands.ValidateOTP
         private Mock<IJwtTokenGenerator>? _jwtTokenGeneratorMock;
         private Mock<IUserRepository>? _userRepositoryMock;
         private Mock<IOtpService>? _otpServiceMock;
-        private Mock<IStreamClientFactory> _streamClientFactoryMock;
+        private Mock<IStreamClientFactory>? _streamClientFactoryMock;
 
         [TestInitialize]
         public void Setup()

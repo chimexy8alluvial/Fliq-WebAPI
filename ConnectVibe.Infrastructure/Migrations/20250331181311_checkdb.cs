@@ -6,74 +6,56 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Fliq.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class UpdatedBlindDateCategorySchema : Migration
+    public partial class checkdb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<string>(
-                name: "Description",
-                table: "BlindDateCategories",
-                type: "nvarchar(max)",
-                nullable: false,
-                defaultValue: "",
-                oldClrType: typeof(string),
-                oldType: "nvarchar(max)",
-                oldNullable: true);
-
             migrationBuilder.UpdateData(
                 table: "Roles",
                 keyColumn: "Id",
                 keyValue: 1,
                 column: "DateCreated",
-                value: new DateTime(2025, 3, 7, 17, 27, 21, 709, DateTimeKind.Utc).AddTicks(1684));
+                value: new DateTime(2025, 3, 31, 18, 13, 9, 788, DateTimeKind.Utc).AddTicks(7394));
 
             migrationBuilder.UpdateData(
                 table: "Roles",
                 keyColumn: "Id",
                 keyValue: 2,
                 column: "DateCreated",
-                value: new DateTime(2025, 3, 7, 17, 27, 21, 709, DateTimeKind.Utc).AddTicks(1691));
+                value: new DateTime(2025, 3, 31, 18, 13, 9, 788, DateTimeKind.Utc).AddTicks(7397));
 
             migrationBuilder.UpdateData(
                 table: "Roles",
                 keyColumn: "Id",
                 keyValue: 3,
                 column: "DateCreated",
-                value: new DateTime(2025, 3, 7, 17, 27, 21, 709, DateTimeKind.Utc).AddTicks(1693));
+                value: new DateTime(2025, 3, 31, 18, 13, 9, 788, DateTimeKind.Utc).AddTicks(7398));
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AlterColumn<string>(
-                name: "Description",
-                table: "BlindDateCategories",
-                type: "nvarchar(max)",
-                nullable: true,
-                oldClrType: typeof(string),
-                oldType: "nvarchar(max)");
-
             migrationBuilder.UpdateData(
                 table: "Roles",
                 keyColumn: "Id",
                 keyValue: 1,
                 column: "DateCreated",
-                value: new DateTime(2025, 2, 20, 22, 55, 48, 839, DateTimeKind.Utc).AddTicks(9278));
+                value: new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc));
 
             migrationBuilder.UpdateData(
                 table: "Roles",
                 keyColumn: "Id",
                 keyValue: 2,
                 column: "DateCreated",
-                value: new DateTime(2025, 2, 20, 22, 55, 48, 839, DateTimeKind.Utc).AddTicks(9280));
+                value: new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc));
 
             migrationBuilder.UpdateData(
                 table: "Roles",
                 keyColumn: "Id",
                 keyValue: 3,
                 column: "DateCreated",
-                value: new DateTime(2025, 2, 20, 22, 55, 48, 839, DateTimeKind.Utc).AddTicks(9281));
+                value: new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc));
         }
     }
 }
