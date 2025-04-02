@@ -1,19 +1,21 @@
-﻿using Fliq.Application.Authentication.Commands.Register;
+﻿using Fliq.Application.Authentication.Commands.ChangePassword;
+using Fliq.Application.Authentication.Commands.PasswordCreation;
+using Fliq.Application.Authentication.Commands.PasswordReset;
+using Fliq.Application.Authentication.Commands.Register;
 using Fliq.Application.Authentication.Commands.ValidateOTP;
+using Fliq.Application.Authentication.Commands.ValidatePasswordOTP;
 using Fliq.Application.Authentication.Queries.FacebookLogin;
 using Fliq.Application.Authentication.Queries.GoogleLogin;
-using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Authentication.Queries.Login;
+using Fliq.Application.Authentication.Queries.SetupData;
+using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.Profile.Common;
 using Fliq.Contracts.Authentication;
 using Fliq.Domain.Common.Errors;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Fliq.Application.Authentication.Commands.ChangePassword;
-using Fliq.Application.Authentication.Commands.PasswordReset;
-using Fliq.Application.Authentication.Commands.ValidatePasswordOTP;
-using Fliq.Application.Authentication.Commands.PasswordCreation;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -179,6 +181,20 @@ namespace Fliq.Api.Controllers
                 authResult => Ok(_mapper.Map<SocialAuthenticationResponse>(authResult)),
                 errors => Problem(errors)
                 );
+        }
+
+        [HttpGet("getprofilesetupdata")]
+        public async Task<IActionResult> GetProfileSetupData()
+        {
+            _logger.LogInfo("Received request for Profile Setup Data");
+
+            var query = new GetProfileSetupDataQuery();
+            var result = await _mediator.Send(query);
+
+            return result.Match(
+               result => Ok(_mapper.Map<ProfileDataTablesResponse>(result)),
+               errors => Problem(errors)
+               );
         }
     }
 }

@@ -12,7 +12,6 @@ using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Entities.Prompts;
 using Fliq.Domain.Enums;
 using Mapster;
-using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 
@@ -20,52 +19,53 @@ namespace Fliq.Application.Profile.Commands.Create
 {
     public class CreateProfileCommand : IRequest<ErrorOr<CreateProfileResult>>
     {
-        public List<string>? Passions { get; set; }
-        public string? ProfileDescription { get; set; }
-        public List<ProfilePhotoMapped>? Photos { get; set; }
-        public List<ProfileType>? ProfileTypes { get; set; }
-        public ProfileSection CurrentSection { get; set; }
+        public int UserId { get; set; }
+        public int? SexualOrientationId { get; set; }
+        public bool IsSexualOrientationVisible { get; set; }
+        public int? EducationStatusId { get; set; }
+        public bool IsEducationStatusVisible { get; set; }
+        public int? EthnicityId { get; set; }
+        public bool IsEthnicityVisible { get; set; }
+        public int? OccupationId { get; set; }
+        public bool IsOccupationVisible { get; set; }
+        public int? ReligionId { get; set; }
+        public bool IsReligionVisible { get; set; }
+
+        public bool AllowNotifications { get; set; }
         public DateTime? DOB { get; set; }
-        public Gender? Gender { get; set; }
-        public SexualOrientation? SexualOrientation { get; set; }
-        public Religion? Religion { get; set; }
-        public Ethnicity? Ethnicity { get; set; }
-        public Occupation? Occupation { get; set; }
-        public EducationStatus? EducationStatus { get; set; }
-        public HaveKids? HaveKids { get; set; }
-        public WantKids? WantKids { get; set; }
+        public string? ProfileDescription { get; set; }
+        public ProfileSection CurrentSection { get; set; }
+        public int GenderId { get; set; }
+        public int HaveKidsId { get; set; }
+        public int WantKidsId { get; set; }
         public Location? Location { get; set; }
         public LocationDetail? LocationDetail { get; set; }
         public List<PromptResponseDto>? PromptResponses { get; set; } = new(); // for default prompt responses
-        public bool AllowNotifications { get; set; }
-        public int UserId { get; set; }
+        public List<string>? Passions { get; set; }
+        public List<ProfilePhotoMapped>? Photos { get; set; }
+        public List<ProfileType>? ProfileTypes { get; set; }
     }
 
     public class CreateProfileCommandHandler : IRequestHandler<CreateProfileCommand, ErrorOr<CreateProfileResult>>
     {
-        private readonly IMapper _mapper;
         private readonly IProfileRepository _profileRepository;
         private readonly IUserRepository _userRepository;
         private readonly ILocationService _locationService;
-        private readonly ISettingsRepository _settingsRepository;
         private readonly IPromptQuestionRepository _promptQuestionRepository;
         private readonly IPromptCategoryRepository _promptCategoryRepository;
         private readonly ILoggerManager _loggerManager;
         private readonly IMediaServices _mediaServices;
-        private readonly IPromptResponseRepository _promptResponseRepository;
 
-        public CreateProfileCommandHandler(IMapper mapper, IProfileRepository profileRepository, IUserRepository userRepository, ILocationService locationService, ISettingsRepository settingsRepository, ILoggerManager loggerManager, IPromptQuestionRepository promptQuestionRepository, IPromptCategoryRepository promptCategoryRepository, IMediaServices mediaServices, IPromptResponseRepository promptResponseRepository)
+        public CreateProfileCommandHandler(IProfileRepository profileRepository, IUserRepository userRepository, ILocationService locationService, ILoggerManager loggerManager, IPromptQuestionRepository promptQuestionRepository, IPromptCategoryRepository promptCategoryRepository, IMediaServices mediaServices)
         {
-            _mapper = mapper;
             _profileRepository = profileRepository;
             _userRepository = userRepository;
             _locationService = locationService;
-            _settingsRepository = settingsRepository;
+
             _loggerManager = loggerManager;
             _promptQuestionRepository = promptQuestionRepository;
             _promptCategoryRepository = promptCategoryRepository;
             _mediaServices = mediaServices;
-            _promptResponseRepository = promptResponseRepository;
         }
 
         public async Task<ErrorOr<CreateProfileResult>> Handle(CreateProfileCommand command, CancellationToken cancellationToken)
@@ -83,7 +83,7 @@ namespace Fliq.Application.Profile.Commands.Create
             if (existingProfile == null)
             {
                 // Create a new profile if none exists
-                existingProfile = new UserProfile { UserId = command.UserId, User = user };
+                existingProfile = new UserProfile { UserId = command.UserId, User = user, GenderId=command.GenderId, WantKidsId=command.WantKidsId, HaveKidsId=command.HaveKidsId };
                 _profileRepository.Add(existingProfile);
             }
 
