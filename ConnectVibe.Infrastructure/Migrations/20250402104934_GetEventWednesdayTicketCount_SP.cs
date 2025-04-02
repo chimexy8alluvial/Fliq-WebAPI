@@ -23,6 +23,7 @@ namespace Fliq.Infrastructure.Migrations
                 FROM [dbo].[Tickets]
                 WHERE EventId = @EventId
                 AND DATEPART(WEEKDAY, DateSold) = 4 -- Wednesday
+                AND IsRefunded = 0
                 AND (@TicketType IS NULL OR TicketType = @TicketType);
             END
             ");
