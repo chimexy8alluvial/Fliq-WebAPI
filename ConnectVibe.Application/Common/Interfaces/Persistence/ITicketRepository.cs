@@ -34,5 +34,6 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         Task<int> GetFridayTicketCountAsync(int eventId, TicketType? ticketType);
         Task<int> GetSaturdayTicketCountAsync(int eventId, TicketType? ticketType);
         Task<int> GetSundayTicketCountAsync(int eventId, TicketType? ticketType);
+        Task<decimal> GetEventTicketGrossRevenueAsync(int eventId);
     }
 }

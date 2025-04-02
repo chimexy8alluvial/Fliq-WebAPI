@@ -11,11 +11,11 @@ namespace Fliq.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@"
-                        CREATE PROCEDURE [dbo].[GetAllEventsTicketsForDashBoard]
+                       CREATE PROCEDURE [dbo].[GetAllEventsTicketsForDashBoard]
                 @PageNumber INT,
                 @PageSize INT,
                 @Category NVARCHAR(100) = NULL,
-                @StatusFilter NVARCHAR(50) = NULL, -- ""SoldOut"" or ""Cancelled""
+                @StatusFilter NVARCHAR(50) = NULL, -- 'SoldOut' or 'Cancelled'
                 @StartDate DATETIME = NULL,
                 @EndDate DATETIME = NULL,
                 @Location NVARCHAR(100) = NULL
@@ -39,7 +39,12 @@ namespace Fliq.Infrastructure.Migrations
                             WHEN e.SponsoredEvent = 1 THEN 'sponsored'
                             ELSE 'free'
                         END,
-                        NumOfSoldTickets = ISNULL((SELECT COUNT(*) FROM [dbo].[Tickets] t WHERE t.EventId = e.Id AND t.SoldOut = 1), 0),
+                        NumOfSoldTickets = ISNULL((
+                            SELECT COUNT(*) 
+                            FROM [dbo].[Tickets] t 
+                            WHERE t.EventId = e.Id 
+                            AND t.IsRefund = 0 -- Exclude refunded tickets
+                        ), 0),
                         e.DateCreated AS CreatedOn,
                         ROW_NUMBER() OVER (ORDER BY e.DateCreated DESC) AS RowNum
                     FROM 
@@ -50,10 +55,16 @@ namespace Fliq.Infrastructure.Migrations
                         (@Category IS NULL OR e.EventCategory = @Category)
                         AND (@StartDate IS NULL OR e.StartDate >= @StartDate)
                         AND (@EndDate IS NULL OR e.EndDate <= @EndDate)
-                        AND (@location IS NULL OR ld.Status LIKE '%' + @location + '%')
+                        AND (@Location IS NULL OR ld.Status LIKE '%' + @Location + '%')
                         AND (
                             @StatusFilter IS NULL 
-                            OR (@StatusFilter = 'SoldOut' AND EXISTS (SELECT 1 FROM [dbo].[Tickets] t WHERE t.EventId = e.Id AND t.SoldOut = 1))
+                            OR (@StatusFilter = 'SoldOut' AND EXISTS (
+                                SELECT 1 
+                                FROM [dbo].[Tickets] t 
+                                WHERE t.EventId = e.Id 
+                                AND t.SoldOut = 1 
+                                AND t.IsRefund = 0 -- Exclude refunded tickets in filter too
+                            ))
                             OR (@StatusFilter = 'Cancelled' AND e.EventStatus = 4)
                         )
                 )
@@ -71,7 +82,7 @@ namespace Fliq.Infrastructure.Migrations
                 ORDER BY 
                     CreatedOn DESC;
             END
-        ");
+            ");
 
 
         }

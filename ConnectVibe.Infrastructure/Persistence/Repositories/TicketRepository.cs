@@ -28,6 +28,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
         public void Update(Ticket request)
         {
+            request.DateModified = DateTime.Now;
             _dbContext.Update(request);
             _dbContext.SaveChanges();
         }
@@ -245,6 +246,18 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                     new { EventId = eventId, TicketType = ticketType },
                     commandType: CommandType.StoredProcedure);
                 return count;
+            }
+        }
+
+        public async Task<decimal> GetEventTicketGrossRevenueAsync(int eventId)
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var revenue = await connection.ExecuteScalarAsync<decimal>(
+                    "GetEventTicketGrossRevenue",
+                    new { EventId = eventId },
+                    commandType: CommandType.StoredProcedure);
+                return revenue;
             }
         }
 

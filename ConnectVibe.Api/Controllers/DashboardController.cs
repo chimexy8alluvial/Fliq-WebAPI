@@ -1,5 +1,6 @@
 ﻿using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.DashBoard.Common;
+using Fliq.Application.DashBoard.Queries;
 using Fliq.Application.DashBoard.Queries.ActiveUserCount;
 using Fliq.Application.DashBoard.Queries.DailyTicketCount;
 using Fliq.Application.DashBoard.Queries.GetAllEvents;
@@ -263,6 +264,17 @@ namespace Fliq.Api.Controllers
             );
         }
 
+        [HttpGet("gross-revenue")]
+        public async Task<IActionResult> GetEventTicketGrossRevenue([FromQuery] int eventId)
+        {
+            _logger.LogInfo($"Received request for gross revenue for EventId: {eventId}");
+            var query = new GetEventTicketGrossRevenueQuery(eventId);
+            var result = await _mediator.Send(query);
+            return result.Match(
+                revenue => Ok(new { Revenue = revenue }), // Simple JSON response
+                errors => Problem(errors)
+            );
+        }
     }
 }
 

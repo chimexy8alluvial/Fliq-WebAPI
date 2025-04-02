@@ -21,6 +21,7 @@ namespace Fliq.Infrastructure.Migrations
                 SELECT COUNT(*)
                 FROM [dbo].[Tickets]
                 WHERE EventId = @EventId
+                AND IsRefunded = 0
                 AND TicketType = 1; -- 1 corresponds to TicketType.Vip
             END
             ");
