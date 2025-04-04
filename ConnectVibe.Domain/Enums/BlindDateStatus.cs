@@ -9,6 +9,7 @@ namespace Fliq.Domain.Enums
         Completed = 2, 
         Cancelled = 3,
         Upcoming = 4,
+        Rejected = 5,
     }
 
     public enum DateParticipantStatus

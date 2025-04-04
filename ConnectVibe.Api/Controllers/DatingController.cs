@@ -159,10 +159,26 @@ namespace Fliq.Api.Controllers
             );
         }
 
-        
-        //-------speed--dating------\\
+        [Authorize(Roles = "Admin,SuperAdmin")]
+        [HttpPut("approve-event/{eventId}")]
+        public async Task<IActionResult> ApproveEventById(int eventId)
+        {
+            _logger.LogInfo($"Approve event with ID: {eventId} received");
 
-        [HttpPost("SpeedDate")] 
+            var command = new ApproveEventCommand(eventId);
+            var result = await _mediator.Send(command);
+
+            _logger.LogInfo($"Approve event with ID: {eventId} executed. Result: {result} ");
+
+            return result.Match(
+              cancelEventResult => Ok(new EventCommandResponse($"Event with ID: {eventId} was successfully approved")),
+              errors => Problem(errors)
+          );
+
+
+            //-------speed--dating------\\
+
+            [HttpPost("SpeedDate")] 
         [Produces(typeof(CreateSpeedDatingEventResponse))]
         public async Task<IActionResult> CreateSpeedDateEvent([FromForm] CreateSpeedDatingEventRequest request)
         {
