@@ -170,9 +170,9 @@ namespace Fliq.Test.DatingEnvironment.Commands
                 DateCreatedTo: null
             );
 
-            var blindEvents = new List<DatingListItems>
+            var blindEvents = new List<DatingListItems> 
             {
-                new DatingListItems { Id = 1, Title = "Blind Date 1", Type = DatingType.BlindDating }
+                    new DatingListItems { Id = 1, Title = "Blind Date 1", Type = DatingType.BlindDating, CreatedBy = "User3", SubscriptionType = "Premium", Duration = TimeSpan.FromHours(2), DateCreated = DateTime.Now }
             };
 
             _mockBlindDateRepository?.Setup(r => r.GetAllFilteredListAsync(
@@ -190,9 +190,13 @@ namespace Fliq.Test.DatingEnvironment.Commands
 
             // Assert
             Assert.IsFalse(result.IsError); // No errors expected
-            //Assert.AreEqual(1, result.Value.Items.Count); // Only blind dating events
+            Assert.IsNotNull(result.Value); // Ensure value is not null
+            Assert.IsTrue(result.Value.Data.Any()); // Ensure there are items in Data
+            Assert.AreEqual(1, result.Value.Data.Count()); // Only one blind dating event
+            Assert.IsTrue(result.Value.Data.All(e => e.Type == DatingType.BlindDating)); // All should be blind dating
             Assert.AreEqual(1, result.Value.TotalCount); // Total count should match
-            //Assert.IsTrue(result.Value.Items.All(e => e.Type == DatingType.BlindDating)); // All should be blind dating
+            Assert.AreEqual(command.Page, result.Value.PageNumber); // Page number should match
+            Assert.AreEqual(command.PageSize, result.Value.PageSize); // Page size should match
         }
     }
 }
