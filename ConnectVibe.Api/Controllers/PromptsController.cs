@@ -117,7 +117,8 @@ namespace Fliq.Api.Controllers
         public async Task<IActionResult> AddSystemPrompt([FromBody] AddSystemPromptRequest request)
         {
             _logger.LogInfo($"Add System Prompt request received: {request}");
-            var command = new AddSystemPromptCommand(request.QuestionText, request.CategoryId);
+            var userId = GetAuthUserId();
+            var command = new AddSystemPromptCommand(request.QuestionText, request.CategoryId, userId);
 
             var result = await _mediator.Send(command);
             _logger.LogInfo($"Add System Prompt Command Executed. Result: {result}");
@@ -153,7 +154,7 @@ namespace Fliq.Api.Controllers
             _logger.LogInfo($"Reject prompt with ID: {promptId} received");
             var userId = GetAuthUserId();
 
-            var command = new RejectSpeedDateCommand(promptId, userId);
+            var command = new RejectPromptCommand(promptId, userId);
             var result = await _mediator.Send(command);
 
             _logger.LogInfo($"Reject prompt with ID: {promptId} executed. Result: {result} ");
@@ -163,5 +164,7 @@ namespace Fliq.Api.Controllers
               errors => Problem(errors)
           );
         }
+
+
     }
 }

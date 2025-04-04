@@ -1,8 +1,10 @@
 ﻿
 
+using Dapper;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Domain.Entities.DatingEnvironment.BlindDates;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {
@@ -45,6 +47,24 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                 .Include(b => b.Location)
                 .Include(b => b.Participants)
                 .ToListAsync();
+        }
+
+        public async Task<IEnumerable<BlindDate>> GetBlindDatesForAdmin(int pageSize, int pageNumber, int? creationStatus)
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var sql = "sp_BlindDateListForAdmin";
+
+                var parameter = new { 
+                    PageSize = pageSize,
+                  PageNumber = pageNumber,
+                  CreationStatus = creationStatus
+                };
+
+                var blindDates = await connection.QueryAsync<BlindDate>(sql, parameter, commandType: CommandType.StoredProcedure);
+                return blindDates.ToList();
+            }
+
         }
 
         public async Task AddAsync(BlindDate blindDate)

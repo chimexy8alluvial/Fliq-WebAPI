@@ -1,9 +1,13 @@
 ﻿using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.Common.Pagination;
 using Fliq.Application.DatingEnvironment.Commands.BlindDateCategory;
 using Fliq.Application.DatingEnvironment.Commands.BlindDates;
 using Fliq.Application.DatingEnvironment.Commands.SpeedDating;
 using Fliq.Application.DatingEnvironment.Common;
 using Fliq.Application.DatingEnvironment.Queries.BlindDateCategory;
+using Fliq.Application.DatingEnvironment.Queries.BlindDates;
+using Fliq.Application.DatingEnvironment.Queries.SpeedDates;
+using Fliq.Application.HelpAndSupport.Queries.GetSupportTickets;
 using Fliq.Contracts.Dating;
 using MapsterMapper;
 using MediatR;
@@ -195,6 +199,25 @@ namespace Fliq.Api.Controllers
           );
         }
 
+
+        [HttpGet]
+        public async Task<IActionResult> GetPaginatedBlindDatesForAdmin(
+           [FromQuery] int pageNumber = 1,
+           [FromQuery] int pageSize = 10,
+           [FromQuery] int? CreationStatus = null)
+        {
+            var query = new GetPaginatedBlindDatesForAdminQuery(pageNumber, pageSize, CreationStatus);
+
+            var result = await _mediator.Send(query);
+
+            if (result.IsError)
+            {
+                return BadRequest(result.FirstError.Description);
+            }
+
+            return Ok(result.Value);
+        }
+
         //-------speed--dating------\\
 
         [HttpPost("SpeedDate")] 
@@ -312,6 +335,24 @@ namespace Fliq.Api.Controllers
               cancelEventResult => Ok($"Speed date request with ID: {speedDateId} was successfully approved"),
               errors => Problem(errors)
           );
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetPaginatedSpeedDatesForAdmin(
+           [FromQuery] int pageNumber = 1,
+           [FromQuery] int pageSize = 10,
+           [FromQuery] int? CreationStatus = null)
+        {
+            var query = new GetPaginatedSpeedDatesForAdminQuery(pageNumber, pageSize, CreationStatus);
+
+            var result = await _mediator.Send(query);
+
+            if (result.IsError)
+            {
+                return BadRequest(result.FirstError.Description);
+            }
+
+            return Ok(result.Value);
         }
     }
 }
