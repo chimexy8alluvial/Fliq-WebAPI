@@ -1,4 +1,6 @@
-﻿namespace Fliq.Domain.Entities.Games
+﻿using Fliq.Domain.Enums;
+
+namespace Fliq.Domain.Entities.Games
 {
     public class Game : Record
     {
@@ -7,5 +9,6 @@
         public bool RequiresLevel { get; set; }
         public bool RequiresTheme { get; set; }
         public bool RequiresCategory { get; set; }
+        public GameCreationStatus CreationStatus { get; set; }
     }
 }

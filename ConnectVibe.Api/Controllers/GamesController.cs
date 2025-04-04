@@ -1,5 +1,7 @@
 ﻿using Fliq.Application.Common.Hubs;
 using Fliq.Application.Common.Interfaces.UserFeatureActivities;
+using Fliq.Application.DatingEnvironment.Commands.SpeedDating;
+using Fliq.Application.Games.Commands;
 using Fliq.Application.Games.Commands.AcceptGameRequest;
 using Fliq.Application.Games.Commands.AcceptStake;
 using Fliq.Application.Games.Commands.CreateGame;
@@ -260,7 +262,7 @@ namespace Fliq.Api.Controllers
         /*---Admin fxns ----------*/
         [Authorize(Roles = "SuperAdmin,Admin")]
         [HttpGet("users-count")]
-        public async Task<IActionResult> GetUsersCount([FromQuery] int userId)
+        public async Task<IActionResult> GetUsersStakeCount([FromQuery] int userId)
         {
             _logger.LogInformation("Received request for inactive users count.");
 
@@ -270,6 +272,42 @@ namespace Fliq.Api.Controllers
 
             return result.Match(
               matchedProfileResult => Ok(_mapper.Map<UserCountResponse>(result.Value)),
+              errors => Problem(errors)
+          );
+        }
+
+        [Authorize(Roles = "Admin,SuperAdmin")]
+        [HttpPut("approve-create-game-request/{gameRequestId}")]
+        public async Task<IActionResult> ApproveGameCreationRequestById(int gameRequestId)
+        {
+            _logger.LogInformation($"Approve game creation request with ID: {gameRequestId} received");
+            var userId = GetAuthUserId();
+
+            var command = new ApproveSpeedDateCommand(gameRequestId, userId);
+            var result = await _mediator.Send(command);
+
+            _logger.LogInformation($"Approve game date with ID: {gameRequestId} executed. Result: {result} ");
+
+            return result.Match(
+              ApproveGameResult => Ok($"Game request with ID: {gameRequestId} was successfully approved"),
+              errors => Problem(errors)
+          );
+        }
+
+        [Authorize(Roles = "Admin,SuperAdmin")]
+        [HttpPut("reject-game-creation/{gameRequestId}")]
+        public async Task<IActionResult> RejectSpeedDateById(int gameRequestId)
+        {
+            _logger.LogInformation($"Reject Game with ID: {gameRequestId} received");
+            var userId = GetAuthUserId();
+
+            var command = new RejectGameRequestCommand(gameRequestId, userId);
+            var result = await _mediator.Send(command);
+
+            _logger.LogInformation($"Reject Game with ID: {gameRequestId} executed. Result: {result} ");
+
+            return result.Match(
+              cancelEventResult => Ok($"Speed date request with ID: {gameRequestId} was successfully rejected"),
               errors => Problem(errors)
           );
         }
