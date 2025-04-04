@@ -11,7 +11,6 @@
         public decimal Amount { get; set; } = default!;
         public int MaximumLimit { get; set; } = default!;
         public bool SoldOut { get; set; } = default!;
-        public bool IsRefunded { get; set; } = default!;
         public List<Discount>? Discounts { get; set; } = default!;
         public Events Event { get; set; } = default!;
         public int EventId { get; set; }

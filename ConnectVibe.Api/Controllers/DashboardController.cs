@@ -1,4 +1,5 @@
-﻿using Fliq.Application.Common.Interfaces.Services;
+﻿using ErrorOr;
+using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.DashBoard.Common;
 using Fliq.Application.DashBoard.Queries;
 using Fliq.Application.DashBoard.Queries.ActiveUserCount;
@@ -12,6 +13,8 @@ using Fliq.Application.DashBoard.Queries.TotalTicketCount;
 using Fliq.Application.DashBoard.Queries.UsersCount;
 using Fliq.Application.DashBoard.Queries.VipTicketCount;
 using Fliq.Application.DashBoard.Queries.VVipTicketCount;
+using Fliq.Application.Event.Commands.RefundTicket;
+using Fliq.Application.Event.Commands.StopTicketSales;
 using Fliq.Contracts.DashBoard;
 using Fliq.Domain.Entities.Event;
 using MapsterMapper;
@@ -273,6 +276,40 @@ namespace Fliq.Api.Controllers
             return result.Match(
                 revenue => Ok(new { Revenue = revenue }), // Simple JSON response
                 errors => Problem(errors)
+            );
+        }
+
+        [HttpGet("{eventId}/net-revenue")]
+        public async Task<IActionResult> GetNetRevenue(int eventId)
+        {
+            var query = new GetEventTicketNetRevenueQuery(eventId);
+            ErrorOr<decimal> result = await _mediator.Send(query);
+
+            return result.Match(
+                revenue => Ok(revenue),
+                errors => Problem( errors)
+            );
+        }
+
+        [HttpPost("refund")]
+        public async Task<IActionResult> RefundTicket([FromBody] RefundTicketCommand command)
+        {
+            ErrorOr<RefundTicketResult> result = await _mediator.Send(command);
+
+            return result.Match(
+                refundResult => Ok(new { RefundedTickets = refundResult.RefundedTickets.Count }),
+                errors => Problem(detail: errors.First().Description, statusCode: 400)
+            );
+        }
+
+        [HttpPost("stop-sales")]
+        public async Task<IActionResult> StopTicketSales([FromBody] StopTicketSalesCommand command)
+        {
+            ErrorOr<StopTicketSalesResult> result = await _mediator.Send(command);
+
+            return result.Match(
+                stopResult => Ok(new { UpdatedTicketCount = stopResult.UpdatedTicketCount }),
+                errors => Problem(detail: errors.First().Description, statusCode: 400)
             );
         }
     }

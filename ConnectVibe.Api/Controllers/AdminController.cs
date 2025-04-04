@@ -1,6 +1,7 @@
-﻿using Fliq.Application.Authentication.Commands.CreateAdmin;
-using Fliq.Application.Commands;
+﻿using ErrorOr;
+using Fliq.Application.Authentication.Commands.CreateAdmin;
 using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.Event.Commands.RefundTicket;
 using Fliq.Application.Users.Commands;
 using Fliq.Application.Users.Queries;
 using Fliq.Contracts.Authentication;
@@ -109,16 +110,14 @@ namespace Fliq.Api.Controllers
         }
 
         [Authorize(Roles = "SuperAdmin,Admin")]
-        [HttpPost("refund-ticket")]
-        public async Task<IActionResult> RefundTicket([FromQuery] int ticketId)
+        [HttpPost("refund")]
+        public async Task<IActionResult> RefundTicket([FromBody] RefundTicketCommand command)
         {
-            _logger.LogInfo($"Received refund request for TicketId: {ticketId}");
-            var command = new RefundTicketCommand(ticketId);
-            var result = await _mediator.Send(command);
+            ErrorOr<RefundTicketResult> result = await _mediator.Send(command);
 
             return result.Match(
-                _ => Ok(),
-                errors => Problem(errors)
+                refundResult => Ok(new { RefundedTickets = refundResult.RefundedTickets.Count }),
+                errors => Problem(detail: errors.First().Description, statusCode: 400)
             );
         }
     }

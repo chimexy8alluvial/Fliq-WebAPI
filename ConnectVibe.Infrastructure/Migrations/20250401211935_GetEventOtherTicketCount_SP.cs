@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -12,17 +11,18 @@ namespace Fliq.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@"
-            CREATE PROCEDURE [dbo].[GetEventOtherTicketCount]
+           CREATE PROCEDURE [dbo].[GetEventOtherTicketCount]
                 @EventId INT
             AS
             BEGIN
                 SET NOCOUNT ON;
 
                 SELECT COUNT(*)
-                FROM [dbo].[Tickets]
-                WHERE EventId = @EventId
-                AND IsRefunded = 0
-                AND TicketType = 3; -- 3 corresponds to TicketType.Other
+                FROM [dbo].[EventTickets] et
+                INNER JOIN [dbo].[Tickets] t ON et.TicketId = t.Id
+                WHERE t.EventId = @EventId
+                AND et.IsRefunded = 0 -- Updated to use EventTicket's IsRefunded
+                AND t.TicketType = 3; -- 3 corresponds to TicketType.Other
             END
             ");
         }

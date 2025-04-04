@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -13,16 +12,20 @@ namespace Fliq.Infrastructure.Migrations
         {
             migrationBuilder.Sql(@"
              CREATE PROCEDURE [dbo].[GetEventTicketGrossRevenue]
-                    @EventId INT
-                AS
-                BEGIN
-                    SET NOCOUNT ON;
+                @EventId INT
+            AS
+            BEGIN
+                SET NOCOUNT ON;
 
-                    SELECT ISNULL(SUM(Amount), 0)
-                    FROM [dbo].[Tickets]
-                    WHERE EventId = @EventId
-                    AND IsRefunded = 0; -- Exclude refunded tickets
-                END
+                SELECT 
+                    ISNULL((
+                        SELECT SUM(t.Amount)
+                        FROM [dbo].[EventTickets] et
+                        INNER JOIN [dbo].[Tickets] t ON et.TicketId = t.Id
+                        WHERE t.EventId = @EventId
+                        -- No IsRefunded filter; includes all tickets sold
+                    ), 0) AS GrossRevenue;
+            END
              ");
         }
 

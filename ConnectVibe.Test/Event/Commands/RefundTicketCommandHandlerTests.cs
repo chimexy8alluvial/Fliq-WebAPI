@@ -1,145 +1,124 @@
-﻿using ErrorOr;
-using Fliq.Application.Commands;
-using Fliq.Application.Common.Interfaces.Persistence;
+﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.Event.Commands.RefundTicket;
+using Fliq.Application.Notifications.Common.EventCreatedEvents;
+using Fliq.Domain.Common.Errors;
+using Fliq.Domain.Entities;
 using Fliq.Domain.Entities.Event;
 using MediatR;
 using Moq;
 
-namespace Fliq.Application.Tests.Commands
+[TestClass]
+public class RefundTicketCommandHandlerTests
 {
-    [TestClass]
-    public class RefundTicketCommandHandlerTests
+    private Mock<IEventRepository>? _eventRepositoryMock;
+    private Mock<ILoggerManager>? _loggerMock;
+    private Mock<ITicketRepository>? _ticketRepositoryMock;
+    private Mock<IUserRepository>? _userRepositoryMock;
+    private Mock<IMediator>? _mediatorMock;
+    private RefundTicketCommandHandler? _handler;
+
+    [TestInitialize]
+    public void Setup()
     {
-        private Mock<ITicketRepository>? _ticketRepositoryMock;
-        private Mock<ILoggerManager>? _loggerMock;
-        private RefundTicketCommandHandler? _handler;
+        _eventRepositoryMock = new Mock<IEventRepository>();
+        _loggerMock = new Mock<ILoggerManager>();
+        _ticketRepositoryMock = new Mock<ITicketRepository>();
+        _userRepositoryMock = new Mock<IUserRepository>();
+        _mediatorMock = new Mock<IMediator>();
+        _handler = new RefundTicketCommandHandler(
+            _eventRepositoryMock.Object,
+            _loggerMock.Object,
+            _ticketRepositoryMock.Object,
+            _userRepositoryMock.Object,
+            _mediatorMock.Object);
+    }
 
-        [TestInitialize]
-        public void Setup()
+    [TestMethod]
+    public async Task Handle_ValidRefund_ReturnsRefundedTickets()
+    {
+        // Arrange
+        int eventId = 1;
+        int userId = 2;
+        var eventTicketIds = new List<int> { 1, 2 };
+        var command = new RefundTicketCommand { EventId = eventId, UserId = userId, EventTicketIds = eventTicketIds };
+
+        var eventDetails = new Events { Id = eventId, Capacity = 10, OccupiedSeats = new List<int> { 1, 2 }, UserId = 3 };
+        var user = new User { Id = userId, DisplayName = "Test User" };
+        var tickets = eventTicketIds.Select(id => new EventTicket
         {
-            _ticketRepositoryMock = new Mock<ITicketRepository>();
-            _loggerMock = new Mock<ILoggerManager>();
-            _handler = new RefundTicketCommandHandler(_ticketRepositoryMock.Object, _loggerMock.Object);
-        }
+            Id = id,
+            UserId = userId,
+            SeatNumber = id,
+            IsRefunded = false, // IsRefunded on EventTicket
+            Ticket = new Ticket { EventId = eventId }
+        }).ToList();
 
-        [TestMethod]
-        public async Task Handle_ValidTicketId_ReturnsUnit()
+        _eventRepositoryMock!.Setup(r => r.GetEventById(eventId)).Returns(eventDetails);
+        _userRepositoryMock!.Setup(r => r.GetUserById(userId)).Returns(user);
+        _ticketRepositoryMock!.Setup(r => r.GetEventTicketsByIds(eventTicketIds)).Returns(tickets);
+        _mediatorMock!.Setup(m => m.Publish(It.IsAny<TicketRefundedEvent>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+
+        // Act
+        var result = await _handler!.Handle(command, CancellationToken.None);
+
+        // Assert
+        Assert.AreEqual(2, result.Value.RefundedTickets.Count);
+        Assert.IsTrue(tickets.All(t => t.IsRefunded)); // Check IsRefunded on EventTicket
+        Assert.AreEqual(12, eventDetails.Capacity);
+        Assert.IsFalse(eventDetails.OccupiedSeats.Any());
+        _loggerMock!.Verify(l => l.LogInfo($"Refunded {tickets.Count} tickets for EventId {eventId}."), Times.Once());
+    }
+
+    [TestMethod]
+    public async Task Handle_EventNotFound_ReturnsError()
+    {
+        // Arrange
+        var command = new RefundTicketCommand { EventId = 1, UserId = 2, EventTicketIds = new List<int> { 1 } };
+        _eventRepositoryMock!.Setup(r => r.GetEventById(1)).Returns((Events)null!);
+
+        // Act
+        var result = await _handler!.Handle(command, CancellationToken.None);
+
+        // Assert
+        Assert.IsTrue(result.IsError);
+        Assert.AreEqual(Errors.Event.EventNotFound, result.FirstError);
+        _loggerMock!.Verify(l => l.LogError($"Event with ID {command.EventId} not found."), Times.Once());
+    }
+
+    [TestMethod]
+    public async Task Handle_AlreadyRefunded_ReturnsError()
+    {
+        // Arrange
+        int eventId = 1;
+        int userId = 2;
+        var eventTicketIds = new List<int> { 1 };
+        var command = new RefundTicketCommand { EventId = eventId, UserId = userId, EventTicketIds = eventTicketIds };
+
+        var eventDetails = new Events { Id = eventId, Capacity = 10, OccupiedSeats = new List<int> { 1 } };
+        var user = new User { Id = userId, DisplayName = "Test User" };
+        var tickets = new List<EventTicket>
         {
-            // Arrange
-            int ticketId = 1;
-            var ticket = new Ticket { Id = ticketId, IsRefunded = false };
-            var command = new RefundTicketCommand(ticketId);
+            new EventTicket
+            {
+                Id = 1,
+                UserId = userId,
+                SeatNumber = 1,
+                IsRefunded = true, // Already refunded
+                Ticket = new Ticket { EventId = eventId }
+            }
+        };
 
-            _ticketRepositoryMock!
-                .Setup(x => x.GetTicketById(ticketId))
-                .Returns(ticket);
-            _ticketRepositoryMock
-                .Setup(x => x.Update(It.IsAny<Ticket>()));
-               
+        _eventRepositoryMock!.Setup(r => r.GetEventById(eventId)).Returns(eventDetails);
+        _userRepositoryMock!.Setup(r => r.GetUserById(userId)).Returns(user);
+        _ticketRepositoryMock!.Setup(r => r.GetEventTicketsByIds(eventTicketIds)).Returns(tickets);
 
-            _loggerMock!.Setup(x => x.LogInfo(It.IsAny<string>()));
+        // Act
+        var result = await _handler!.Handle(command, CancellationToken.None);
 
-            // Act
-            var result = await _handler!.Handle(command, CancellationToken.None);
-
-            // Assert
-            Assert.IsFalse(result.IsError);
-            Assert.AreEqual(Unit.Value, result.Value);
-
-            _loggerMock.Verify(x => x.LogInfo($"Processing refund request for TicketId: {ticketId}"), Times.Once());
-            _loggerMock.Verify(x => x.LogInfo($"Successfully refunded TicketId: {ticketId}"), Times.Once());
-            _ticketRepositoryMock.Verify(x => x.GetTicketById(ticketId), Times.Once());
-            _ticketRepositoryMock.Verify(x => x.Update(It.Is<Ticket>(t => t.Id == ticketId && t.IsRefunded)), Times.Once());
-        }
-
-        [TestMethod]
-        public async Task Handle_TicketNotFound_ReturnsNotFoundError()
-        {
-            // Arrange
-            int ticketId = 2;
-            var command = new RefundTicketCommand(ticketId);
-
-            _ticketRepositoryMock!
-                .Setup(x => x.GetTicketById(ticketId))
-                .Returns((Ticket)null!);
-
-            _loggerMock!.Setup(x => x.LogInfo(It.IsAny<string>()));
-            _loggerMock.Setup(x => x.LogWarn(It.IsAny<string>()));
-
-            // Act
-            var result = await _handler!.Handle(command, CancellationToken.None);
-
-            // Assert
-            Assert.IsTrue(result.IsError);
-            Assert.AreEqual(ErrorType.NotFound, result.FirstError.Type);
-            Assert.AreEqual("TicketNotFound", result.FirstError.Code);
-            Assert.AreEqual($"Ticket with ID {ticketId} does not exist.", result.FirstError.Description);
-
-            _loggerMock.Verify(x => x.LogInfo($"Processing refund request for TicketId: {ticketId}"), Times.Once());
-            _loggerMock.Verify(x => x.LogWarn($"Ticket with TicketId {ticketId} not found."), Times.Once());
-            _ticketRepositoryMock.Verify(x => x.GetTicketById(ticketId), Times.Once());
-            _ticketRepositoryMock.Verify(x => x.Update(It.IsAny<Ticket>()), Times.Never());
-        }
-
-        [TestMethod]
-        public async Task Handle_AlreadyRefundedTicket_ReturnsConflictError()
-        {
-            // Arrange
-            int ticketId = 3;
-            var ticket = new Ticket { Id = ticketId, IsRefunded = true };
-            var command = new RefundTicketCommand(ticketId);
-
-            _ticketRepositoryMock!
-                .Setup(x => x.GetTicketById(ticketId))
-                .Returns(ticket);
-
-            _loggerMock!.Setup(x => x.LogInfo(It.IsAny<string>()));
-            _loggerMock.Setup(x => x.LogWarn(It.IsAny<string>()));
-
-            // Act
-            var result = await _handler!.Handle(command, CancellationToken.None);
-
-            // Assert
-            Assert.IsTrue(result.IsError);
-            Assert.AreEqual(ErrorType.Conflict, result.FirstError.Type);
-            Assert.AreEqual("TicketAlreadyRefunded", result.FirstError.Code);
-            Assert.AreEqual($"Ticket with ID {ticketId} has already been refunded.", result.FirstError.Description);
-
-            _loggerMock.Verify(x => x.LogInfo($"Processing refund request for TicketId: {ticketId}"), Times.Once());
-            _loggerMock.Verify(x => x.LogWarn($"Ticket with TicketId {ticketId} is already refunded."), Times.Once());
-            _ticketRepositoryMock.Verify(x => x.GetTicketById(ticketId), Times.Once());
-            _ticketRepositoryMock.Verify(x => x.Update(It.IsAny<Ticket>()), Times.Never());
-        }
-
-        [TestMethod]
-        public async Task Handle_RepositoryThrowsException_ReturnsFailureError()
-        {
-            // Arrange
-            int ticketId = 4;
-            var command = new RefundTicketCommand(ticketId);
-            var exception = new Exception("Database error");
-
-            _ticketRepositoryMock!
-                .Setup(x => x.GetTicketById(ticketId))
-                .Throws(exception);
-
-            _loggerMock!.Setup(x => x.LogInfo(It.IsAny<string>()));
-            _loggerMock.Setup(x => x.LogError(It.IsAny<string>()));
-
-            // Act
-            var result = await _handler!.Handle(command, CancellationToken.None);
-
-            // Assert
-            Assert.IsTrue(result.IsError);
-            Assert.AreEqual(ErrorType.Failure, result.FirstError.Type);
-            Assert.AreEqual("RefundTicketFailed", result.FirstError.Code);
-            Assert.IsTrue(result.FirstError.Description.Contains("Database error"));
-
-            _loggerMock.Verify(x => x.LogInfo($"Processing refund request for TicketId: {ticketId}"), Times.Once());
-            _loggerMock.Verify(x => x.LogError($"Error refunding TicketId {ticketId}: {exception.Message}"), Times.Once());
-            _ticketRepositoryMock.Verify(x => x.GetTicketById(ticketId), Times.Once());
-            _ticketRepositoryMock.Verify(x => x.Update(It.IsAny<Ticket>()), Times.Never());
-        }
+        // Assert
+        Assert.IsTrue(result.IsError);
+        Assert.AreEqual(Errors.Ticket.TicketAlreadyRefunded, result.FirstError);
+        _loggerMock!.Verify(l => l.LogInfo($"Some tickets for EventId {eventId} are already refunded."), Times.Once());
     }
 }

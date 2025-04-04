@@ -79,6 +79,42 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             }
         }
 
+        public List<EventTicket> GetEventTicketsByIds(List<int> eventTicketIds)
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                // Convert list of IDs to a comma-separated string
+                string eventTicketIdsParam = string.Join(",", eventTicketIds);
+
+                var eventTickets = connection.Query<EventTicket, Ticket, EventTicket>(
+                    "[dbo].[GetEventTicketsByIds]",
+                    (eventTicket, ticket) =>
+                    {
+                        // Map EventTicket properties (including Record base class)
+                        eventTicket.Ticket = ticket; // Assign the related Ticket
+                        return eventTicket;
+                    },
+                    new { EventTicketIds = eventTicketIdsParam },
+                    commandType: CommandType.StoredProcedure,
+                    splitOn: "Ticket_Id" // Split on Ticket's Id column
+                ).ToList();
+
+                return eventTickets;
+            }
+        }
+
+        public List<Ticket> GetTicketsByEventId(int eventId)
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                return connection.Query<Ticket>(
+                    "[dbo].[GetTicketsByEventId]",
+                    new { EventId = eventId },
+                    commandType: CommandType.StoredProcedure
+                ).ToList();
+            }
+        }
+
         private static DynamicParameters FilterEventsTicketsDynamicParams(GetEventsTicketsListRequest request)
         {
             var parameters = new DynamicParameters();
@@ -261,6 +297,17 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             }
         }
 
+        public async Task<decimal> GetEventTicketNetRevenueAsync(int eventId)
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var netRevenue = await connection.ExecuteScalarAsync<decimal>(
+                    "GetEventTicketNetRevenue",
+                    new { EventId = eventId },
+                    commandType: CommandType.StoredProcedure);
+                return netRevenue;
+            }
+        }
         #endregion
 
     }

@@ -20,6 +20,8 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         EventTicket? GetEventTicketById(int id);
 
         Task<List<GetEventsTicketsResult>> GetAllEventsTicketsForDashBoardAsync(GetEventsTicketsListRequest request);
+        List<EventTicket> GetEventTicketsByIds(List<int> eventTicketIds); // Synchronous
+        List<Ticket> GetTicketsByEventId(int eventId);
 
 
         Task<int> GetRegularTicketCountAsync(int eventId);
@@ -35,5 +37,6 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         Task<int> GetSaturdayTicketCountAsync(int eventId, TicketType? ticketType);
         Task<int> GetSundayTicketCountAsync(int eventId, TicketType? ticketType);
         Task<decimal> GetEventTicketGrossRevenueAsync(int eventId);
+        Task<decimal> GetEventTicketNetRevenueAsync(int eventId);
     }
 }

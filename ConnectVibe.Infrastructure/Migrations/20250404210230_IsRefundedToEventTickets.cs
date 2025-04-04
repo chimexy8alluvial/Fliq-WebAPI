@@ -6,17 +6,22 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Fliq.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class IsRefundedToTicket : Migration
+    public partial class IsRefundedToEventTickets : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<bool>(
+                 name: "IsRefunded",
+                 table: "EventTickets",
+                 type: "bit",
+                 nullable: false,
+                 defaultValue: false);
+
+            migrationBuilder.DropColumn(
                 name: "IsRefunded",
-                table: "Tickets",
-                type: "bit",
-                nullable: false,
-                defaultValue: false);
+                table: "Tickets");
+
         }
 
         /// <inheritdoc />
@@ -24,7 +29,7 @@ namespace Fliq.Infrastructure.Migrations
         {
             migrationBuilder.DropColumn(
                 name: "IsRefunded",
-                table: "Tickets");
+                table: "EventTickets");
         }
     }
 }

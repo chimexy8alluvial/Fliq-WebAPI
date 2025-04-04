@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fliq.Infrastructure.Migrations
 {
     [DbContext(typeof(FliqDbContext))]
-    [Migration("20250402135414_IsRefundedToTicket")]
-    partial class IsRefundedToTicket
+    [Migration("20250404185046_GetEventTicketNetRevenue_SP")]
+    partial class GetEventTicketNetRevenue_SP
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1923,21 +1923,21 @@ namespace Fliq.Infrastructure.Migrations
                         new
                         {
                             Id = 1,
-                            DateCreated = new DateTime(2025, 4, 2, 13, 54, 8, 133, DateTimeKind.Utc).AddTicks(3670),
+                            DateCreated = new DateTime(2025, 4, 4, 18, 50, 36, 188, DateTimeKind.Utc).AddTicks(9738),
                             IsDeleted = false,
                             Name = "SuperAdmin"
                         },
                         new
                         {
                             Id = 2,
-                            DateCreated = new DateTime(2025, 4, 2, 13, 54, 8, 133, DateTimeKind.Utc).AddTicks(3680),
+                            DateCreated = new DateTime(2025, 4, 4, 18, 50, 36, 188, DateTimeKind.Utc).AddTicks(9746),
                             IsDeleted = false,
                             Name = "Admin"
                         },
                         new
                         {
                             Id = 3,
-                            DateCreated = new DateTime(2025, 4, 2, 13, 54, 8, 133, DateTimeKind.Utc).AddTicks(3682),
+                            DateCreated = new DateTime(2025, 4, 4, 18, 50, 36, 188, DateTimeKind.Utc).AddTicks(9747),
                             IsDeleted = false,
                             Name = "User"
                         });

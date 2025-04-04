@@ -11,7 +11,7 @@ namespace Fliq.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@"
-                       CREATE PROCEDURE [dbo].[GetAllEventsTicketsForDashBoard]
+                      CREATE PROCEDURE [dbo].[GetAllEventsTicketsForDashBoard]
                 @PageNumber INT,
                 @PageSize INT,
                 @Category NVARCHAR(100) = NULL,
@@ -41,9 +41,10 @@ namespace Fliq.Infrastructure.Migrations
                         END,
                         NumOfSoldTickets = ISNULL((
                             SELECT COUNT(*) 
-                            FROM [dbo].[Tickets] t 
+                            FROM [dbo].[EventTickets] et
+                            INNER JOIN [dbo].[Tickets] t ON et.TicketId = t.Id
                             WHERE t.EventId = e.Id 
-                            AND t.IsRefunded = 0 -- Exclude refunded tickets
+                            AND et.IsRefunded = 0 -- Exclude refunded tickets
                         ), 0),
                         e.DateCreated AS CreatedOn,
                         ROW_NUMBER() OVER (ORDER BY e.DateCreated DESC) AS RowNum
@@ -58,12 +59,20 @@ namespace Fliq.Infrastructure.Migrations
                         AND (@Location IS NULL OR ld.Status LIKE '%' + @Location + '%')
                         AND (
                             @StatusFilter IS NULL 
-                            OR (@StatusFilter = 'SoldOut' AND EXISTS (
-                                SELECT 1 
-                                FROM [dbo].[Tickets] t 
-                                WHERE t.EventId = e.Id 
-                                AND t.SoldOut = 1 
-                                AND t.IsRefunded = 0 -- Exclude refunded tickets in filter too
+                            OR (@StatusFilter = 'SoldOut' AND (
+                                -- Condition 1: Number of sold tickets meets or exceeds capacity
+                                (SELECT COUNT(*) 
+                                 FROM [dbo].[EventTickets] et
+                                 INNER JOIN [dbo].[Tickets] t ON et.TicketId = t.Id
+                                 WHERE t.EventId = e.Id 
+                                 AND et.IsRefunded = 0) >= e.Capacity
+                                -- Condition 2: All ticket types for the event are marked SoldOut
+                                OR NOT EXISTS (
+                                    SELECT 1 
+                                    FROM [dbo].[Tickets] t
+                                    WHERE t.EventId = e.Id 
+                                    AND t.SoldOut = 0 -- At least one ticket type is not sold out
+                                )
                             ))
                             OR (@StatusFilter = 'Cancelled' AND e.Status = 4)
                         )

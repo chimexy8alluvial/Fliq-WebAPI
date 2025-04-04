@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -19,12 +18,13 @@ namespace Fliq.Infrastructure.Migrations
             BEGIN
                 SET NOCOUNT ON;
 
-                SELECT COUNT(*)
-                FROM [dbo].[Tickets]
-                WHERE EventId = @EventId
-                AND DATEPART(WEEKDAY, DateCreated) = 6 -- Friday
-                AND (@TicketType IS NULL OR TicketType = @TicketType)
-                AND IsRefunded = 0;
+                 SELECT COUNT(*)
+                FROM [dbo].[EventTickets] et
+                INNER JOIN [dbo].[Tickets] t ON et.TicketId = t.Id
+                WHERE t.EventId = @EventId
+                AND DATEPART(WEEKDAY, et.DateCreated) = 6 -- Friday (using EventTicket's DateCreated)
+                AND (@TicketType IS NULL OR t.TicketType = @TicketType)
+                AND et.IsRefunded = 0; -- Updated to use EventTicket's IsRefunded
             END
              ");
         }
