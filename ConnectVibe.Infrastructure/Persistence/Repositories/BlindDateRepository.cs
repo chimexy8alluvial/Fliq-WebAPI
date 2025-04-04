@@ -2,7 +2,7 @@
 
 using Dapper;
 using Fliq.Application.Common.Interfaces.Persistence;
-using Fliq.Contracts.Dating;
+using Fliq.Domain.Entities.DatingEnvironment;
 using Fliq.Domain.Entities.DatingEnvironment.BlindDates;
 using Fliq.Domain.Entities.Event.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -126,11 +126,10 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             }
         }
 
-        public async Task<(List<DatingListItem> List, int blindCount)> GetAllFilteredListAsync(string title, DatingType? type, TimeSpan? duration, string subscriptionType, DateTime? dateCreatedFrom, DateTime? dateCreatedTo, string createdBy, int page, int pageSize)
+        public async Task<(List<DatingListItems> List, int blindCount)> GetAllFilteredListAsync(string title, DatingType? type, TimeSpan? duration, string subscriptionType, DateTime? dateCreatedFrom, DateTime? dateCreatedTo, string createdBy, int page, int pageSize)
         {
-            using (var connection = _connectionFactory.CreateConnection() as DbConnection ?? throw new InvalidOperationException("Connection must be a DbConnection"))
+            using (var connection = _connectionFactory.CreateConnection())
             {
-                await connection.OpenAsync();
 
                 var parameters = new
                 {
@@ -147,7 +146,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
                 using (var multi = await connection.QueryMultipleAsync("sp_GetAllFilteredBlindDatingList", parameters, commandType: CommandType.StoredProcedure))
                 {
-                    var list = (await multi.ReadAsync<DatingListItem>()).AsList();
+                    var list = (await multi.ReadAsync<DatingListItems>()).AsList();
                     var totalCount = await multi.ReadSingleAsync<int>();
                     return (list, totalCount);
                 }

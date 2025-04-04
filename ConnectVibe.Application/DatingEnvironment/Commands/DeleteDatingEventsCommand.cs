@@ -19,14 +19,12 @@ namespace Fliq.Application.DatingEnvironment.Commands
     {
         private readonly IBlindDateRepository _blindDateRepository;
         private readonly ISpeedDatingEventRepository _speedDatingEventRepository;
-        private readonly IMediator _mediator;
         private readonly ILoggerManager _logger;
 
-        public DeleteDatingEventsCommandHandler( IBlindDateRepository blindDateRepository, ISpeedDatingEventRepository speedDatingEventRepository, IMediator mediator, ILoggerManager logger)
+        public DeleteDatingEventsCommandHandler( IBlindDateRepository blindDateRepository, ISpeedDatingEventRepository speedDatingEventRepository, ILoggerManager logger)
         {
             _blindDateRepository = blindDateRepository;
             _speedDatingEventRepository = speedDatingEventRepository;
-            _mediator = mediator;
             _logger = logger;
         }
 

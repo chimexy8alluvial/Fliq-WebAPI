@@ -64,30 +64,6 @@ namespace Fliq.Domain.Common.Errors
         code: "DatingEvent.NoEventsFound",
         description: "No dating events were found matching the provided filters");
 
-            public static Error InvalidPaginationPage => Error.Validation(
-                "Dating.InvalidPaginationPage",
-                "Page number must be greater than 0");
-
-            public static Error InvalidPaginationPageSize => Error.Validation(
-                "Dating.InvalidPaginationPageSize",
-                "Page size must be greater than 0");
-
-            public static Error InvalidDateCreatedFromRange => Error.Validation(
-                "Dating.InvalidDateCreatedFromRange",
-                "DateCreatedFrom must be between 1/1/1753 and 12/31/9999");
-
-            public static Error InvalidDateCreatedToRange => Error.Validation(
-                "Dating.InvalidDateCreatedToRange",
-                "DateCreatedTo must be between 1/1/1753 and 12/31/9999");
-
-            public static Error InvalidDateRangeOrder => Error.Validation(
-                "Dating.InvalidDateRangeOrder",
-                "DateCreatedFrom must be less than or equal to DateCreatedTo");
-
-            public static Error InvalidDuration => Error.Validation(
-                "Dating.InvalidDuration",
-                "Duration cannot be negative");
-
             // No events found
             public static Error NoEventsFound => Error.NotFound(
                 "Dating.NoEventsFound",

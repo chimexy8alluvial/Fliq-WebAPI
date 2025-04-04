@@ -16,7 +16,6 @@ namespace Fliq.Test.Dating.Commands.Both
         private Mock<IBlindDateRepository>? _mockBlindDateRepository;
         private Mock<ISpeedDatingEventRepository>? _mockSpeedDatingEventRepository;
         private Mock<ILoggerManager>? _mockLoggerManager;
-        private Mock<IMediator>? _mockMediator;
         private DeleteDatingEventsCommandHandler _handler;
 
         [TestInitialize]
@@ -25,12 +24,10 @@ namespace Fliq.Test.Dating.Commands.Both
             _mockBlindDateRepository = new Mock<IBlindDateRepository>();
             _mockSpeedDatingEventRepository = new Mock<ISpeedDatingEventRepository>();
             _mockLoggerManager = new Mock<ILoggerManager>();
-            _mockMediator = new Mock<IMediator>();
 
             _handler = new DeleteDatingEventsCommandHandler(
                 _mockBlindDateRepository.Object,
                 _mockSpeedDatingEventRepository.Object,
-                _mockMediator.Object,
                 _mockLoggerManager.Object
             );
         }
@@ -117,40 +114,6 @@ namespace Fliq.Test.Dating.Commands.Both
             _mockSpeedDatingEventRepository?.Verify(repo => repo.DeleteMultipleAsync(It.Is<List<int>>(ids => ids.Contains(2))), Times.Once);
             _mockLoggerManager?.Verify(logger => logger.LogError(It.Is<string>(msg => msg.Contains("No dating events were deleted"))), Times.Once);
         }
-
-        //[TestMethod]
-        //public async Task Handle_PartialDeletion_ReturnsSuccessWithCorrectCounts()
-        //{
-        //    // Arrange
-        //    var datingOptions = new List<DatingOptions>
-        //    {
-        //        new DatingOptions { id = 1, DatingType = DatingType.BlindDating },
-        //        new DatingOptions { id = 2, DatingType = DatingType.SpeedDating }
-        //    };
-        //    var command = new DeleteDatingEventsCommand(datingOptions);
-
-        //    _mockBlindDateRepository?
-        //        .Setup(repo => repo.DeleteMultipleAsync(new List<int> { 1 }))
-        //        .ReturnsAsync(1);
-
-        //    _mockSpeedDatingEventRepository?
-        //        .Setup(repo => repo.DeleteMultipleAsync(new List<int> { 2 }))
-        //        .ReturnsAsync(0);
-
-        //    // Act
-        //    var result = await _handler.Handle(command, CancellationToken.None);
-
-        //    // Assert
-        //    Assert.IsFalse(result.IsError);
-        //    Assert.IsNotNull(result.Value);
-        //    Assert.AreEqual(1, result.Value.TotalDeletedCount);
-        //    Assert.AreEqual(1, result.Value.BlindDateDeletedCount);
-        //    Assert.AreEqual(0, result.Value.SpeedDateDeletedCount);
-
-        //    _mockBlindDateRepository?.Verify(repo => repo.DeleteMultipleAsync(It.Is<List<int>>(ids => ids.Contains(1))), Times.Once);
-        //    _mockSpeedDatingEventRepository?.Verify(repo => repo.DeleteMultipleAsync(It.Is<List<int>>(ids => ids.Contains(2))), Times.Once);
-        //    _mockLoggerManager?.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains("Total dating events deleted: 1"))), Times.Once);
-        //}
     }
 }
 
