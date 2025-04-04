@@ -50,7 +50,7 @@ namespace Fliq.Application.DatingEnvironment.Commands.BlindDates
                 return Errors.User.UserNotFound;
             }
 
-            blindDate.Status = DateStatus.Upcoming;
+            blindDate.Status = DateStatus.Rejected;
 
             await _blindDateRepository.UpdateAsync(blindDate);
 

@@ -31,14 +31,14 @@ namespace Fliq.Application.DatingEnvironment.Commands.SpeedDating
         {
 
             _logger.LogInfo($"Rejecting speed date with ID: {command.SpeedDateId}");
-            var blindDate = await _speedDateRepository.GetByIdAsync(command.SpeedDateId);
-            if (blindDate == null)
+            var speedDate = await _speedDateRepository.GetByIdAsync(command.SpeedDateId);
+            if (speedDate == null)
             {
                 _logger.LogError($"Speed date with ID: {command.SpeedDateId} was not found.");
                 return Errors.Dating.SpeedDateNotFound;
             }
 
-            if (blindDate.Status != DateStatus.Pending)
+            if (speedDate.Status != DateStatus.Pending)
             {
                 _logger.LogError($"Speed date with ID: {command.SpeedDateId} has been rejected already.");
                 return Errors.Dating.DateAlreadyRejected;
@@ -51,9 +51,9 @@ namespace Fliq.Application.DatingEnvironment.Commands.SpeedDating
                 return Errors.User.UserNotFound;
             }
 
-            blindDate.Status = DateStatus.Upcoming;
+            speedDate.Status = DateStatus.Rejected;
 
-            await _speedDateRepository.UpdateAsync(blindDate);
+            await _speedDateRepository.UpdateAsync(speedDate);
 
             _logger.LogInfo($"Speed Date with ID: {command.SpeedDateId} was rejected");
 

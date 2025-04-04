@@ -22,6 +22,11 @@ namespace Fliq.Domain.Entities.DatingEnvironment.SpeedDates
 
         public DateStatus Status { get; set; } = DateStatus.Pending;
 
+        // Track the creator
+        public bool CreatorIsAdmin { get; set; }
+        public int CreatedByUserId { get; set; }
+        public User CreatedByUser { get; set; } = default!;
+
         public int LocationId { get; set; }
         public Location Location { get; set; } = default!;
 
