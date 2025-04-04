@@ -38,7 +38,7 @@ namespace Fliq.Application.DatingEnvironment.Commands.SpeedDating
                 return Errors.Dating.SpeedDateNotFound;
             }
 
-            if (speedDate.Status != DateStatus.Pending)
+            if (speedDate.ContentCreationStatus == (int)ContentCreationStatus.Rejected)
             {
                 _logger.LogError($"Speed date with ID: {command.SpeedDateId} has been rejected already.");
                 return Errors.Dating.DateAlreadyRejected;
@@ -51,7 +51,7 @@ namespace Fliq.Application.DatingEnvironment.Commands.SpeedDating
                 return Errors.User.UserNotFound;
             }
 
-            speedDate.Status = DateStatus.Rejected;
+            speedDate.ContentCreationStatus = (int)ContentCreationStatus.Rejected;
 
             await _speedDateRepository.UpdateAsync(speedDate);
 

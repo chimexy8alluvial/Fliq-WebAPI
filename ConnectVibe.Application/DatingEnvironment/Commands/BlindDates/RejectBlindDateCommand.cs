@@ -37,7 +37,7 @@ namespace Fliq.Application.DatingEnvironment.Commands.BlindDates
                 return Errors.Dating.BlindDateNotFound;
             }
 
-            if (blindDate.Status != DateStatus.Pending)
+            if (blindDate.ContentCreationStatus == (int)ContentCreationStatus.Rejected)
             {
                 _logger.LogError($"Blind date with ID: {command.BlindDateId} has been rejected already.");
                 return Errors.Dating.DateAlreadyRejected;
@@ -50,7 +50,7 @@ namespace Fliq.Application.DatingEnvironment.Commands.BlindDates
                 return Errors.User.UserNotFound;
             }
 
-            blindDate.Status = DateStatus.Rejected;
+            blindDate.ContentCreationStatus = (int)ContentCreationStatus.Rejected;
 
             await _blindDateRepository.UpdateAsync(blindDate);
 

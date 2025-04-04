@@ -31,6 +31,7 @@ namespace Fliq.Domain.Entities.DatingEnvironment.BlindDates
         public DateStatus Status { get; set; } = DateStatus.Pending;
 
         // Track the creator
+        public int? ContentCreationStatus { get; set; }
         public bool CreatorIsAdmin { get; set; }
         public int CreatedByUserId { get; set; }
         public User CreatedByUser { get; set; } = default!;
