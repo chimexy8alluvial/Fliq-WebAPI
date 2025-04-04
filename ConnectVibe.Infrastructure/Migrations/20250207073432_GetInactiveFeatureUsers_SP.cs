@@ -20,6 +20,7 @@ namespace Fliq.Infrastructure.Migrations
                 SELECT UserId, Feature, MIN(LastActiveAt) AS LastActiveAt
                 FROM UserFeatureActivities
                 WHERE LastActiveAt < @ThresholdDate
+                  AND IsDeleted = 0 
                 GROUP BY UserId, Feature;
             END;");
         }
