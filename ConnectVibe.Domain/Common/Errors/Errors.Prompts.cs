@@ -15,6 +15,14 @@ namespace Fliq.Domain.Common.Errors
             code: "PromptQuestion.NotFound",
             description: "Prompt Question not found");
 
+            public static Error PromptAlreadyApproved => Error.Conflict(
+            code: "Question.QuestionAlreadyApproved;",
+            description: "This Prompt Question is already Approved");
+
+            public static Error PromptAlreadyRejected => Error.Conflict(
+            code: "Question.QuestionAlreadyRejected;",
+            description: "This Prompt Question is already Rejected");
+
             public static Error CategoryNotFound => Error.NotFound(
             code: "PromptCategory.NotFound",
             description: "Prompt Category not found");

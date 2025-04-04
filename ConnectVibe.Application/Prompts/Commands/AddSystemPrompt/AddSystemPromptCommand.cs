@@ -4,6 +4,7 @@ using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Prompts.Common;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Prompts;
+using Fliq.Domain.Enums;
 using MediatR;
 
 
@@ -48,7 +49,8 @@ namespace Fliq.Application.Prompts.Commands.AddSystemPrompt
             {
                 QuestionText = request.QuestionText,
                 IsSystemGenerated = true,
-                PromptCategoryId = request.CategoryId
+                PromptCategoryId = request.CategoryId,
+                ContentCreationStatus = (int)ContentCreationStatus.Pending, // set it to pending for super admin approval
             };
 
             _questionRepository.AddQuestion(promptQuestion);

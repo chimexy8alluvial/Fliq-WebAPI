@@ -261,7 +261,7 @@ namespace Fliq.Api.Controllers
         }
         /*---Admin fxns ----------*/
         [Authorize(Roles = "SuperAdmin,Admin")]
-        [HttpGet("users-count")]
+        [HttpGet("users-stake-count")]
         public async Task<IActionResult> GetUsersStakeCount([FromQuery] int userId)
         {
             _logger.LogInformation("Received request for inactive users count.");
@@ -277,7 +277,7 @@ namespace Fliq.Api.Controllers
         }
 
         [Authorize(Roles = "Admin,SuperAdmin")]
-        [HttpPut("approve-create-game-request/{gameRequestId}")]
+        [HttpPut("approve-game-creation/{gameRequestId}")]
         public async Task<IActionResult> ApproveGameCreationRequestById(int gameRequestId)
         {
             _logger.LogInformation($"Approve game creation request with ID: {gameRequestId} received");
@@ -296,7 +296,7 @@ namespace Fliq.Api.Controllers
 
         [Authorize(Roles = "Admin,SuperAdmin")]
         [HttpPut("reject-game-creation/{gameRequestId}")]
-        public async Task<IActionResult> RejectSpeedDateById(int gameRequestId)
+        public async Task<IActionResult> RejectGameCreationRequestById(int gameRequestId)
         {
             _logger.LogInformation($"Reject Game with ID: {gameRequestId} received");
             var userId = GetAuthUserId();
@@ -307,7 +307,7 @@ namespace Fliq.Api.Controllers
             _logger.LogInformation($"Reject Game with ID: {gameRequestId} executed. Result: {result} ");
 
             return result.Match(
-              cancelEventResult => Ok($"Speed date request with ID: {gameRequestId} was successfully rejected"),
+              RejectGameResult => Ok($"Speed date request with ID: {gameRequestId} was successfully rejected"),
               errors => Problem(errors)
           );
         }
