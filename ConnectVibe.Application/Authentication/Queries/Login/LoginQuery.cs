@@ -7,6 +7,7 @@ using Fliq.Application.Common.Security;
 using Fliq.Domain.Common.Errors;
 using ErrorOr;
 using MediatR;
+using Fliq.Domain.Entities;
 
 
 namespace Fliq.Application.Authentication.Queries.Login
@@ -21,11 +22,13 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, ErrorOr<Authenticat
     private readonly IJwtTokenGenerator _jwtTokenGenerator;
     private readonly IUserRepository _userRepository;
     private readonly ILoggerManager _logger;
-    public LoginQueryHandler(IJwtTokenGenerator jwtTokenGenerator, IUserRepository userRepository, ILoggerManager logger)
+    private readonly IAuditTrailRepository _auditTrailRepository;
+    public LoginQueryHandler(IJwtTokenGenerator jwtTokenGenerator, IUserRepository userRepository, ILoggerManager logger, IAuditTrailRepository auditTrailRepository)
     {
         _jwtTokenGenerator = jwtTokenGenerator;
         _userRepository = userRepository;
         _logger = logger;
+        _auditTrailRepository = auditTrailRepository;
     }
     public async Task<ErrorOr<AuthenticationResult>> Handle(LoginQuery query, CancellationToken cancellationToken)
     {
@@ -41,6 +44,19 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, ErrorOr<Authenticat
 
 
         var token = _jwtTokenGenerator.GenerateToken(user);
+
+        var auditTrail = new AuditTrail
+        {
+            UserId = user.Id,
+            UserFirstName = user.FirstName,
+            UserLastName = user.LastName,
+            UserEmail = user.Email,
+            UserRole = user.Role.Name,
+            AuditAction = $"Deactivating user with id {user.Id}",
+            //IPAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown",
+        };
+
+        await _auditTrailRepository.AddAuditTrailAsync(auditTrail);
 
         return new AuthenticationResult(user, token, "");
     }

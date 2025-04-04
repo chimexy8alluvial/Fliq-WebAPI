@@ -148,5 +148,32 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                     gameId, pageNumber, pageSize)
                 .ToList();
         }
+
+        public async Task<int> GetActiveGamesCountAsync()
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_GetActiveGamesCount", commandType: CommandType.StoredProcedure);
+                return count;
+            }
+        }
+
+        public async Task<int> GetGamersCountAsync()
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_GetTotalGamersCount", commandType: CommandType.StoredProcedure);
+                return count;
+            }
+        }
+
+        public async Task<int> GetTotalGamesPlayedCountAsync()
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_GetTotalGamesPlayedCount", commandType: CommandType.StoredProcedure);
+                return count;
+            }
+        }
     }
 }

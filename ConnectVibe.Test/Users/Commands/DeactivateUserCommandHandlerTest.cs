@@ -14,6 +14,7 @@ namespace Fliq.Test.Users.Commands
     {
         private Mock<IUserRepository> _mockUserRepository;
         private Mock<ILoggerManager> _mockLoggerManager;
+        private Mock<IAuditTrailRepository>? _auditTrailRepository;
         private DeactivateUserCommandHandler _handler;
 
         [TestInitialize]
@@ -21,10 +22,12 @@ namespace Fliq.Test.Users.Commands
         {
             _mockUserRepository = new Mock<IUserRepository>();
             _mockLoggerManager = new Mock<ILoggerManager>();
+            _auditTrailRepository = new Mock<IAuditTrailRepository>();
 
             _handler = new DeactivateUserCommandHandler(
                 _mockUserRepository.Object,
-                _mockLoggerManager.Object
+                _mockLoggerManager.Object,
+                _auditTrailRepository.Object
             );
         }
 

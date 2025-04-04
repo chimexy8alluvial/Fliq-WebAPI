@@ -23,6 +23,9 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
+using static Fliq.Application.Games.Queries.GetActiveGamesCountQuery.GetActiveGamesCountQuery;
+using static Fliq.Application.Games.Queries.GetNumberOfGamersCountQuery.GetNumberOfGamersCountQuery;
+using static Fliq.Application.Games.Queries.GetTotalGamesPlayed.GetTotalGamesPlayedCountQuery;
 
 namespace Fliq.Api.Controllers
 {
@@ -269,10 +272,57 @@ namespace Fliq.Api.Controllers
             var result = await _mediator.Send(query);
 
             return result.Match(
-              matchedProfileResult => Ok(_mapper.Map<UserCountResponse>(result.Value)),
+              matchedProfileResult => Ok(_mapper.Map<GetAllPaginatedAuditTrailCommand>(result.Value)),
               errors => Problem(errors)
           );
         }
+
+        [HttpGet("active-games-count")]
+        [Authorize(Roles = "SuperAdmin,Admin")]
+        public async Task<IActionResult> GetActiveGamesCount()
+        {
+            _logger.LogInformation("Recieved request for active games count");
+
+            var query = new ActiveGamesCountQuery();
+            var result = await _mediator.Send(query);
+
+            return result.Match(
+                matchedProfileResult => Ok(_mapper.Map<GetAllPaginatedAuditTrailCommand>(result.Value)),
+                errors => Problem(errors)
+            );
+        }
+
+        [HttpGet("number-of-gamers-count")]
+        [Authorize(Roles = "SuperAdmin,Admin")]
+        public async Task<IActionResult> GetNumberOfGamersCount()
+        {
+            _logger.LogInformation("Recieved request for number of gamers count");
+
+            var query = new NumberOfGamersCountQuery();
+            var result = await _mediator.Send(query);
+
+            return result.Match(
+                matchedProfileResult => Ok(_mapper.Map<GetAllPaginatedAuditTrailCommand>(result.Value)),
+                errors => Problem(errors)
+            );
+        }
+
+        [HttpGet("total-games-played-count")]
+        [Authorize(Roles = "SuperAdmin,Admin")]
+        public async Task<IActionResult> GetTotalGamesPlayedCount()
+        {
+            _logger.LogInformation("Recieved request for total games played count");
+
+            var query = new TotalGamesPlayedCountQuery();
+            var result = await _mediator.Send(query);
+
+            return result.Match(
+                matchedProfileResult => Ok(_mapper.Map<GetAllPaginatedAuditTrailCommand>(result.Value)),
+                errors => Problem(errors)
+            );
+        }
+
+
 
     }
 }

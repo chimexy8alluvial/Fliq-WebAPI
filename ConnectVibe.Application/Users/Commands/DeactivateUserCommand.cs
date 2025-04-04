@@ -3,7 +3,10 @@ using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Domain.Common.Errors;
+using Fliq.Domain.Entities;
 using MediatR;
+using Microsoft.AspNetCore.Http;
+using System.Net.Http;
 
 namespace Fliq.Application.Users.Commands
 {
@@ -13,11 +16,15 @@ namespace Fliq.Application.Users.Commands
     {
         private readonly IUserRepository _userRepository;
         private readonly ILoggerManager _logger;
+        //private readonly HttpContext _httpContext;
+        private readonly IAuditTrailRepository _auditTrailRepository;
 
-        public DeactivateUserCommandHandler(IUserRepository userRepository, ILoggerManager logger)
+        public DeactivateUserCommandHandler(IUserRepository userRepository, ILoggerManager logger, IAuditTrailRepository auditTrailRepository)
         {
             _userRepository = userRepository;
             _logger = logger;
+            //_httpContext = httpContext;
+            _auditTrailRepository = auditTrailRepository;
         }
 
         public async Task<ErrorOr<Unit>> Handle(DeactivateUserCommand command, CancellationToken cancellationToken)
@@ -36,6 +43,19 @@ namespace Fliq.Application.Users.Commands
 
             _userRepository.Update(user);
             _logger.LogInfo($"User with ID {command.UserId} Deactivated successfully");
+
+            var auditTrail = new AuditTrail
+            {
+                UserId = user.Id,
+                UserFirstName = user.FirstName,
+                UserLastName = user.LastName,
+                UserEmail = user.Email,
+                UserRole = user.Role.Name,
+                AuditAction = $"Deactivating user with id {user.Id}",
+                //IPAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown",
+            };
+
+            await _auditTrailRepository.AddAuditTrailAsync(auditTrail);
 
             return Unit.Value;
         }
