@@ -3,7 +3,6 @@ using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Pagination;
 using Fliq.Domain.Entities;
-using Fliq.Domain.Entities.HelpAndSupport;
 using System.Data;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
