@@ -18,7 +18,7 @@ namespace Fliq.Infrastructure.Migrations
                SELECT COUNT(DISTINCT u.Id) AS MaleUserCount
                 FROM Users u
                 LEFT JOIN UserProfiles up ON u.Id = up.UserId
-                LEFT JOIN Gender g ON up.Id = g.UserProfileId
+                 LEFT JOIN Genders g ON up.GenderId = g.Id
 
                 WHERE 
                     u.IsDeleted = 0
