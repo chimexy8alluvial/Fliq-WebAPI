@@ -2,9 +2,7 @@
 {
     public class Ethnicity : Record
     {
-        public int UserProfileId { get; set; }
-        public EthnicityType EthnicityType { get; set; }
-        public bool IsVisible { get; set; }
+        public string EthnicityType { get; set; } = default!;
     }
 
     public enum EthnicityType

@@ -19,40 +19,35 @@ namespace Fliq.Application.Profile.Commands.Create
                 RuleFor(x => x.DOB)
                     .NotEmpty().WithMessage("Date of Birth is required.");
 
-                RuleFor(x => x.Gender)
-                    .NotNull().WithMessage("Gender is required.")
-                    .SetValidator(new GenderValidator());
+                RuleFor(x => x.GenderId)
+                    .GreaterThan(0).WithMessage("Gender is required.");
 
-                RuleFor(x => x.SexualOrientation)
-                    .NotNull().When(x => x.ProfileTypes.Any(pt => pt == ProfileType.Dating || pt == ProfileType.Friendship))
-                    .WithMessage("Sexual Orientation is required for Dating or Friendship profile types.")
-                    .SetValidator(new SexualOrientationValidator());
+                RuleFor(x => x.SexualOrientationId)
+                    .GreaterThan(0).When(x => x.ProfileTypes.Any(pt => pt == ProfileType.Dating || pt == ProfileType.Friendship))
+                    .WithMessage("Sexual Orientation is required for Dating or Friendship profile types.");
 
-                RuleFor(x => x.Religion)
-                    .NotNull().WithMessage("Religion is required.")
-                    .SetValidator(new ReligionValidator());
 
-                RuleFor(x => x.Ethnicity)
-                    .NotNull().WithMessage("Ethnicity is required.")
-                    .SetValidator(new EthnicityValidator());
+                RuleFor(x => x.ReligionId)
+                    .GreaterThan(0)
+                    .WithMessage("Religion is required.");
 
-                RuleFor(x => x.Occupation)
-                    .NotNull().WithMessage("Occupation is required.")
-                    .SetValidator(new OccupationValidator());
+                RuleFor(x => x.EthnicityId)
+                     .GreaterThan(0).WithMessage("Ethnicity is required.");
+                    
 
-                RuleFor(x => x.EducationStatus)
-                    .NotNull().WithMessage("Education Status is required.")
-                    .SetValidator(new EducationStatusValidator());
+                RuleFor(x => x.OccupationId)
+                    .GreaterThan(0).WithMessage("Occupation is required.");
 
-                RuleFor(x => x.HaveKids)
-                    .NotNull().When(x => x.ProfileTypes.Any(pt => pt == ProfileType.Dating || pt == ProfileType.Friendship))
-                    .WithMessage("HaveKids is required for Dating or Friendship profile types.")
-                    .SetValidator(new HaveKidsValidator());
+                RuleFor(x => x.EducationStatusId)
+                    .GreaterThan(0).WithMessage("Education Status is required.");
 
-                RuleFor(x => x.WantKids)
-                    .NotNull().When(x => x.ProfileTypes.Any(pt => pt == ProfileType.Dating || pt == ProfileType.Friendship))
-                    .WithMessage("WantKids is required for Dating or Friendship profile types.")
-                    .SetValidator(new WantKidsValidator());
+                RuleFor(x => x.HaveKidsId)
+                    .GreaterThan(0).When(x => x.ProfileTypes.Any(pt => pt == ProfileType.Dating || pt == ProfileType.Friendship))
+                    .WithMessage("HaveKids is required for Dating or Friendship profile types.");
+
+                RuleFor(x => x.WantKidsId)
+                    .GreaterThan(0).When(x => x.ProfileTypes.Any(pt => pt == ProfileType.Dating || pt == ProfileType.Friendship))
+                    .WithMessage("WantKids is required for Dating or Friendship profile types.");
             });
 
             When(x => x.CurrentSection == ProfileSection.Photos, () =>
@@ -100,88 +95,9 @@ namespace Fliq.Application.Profile.Commands.Create
         }
     }
 
-    // Validators for nested DTOs
-    public class GenderValidator : AbstractValidator<Gender>
-    {
-        public GenderValidator()
-        {
-            RuleFor(x => x.GenderType)
-                .IsInEnum().WithMessage("Invalid GenderType value.");
-
-            RuleFor(x => x.IsVisible)
-                .NotNull().WithMessage("IsVisible is required.");
-        }
-    }
-
-    public class SexualOrientationValidator : AbstractValidator<SexualOrientation?>
-    {
-        public SexualOrientationValidator()
-        {
-            RuleFor(x => x)
-            .NotNull().WithMessage("Sexual Orientation is required.")
-            .Must(x => x != null && Enum.IsDefined(typeof(SexualOrientationType), x.SexualOrientationType))
-            .WithMessage("Invalid SexualOrientationType value.");
-
-            RuleFor(x => x.IsVisible)
-                .NotNull().WithMessage("IsVisible is required.")
-                .When(x => x != null);
-        }
-    }
-
-    public class ReligionValidator : AbstractValidator<Religion>
-    {
-        public ReligionValidator()
-        {
-            RuleFor(x => x.ReligionType)
-                .IsInEnum().WithMessage("Invalid ReligionType value.");
-
-            RuleFor(x => x.IsVisible)
-                .NotNull().WithMessage("IsVisible is required.");
-        }
-    }
-
-    public class EthnicityValidator : AbstractValidator<Ethnicity>
-    {
-        public EthnicityValidator()
-        {
-            RuleFor(x => x.EthnicityType)
-                .IsInEnum().WithMessage("Invalid EthnicityType value.");
-
-            RuleFor(x => x.IsVisible)
-                .NotNull().WithMessage("IsVisible is required.");
-        }
-    }
-
-    public class HaveKidsValidator : AbstractValidator<HaveKids?>
-    {
-        public HaveKidsValidator()
-        {
-            RuleFor(x => x)
-             .NotNull().WithMessage("Have Kids information is required.")
-             .Must(x => x != null && Enum.IsDefined(typeof(HaveKidsType), x.HaveKidsType))
-             .WithMessage("Invalid HaveKidsType value.");
-
-            RuleFor(x => x.IsVisible)
-                .NotNull().WithMessage("IsVisible is required.")
-                .When(x => x != null);
-        }
-    }
-
-    public class WantKidsValidator : AbstractValidator<WantKids?>
-    {
-        public WantKidsValidator()
-        {
-            RuleFor(x => x)
-             .NotNull().WithMessage("Want Kids information is required.")
-             .Must(x => x != null && Enum.IsDefined(typeof(WantKidsType), x.WantKidsType))
-             .WithMessage("Invalid WantKidsType value.");
-
-            RuleFor(x => x.IsVisible)
-                .NotNull().WithMessage("IsVisible is required.")
-                .When(x => x != null);
-        }
-    }
-
+   
+  
+   
     public class ProfilePhotoDtoValidator : AbstractValidator<ProfilePhotoMapped>
     {
         public ProfilePhotoDtoValidator()
@@ -215,30 +131,6 @@ namespace Fliq.Application.Profile.Commands.Create
         }
     }
 
-    public class OccupationValidator : AbstractValidator<Occupation>
-    {
-        public OccupationValidator()
-        {
-            RuleFor(x => x.OccupationName)
-                .NotEmpty().WithMessage("Occupation name is required.")
-                .MaximumLength(100).WithMessage("Occupation name cannot be longer than 100 characters.");
-
-            RuleFor(x => x.IsVisible)
-                .NotNull().WithMessage("IsVisible is required.");
-        }
-    }
-
-    public class EducationStatusValidator : AbstractValidator<EducationStatus>
-    {
-        public EducationStatusValidator()
-        {
-            RuleFor(x => x.EducationLevel)
-                .IsInEnum().WithMessage("Invalid EducationLevel value.");
-
-            RuleFor(x => x.IsVisible)
-                .NotNull().WithMessage("IsVisible is required.");
-        }
-    }
 
     public class PromptResponseValidator : AbstractValidator<PromptResponseDto>
     {

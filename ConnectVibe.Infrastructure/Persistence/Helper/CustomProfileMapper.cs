@@ -28,50 +28,44 @@ namespace Fliq.Infrastructure.Persistence.Helper
                 Gender = new Gender
                 {
                     Id = firstRow.GenderId,
-                    GenderType = (GenderType)firstRow.GenderType,
-                    IsVisible = firstRow.GenderVisible
+                    GenderType = firstRow.GenderType,
                 },
                 Occupation = new Occupation
                 {
                     Id = firstRow.OccupationId,
                     OccupationName = firstRow.OccupationName,
-                    IsVisible = firstRow.OccupationVisible
                 },
                 EducationStatus = new EducationStatus
                 {
                     Id = firstRow.EducationStatusId,
-                    EducationLevel = (EducationLevel)firstRow.EducationLevel,
-                    IsVisible = firstRow.EducationVisible
+                    EducationLevel = firstRow.EducationLevel,
                 },
                 SexualOrientation = new SexualOrientation
                 {
                     Id = firstRow.SexualOrientationId,
-                    SexualOrientationType = (SexualOrientationType)firstRow.SexualOrientationType,
-                    IsVisible = firstRow.SexualOrientationVisible
+                    SexualOrientationType = firstRow.SexualOrientationType,
                 },
                 Religion = new Religion
                 {
                     Id = firstRow.ReligionId,
-                    ReligionType = (ReligionType)firstRow.ReligionType,
-                    IsVisible = firstRow.ReligionVisible
+                    ReligionType = firstRow.ReligionType,
                 },
                 Ethnicity = new Ethnicity
                 {
                     Id = firstRow.EthnicityId,
-                    EthnicityType = (EthnicityType)firstRow.EthnicityType,
-                    IsVisible = firstRow.EthnicityVisible
+                    EthnicityType = firstRow.EthnicityType,
                 },
                 WantKids = new WantKids
                 {
                     Id = firstRow.WantKidsId,
-                    WantKidsType = (WantKidsType)firstRow.WantKidsType,
-                    IsVisible = firstRow.WantKidsVisible
+                    WantKidsType = firstRow.WantKidsType,
+                    
                 },
                 HaveKids = new HaveKids
                 {
                     Id = firstRow.HaveKidsId,
-                    HaveKidsType = (HaveKidsType)firstRow.HaveKidsType,
-                    IsVisible = firstRow.HaveKidsVisible
+                    HaveKidsType = firstRow.HaveKidsType,
+                   
                 },
                 Location = new Location
                 {

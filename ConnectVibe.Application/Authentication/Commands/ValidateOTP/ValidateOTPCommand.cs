@@ -56,7 +56,7 @@ namespace Fliq.Application.Authentication.Commands.ValidateOTP
 
             streamUser.SetData("email", user.Email);
             streamUser.SetData("name", user.DisplayName);
-
+            //please check
             await userClient.UpsertManyAsync([streamUser]);
             #endregion
 

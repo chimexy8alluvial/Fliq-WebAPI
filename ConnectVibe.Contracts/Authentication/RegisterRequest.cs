@@ -6,5 +6,7 @@ public record RegisterRequest(
     string? DisplayName,
     string Email,
     string Password,
-    int Language
+    int Language,
+    int Theme,
+    string? PhoneNumber
     );

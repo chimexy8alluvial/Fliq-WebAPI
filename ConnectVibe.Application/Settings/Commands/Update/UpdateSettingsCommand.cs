@@ -4,6 +4,7 @@ using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Settings.Common;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Settings;
+using Fliq.Domain.Enums;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -16,7 +17,7 @@ namespace Fliq.Application.Settings.Commands.Update
         ScreenMode ScreenMode,
          bool RelationAvailability,
         bool ShowMusicAndGameStatus,
-        string Language,
+        Language Language,
         List<NotificationPreference> NotificationPreferences,
         Filter Filter,
         int UserId

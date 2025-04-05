@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fliq.Infrastructure.Migrations
 {
     [DbContext(typeof(FliqDbContext))]
-    [Migration("20250203101704_initial_migration")]
-    partial class initial_migration
+    [Migration("20250330174403_seedprofiledatamig")]
+    partial class seedprofiledatamig
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,247 @@ namespace Fliq.Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("Fliq.Domain.Entities.DatingEnvironment.BlindDates.BlindDate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BlindDateCategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CreatedByUserId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsOneOnOne")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsRecordingEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("LocationId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("NumberOfParticipants")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RecordingUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("SessionEndTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("SessionStartTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("StartDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BlindDateCategoryId");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("LocationId");
+
+                    b.ToTable("BlindDates");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.DatingEnvironment.BlindDates.BlindDateCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CategoryName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BlindDateCategories");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.DatingEnvironment.BlindDates.BlindDateParticipant", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BlindDateId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsCreator")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("JoinedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BlindDateId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("BlindDatesParticipants");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.DatingEnvironment.SpeedDates.SpeedDatingEvent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Category")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("DurationPerPairingMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("EndSessionTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("LocationId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MaxAge")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MaxParticipants")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MinAge")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("StartSessionTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LocationId");
+
+                    b.ToTable("SpeedDatingEvents");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.DatingEnvironment.SpeedDates.SpeedDatingParticipant", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("HasCompletedAllRounds")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsCreator")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("SpeedDatingEventId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SpeedDatingEventId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("SpeedDatingParticipanticipants");
+                });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Event.Currency", b =>
                 {
@@ -69,7 +310,6 @@ namespace Fliq.Infrastructure.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("NumberOfTickets")
@@ -651,10 +891,16 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsResolved")
+                        .HasColumnType("bit");
+
                     b.Property<int>("RecipientId")
                         .HasColumnType("int");
 
                     b.Property<int>("RequesterId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ResolutionOption")
                         .HasColumnType("int");
 
                     b.Property<int>("StakeStatus")
@@ -666,6 +912,90 @@ namespace Fliq.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Stakes");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.HelpAndSupport.HelpMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("SenderId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SenderName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("SupportTicketId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SupportTicketId");
+
+                    b.ToTable("HelpMessage");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.HelpAndSupport.SupportTicket", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("RequestStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RequestType")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RequesterId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RequesterName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TicketId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SupportTickets");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.MatchedProfile.MatchRequest", b =>
@@ -833,7 +1163,7 @@ namespace Fliq.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("DateCreated")
+                    b.Property<DateTime?>("DateCreated")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("DateModified")
@@ -931,8 +1261,9 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<DateTime?>("DateModified")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("EducationLevel")
-                        .HasColumnType("int");
+                    b.Property<string>("EducationLevel")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -959,14 +1290,18 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<DateTime?>("DateModified")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("EthnicityType")
-                        .HasColumnType("int");
+                    b.Property<string>("EthnicityType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsVisible")
                         .HasColumnType("bit");
+
+                    b.Property<int>("UserProfileId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -996,7 +1331,13 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<bool>("IsVisible")
                         .HasColumnType("bit");
 
+                    b.Property<int>("UserProfileId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserProfileId")
+                        .IsUnique();
 
                     b.ToTable("Gender");
                 });
@@ -1055,7 +1396,13 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<bool>("IsVisible")
                         .HasColumnType("bit");
 
+                    b.Property<int>("UserProfileId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserProfileId")
+                        .IsUnique();
 
                     b.ToTable("HaveKids");
                 });
@@ -1279,7 +1626,11 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<bool>("IsVisible")
                         .HasColumnType("bit");
 
-                    b.Property<int>("ReligionType")
+                    b.Property<string>("ReligionType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserProfileId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -1310,7 +1661,13 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<int>("SexualOrientationType")
                         .HasColumnType("int");
 
+                    b.Property<int>("UserProfileId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserProfileId")
+                        .IsUnique();
 
                     b.ToTable("SexualOrientation");
                 });
@@ -1326,6 +1683,10 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<bool>("AllowNotifications")
                         .HasColumnType("bit");
 
+                    b.Property<string>("CompletedSections")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("DOB")
                         .HasColumnType("datetime2");
 
@@ -1335,26 +1696,24 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<DateTime?>("DateModified")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("EducationStatusId")
+                    b.Property<int?>("EducationStatusId")
                         .HasColumnType("int");
 
-                    b.Property<int>("EthnicityId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("GenderId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("HaveKidsId")
+                    b.Property<int?>("EthnicityId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int>("LocationId")
+                    b.Property<int?>("LocationId")
                         .HasColumnType("int");
 
-                    b.Property<int>("OccupationId")
+                    b.Property<int?>("OccupationId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Passions")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PassionsJson")
                         .IsRequired()
@@ -1369,16 +1728,10 @@ namespace Fliq.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("ProfileTypes");
 
-                    b.Property<int>("ReligionId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("SexualOrientationId")
+                    b.Property<int?>("ReligionId")
                         .HasColumnType("int");
 
                     b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("WantKidsId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -1387,24 +1740,20 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasIndex("EthnicityId");
 
-                    b.HasIndex("GenderId");
-
-                    b.HasIndex("HaveKidsId");
-
                     b.HasIndex("LocationId");
 
                     b.HasIndex("OccupationId");
 
                     b.HasIndex("ReligionId");
 
-                    b.HasIndex("SexualOrientationId");
-
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.HasIndex("WantKidsId");
-
-                    b.ToTable("UserProfiles");
+                    b.ToTable("UserProfiles", t =>
+                        {
+                            t.Property("Passions")
+                                .HasColumnName("Passions1");
+                        });
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.WantKids", b =>
@@ -1427,10 +1776,16 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<bool>("IsVisible")
                         .HasColumnType("bit");
 
+                    b.Property<int>("UserProfileId")
+                        .HasColumnType("int");
+
                     b.Property<int>("WantKidsType")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserProfileId")
+                        .IsUnique();
 
                     b.ToTable("WantKids");
                 });
@@ -1539,6 +1894,55 @@ namespace Fliq.Infrastructure.Migrations
                     b.HasIndex("UserProfileId");
 
                     b.ToTable("PromptResponse");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.Role", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Roles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            DateCreated = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsDeleted = false,
+                            Name = "SuperAdmin"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            DateCreated = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsDeleted = false,
+                            Name = "Admin"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            DateCreated = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsDeleted = false,
+                            Name = "User"
+                        });
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Settings.Filter", b =>
@@ -1650,9 +2054,8 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Language")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Language")
+                        .HasColumnType("int");
 
                     b.Property<bool>("RelationAvailability")
                         .HasColumnType("bit");
@@ -1720,7 +2123,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("DateCreated")
+                    b.Property<DateTime?>("DateCreated")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("DateModified")
@@ -1787,6 +2190,9 @@ namespace Fliq.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -1795,6 +2201,9 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.Property<bool>("IsEmailValidated")
                         .HasColumnType("bit");
+
+                    b.Property<DateTime>("LastActiveAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -1808,9 +2217,52 @@ namespace Fliq.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("RoleId");
+
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.UserFeatureActivities.UserFeatureActivity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DateCreated")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DateModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Feature")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("LastActiveAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserFeatureActivities");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Wallet", b =>
@@ -1843,11 +2295,11 @@ namespace Fliq.Infrastructure.Migrations
 
             modelBuilder.Entity("Fliq.Domain.Entities.WalletHistory", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int?>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"));
 
                     b.Property<int>("ActivityType")
                         .HasColumnType("int");
@@ -1881,6 +2333,82 @@ namespace Fliq.Infrastructure.Migrations
                     b.HasIndex("WalletId");
 
                     b.ToTable("WalletHistories");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.DatingEnvironment.BlindDates.BlindDate", b =>
+                {
+                    b.HasOne("Fliq.Domain.Entities.DatingEnvironment.BlindDates.BlindDateCategory", "BlindDateCategory")
+                        .WithMany("BlindDates")
+                        .HasForeignKey("BlindDateCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Fliq.Domain.Entities.User", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Fliq.Domain.Entities.Profile.Location", "Location")
+                        .WithMany()
+                        .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BlindDateCategory");
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("Location");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.DatingEnvironment.BlindDates.BlindDateParticipant", b =>
+                {
+                    b.HasOne("Fliq.Domain.Entities.DatingEnvironment.BlindDates.BlindDate", "BlindDate")
+                        .WithMany("Participants")
+                        .HasForeignKey("BlindDateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Fliq.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BlindDate");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.DatingEnvironment.SpeedDates.SpeedDatingEvent", b =>
+                {
+                    b.HasOne("Fliq.Domain.Entities.Profile.Location", "Location")
+                        .WithMany()
+                        .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Location");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.DatingEnvironment.SpeedDates.SpeedDatingParticipant", b =>
+                {
+                    b.HasOne("Fliq.Domain.Entities.DatingEnvironment.SpeedDates.SpeedDatingEvent", "SpeedDatingEvent")
+                        .WithMany("Participants")
+                        .HasForeignKey("SpeedDatingEventId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Fliq.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SpeedDatingEvent");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Event.Discount", b =>
@@ -2018,6 +2546,15 @@ namespace Fliq.Infrastructure.Migrations
                     b.Navigation("GameSession");
                 });
 
+            modelBuilder.Entity("Fliq.Domain.Entities.HelpAndSupport.HelpMessage", b =>
+                {
+                    b.HasOne("Fliq.Domain.Entities.HelpAndSupport.SupportTicket", null)
+                        .WithMany("Messages")
+                        .HasForeignKey("SupportTicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Fliq.Domain.Entities.MatchedProfile.MatchRequest", b =>
                 {
                     b.HasOne("Fliq.Domain.Entities.User", null)
@@ -2063,6 +2600,15 @@ namespace Fliq.Infrastructure.Migrations
                         .HasForeignKey("LocationResultId");
                 });
 
+            modelBuilder.Entity("Fliq.Domain.Entities.Profile.Gender", b =>
+                {
+                    b.HasOne("Fliq.Domain.Entities.Profile.UserProfile", null)
+                        .WithOne("Gender")
+                        .HasForeignKey("Fliq.Domain.Entities.Profile.Gender", "UserProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.Geometry", b =>
                 {
                     b.HasOne("Fliq.Domain.Entities.Profile.Locationn", "Location")
@@ -2072,6 +2618,15 @@ namespace Fliq.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Location");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.Profile.HaveKids", b =>
+                {
+                    b.HasOne("Fliq.Domain.Entities.Profile.UserProfile", null)
+                        .WithOne("HaveKids")
+                        .HasForeignKey("Fliq.Domain.Entities.Profile.HaveKids", "UserProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.LocationDetail", b =>
@@ -2107,51 +2662,36 @@ namespace Fliq.Infrastructure.Migrations
                         .HasForeignKey("UserProfileId");
                 });
 
+            modelBuilder.Entity("Fliq.Domain.Entities.Profile.SexualOrientation", b =>
+                {
+                    b.HasOne("Fliq.Domain.Entities.Profile.UserProfile", null)
+                        .WithOne("SexualOrientation")
+                        .HasForeignKey("Fliq.Domain.Entities.Profile.SexualOrientation", "UserProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.UserProfile", b =>
                 {
                     b.HasOne("Fliq.Domain.Entities.Profile.EducationStatus", "EducationStatus")
                         .WithMany()
-                        .HasForeignKey("EducationStatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("EducationStatusId");
 
                     b.HasOne("Fliq.Domain.Entities.Profile.Ethnicity", "Ethnicity")
                         .WithMany()
-                        .HasForeignKey("EthnicityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Fliq.Domain.Entities.Profile.Gender", "Gender")
-                        .WithMany()
-                        .HasForeignKey("GenderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Fliq.Domain.Entities.Profile.HaveKids", "HaveKids")
-                        .WithMany()
-                        .HasForeignKey("HaveKidsId");
+                        .HasForeignKey("EthnicityId");
 
                     b.HasOne("Fliq.Domain.Entities.Profile.Location", "Location")
                         .WithMany()
-                        .HasForeignKey("LocationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("LocationId");
 
                     b.HasOne("Fliq.Domain.Entities.Profile.Occupation", "Occupation")
                         .WithMany()
-                        .HasForeignKey("OccupationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("OccupationId");
 
                     b.HasOne("Fliq.Domain.Entities.Profile.Religion", "Religion")
                         .WithMany()
-                        .HasForeignKey("ReligionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Fliq.Domain.Entities.Profile.SexualOrientation", "SexualOrientation")
-                        .WithMany()
-                        .HasForeignKey("SexualOrientationId");
+                        .HasForeignKey("ReligionId");
 
                     b.HasOne("Fliq.Domain.Entities.User", "User")
                         .WithOne("UserProfile")
@@ -2159,17 +2699,9 @@ namespace Fliq.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Fliq.Domain.Entities.Profile.WantKids", "WantKids")
-                        .WithMany()
-                        .HasForeignKey("WantKidsId");
-
                     b.Navigation("EducationStatus");
 
                     b.Navigation("Ethnicity");
-
-                    b.Navigation("Gender");
-
-                    b.Navigation("HaveKids");
 
                     b.Navigation("Location");
 
@@ -2177,11 +2709,16 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.Navigation("Religion");
 
-                    b.Navigation("SexualOrientation");
-
                     b.Navigation("User");
+                });
 
-                    b.Navigation("WantKids");
+            modelBuilder.Entity("Fliq.Domain.Entities.Profile.WantKids", b =>
+                {
+                    b.HasOne("Fliq.Domain.Entities.Profile.UserProfile", null)
+                        .WithOne("WantKids")
+                        .HasForeignKey("Fliq.Domain.Entities.Profile.WantKids", "UserProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Prompts.PromptQuestion", b =>
@@ -2263,6 +2800,28 @@ namespace Fliq.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Fliq.Domain.Entities.User", b =>
+                {
+                    b.HasOne("Fliq.Domain.Entities.Role", "Role")
+                        .WithMany("Users")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.UserFeatureActivities.UserFeatureActivity", b =>
+                {
+                    b.HasOne("Fliq.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Fliq.Domain.Entities.WalletHistory", b =>
                 {
                     b.HasOne("Fliq.Domain.Entities.Wallet", "Wallet")
@@ -2272,6 +2831,21 @@ namespace Fliq.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Wallet");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.DatingEnvironment.BlindDates.BlindDate", b =>
+                {
+                    b.Navigation("Participants");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.DatingEnvironment.BlindDates.BlindDateCategory", b =>
+                {
+                    b.Navigation("BlindDates");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.DatingEnvironment.SpeedDates.SpeedDatingEvent", b =>
+                {
+                    b.Navigation("Participants");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Event.Events", b =>
@@ -2293,6 +2867,11 @@ namespace Fliq.Infrastructure.Migrations
                     b.Navigation("Stake");
                 });
 
+            modelBuilder.Entity("Fliq.Domain.Entities.HelpAndSupport.SupportTicket", b =>
+                {
+                    b.Navigation("Messages");
+                });
+
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.Location", b =>
                 {
                     b.Navigation("LocationDetail")
@@ -2311,14 +2890,27 @@ namespace Fliq.Infrastructure.Migrations
 
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.UserProfile", b =>
                 {
+                    b.Navigation("Gender");
+
+                    b.Navigation("HaveKids");
+
                     b.Navigation("Photos");
 
                     b.Navigation("PromptResponses");
+
+                    b.Navigation("SexualOrientation");
+
+                    b.Navigation("WantKids");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Prompts.PromptCategory", b =>
                 {
                     b.Navigation("PromptQuestions");
+                });
+
+            modelBuilder.Entity("Fliq.Domain.Entities.Role", b =>
+                {
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Settings.Filter", b =>
