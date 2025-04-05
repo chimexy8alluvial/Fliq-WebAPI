@@ -1,6 +1,10 @@
-﻿using Fliq.Application.Common.Interfaces.Persistence;
+﻿using Dapper;
+using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.Common.Pagination;
 using Fliq.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
+using Fliq.Domain.Entities.HelpAndSupport;
+using System.Data;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {
@@ -8,9 +12,13 @@ namespace Fliq.Infrastructure.Persistence.Repositories
     public class AuditTrailRepository : IAuditTrailRepository
     {
         private readonly FliqDbContext _dbContext;
-        public AuditTrailRepository(FliqDbContext dbContext)
+        private readonly IDbConnectionFactory _connectionFactory;
+        private readonly ILoggerManager _loggerManager;
+        public AuditTrailRepository(FliqDbContext dbContext, IDbConnectionFactory connectionFactory, ILoggerManager loggerManager)
         {
             _dbContext = dbContext;
+            _connectionFactory = connectionFactory;
+            _loggerManager = loggerManager;
         }
         public async Task AddAuditTrailAsync(AuditTrail auditTrail)
         {
@@ -23,35 +31,55 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<List<AuditTrail>> GetAllAuditTrailsAsync(string? filterByAction = null, string? filterByUserEmail = null, DateTime? startDate = null, DateTime? endDate = null)
+        public async Task<List<AuditTrail>> GetAllAuditTrailsAsync(PaginationRequest paginationRequest)
         {
-            var query = _dbContext.Set<AuditTrail>().AsQueryable();
-
-            // Apply filters
-            if (!string.IsNullOrEmpty(filterByAction))
+            try
             {
-                query = query.Where(a => a.AuditAction.Contains(filterByAction));
-            }
+                using (var connection = _connectionFactory.CreateConnection())
+                {
+                    _loggerManager.LogInfo($"Fetching paginated audit trails. Page: {paginationRequest.PageNumber}, PageSize: {paginationRequest.PageSize}");
 
-            if (!string.IsNullOrEmpty(filterByUserEmail))
+                    var parameters = CreateDynamicParameters(paginationRequest); ;
+                    var sql = "sp_GetAllPaginatedAuditTrails";
+
+                    var auditTrails = await connection.QueryAsync<AuditTrail>(sql, parameters, commandType: CommandType.StoredProcedure);
+
+                    return auditTrails.ToList();
+                }
+            }
+            catch (Exception ex)
             {
-                query = query.Where(a => a.UserEmail.Contains(filterByUserEmail));
+                _loggerManager.LogError($"Error fetching paginated audit trails: {ex.Message}");
+                throw;
             }
+        }
 
-            //if (startDate.HasValue)
-            //{
-            //    query = query.Where(a => a.CreatedAt >= startDate.Value);
-            //}
+        private static DynamicParameters CreateDynamicParameters(PaginationRequest paginationRequest)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@pageNumber", paginationRequest.PageNumber);
+            parameters.Add("@pageSize", paginationRequest.PageSize);
 
-            //if (endDate.HasValue)
-            //{
-            //    query = query.Where(a => a.CreatedAt <= endDate.Value);
-            //}
+            return parameters;
+        }
 
-            // Execute stored procedure for final retrieval (example)
-            var results = await query.ToListAsync();
+        public async Task<int> GetTotalAuditTrailCountAsync()
+        {
+                try
+                {
+                    using (var connection = _connectionFactory.CreateConnection())
+                    {
+                        var sql = "SELECT COUNT(*) FROM AuditTrails";
 
-            return results;
+                        var totalCount = await connection.ExecuteScalarAsync<int>(sql);
+                        return totalCount;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _loggerManager.LogError($"Error fetching total count of audit trails: {ex.Message}");
+                    throw;
+                }
         }
     }
 }

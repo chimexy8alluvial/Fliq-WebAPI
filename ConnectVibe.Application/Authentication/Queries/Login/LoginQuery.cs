@@ -52,7 +52,7 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, ErrorOr<Authenticat
             UserLastName = user.LastName,
             UserEmail = user.Email,
             UserRole = user.Role.Name,
-            AuditAction = $"Deactivating user with id {user.Id}",
+            AuditAction = $"Logged in user with id {user.Id}",
             //IPAddress = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown",
         };
 
