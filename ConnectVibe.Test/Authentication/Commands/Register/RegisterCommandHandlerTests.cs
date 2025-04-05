@@ -3,6 +3,7 @@ using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities;
+using Fliq.Domain.Entities.Settings;
 using Fliq.Domain.Enums;
 using MapsterMapper;
 using Moq;
@@ -18,6 +19,7 @@ namespace Fliq.Test.Authentication.Commands.Register
         private Mock<IEmailService>? _emailServiceMock;
         private Mock<IOtpService>? _otpServiceMock;
         private Mock<ILoggerManager>? _loggerManagerMock;
+        private Mock<ISettingsRepository>? _settingsRepositoryMock;
 
         [TestInitialize]
         public void Setup()
@@ -27,20 +29,22 @@ namespace Fliq.Test.Authentication.Commands.Register
             _emailServiceMock = new Mock<IEmailService>();
             _otpServiceMock = new Mock<IOtpService>();
             _loggerManagerMock = new Mock<ILoggerManager>();
+            _settingsRepositoryMock = new Mock<ISettingsRepository>();
 
             _handler = new RegisterCommandHandler(
                 _userRepositoryMock.Object,
                 _mapperMock.Object,
                 _emailServiceMock.Object,
                 _otpServiceMock.Object,
-                _loggerManagerMock.Object);
+                _loggerManagerMock.Object,
+                _settingsRepositoryMock.Object);
         }
 
         [TestMethod]
         public async Task Handle_UserAlreadyExists_ReturnsDuplicateEmailError()
         {
             // Arrange
-            var command = new RegisterCommand("John", "Doe", "johndoe", "johndoe@example.com", "password", Language.English);
+            var command = new RegisterCommand("John", "Doe", "johndoe", "johndoe@example.com", "password", Language.English, ScreenMode.White, "23412345678");
             var existingUser = new User { Email = command.Email, IsEmailValidated = true };
 
             _userRepositoryMock?.Setup(repo => repo.GetUserByEmail(command.Email))
@@ -58,7 +62,7 @@ namespace Fliq.Test.Authentication.Commands.Register
         public async Task Handle_NewUser_CreatesUserAndSendsOtp()
         {
             // Arrange
-            var command = new RegisterCommand("John", "Doe", "johndoe", "johndoe@example.com", "password", Language.English);
+            var command = new RegisterCommand("John", "Doe", "johndoe", "johndoe@example.com", "password", Language.English, ScreenMode.White, "23412345678");
             User newUser = null;
 
             _userRepositoryMock?.Setup(repo => repo.GetUserByEmail(command.Email))
@@ -88,7 +92,7 @@ namespace Fliq.Test.Authentication.Commands.Register
         public async Task Handle_ExistingUserButEmailNotValidated_CreatesUserAndSendsOtp()
         {
             // Arrange
-            var command = new RegisterCommand("John", "Doe", "johndoe", "johndoe@example.com", "password", Language.English);
+            var command = new RegisterCommand("John", "Doe", "johndoe", "johndoe@example.com", "password", Language.English, ScreenMode.White, "23412345678");
             var existingUser = new User { Email = command.Email, IsEmailValidated = false };
 
             _userRepositoryMock?.Setup(repo => repo.GetUserByEmail(command.Email))

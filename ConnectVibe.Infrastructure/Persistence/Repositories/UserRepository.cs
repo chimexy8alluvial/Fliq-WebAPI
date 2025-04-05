@@ -1,9 +1,13 @@
 ﻿using Dapper;
+using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.DashBoard.Common;
-using Fliq.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
+using Fliq.Application.Profile.Common;
 using Fliq.Application.Users.Common;
+using Fliq.Domain.Entities;
+using Fliq.Domain.Entities.Profile;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using System.Data;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
@@ -54,26 +58,16 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             }
         }
 
-         public IEnumerable<User> GetAllUsersForDashBoard(GetUsersListRequest query)
+         public async Task<IEnumerable<GetUsersResult>> GetAllUsersForDashBoardAsync(GetUsersListRequest query)
         {
             using (var connection = _connectionFactory.CreateConnection())
             {
-                var parameters = FilterListDynamicParams(query);              
+                var parameters = FilterListDynamicParams(query);
 
-                var results = connection.Query<dynamic>("sp_GetAllUsersForDashBoard",
+                return await connection.QueryAsync<GetUsersResult>("sp_GetAllUsersForDashBoard",
                     parameters,
                     commandType: CommandType.StoredProcedure);
-               
-                return   results.Select(r => new User
-                {
-                    DisplayName = r.DisplayName,
-                    Email = r.Email,
-                    DateCreated = r.DateJoined,
-                    LastActiveAt = r.LastOnline,
-                    Subscriptions = r.SubscriptionType != "None"
-                        ? new List<Subscription> { new Subscription { ProductId = r.SubscriptionType } }
-                        : null
-                });
+                       
             }
         }
 
@@ -94,7 +88,9 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             using (var connection = _connectionFactory.CreateConnection())
             {
                 var sql = "sp_GetUsersWithLatestSubscription";
-                var parameter = new { RoleId = roleId,
+                var parameter = new
+                {
+                    RoleId = roleId,
                     Offset = (pageNumber - 1) * pageSize,
                     Fetch = pageSize
                 };
@@ -122,7 +118,8 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         //To be changed to stored procedure
         public User? GetUserByIdIncludingProfile(int id)
         {
-            var user = _dbContext.Users.Include(p=>p.UserProfile).ThenInclude(p => p!.Photos).SingleOrDefault(p => p.Id == id);
+            var user = _dbContext.Users.Include(p => p.UserProfile).ThenInclude(p => p!.Photos).SingleOrDefault(p => p.Id == id);
+          
             return user;
         }
 
@@ -177,6 +174,57 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                 var parameter = new { Days = days };
                 var count = await connection.QueryFirstOrDefaultAsync<int>(sql, parameter, commandType: CommandType.StoredProcedure); // Using IsActive flag
                 return count;
+            }
+        }
+
+        public async Task<ErrorOr<ProfileDataTablesResponse>> GetAllProfileSetupData(CancellationToken cancellationToken)
+        {
+            try
+            {
+                using var connection = _connectionFactory.CreateConnection();
+                connection.Open();
+
+                var commandDefinition = new CommandDefinition(
+             "sp_GetAllProfileData",
+             commandType: CommandType.StoredProcedure,
+             cancellationToken: cancellationToken);
+                using var multi = await connection.QueryMultipleAsync(commandDefinition);
+                var result = new ProfileDataTablesResponse
+                {
+                    Occupations = (await multi.ReadAsync<Occupation>()).ToList(),
+                    Religions = (await multi.ReadAsync<Religion>()).ToList(),
+                    Ethnicities = (await multi.ReadAsync<Ethnicity>()).ToList(),
+                    EducationStatuses = (await multi.ReadAsync<EducationStatus>()).ToList(),
+                    Genders=(await multi.ReadAsync<Gender>()).ToList(),
+                    HaveKids=(await multi.ReadAsync<HaveKids>()).ToList(),
+                    WantKids=(await multi.ReadAsync<WantKids>()).ToList(),
+                };
+
+                if (!result.Occupations.Any() &&
+                    !result.Religions.Any() &&
+                    !result.Ethnicities.Any() &&
+                    !result.EducationStatuses.Any()&&
+                    !result.Genders.Any()&&
+                    !result.HaveKids.Any()&&
+                    !result.WantKids.Any()
+                    
+                    )
+                {
+                    return Error.NotFound(description: "No profile setup data found");
+                }
+
+                return result;
+            }
+            catch (SqlException ex)
+            {
+                return Error.Failure(
+                    code: "DatabaseError",
+                    description: $"Failed to retrieve profile setup data: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return Error.Unexpected(
+                    description: $"An unexpected error occurred: {ex.Message}");
             }
         }
 

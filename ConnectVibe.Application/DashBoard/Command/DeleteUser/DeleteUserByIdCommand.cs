@@ -36,7 +36,7 @@ namespace Fliq.Application.DashBoard.Command.DeleteUser
 
             if (user.IsDeleted)
             {
-                _logger.LogError($"This user with ID: {user.Id} has been deleted before");
+                _logger.LogInfo($"This user with ID: {user.Id} has been deleted before");
                  return Errors.User.UserAlreadyDeleted;
             }
 

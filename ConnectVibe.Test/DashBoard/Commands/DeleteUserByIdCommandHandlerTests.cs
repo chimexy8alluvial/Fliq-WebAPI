@@ -84,7 +84,7 @@ public class DeleteUserByIdCommandHandlerTests
         // Assert
         Assert.IsTrue(result.IsError);
         Assert.AreEqual(Errors.User.UserAlreadyDeleted, result.FirstError);
-        _loggerMock?.Verify(l => l.LogError($"This user with ID: {user.Id} has been deleted before"), Times.Once());
+        _loggerMock?.Verify(l => l.LogInfo($"This user with ID: {user.Id} has been deleted before"), Times.Once());
         _userRepositoryMock?.Verify(r => r.Update(It.IsAny<User>()), Times.Never());
     }
 

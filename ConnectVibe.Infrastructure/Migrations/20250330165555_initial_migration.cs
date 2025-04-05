@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace Fliq.Infrastructure.Migrations
 {
     /// <inheritdoc />
@@ -11,6 +13,23 @@ namespace Fliq.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "BlindDateCategories",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CategoryName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BlindDateCategories", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Currencies",
                 columns: table => new
@@ -33,7 +52,7 @@ namespace Fliq.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    EducationLevel = table.Column<int>(type: "int", nullable: false),
+                    EducationLevel = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsVisible = table.Column<bool>(type: "bit", nullable: false),
                     DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -50,7 +69,8 @@ namespace Fliq.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    EthnicityType = table.Column<int>(type: "int", nullable: false),
+                    UserProfileId = table.Column<int>(type: "int", nullable: false),
+                    EthnicityType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsVisible = table.Column<bool>(type: "bit", nullable: false),
                     DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -135,40 +155,6 @@ namespace Fliq.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Games", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Gender",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    GenderType = table.Column<int>(type: "int", nullable: false),
-                    IsVisible = table.Column<bool>(type: "bit", nullable: false),
-                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Gender", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "HaveKids",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    HaveKidsType = table.Column<int>(type: "int", nullable: false),
-                    IsVisible = table.Column<bool>(type: "bit", nullable: false),
-                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_HaveKids", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -267,7 +253,8 @@ namespace Fliq.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ReligionType = table.Column<int>(type: "int", nullable: false),
+                    UserProfileId = table.Column<int>(type: "int", nullable: false),
+                    ReligionType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsVisible = table.Column<bool>(type: "bit", nullable: false),
                     DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -279,12 +266,28 @@ namespace Fliq.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Roles",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Roles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "SexualOrientation",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    SexualOrientationType = table.Column<int>(type: "int", nullable: false),
+                    SexualOrientationType = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsVisible = table.Column<bool>(type: "bit", nullable: false),
                     DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -321,26 +324,24 @@ namespace Fliq.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Users",
+                name: "SupportTickets",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DisplayName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PasswordSalt = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsEmailValidated = table.Column<bool>(type: "bit", nullable: false),
-                    IsDocumentVerified = table.Column<bool>(type: "bit", nullable: false),
+                    TicketId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RequesterId = table.Column<int>(type: "int", nullable: false),
+                    RequesterName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    RequestType = table.Column<int>(type: "int", nullable: false),
+                    RequestStatus = table.Column<int>(type: "int", nullable: false),
                     DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.PrimaryKey("PK_SupportTickets", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -358,23 +359,6 @@ namespace Fliq.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Wallets", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "WantKids",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    WantKidsType = table.Column<int>(type: "int", nullable: false),
-                    IsVisible = table.Column<bool>(type: "bit", nullable: false),
-                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_WantKids", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -455,6 +439,39 @@ namespace Fliq.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SpeedDatingEvents",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Category = table.Column<int>(type: "int", nullable: false),
+                    StartTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    StartSessionTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    EndSessionTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    MinAge = table.Column<int>(type: "int", nullable: false),
+                    MaxAge = table.Column<int>(type: "int", nullable: false),
+                    MaxParticipants = table.Column<int>(type: "int", nullable: false),
+                    DurationPerPairingMinutes = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    LocationId = table.Column<int>(type: "int", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SpeedDatingEvents", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SpeedDatingEvents_Location_LocationId",
+                        column: x => x.LocationId,
+                        principalTable: "Location",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Geometry",
                 columns: table => new
                 {
@@ -498,6 +515,39 @@ namespace Fliq.Infrastructure.Migrations
                         name: "FK_PromptQuestions_PromptCategories_PromptCategoryId",
                         column: x => x.PromptCategoryId,
                         principalTable: "PromptCategories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DisplayName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PasswordSalt = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsEmailValidated = table.Column<bool>(type: "bit", nullable: false),
+                    IsDocumentVerified = table.Column<bool>(type: "bit", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    LastActiveAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    RoleId = table.Column<int>(type: "int", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Users_Roles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "Roles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -557,6 +607,166 @@ namespace Fliq.Infrastructure.Migrations
                         column: x => x.SponsoredEventDetailId,
                         principalTable: "SponsoredEventDetails",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "HelpMessage",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SupportTicketId = table.Column<int>(type: "int", nullable: false),
+                    SenderId = table.Column<int>(type: "int", nullable: false),
+                    SenderName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_HelpMessage", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_HelpMessage_SupportTickets_SupportTicketId",
+                        column: x => x.SupportTicketId,
+                        principalTable: "SupportTickets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "WalletHistories",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    WalletId = table.Column<int>(type: "int", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    ActivityType = table.Column<int>(type: "int", nullable: false),
+                    TransactionStatus = table.Column<int>(type: "int", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FailureReason = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WalletHistories", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_WalletHistories_Wallets_WalletId",
+                        column: x => x.WalletId,
+                        principalTable: "Wallets",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Stakes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    GameSessionId = table.Column<int>(type: "int", nullable: false),
+                    RequesterId = table.Column<int>(type: "int", nullable: false),
+                    RecipientId = table.Column<int>(type: "int", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    IsAccepted = table.Column<bool>(type: "bit", nullable: false),
+                    StakeStatus = table.Column<int>(type: "int", nullable: false),
+                    IsResolved = table.Column<bool>(type: "bit", nullable: false),
+                    ResolutionOption = table.Column<int>(type: "int", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Stakes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Stakes_GameSessions_GameSessionId",
+                        column: x => x.GameSessionId,
+                        principalTable: "GameSessions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LocationResult",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FormattedAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    GeometryId = table.Column<int>(type: "int", nullable: false),
+                    PlaceId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Types = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LocationDetailId = table.Column<int>(type: "int", nullable: true),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LocationResult", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_LocationResult_Geometry_GeometryId",
+                        column: x => x.GeometryId,
+                        principalTable: "Geometry",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_LocationResult_LocationDetails_LocationDetailId",
+                        column: x => x.LocationDetailId,
+                        principalTable: "LocationDetails",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BlindDates",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CategoryId = table.Column<int>(type: "int", nullable: false),
+                    BlindDateCategoryId = table.Column<int>(type: "int", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    StartDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LocationId = table.Column<int>(type: "int", nullable: false),
+                    IsOneOnOne = table.Column<bool>(type: "bit", nullable: false),
+                    NumberOfParticipants = table.Column<int>(type: "int", nullable: true),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsRecordingEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    RecordingUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SessionStartTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    SessionEndTime = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    CreatedByUserId = table.Column<int>(type: "int", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BlindDates", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BlindDates_BlindDateCategories_BlindDateCategoryId",
+                        column: x => x.BlindDateCategoryId,
+                        principalTable: "BlindDateCategories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BlindDates_Location_LocationId",
+                        column: x => x.LocationId,
+                        principalTable: "Location",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BlindDates_Users_CreatedByUserId",
+                        column: x => x.CreatedByUserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -626,7 +836,7 @@ namespace Fliq.Infrastructure.Migrations
                     Method = table.Column<int>(type: "int", nullable: false),
                     ExpirationDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Environment = table.Column<int>(type: "int", nullable: false),
-                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: true),
                     DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -650,7 +860,7 @@ namespace Fliq.Infrastructure.Migrations
                     ScreenMode = table.Column<int>(type: "int", nullable: false),
                     RelationAvailability = table.Column<bool>(type: "bit", nullable: false),
                     ShowMusicAndGameStatus = table.Column<bool>(type: "bit", nullable: false),
-                    Language = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Language = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -661,6 +871,37 @@ namespace Fliq.Infrastructure.Migrations
                     table.PrimaryKey("PK_Settings", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Settings_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SpeedDatingParticipanticipants",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    HasCompletedAllRounds = table.Column<bool>(type: "bit", nullable: false),
+                    IsCreator = table.Column<bool>(type: "bit", nullable: false),
+                    SpeedDatingEventId = table.Column<int>(type: "int", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SpeedDatingParticipanticipants", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SpeedDatingParticipanticipants_SpeedDatingEvents_SpeedDatingEventId",
+                        column: x => x.SpeedDatingEventId,
+                        principalTable: "SpeedDatingEvents",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_SpeedDatingParticipanticipants_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -681,7 +922,7 @@ namespace Fliq.Infrastructure.Migrations
                     Provider = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     Environment = table.Column<int>(type: "int", nullable: false),
-                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: true),
                     DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -720,28 +961,25 @@ namespace Fliq.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "WalletHistories",
+                name: "UserFeatureActivities",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    WalletId = table.Column<int>(type: "int", nullable: false),
-                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    ActivityType = table.Column<int>(type: "int", nullable: false),
-                    TransactionStatus = table.Column<int>(type: "int", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    FailureReason = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Feature = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastActiveAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_WalletHistories", x => x.Id);
+                    table.PrimaryKey("PK_UserFeatureActivities", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_WalletHistories_Wallets_WalletId",
-                        column: x => x.WalletId,
-                        principalTable: "Wallets",
+                        name: "FK_UserFeatureActivities_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -752,20 +990,19 @@ namespace Fliq.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    DOB = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    GenderId = table.Column<int>(type: "int", nullable: false),
-                    ProfileDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     SexualOrientationId = table.Column<int>(type: "int", nullable: true),
-                    ReligionId = table.Column<int>(type: "int", nullable: false),
-                    EthnicityId = table.Column<int>(type: "int", nullable: false),
-                    OccupationId = table.Column<int>(type: "int", nullable: false),
-                    EducationStatusId = table.Column<int>(type: "int", nullable: false),
-                    HaveKidsId = table.Column<int>(type: "int", nullable: true),
-                    WantKidsId = table.Column<int>(type: "int", nullable: true),
-                    LocationId = table.Column<int>(type: "int", nullable: false),
+                    EducationStatusId = table.Column<int>(type: "int", nullable: true),
+                    EthnicityId = table.Column<int>(type: "int", nullable: true),
+                    OccupationId = table.Column<int>(type: "int", nullable: true),
+                    ReligionId = table.Column<int>(type: "int", nullable: true),
+                    DOB = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ProfileDescription = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LocationId = table.Column<int>(type: "int", nullable: true),
                     AllowNotifications = table.Column<bool>(type: "bit", nullable: false),
                     Passions = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Passions1 = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ProfileTypes = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CompletedSections = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -778,43 +1015,27 @@ namespace Fliq.Infrastructure.Migrations
                         name: "FK_UserProfiles_EducationStatus_EducationStatusId",
                         column: x => x.EducationStatusId,
                         principalTable: "EducationStatus",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_UserProfiles_Ethnicity_EthnicityId",
                         column: x => x.EthnicityId,
                         principalTable: "Ethnicity",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserProfiles_Gender_GenderId",
-                        column: x => x.GenderId,
-                        principalTable: "Gender",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserProfiles_HaveKids_HaveKidsId",
-                        column: x => x.HaveKidsId,
-                        principalTable: "HaveKids",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_UserProfiles_Location_LocationId",
                         column: x => x.LocationId,
                         principalTable: "Location",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_UserProfiles_Occupation_OccupationId",
                         column: x => x.OccupationId,
                         principalTable: "Occupation",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_UserProfiles_Religion_ReligionId",
                         column: x => x.ReligionId,
                         principalTable: "Religion",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_UserProfiles_SexualOrientation_SexualOrientationId",
                         column: x => x.SexualOrientationId,
@@ -826,69 +1047,6 @@ namespace Fliq.Infrastructure.Migrations
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_UserProfiles_WantKids_WantKidsId",
-                        column: x => x.WantKidsId,
-                        principalTable: "WantKids",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Stakes",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    GameSessionId = table.Column<int>(type: "int", nullable: false),
-                    RequesterId = table.Column<int>(type: "int", nullable: false),
-                    RecipientId = table.Column<int>(type: "int", nullable: false),
-                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    IsAccepted = table.Column<bool>(type: "bit", nullable: false),
-                    StakeStatus = table.Column<int>(type: "int", nullable: false),
-                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Stakes", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Stakes_GameSessions_GameSessionId",
-                        column: x => x.GameSessionId,
-                        principalTable: "GameSessions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "LocationResult",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FormattedAddress = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    GeometryId = table.Column<int>(type: "int", nullable: false),
-                    PlaceId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Types = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LocationDetailId = table.Column<int>(type: "int", nullable: true),
-                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LocationResult", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_LocationResult_Geometry_GeometryId",
-                        column: x => x.GeometryId,
-                        principalTable: "Geometry",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_LocationResult_LocationDetails_LocationDetailId",
-                        column: x => x.LocationDetailId,
-                        principalTable: "LocationDetails",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -976,6 +1134,62 @@ namespace Fliq.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "AddressComponent",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    LongName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ShortName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Types = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LocationResultId = table.Column<int>(type: "int", nullable: true),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AddressComponent", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AddressComponent_LocationResult_LocationResultId",
+                        column: x => x.LocationResultId,
+                        principalTable: "LocationResult",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BlindDatesParticipants",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    BlindDateId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    IsCreator = table.Column<bool>(type: "bit", nullable: false),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    JoinedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BlindDatesParticipants", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BlindDatesParticipants_BlindDates_BlindDateId",
+                        column: x => x.BlindDateId,
+                        principalTable: "BlindDates",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BlindDatesParticipants_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.NoAction);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Filter",
                 columns: table => new
                 {
@@ -1027,6 +1241,54 @@ namespace Fliq.Infrastructure.Migrations
                         column: x => x.SettingId,
                         principalTable: "Settings",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Gender",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserProfileId = table.Column<int>(type: "int", nullable: false),
+                    GenderType = table.Column<int>(type: "int", nullable: false),
+                    IsVisible = table.Column<bool>(type: "bit", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Gender", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Gender_UserProfiles_UserProfileId",
+                        column: x => x.UserProfileId,
+                        principalTable: "UserProfiles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "HaveKids",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserProfileId = table.Column<int>(type: "int", nullable: false),
+                    HaveKidsType = table.Column<int>(type: "int", nullable: false),
+                    IsVisible = table.Column<bool>(type: "bit", nullable: false),
+                    DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_HaveKids", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_HaveKids_UserProfiles_UserProfileId",
+                        column: x => x.UserProfileId,
+                        principalTable: "UserProfiles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -1084,27 +1346,27 @@ namespace Fliq.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AddressComponent",
+                name: "WantKids",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    LongName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ShortName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Types = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LocationResultId = table.Column<int>(type: "int", nullable: true),
+                    UserProfileId = table.Column<int>(type: "int", nullable: false),
+                    WantKidsType = table.Column<int>(type: "int", nullable: false),
+                    IsVisible = table.Column<bool>(type: "bit", nullable: false),
                     DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AddressComponent", x => x.Id);
+                    table.PrimaryKey("PK_WantKids", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AddressComponent_LocationResult_LocationResultId",
-                        column: x => x.LocationResultId,
-                        principalTable: "LocationResult",
-                        principalColumn: "Id");
+                        name: "FK_WantKids_UserProfiles_UserProfileId",
+                        column: x => x.UserProfileId,
+                        principalTable: "UserProfiles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -1113,7 +1375,7 @@ namespace Fliq.Infrastructure.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Type = table.Column<int>(type: "int", nullable: false),
                     Percentage = table.Column<double>(type: "float", nullable: false),
                     NumberOfTickets = table.Column<int>(type: "int", nullable: true),
@@ -1198,10 +1460,45 @@ namespace Fliq.Infrastructure.Migrations
                         principalColumn: "Id");
                 });
 
+            migrationBuilder.InsertData(
+                table: "Roles",
+                columns: new[] { "Id", "DateCreated", "DateModified", "IsDeleted", "Name" },
+                values: new object[,]
+                {
+                    { 1, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null, false, "SuperAdmin" },
+                    { 2, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null, false, "Admin" },
+                    { 3, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null, false, "User" }
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AddressComponent_LocationResultId",
                 table: "AddressComponent",
                 column: "LocationResultId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BlindDates_BlindDateCategoryId",
+                table: "BlindDates",
+                column: "BlindDateCategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BlindDates_CreatedByUserId",
+                table: "BlindDates",
+                column: "CreatedByUserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BlindDates_LocationId",
+                table: "BlindDates",
+                column: "LocationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BlindDatesParticipants_BlindDateId",
+                table: "BlindDatesParticipants",
+                column: "BlindDateId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BlindDatesParticipants_UserId",
+                table: "BlindDatesParticipants",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Discount_TicketId",
@@ -1270,9 +1567,26 @@ namespace Fliq.Infrastructure.Migrations
                 column: "GameId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Gender_UserProfileId",
+                table: "Gender",
+                column: "UserProfileId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Geometry_LocationId",
                 table: "Geometry",
                 column: "LocationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_HaveKids_UserProfileId",
+                table: "HaveKids",
+                column: "UserProfileId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_HelpMessage_SupportTicketId",
+                table: "HelpMessage",
+                column: "SupportTicketId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_LocationDetails_LocationId",
@@ -1336,6 +1650,21 @@ namespace Fliq.Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_SpeedDatingEvents_LocationId",
+                table: "SpeedDatingEvents",
+                column: "LocationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SpeedDatingParticipanticipants_SpeedDatingEventId",
+                table: "SpeedDatingParticipanticipants",
+                column: "SpeedDatingEventId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SpeedDatingParticipanticipants_UserId",
+                table: "SpeedDatingParticipanticipants",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Stakes_GameSessionId",
                 table: "Stakes",
                 column: "GameSessionId",
@@ -1362,6 +1691,11 @@ namespace Fliq.Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_UserFeatureActivities_UserId",
+                table: "UserFeatureActivities",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserProfiles_EducationStatusId",
                 table: "UserProfiles",
                 column: "EducationStatusId");
@@ -1370,16 +1704,6 @@ namespace Fliq.Infrastructure.Migrations
                 name: "IX_UserProfiles_EthnicityId",
                 table: "UserProfiles",
                 column: "EthnicityId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserProfiles_GenderId",
-                table: "UserProfiles",
-                column: "GenderId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserProfiles_HaveKidsId",
-                table: "UserProfiles",
-                column: "HaveKidsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserProfiles_LocationId",
@@ -1408,9 +1732,9 @@ namespace Fliq.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserProfiles_WantKidsId",
-                table: "UserProfiles",
-                column: "WantKidsId");
+                name: "IX_Users_RoleId",
+                table: "Users",
+                column: "RoleId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Vice_FilterId",
@@ -1426,6 +1750,12 @@ namespace Fliq.Infrastructure.Migrations
                 name: "IX_WalletHistories_WalletId",
                 table: "WalletHistories",
                 column: "WalletId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WantKids_UserProfileId",
+                table: "WantKids",
+                column: "UserProfileId",
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -1433,6 +1763,9 @@ namespace Fliq.Infrastructure.Migrations
         {
             migrationBuilder.DropTable(
                 name: "AddressComponent");
+
+            migrationBuilder.DropTable(
+                name: "BlindDatesParticipants");
 
             migrationBuilder.DropTable(
                 name: "Discount");
@@ -1453,6 +1786,15 @@ namespace Fliq.Infrastructure.Migrations
                 name: "GameRequests");
 
             migrationBuilder.DropTable(
+                name: "Gender");
+
+            migrationBuilder.DropTable(
+                name: "HaveKids");
+
+            migrationBuilder.DropTable(
+                name: "HelpMessage");
+
+            migrationBuilder.DropTable(
                 name: "MatchRequests");
 
             migrationBuilder.DropTable(
@@ -1471,6 +1813,9 @@ namespace Fliq.Infrastructure.Migrations
                 name: "PromptResponse");
 
             migrationBuilder.DropTable(
+                name: "SpeedDatingParticipanticipants");
+
+            migrationBuilder.DropTable(
                 name: "Stakes");
 
             migrationBuilder.DropTable(
@@ -1480,13 +1825,22 @@ namespace Fliq.Infrastructure.Migrations
                 name: "UserDeviceTokens");
 
             migrationBuilder.DropTable(
+                name: "UserFeatureActivities");
+
+            migrationBuilder.DropTable(
                 name: "Vice");
 
             migrationBuilder.DropTable(
                 name: "WalletHistories");
 
             migrationBuilder.DropTable(
+                name: "WantKids");
+
+            migrationBuilder.DropTable(
                 name: "LocationResult");
+
+            migrationBuilder.DropTable(
+                name: "BlindDates");
 
             migrationBuilder.DropTable(
                 name: "Payments");
@@ -1495,10 +1849,13 @@ namespace Fliq.Infrastructure.Migrations
                 name: "Tickets");
 
             migrationBuilder.DropTable(
+                name: "SupportTickets");
+
+            migrationBuilder.DropTable(
                 name: "PromptQuestions");
 
             migrationBuilder.DropTable(
-                name: "UserProfiles");
+                name: "SpeedDatingEvents");
 
             migrationBuilder.DropTable(
                 name: "GameSessions");
@@ -1510,10 +1867,16 @@ namespace Fliq.Infrastructure.Migrations
                 name: "Wallets");
 
             migrationBuilder.DropTable(
+                name: "UserProfiles");
+
+            migrationBuilder.DropTable(
                 name: "Geometry");
 
             migrationBuilder.DropTable(
                 name: "LocationDetails");
+
+            migrationBuilder.DropTable(
+                name: "BlindDateCategories");
 
             migrationBuilder.DropTable(
                 name: "Currencies");
@@ -1525,16 +1888,16 @@ namespace Fliq.Infrastructure.Migrations
                 name: "PromptCategories");
 
             migrationBuilder.DropTable(
+                name: "Games");
+
+            migrationBuilder.DropTable(
+                name: "Settings");
+
+            migrationBuilder.DropTable(
                 name: "EducationStatus");
 
             migrationBuilder.DropTable(
                 name: "Ethnicity");
-
-            migrationBuilder.DropTable(
-                name: "Gender");
-
-            migrationBuilder.DropTable(
-                name: "HaveKids");
 
             migrationBuilder.DropTable(
                 name: "Occupation");
@@ -1544,15 +1907,6 @@ namespace Fliq.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "SexualOrientation");
-
-            migrationBuilder.DropTable(
-                name: "WantKids");
-
-            migrationBuilder.DropTable(
-                name: "Games");
-
-            migrationBuilder.DropTable(
-                name: "Settings");
 
             migrationBuilder.DropTable(
                 name: "Locationn");
@@ -1571,6 +1925,9 @@ namespace Fliq.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "Roles");
         }
     }
 }

@@ -1,16 +1,10 @@
-﻿namespace Fliq.Domain.Entities.Profile
+﻿using Fliq.Domain.Entities.Event.Enums;
+
+namespace Fliq.Domain.Entities.Profile
 {
     public class Gender : Record
     {
-        public int UserProfileId { get; set; }
-        public GenderType GenderType { get; set; }
-        public bool IsVisible { get; set; }
+        public  GenderType GenderType { get; set; } = default!;
     }
 
-    public enum GenderType
-    {
-        Male,
-        Female,
-        Others
-    }
 }

@@ -26,42 +26,38 @@ namespace Fliq.Application.DashBoard.Queries.GetAllUser
 
         public async Task<ErrorOr<List<GetUsersResult>>> Handle(GetAllUsersQuery query, CancellationToken cancellationToken)
         {
-            await Task.CompletedTask;
-
-            _logger.LogInfo($"Getting users for page {query.PaginationRequest.PageNumber} with page size {query.PaginationRequest.PageSize}");
-          
-
-            var request = new GetUsersListRequest
+            try
             {
-                PaginationRequest = query.PaginationRequest,
-                HasSubscription = query.HasSubscription,
-                ActiveSince = query.ActiveSince,
-                RoleName = query.RoleName
-             
-              
-            };
-         
-            var users = _userRepository.GetAllUsersForDashBoard(request);
+                _logger.LogInfo($"Getting users for page {query.PaginationRequest.PageNumber} with page size {query.PaginationRequest.PageSize}");
 
-            _logger.LogInfo($"Got {users.Count()} users for page {query.PaginationRequest.PageNumber}");
+                // Validate pagination parameters
+                if (query.PaginationRequest.PageNumber < 1)
+                    return Error.Validation("InvalidPagination", "Page number must be greater than 0");
+                if (query.PaginationRequest.PageSize < 1)
+                    return Error.Validation("InvalidPagination", "Page size must be greater than 0");
 
-            var results = users.Select(user =>
+                var request = new GetUsersListRequest
+                {
+                    PaginationRequest = query.PaginationRequest,
+                    HasSubscription = query.HasSubscription,
+                    ActiveSince = query.ActiveSince,
+                    RoleName = query.RoleName
+                };
+
+                var users = await _userRepository.GetAllUsersForDashBoardAsync(request);
+
+                if (users == null)
+                    return Error.Failure("DatabaseError", "Failed to retrieve users from database");
+
+                _logger.LogInfo($"Got {users.Count()} users for page {query.PaginationRequest.PageNumber}");
+
+                return users.ToList();
+            }
+            catch (Exception ex)
             {
-                
-                var latestSubscription = user.Subscriptions?
-                    .OrderByDescending(s => s.StartDate)
-                    .FirstOrDefault();
-
-                return new GetUsersResult(
-                    DisplayName: user.DisplayName,
-                    Email: user.Email,
-                    SubscriptionType: latestSubscription?.ProductId ?? "Free",
-                    DateJoined: user.DateCreated,
-                    LastOnline: user.LastActiveAt
-                );
-            }).ToList();
-
-            return results;
+                _logger.LogError($"Error retrieving users: {ex.Message}");
+                return Error.Failure("UnexpectedError", $"An unexpected error occurred: {ex.Message}");
+            }
         }
     }
 }

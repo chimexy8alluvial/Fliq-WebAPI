@@ -24,10 +24,12 @@ namespace Fliq.Infrastructure.Persistence
         {
             base.OnModelCreating(modelBuilder);
 
+            var fixedDate = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc); // Fixed date
+
             modelBuilder.Entity<Role>().HasData(
-            new Role { Id = 1, Name = "SuperAdmin" },
-            new Role { Id = 2, Name = "Admin" },
-            new Role { Id = 3, Name = "User" }
+                new Role { Id = 1, Name = "SuperAdmin", DateCreated = fixedDate },
+                new Role { Id = 2, Name = "Admin", DateCreated = fixedDate },
+                new Role { Id = 3, Name = "User", DateCreated = fixedDate }
             );
         }
 
@@ -74,6 +76,9 @@ namespace Fliq.Infrastructure.Persistence
 
         public DbSet<SpeedDatingEvent> SpeedDatingEvents { get; set; } = null!;
         public DbSet<SpeedDatingParticipant> SpeedDatingParticipanticipants { get; set; } = null!;
+        public DbSet<Gender> Genders { get; set; }
+        public DbSet<WantKids> WantKids { get; set; }
+        public DbSet<HaveKids> HaveKids { get; set; } 
 
     }
 }

@@ -35,7 +35,7 @@ namespace Fliq.Infrastructure.Migrations
                     END
 
                 SELECT 
-                    u.DisplayName,
+                    u.FirstName + ' ' + u.LastName AS DisplayName,
                     u.Email,
                     COALESCE(s.ProductId, 'Free') AS SubscriptionType,
                     u.DateCreated AS DateJoined,
