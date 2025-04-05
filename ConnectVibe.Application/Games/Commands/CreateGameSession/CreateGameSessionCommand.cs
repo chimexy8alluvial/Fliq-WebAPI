@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Fliq.Application.Games.Commands.CreateGameSession
 {
-    public record CreateGameSessionCommand(int GameId, int Player1Id, int Player2Id) : IRequest<ErrorOr<GetGameSessionResult>>;
+    public record CreateGameSessionCommand(int GameId, int Player1Id, int Player2Id, GameDisconnectionResolutionOption GameDisconnectionResolutionOption) : IRequest<ErrorOr<GetGameSessionResult>>;
 
     public class CreateGameSessionCommandHandler : IRequestHandler<CreateGameSessionCommand, ErrorOr<GetGameSessionResult>>
     {
@@ -35,7 +35,8 @@ namespace Fliq.Application.Games.Commands.CreateGameSession
                 GameId = request.GameId,
                 Player1Id = request.Player1Id,
                 Player2Id = request.Player2Id,
-                StartTime = DateTime.UtcNow
+                StartTime = DateTime.UtcNow,
+                DisconnectionResolutionOption = request.GameDisconnectionResolutionOption
             };
 
             _gamesRepository.CreateGameSession(session);
