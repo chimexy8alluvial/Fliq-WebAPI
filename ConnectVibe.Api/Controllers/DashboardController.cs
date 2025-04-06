@@ -2,7 +2,9 @@
 using Fliq.Application.DashBoard.Common;
 using Fliq.Application.DashBoard.Queries.ActiveUserCount;
 using Fliq.Application.DashBoard.Queries.EventsCount;
+using Fliq.Application.DashBoard.Queries.EventsWithPendingApproval;
 using Fliq.Application.DashBoard.Queries.FemaleUsersCount;
+using Fliq.Application.DashBoard.Queries.GetAllEvents;
 using Fliq.Application.DashBoard.Queries.GetAllUser;
 using Fliq.Application.DashBoard.Queries.InActiveUserCount;
 using Fliq.Application.DashBoard.Queries.MaleUsersCount;
@@ -101,7 +103,22 @@ namespace Fliq.Api.Controllers
             return result.Match(
               eventCountResult => Ok(_mapper.Map<CountResponse>(result.Value)),
               errors => Problem(errors)
-          );
+            );
+        }
+        
+        
+        [HttpGet("events-with-pending-approval-count")]
+        public async Task<IActionResult> GetEventsWithPendingApprovalCount()
+        {
+            _logger.LogInfo("Received request for events with pending approval count.");
+
+            var query = new GetAllEventsWithPendingApprovalCountQuery();
+            var result = await _mediator.Send(query);
+
+            return result.Match(
+              eventCountResult => Ok(_mapper.Map<CountResponse>(result.Value)),
+              errors => Problem(errors)
+            );
         }
         
         [HttpGet("sponsored-event-count")]
@@ -177,6 +194,38 @@ namespace Fliq.Api.Controllers
           );
         }
 
+          [HttpGet("get-all-events")]
+         public async Task<IActionResult> GetAllEventsForDashBoard([FromQuery] GetEventsListRequest request)
+         {
+             _logger.LogInfo("Get all events request received");
+
+             var query = _mapper.Map<GetAllEventsQuery>(request);
+             var result = await _mediator.Send(query);
+
+             _logger.LogInfo($"Get all events query executed. Result: {result} ");
+
+             return result.Match(
+               getAllEventsResult => Ok(_mapper.Map<List<GetEventsResponse>>(result.Value)),
+               errors => Problem(errors)
+           );
+         }
+
+ 
+         [HttpGet("get-all-flaggged-events")]
+         public async Task<IActionResult> GetAllFlaggedEventsForDashBoard([FromQuery] GetEventsListRequest request)
+         {
+             _logger.LogInfo("Get all events request received");
+
+             var query = _mapper.Map<GetAllFlaggedEventsQuery>(request);
+             var result = await _mediator.Send(query);
+
+             _logger.LogInfo($"Get all events query executed. Result: {result} ");
+
+             return result.Match(
+               getAllFlaggedEventsResult => Ok(_mapper.Map<List<GetEventsResponse>>(result.Value)),
+               errors => Problem(errors)
+           );
+         }
 
     }
 }

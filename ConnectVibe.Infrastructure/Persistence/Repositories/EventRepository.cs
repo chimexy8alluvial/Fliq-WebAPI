@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.DashBoard.Common;
 using Fliq.Domain.Entities.Event;
 using System.Data;
 
@@ -29,6 +30,8 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
         public void Update(Events request)
         {
+            request.DateModified = DateTime.Now;
+
             _dbContext.Update(request);
             _dbContext.SaveChanges();
         }
@@ -52,12 +55,63 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                 return results.ToList();
             }
         }
+        public async Task<IEnumerable<GetEventsResult>> GetAllEventsForDashBoardAsync(GetEventsListRequest query)
+        {
+            using var connection = _connectionFactory.CreateConnection();
+            var parameters = FilterListDynamicParams(query);
+
+            var results = await connection.QueryAsync<GetEventsResult>(
+                "sp_GetAllEventsForDashBoard",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
+
+            return results.ToList();
+        }
+       
+        public async Task<IEnumerable<GetEventsResult>> GetAllFlaggedEventsForDashBoardAsync(GetEventsListRequest query)
+        {
+            using var connection = _connectionFactory.CreateConnection();
+            var parameters = FilterListDynamicParams(query);
+
+            var results = await connection.QueryAsync<GetEventsResult>(
+                "sp_GetAllFlaggedEventsForDashBoard",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
+
+            return results.ToList();
+        }
+
+        private static DynamicParameters FilterListDynamicParams(GetEventsListRequest query)
+        {
+            var parameters = new DynamicParameters();
+            parameters.Add("@pageNumber", query.PaginationRequest!.PageNumber);
+            parameters.Add("@pageSize", query.PaginationRequest.PageSize);
+            parameters.Add("@category", query.Category);
+            parameters.Add("@status", query.Status);
+            parameters.Add("@startDate", query.StartDate);
+            parameters.Add("@endDate", query.EndDate);
+            parameters.Add("@location", query.Location);
+            return parameters;
+        }
+
+        #region Count Queries
 
         public async Task<int> CountAllEvents()
         {
             using (var connection = _connectionFactory.CreateConnection())
             {
                 var count = await connection.QueryFirstOrDefaultAsync<int>("sp_CountAllEvents", commandType: CommandType.StoredProcedure);
+                return count;
+            }
+        }
+        
+        public async Task<int> CountAllEventsWithPendingApproval()
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_CountAllEventsWithPendingApproval", commandType: CommandType.StoredProcedure);
                 return count;
             }
         }
@@ -70,5 +124,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                 return count;
             }
         }
+
+        #endregion
     }
 }
