@@ -43,7 +43,8 @@ namespace Fliq.Application.Games.Commands.AcceptGameRequest
                 GameId = gameRequest.GameId,
                 Player1Id = gameRequest.RequesterId,
                 Player2Id = request.UserId,
-                Status = GameStatus.InProgress
+                Status = GameStatus.InProgress,
+                DisconnectionResolutionOption = gameRequest.GameDisconnectionResolutionOption
             };
 
             _gamesRepository.CreateGameSession(gameSession);
