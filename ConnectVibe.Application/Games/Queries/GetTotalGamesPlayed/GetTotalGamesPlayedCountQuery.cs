@@ -6,8 +6,8 @@ using MediatR;
 
 namespace Fliq.Application.Games.Queries.GetTotalGamesPlayed
 {
-    public record GetTotalGamesPlayedCountQuery() : IRequest<ErrorOr<UserCountResult>>;
-        public class GetTotalGamesPlayedCountQueryHandler : IRequestHandler<GetTotalGamesPlayedCountQuery, ErrorOr<UserCountResult>>
+    public record GetTotalGamesPlayedCountQuery() : IRequest<ErrorOr<CountResult>>;
+        public class GetTotalGamesPlayedCountQueryHandler : IRequestHandler<GetTotalGamesPlayedCountQuery, ErrorOr<CountResult>>
         {
             private readonly ILoggerManager _logger;
             private readonly IGamesRepository _gamesRepository;
@@ -17,13 +17,13 @@ namespace Fliq.Application.Games.Queries.GetTotalGamesPlayed
                 _gamesRepository = gamesRepository;
             }
 
-            public async Task<ErrorOr<UserCountResult>> Handle(GetTotalGamesPlayedCountQuery query, CancellationToken cancellationToken)
+            public async Task<ErrorOr<CountResult>> Handle(GetTotalGamesPlayedCountQuery query, CancellationToken cancellationToken)
             {
                 _logger.LogInfo("Fetching all total games played count ...");
                 var count = await _gamesRepository.GetTotalGamesPlayedCountAsync();
                 _logger.LogInfo($"All total games played count: {count}");
 
-                return new UserCountResult(count);
+                return new CountResult(count);
             }
         }
 
