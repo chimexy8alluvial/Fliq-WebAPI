@@ -1,6 +1,7 @@
 ﻿using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.Notifications.Common.EventCreatedEvents;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Event.Enums;
 using MediatR;
@@ -41,7 +42,7 @@ namespace Fliq.Application.Event.Commands.CancelEvent
 
             if (eventFromDb.Status == EventStatus.Cancelled)
             {
-                _logger.LogError($"Event with ID: {command.EventId} has been cancelled already.");
+                _logger.LogInfo($"Event with ID: {command.EventId} has been cancelled already.");
                 return Errors.Event.EventCancelledAlready;
             }
 
@@ -56,7 +57,8 @@ namespace Fliq.Application.Event.Commands.CancelEvent
 
             _eventRepository.Update(eventFromDb);
 
-            _logger.LogInfo($"Event with ID: {command.EventId} was cancelled");           
+            _logger.LogInfo($"Event with ID: {command.EventId} was cancelled");
+          
 
             return Unit.Value;
         }

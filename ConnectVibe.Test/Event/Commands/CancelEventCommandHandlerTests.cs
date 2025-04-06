@@ -107,7 +107,7 @@ namespace Fliq.Application.Tests.Event.Commands
             Assert.AreEqual(Errors.Event.EventCancelledAlready, result.FirstError);
 
             _loggerMock.Verify(logger => logger.LogInfo($"Cancelling Event with ID: {command.EventId}"), Times.Once());
-            _loggerMock.Verify(logger => logger.LogError($"Event with ID: {command.EventId} has been cancelled already."), Times.Once());
+            _loggerMock.Verify(logger => logger.LogInfo($"Event with ID: {command.EventId} has been cancelled already."), Times.Once());
             _eventRepositoryMock.Verify(repo => repo.Update(It.IsAny<Events>()), Times.Never());
         }
 
