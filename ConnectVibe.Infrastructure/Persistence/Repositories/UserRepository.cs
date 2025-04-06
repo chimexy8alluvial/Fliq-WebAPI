@@ -26,6 +26,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         {
             if (user.Id > 0)
             {
+                user.DateModified = DateTime.Now;
                 _dbContext.Update(user);
             }
             else

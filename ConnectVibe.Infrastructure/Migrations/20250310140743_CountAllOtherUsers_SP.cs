@@ -20,7 +20,7 @@ namespace Fliq.Infrastructure.Migrations
                 LEFT JOIN UserProfiles up ON u.Id = up.UserId
                  LEFT JOIN Genders g ON up.GenderId = g.Id
                 WHERE
-                    g.GenderType = 2 
+                    g.GenderType = 3
                AND     u.IsDeleted = 0;
             END;
             ");
