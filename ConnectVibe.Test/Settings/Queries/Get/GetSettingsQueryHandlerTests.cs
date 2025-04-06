@@ -4,7 +4,7 @@ using Fliq.Application.Settings.Queries.GetSettings;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities;
 using Fliq.Domain.Entities.Settings;
-using Microsoft.AspNetCore.Http;
+using Fliq.Domain.Enums;
 using Moq;
 
 namespace Fliq.Test.Settings.Queries.Get
@@ -87,7 +87,7 @@ namespace Fliq.Test.Settings.Queries.Get
                 ScreenMode = ScreenMode.Dark,
                 RelationAvailability = true,
                 ShowMusicAndGameStatus = true,
-                Language = "English",
+                Language = Language.English,
                 NotificationPreferences = new List<NotificationPreference>(),
                 Filter = new Filter()
             };

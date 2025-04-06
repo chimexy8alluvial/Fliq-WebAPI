@@ -63,7 +63,7 @@ namespace Fliq.Test.Games.Commands
             _mockGamesRepository?.Setup(repo => repo.GetQuestionsByGameId(session.GameId, It.IsAny<int>(), It.IsAny<int>()))
                 .Returns(questions);
 
-            var command = new SubmitAnswerCommand(SessionId: 1, Player1Score: 2, Player2Score: 1, true);
+            var command = new SubmitAnswerCommand(SessionId: 1, Player1Score: 2, Player2Score: 1, true, 0);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -82,7 +82,7 @@ namespace Fliq.Test.Games.Commands
             // Arrange
             _mockGamesRepository?.Setup(repo => repo.GetGameSessionById(It.IsAny<int>())).Returns((GameSession?)null);
 
-            var command = new SubmitAnswerCommand(SessionId: 999, Player1Score: 2, Player2Score: 1, true);
+            var command = new SubmitAnswerCommand(SessionId: 999, Player1Score: 2, Player2Score: 1, true, 0);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);

@@ -81,7 +81,7 @@ namespace Fliq.Test.Profile.Queries.Get
             var profile = new UserProfile
             {
                 DOB = DateTime.Now.AddYears(-25),
-                Gender = new Gender { GenderType = GenderType.Male },
+                Gender = new Gender { Id=1 },
                 ProfileDescription = "I am a software engineer who admires hardworking women in tech description",
                 Location = location,
                 UserId = user.Id

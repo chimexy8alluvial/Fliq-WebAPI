@@ -15,7 +15,9 @@ namespace Fliq.Infrastructure.Migrations
             AS
             BEGIN
                 SET NOCOUNT ON;
-                SELECT COUNT(*) AS TotalUsers FROM Users;
+                SELECT COUNT(*) AS TotalUsers FROM Users
+             WHERE 
+                 IsDeleted = 0;
             END;
             ");
         }

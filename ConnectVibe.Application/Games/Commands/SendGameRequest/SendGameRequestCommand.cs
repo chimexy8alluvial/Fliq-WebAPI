@@ -8,7 +8,7 @@ using MediatR;
 
 namespace Fliq.Application.Games.Commands.SendGameRequest
 {
-    public record SendGameRequestCommand(int GameId, int RequesterId, int ReceiverUserId)
+    public record SendGameRequestCommand(int GameId, int RequesterId, int ReceiverUserId, GameDisconnectionResolutionOption GameDisconnectionResolutionOption)
       : IRequest<ErrorOr<GetGameRequestResult>>;
 
     public class SendGameRequestCommandHandler : IRequestHandler<SendGameRequestCommand, ErrorOr<GetGameRequestResult>>
@@ -33,7 +33,8 @@ namespace Fliq.Application.Games.Commands.SendGameRequest
             {
                 GameId = request.GameId,
                 RequesterId = request.RequesterId,
-                RecipientId = request.ReceiverUserId
+                RecipientId = request.ReceiverUserId,
+                GameDisconnectionResolutionOption = request.GameDisconnectionResolutionOption
             };
 
             var reciever = _userRepository.GetUserById(request.ReceiverUserId);

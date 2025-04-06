@@ -2,19 +2,7 @@
 {
     public class EducationStatus : Record
     {
-        public int UserProfileId { get; set; }
-        public EducationLevel EducationLevel { get; set; }
-        public bool IsVisible { get; set; }
+        public string EducationLevel { get; set; } = default!;
     }
 
-    public enum EducationLevel
-    {
-        HighSchool,
-        AssociateDegree,
-        BachelorDegree,
-        MasterDegree,
-        Doctorate,
-        Other,
-        PreferNotToSay
-    }
 }

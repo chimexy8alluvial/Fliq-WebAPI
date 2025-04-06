@@ -1,4 +1,4 @@
 ﻿namespace Fliq.Contracts.Profile
 {
-    public record EthnicityDto(int EthnicityType, bool IsVisible);
+    public record EthnicityDto(int Id, bool IsVisible);
 }

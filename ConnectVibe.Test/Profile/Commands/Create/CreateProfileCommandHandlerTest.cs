@@ -22,50 +22,40 @@ namespace Fliq.Test.Profile.Commands.Create
     public class CreateProfileCommandHandlerTest
     {
         private CreateProfileCommandHandler? _handler;
-        private Mock<IMapper>? _mapperMock;
         private Mock<IProfileRepository>? _profileRepositoryMock;
-        private Mock<ISettingsRepository>? _settingsRepositoryMock;
         private Mock<IUserRepository>? _userRepositoryMock;
         private Mock<ILocationService>? _locationServiceMock;
         private Mock<IHttpContextAccessor>? _httpContextAccessorMock;
         private Mock<ClaimsPrincipal>? _claimsPrincipalMock;
         private Mock<IPromptQuestionRepository>? _promptQuestionRepositoryMock;
         private Mock<IPromptCategoryRepository>? _promptCategoryRepositoryMock;
-        private Mock<IPromptResponseRepository>? _promptResponseRepositoryMock;
         private Mock<ILoggerManager>? _loggerManagerMock;
         private Mock<IMediaServices>? _mediaServicesMock;
 
         [TestInitialize]
         public void Setup()
         {
-            _mapperMock = new Mock<IMapper>();
             _profileRepositoryMock = new Mock<IProfileRepository>();
-            _settingsRepositoryMock = new Mock<ISettingsRepository>();
             _userRepositoryMock = new Mock<IUserRepository>();
             _locationServiceMock = new Mock<ILocationService>();
             _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
-            _settingsRepositoryMock = new Mock<ISettingsRepository>();
             _claimsPrincipalMock = new Mock<ClaimsPrincipal>();
             _promptQuestionRepositoryMock = new Mock<IPromptQuestionRepository>();
             _promptCategoryRepositoryMock = new Mock<IPromptCategoryRepository>();
             _loggerManagerMock = new Mock<ILoggerManager>();
             _mediaServicesMock = new Mock<IMediaServices>();
-            _promptResponseRepositoryMock = new Mock<IPromptResponseRepository>();
 
             _httpContextAccessorMock.Setup(x => x.HttpContext.User)
                 .Returns(_claimsPrincipalMock.Object);
 
             _handler = new CreateProfileCommandHandler(
-                _mapperMock.Object,
                 _profileRepositoryMock.Object,
                 _userRepositoryMock.Object,
                 _locationServiceMock.Object,
-                _settingsRepositoryMock.Object,
                 _loggerManagerMock.Object,
                 _promptQuestionRepositoryMock.Object,
                 _promptCategoryRepositoryMock.Object,
-                _mediaServicesMock.Object,
-                _promptResponseRepositoryMock.Object);
+                _mediaServicesMock.Object);
         }
 
         [TestMethod]
@@ -93,7 +83,7 @@ namespace Fliq.Test.Profile.Commands.Create
             {
                 UserId = 1,
                 DOB = DateTime.Now.AddYears(-25),
-                Gender = new Gender { GenderType = GenderType.Male },
+                GenderId = 1,
                 ProfileDescription = "Test Description",
                 Photos = [new ProfilePhotoMapped { ImageFile = CreateMockFormFile(), Caption = "Test Photo" }],
                 Location = new Location { Lat = 51.5074, Lng = -0.1278 }
@@ -258,7 +248,7 @@ namespace Fliq.Test.Profile.Commands.Create
             {
                 UserId = 1,
                 DOB = DateTime.Now.AddYears(-25),
-                Gender = new Gender { GenderType = GenderType.Male },
+                GenderId = 1,
                 ProfileDescription = "Test Description",
                 Photos = [new ProfilePhotoMapped { ImageFile = CreateMockFormFile(), Caption = "Test Photo" }],
                 Location = new Location { Lat = 51.5074, Lng = -0.1278 }

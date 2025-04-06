@@ -7,16 +7,30 @@ namespace Fliq.Domain.Entities.Profile
 {
     public class UserProfile : Record
     {
+        public int GenderId { get; set; }
+        public int HaveKidsId { get; set; }
+        public int WantKidsId { get; set; }
+        public int? SexualOrientationId { get; set; }
+        public bool IsSexualOrientationVisible { get; set; }
+        public int? EducationStatusId { get; set; }
+        public bool IsEducationStatusVisible { get; set; }
+        public int? EthnicityId { get; set; }
+        public bool IsEthnicityVisible { get; set; }
+        public int? OccupationId { get; set; }
+        public bool IsOccupationVisible { get; set; }
+        public int? ReligionId { get; set; }
+        public bool IsReligionVisible { get; set; }
+
         public DateTime DOB { get; set; }
-        public Gender? Gender { get; set; } = default!;
+        public Gender Gender { get; set; } = default!;
         public string? ProfileDescription { get; set; }  //Nullable
         public SexualOrientation? SexualOrientation { get; set; }  //Nullable
-        public Religion? Religion { get; set; } = default!;
-        public Ethnicity? Ethnicity { get; set; } = default!;
-        public Occupation? Occupation { get; set; } = default!;
-        public EducationStatus? EducationStatus { get; set; } = default!;
-        public HaveKids? HaveKids { get; set; }  //Nullable
-        public WantKids? WantKids { get; set; }  //Nullable
+        public Religion? Religion { get; set; } 
+        public Ethnicity? Ethnicity { get; set; } 
+        public Occupation? Occupation { get; set; } 
+        public EducationStatus? EducationStatus { get; set; } 
+        public HaveKids HaveKids { get; set; }  =default!;
+        public WantKids WantKids { get; set; } =default!;
         public Location? Location { get; set; } = default!;
         public bool AllowNotifications { get; set; }
         public List<ProfilePhoto>? Photos { get; set; } = new();
@@ -44,6 +58,6 @@ namespace Fliq.Domain.Entities.Profile
 
         public int UserId { get; set; }
         public User User { get; set; } = default!;
-        public List<PromptResponse>? PromptResponses { get; set; } = new();
+        public List<PromptResponse>? PromptResponses { get; set; } = new();    
     }
 }

@@ -4,6 +4,7 @@ using Fliq.Application.Settings.Commands.Update;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities;
 using Fliq.Domain.Entities.Settings;
+using Fliq.Domain.Enums;
 using Microsoft.AspNetCore.Http;
 using Moq;
 
@@ -43,7 +44,7 @@ namespace Fliq.Test.Settings.Commands.Update
                 ScreenMode.Dark,
                 true,
                 true,
-                "English",
+                Language.English,
                 new List<NotificationPreference>(),
                 new Filter(),
                 999
@@ -72,7 +73,7 @@ namespace Fliq.Test.Settings.Commands.Update
                 ScreenMode.Dark,
                 true,
                 true,
-                "English",
+                Language.English,
                 new List<NotificationPreference>(),
                 new Filter(),
                 user.Id
@@ -105,7 +106,7 @@ namespace Fliq.Test.Settings.Commands.Update
                 ScreenMode = ScreenMode.White,
                 RelationAvailability = false,
                 ShowMusicAndGameStatus = false,
-                Language = "English",
+                Language = Language.English,
                 NotificationPreferences = new List<NotificationPreference>(),
                 Filter = new Filter()
             };
@@ -115,7 +116,7 @@ namespace Fliq.Test.Settings.Commands.Update
                 ScreenMode.Dark,
                 true,
                 true,
-                "French",
+                Language.French,
                 new List<NotificationPreference>(),
                 new Filter(),
                 user.Id
@@ -140,7 +141,7 @@ namespace Fliq.Test.Settings.Commands.Update
             Assert.AreEqual(ScreenMode.Dark, updatedSettings.ScreenMode);
             Assert.IsTrue(updatedSettings.RelationAvailability);
             Assert.IsTrue(updatedSettings.ShowMusicAndGameStatus);
-            Assert.AreEqual("French", updatedSettings.Language);
+            Assert.AreEqual(Language.French, updatedSettings.Language);
             Assert.AreEqual(user.FirstName + " " + user.LastName, updatedSettings.Name);
             Assert.AreEqual(user.Email, updatedSettings.Email);
 
