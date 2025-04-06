@@ -37,5 +37,6 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         Task<int> GetGamersCountAsync();
         Task<int> GetTotalGamesPlayedCountAsync();
         Task<(List<GamesListItem> List, int totalCount)> GetAllGamesListAsync(int page, int pageSize, DateTime? datePlayedFrom, DateTime? datePlayedTo, int? status);
+
     }
 }

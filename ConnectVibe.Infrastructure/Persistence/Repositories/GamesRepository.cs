@@ -183,12 +183,24 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         {
             using (var connection = _connectionFactory.CreateConnection())
             {
-                //var parameters = CreateDynamicParameters(paginationRequest); ;
-                var sql = "sp_GetAllPaginatedAuditTrails";
+                var parameters = new
+                {
+                    Page = page,
+                    PageSize = pageSize,
+                    Status = status,
+                    DatePlayedFrom = datePlayedFrom,
+                    DatePlayedTo = datePlayedTo
+                };
 
-                var auditTrails = await connection.QueryAsync<AuditTrail>(sql, commandType: CommandType.StoredProcedure);
-
-                return auditTrails.ToList();
+                using (var multi = await connection.QueryMultipleAsync(
+                    "sp_GetAllFilteredGamesList",
+                    parameters,
+                    commandType: CommandType.StoredProcedure))
+                {
+                    var list = (await multi.ReadAsync<GamesListItem>()).AsList();
+                    var totalCount = await multi.ReadSingleAsync<int>();
+                    return (list, totalCount);
+                }
             }
         }
     }
