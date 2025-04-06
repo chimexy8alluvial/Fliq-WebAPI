@@ -14,5 +14,6 @@
         public List<Discount>? Discounts { get; set; } = default!;
         public Events Event { get; set; } = default!;
         public int EventId { get; set; }
+        public List<EventTicket> EventTickets { get; set; } = default!;
     }
 }

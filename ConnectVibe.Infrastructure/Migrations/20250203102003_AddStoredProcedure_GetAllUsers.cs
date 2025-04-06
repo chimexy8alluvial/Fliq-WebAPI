@@ -15,7 +15,9 @@ namespace Fliq.Infrastructure.Migrations
             AS
             BEGIN
                 SELECT *
-                FROM Users;
+                FROM Users
+            WHERE 
+                IsDeleted = 0;
             END;
         ");
         }

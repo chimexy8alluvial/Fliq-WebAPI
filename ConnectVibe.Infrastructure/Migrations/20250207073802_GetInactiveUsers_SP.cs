@@ -11,16 +11,19 @@ namespace Fliq.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@"
-            CREATE PROCEDURE sp_GetInactiveUsers
+           CREATE PROCEDURE [dbo].[sp_GetInactiveUsers]
                 @ThresholdDate DATETIME
             AS
             BEGIN
                 SET NOCOUNT ON;
-            
+
                 SELECT * 
-                FROM Users
-                WHERE LastActiveAt < @ThresholdDate;
-            END;");
+                FROM [dbo].[Users]
+                WHERE  
+                    IsDeleted = 0
+                    AND LastActiveAt < @ThresholdDate;
+            END;
+           ");
         }
 
         /// <inheritdoc />

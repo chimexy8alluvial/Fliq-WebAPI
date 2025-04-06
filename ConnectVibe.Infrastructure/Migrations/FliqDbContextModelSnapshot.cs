@@ -2184,6 +2184,9 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<bool>("IsEmailValidated")
                         .HasColumnType("bit");
 
+                    b.Property<int>("Language")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("LastActiveAt")
                         .HasColumnType("datetime2");
 

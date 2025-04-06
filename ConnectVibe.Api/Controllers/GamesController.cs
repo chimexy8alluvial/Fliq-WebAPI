@@ -269,7 +269,7 @@ namespace Fliq.Api.Controllers
             var result = await _mediator.Send(query);
 
             return result.Match(
-              matchedProfileResult => Ok(_mapper.Map<UserCountResponse>(result.Value)),
+              matchedProfileResult => Ok(_mapper.Map<CountResponse>(result.Value)),
               errors => Problem(errors)
           );
         }

@@ -1,5 +1,4 @@
-﻿
-using Fliq.Application.Common.Interfaces.Persistence;
+﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.DashBoard.Queries.NewSignUpsCount;
 using Moq;

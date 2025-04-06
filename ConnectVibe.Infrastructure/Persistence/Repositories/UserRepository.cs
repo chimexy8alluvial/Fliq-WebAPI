@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.DashBoard.Common;
 using Fliq.Application.Profile.Common;
 using Fliq.Application.Users.Common;
 using Fliq.Domain.Entities;
@@ -35,6 +36,8 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         }
         public void Update(User user)
         {
+            user.DateModified = DateTime.Now;
+
             _dbContext.Update(user);
 
             _dbContext.SaveChanges();
@@ -52,6 +55,19 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             {
                 var users = connection.Query<User>("sp_GetAllUsers", commandType: CommandType.StoredProcedure);
                 return users;
+            }
+        }
+
+         public async Task<IEnumerable<GetUsersResult>> GetAllUsersForDashBoardAsync(GetUsersListRequest query)
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var parameters = FilterListDynamicParams(query);
+
+                return await connection.QueryAsync<GetUsersResult>("sp_GetAllUsersForDashBoard",
+                    parameters,
+                    commandType: CommandType.StoredProcedure);
+                       
             }
         }
 
@@ -102,8 +118,25 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         //To be changed to stored procedure
         public User? GetUserByIdIncludingProfile(int id)
         {
-            var user = _dbContext.Users.Include(p => p.UserProfile).ThenInclude(p => p.Photos).SingleOrDefault(p => p.Id == id);
+            var user = _dbContext.Users.Include(p => p.UserProfile).ThenInclude(up => up.Photos).Include(p => p.UserProfile).
+                ThenInclude(up => up.Gender).Include(p => p.UserProfile).ThenInclude(up => up.Religion).Include(p => p.UserProfile).ThenInclude(up => up.SexualOrientation).
+                Include(p => p.UserProfile).ThenInclude(up => up.EducationStatus).Include(p => p.UserProfile).ThenInclude(up => up.Occupation).
+                Include(p => p.UserProfile).ThenInclude(up => up.HaveKids).
+                Include(p => p.UserProfile).ThenInclude(up => up.WantKids).SingleOrDefault(p => p.Id == id);
             return user;
+        }
+
+
+        private static DynamicParameters FilterListDynamicParams(GetUsersListRequest query)
+        {
+            var parameters = new DynamicParameters();
+
+            parameters.Add("@pageNumber", query.PaginationRequest!.PageNumber);
+            parameters.Add("@pageSize", query.PaginationRequest.PageSize);
+            parameters.Add("@hasSubscription", query.HasSubscription);
+            parameters.Add("@activeSince", query.ActiveSince);
+            parameters.Add("@roleName", query.RoleName);
+            return parameters;
         }
 
 
@@ -165,19 +198,19 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                     Religions = (await multi.ReadAsync<Religion>()).ToList(),
                     Ethnicities = (await multi.ReadAsync<Ethnicity>()).ToList(),
                     EducationStatuses = (await multi.ReadAsync<EducationStatus>()).ToList(),
-                    Genders=(await multi.ReadAsync<Gender>()).ToList(),
-                    HaveKids=(await multi.ReadAsync<HaveKids>()).ToList(),
-                    WantKids=(await multi.ReadAsync<WantKids>()).ToList(),
+                    Genders = (await multi.ReadAsync<Gender>()).ToList(),
+                    HaveKids = (await multi.ReadAsync<HaveKids>()).ToList(),
+                    WantKids = (await multi.ReadAsync<WantKids>()).ToList(),
                 };
 
                 if (!result.Occupations.Any() &&
                     !result.Religions.Any() &&
                     !result.Ethnicities.Any() &&
-                    !result.EducationStatuses.Any()&&
-                    !result.Genders.Any()&&
-                    !result.HaveKids.Any()&&
+                    !result.EducationStatuses.Any() &&
+                    !result.Genders.Any() &&
+                    !result.HaveKids.Any() &&
                     !result.WantKids.Any()
-                    
+
                     )
                 {
                     return Error.NotFound(description: "No profile setup data found");
@@ -198,6 +231,32 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             }
         }
 
+        public async Task<int> CountAllMaleUsers()
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_CountAllMaleUsers", commandType: CommandType.StoredProcedure);
+                return count;
+            }
+        }
+        
+        public async Task<int> CountAllFemaleUsers()
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_CountAllFemaleUsers", commandType: CommandType.StoredProcedure);
+                return count;
+            }
+        }
+        
+        public async Task<int> CountAllOtherUsers()
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_CountAllOtherUsers", commandType: CommandType.StoredProcedure);
+                return count;
+            }
+        }
         #endregion
     }
 }
