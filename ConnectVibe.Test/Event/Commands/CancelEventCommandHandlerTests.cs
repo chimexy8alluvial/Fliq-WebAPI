@@ -18,6 +18,7 @@ namespace Fliq.Application.Tests.Event.Commands
         private Mock<IEventRepository>? _eventRepositoryMock;
         private CancelEventCommandHandler? _handler;
 
+
         [TestInitialize]
         public void Setup()
         {

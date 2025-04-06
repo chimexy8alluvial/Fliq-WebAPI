@@ -1,7 +1,6 @@
 ﻿using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
-using Fliq.Application.Notifications.Common.EventCreatedEvents;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Event.Enums;
 using MediatR;
