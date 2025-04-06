@@ -1,16 +1,11 @@
-﻿using Fliq.Application.Common.Interfaces.Services;
-using Fliq.Application.Common.Pagination;
-using Fliq.Domain.Entities;
-using Microsoft.AspNetCore.Connections;
+﻿using Fliq.Application.AuditTrail.Common;
+
 
 namespace Fliq.Application.Common.Interfaces.Persistence
 {
     public interface IAuditTrailRepository
     {
-        Task AddAuditTrailAsync(AuditTrail auditTrail);
-        Task<List<AuditTrail>> GetAllAuditTrailsAsync(PaginationRequest paginationRequest);
-        Task<int> GetTotalAuditTrailCountAsync();
-
-
+        Task AddAuditTrailAsync(Fliq.Domain.Entities.AuditTrail auditTrail);
+        Task<(List<AuditTrailListItem> List, int TotalCount)> GetAllAuditTrailsAsync(int PageNumber, int PageSize, string? Name);
     }
 }

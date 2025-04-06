@@ -3,6 +3,7 @@ using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Contracts.Games;
+using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Enums;
 using MediatR;
 
@@ -27,15 +28,13 @@ namespace Fliq.Application.Games.Commands.GetAllGamesPaginatedListCommand
         }
         public async Task<ErrorOr<GetGamesListResponse>> Handle(GetGamesPaginatedListCommand command, CancellationToken cancellationToken)
         {
-            _logger.LogInfo($"Get all games list command received. Page: {command.Page}, PageSize: {command.PageSize}, DatePlayedFrom: {command.DatePlayedFrom}, DatePlayedTo: {command.DatePlayedTo}, Status: {command.Status}");
-
             _logger.LogInfo("Fetching all games...");
             var (allGames, totalCount) = await _gamesRepository.GetAllGamesListAsync(command.Page, command.PageSize, command.DatePlayedFrom, command.DatePlayedTo, (int?)command.Status);
 
             if (allGames == null || !allGames.Any())
             {
                 _logger.LogError("No games found matching the provided filters");
-                //return Error.Games.NoGamesFound;
+                return Errors.Games.NoGamesFound;
             }
 
             var pagedGames = allGames.Select(g => new GamesListItem

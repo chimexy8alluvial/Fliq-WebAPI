@@ -1,8 +1,8 @@
-﻿using Fliq.Application.Common.Interfaces.Persistence;
+﻿using Fliq.Application.AuditTrail.Common;
+using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Domain.Entities;
 using Microsoft.AspNetCore.Http;
-using Fliq.Application.AuditTrailCommand;
 
 namespace Fliq.Infrastructure.Services
 {
@@ -18,7 +18,8 @@ namespace Fliq.Infrastructure.Services
 
         public async Task LogAuditTrail(string? Message, User User)
         {
-            //var ipAddress = context. // <-- Use the extension method
+            var ipAddress = _contextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+
             var auditTrail = new AuditTrail
             {
                 UserId = User.Id,
@@ -27,7 +28,7 @@ namespace Fliq.Infrastructure.Services
                 UserEmail = User.Email,
                 UserRole = User.Role.Name,
                 AuditAction = Message,
-                IPAddress = ""
+                IPAddress = ipAddress
             };
 
             await _auditTrailRepository.AddAuditTrailAsync(auditTrail);

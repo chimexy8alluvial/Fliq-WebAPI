@@ -326,36 +326,21 @@ namespace Fliq.Api.Controllers
         }
 
         [HttpGet("GetAllGamesList")]
-        //[Produces(typeof(GetDatingListResponse))]
-        [Authorize(Roles = "SuperAdmin")]
+        [Authorize(Roles = "SuperAdmin,Admin")]
         public async Task<IActionResult> GetAllGamesList([FromQuery] GetGamesListRequest request)
         {
-            _logger.LogInformation($"Get All Games List command received: {request}");
-            var command = new GetGamesPaginatedListCommand(request);
-            //var result = await _mediator.Send(query);
+            _logger.LogInformation($"Get all games list request received. Page: {request.Page}, PageSize: {request.PageSize}");
 
-            //_logger.LogInfo($"Get All Filtered Dating List Command Executed. Result: {result}");
+            var command = _mapper.Map<GetGamesPaginatedListCommand>(request);
 
-            //return result.Match(
-            //    result => Ok(result),
-            //    errors => Problem(string.Join("; ", errors.Select(e => e.Description)))
-            //);
+            var gamesResult = await _mediator.Send(command);
+            _logger.LogInformation($"Get all games list command executed. Result: {gamesResult}");
 
-            _logger.LogInfo($"End Speed Date request received: {request}");
-            var userId = GetAuthUserId();
-
-            var command = new EndSpeedDatingEventCommand(userId, request.SpeedDateId);
-            var result = await _mediator.Send(command);
-
-            _logger.LogInfo($"End Speed Date Command Executed. Result: {result}");
-
-            return result.Match(
-                result => Ok(_mapper.Map<EndSpeedDatingEventResponse>(result)),
-                errors => Problem(string.Join("; ", errors.Select(e => e.Description)))
+            return gamesResult.Match(
+                gamesResult => Ok(_mapper.Map<GetGamesListResponse>(gamesResult)),
+                errors => Problem(errors)
             );
         }
-
-
 
     }
 }
