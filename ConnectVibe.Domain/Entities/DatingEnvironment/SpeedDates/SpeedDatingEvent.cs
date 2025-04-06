@@ -1,11 +1,10 @@
-﻿
-
+﻿using Fliq.Domain.Entities.Interfaces;
 using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Enums;
 
 namespace Fliq.Domain.Entities.DatingEnvironment.SpeedDates
 {
-    public class SpeedDatingEvent : Record
+    public class SpeedDatingEvent : Record, IApprovableContent
     {
         public string Title { get; set; } = default!;
         public SpeedDatingCategory Category { get; set; } = SpeedDatingCategory.Heterosexual;
@@ -23,10 +22,15 @@ namespace Fliq.Domain.Entities.DatingEnvironment.SpeedDates
         public DateStatus Status { get; set; } = DateStatus.Pending;
 
         // Track the creator
-        public int? ContentCreationStatus { get; set; }
         public bool CreatorIsAdmin { get; set; }
         public int CreatedByUserId { get; set; }
         public User CreatedByUser { get; set; } = default!;
+
+        //Track approval status
+        public ContentCreationStatus ContentCreationStatus { get; set; } = ContentCreationStatus.Pending;
+        public DateTime? ApprovedAt { get; set; }
+        public int? ApprovedByUserId { get; set; }
+        public string? RejectionReason { get; set; }
 
         public int LocationId { get; set; }
         public Location Location { get; set; } = default!;

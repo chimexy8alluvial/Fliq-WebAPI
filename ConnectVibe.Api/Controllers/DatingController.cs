@@ -163,43 +163,6 @@ namespace Fliq.Api.Controllers
             );
         }
 
-        [Authorize(Roles = "Admin,SuperAdmin")]
-        [HttpPut("approve-blind-date/{blindDateId}")]
-        public async Task<IActionResult> ApproveBlindDateById(int blindDateId)
-        {
-            _logger.LogInfo($"Approve blind date with ID: {blindDateId} received");
-            var userId = GetAuthUserId();
-
-            var command = new ApproveBlindDateCommand(blindDateId, userId);
-            var result = await _mediator.Send(command);
-
-            _logger.LogInfo($"Approve blind date with ID: {blindDateId} executed. Result: {result} ");
-
-            return result.Match(
-              cancelEventResult => Ok($"Blind date request with ID: {blindDateId} was successfully approved"),
-              errors => Problem(errors)
-          );
-        }
-
-        [Authorize(Roles = "Admin,SuperAdmin")]
-        [HttpPut("reject-blind-date/{blindDateId}")]
-        public async Task<IActionResult> RejectBlindDateById(int blindDateId)
-        {
-            _logger.LogInfo($"Reject blind date with ID: {blindDateId} received");
-            var userId = GetAuthUserId();
-
-            var command = new RejectBlindDateCommand(blindDateId, userId);
-            var result = await _mediator.Send(command);
-
-            _logger.LogInfo($"Reject blind date with ID: {blindDateId} executed. Result: {result} ");
-
-            return result.Match(
-              cancelEventResult => Ok($"Blind date request with ID: {blindDateId} was successfully approved"),
-              errors => Problem(errors)
-          );
-        }
-
-
         [HttpGet]
         public async Task<IActionResult> GetPaginatedBlindDatesForAdmin(
            [FromQuery] int pageNumber = 1,
@@ -301,41 +264,6 @@ namespace Fliq.Api.Controllers
             );
         }
 
-        [Authorize(Roles = "Admin,SuperAdmin")]
-        [HttpPut("approve-speed-date/{speedDateId}")]
-        public async Task<IActionResult> ApproveSpeedDateById(int speedDateId)
-        {
-            _logger.LogInfo($"Approve speed date with ID: {speedDateId} received");
-            var userId = GetAuthUserId();
-
-            var command = new ApproveSpeedDateCommand(speedDateId, userId);
-            var result = await _mediator.Send(command);
-
-            _logger.LogInfo($"Approve speed date with ID: {speedDateId} executed. Result: {result} ");
-
-            return result.Match(
-              cancelEventResult => Ok($"Speed date request with ID: {speedDateId} was successfully approved"),
-              errors => Problem(errors)
-          );
-        }
-
-        [Authorize(Roles = "Admin,SuperAdmin")]
-        [HttpPut("reject-speed-date/{speedDateId}")]
-        public async Task<IActionResult> RejectSpeedDateById(int speedDateId)
-        {
-            _logger.LogInfo($"Reject speed date with ID: {speedDateId} received");
-            var userId = GetAuthUserId();
-
-            var command = new RejectSpeedDateCommand(speedDateId, userId);
-            var result = await _mediator.Send(command);
-
-            _logger.LogInfo($"Reject speed date with ID: {speedDateId} executed. Result: {result} ");
-
-            return result.Match(
-              cancelEventResult => Ok($"Speed date request with ID: {speedDateId} was successfully approved"),
-              errors => Problem(errors)
-          );
-        }
 
         [HttpGet]
         public async Task<IActionResult> GetPaginatedSpeedDatesForAdmin(

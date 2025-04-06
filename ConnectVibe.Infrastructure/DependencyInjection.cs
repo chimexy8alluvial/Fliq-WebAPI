@@ -11,6 +11,7 @@ using Fliq.Application.Common.Interfaces.Services.PaymentServices;
 using Fliq.Application.Common.Interfaces.Services.SubscriptionServices;
 using Fliq.Application.Explore.Common.Services;
 using Fliq.Application.SchedulingServices.QuartzJobs;
+using Fliq.Domain.Entities.DatingEnvironment.SpeedDates;
 using Fliq.Infrastructure.Authentication;
 using Fliq.Infrastructure.Event;
 using Fliq.Infrastructure.Persistence;
@@ -42,6 +43,7 @@ namespace Fliq.Infrastructure
         {
             services.AddAuth(configurationManager);
             services.AddStream(configurationManager);
+            services.AddRepositoryAdapters();
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IProfileRepository, ProfileRepository>();
@@ -85,6 +87,12 @@ namespace Fliq.Infrastructure
             services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
             services.AddDbContext<FliqDbContext>(options =>
     options.UseSqlServer(configurationManager.GetConnectionString("FliqDbContext") ?? throw new InvalidOperationException("Connection string 'FliqDbContext' not found.")));
+            return services;
+        }
+
+        public static IServiceCollection AddRepositoryAdapters(this IServiceCollection services)
+        {
+            services.AddScoped<IGenericRepository<SpeedDatingEvent>>(sp => new SpeedDatingEventRepositoryAdapter(sp.GetRequiredService<ISpeedDatingEventRepository>()));
             return services;
         }
 
