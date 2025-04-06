@@ -6,8 +6,8 @@ using MediatR;
 
 namespace Fliq.Application.DatingEnvironment.Queries.DatingDashboard.BlindDte
 {
-    public record BlindDateCountQuery() : IRequest<ErrorOr<UserCountResult>>;
-    public class BlindDateCountQueryHandler : IRequestHandler<BlindDateCountQuery, ErrorOr<UserCountResult>>
+    public record BlindDateCountQuery() : IRequest<ErrorOr<CountResult>>;
+    public class BlindDateCountQueryHandler : IRequestHandler<BlindDateCountQuery, ErrorOr<CountResult>>
     {
         private readonly ILoggerManager _logger;
         private readonly IBlindDateRepository _blindDateRepository;
@@ -17,14 +17,14 @@ namespace Fliq.Application.DatingEnvironment.Queries.DatingDashboard.BlindDte
             _logger = logger;
         }
 
-        public async Task<ErrorOr<UserCountResult>> Handle(BlindDateCountQuery query, CancellationToken cancellationToken)
+        public async Task<ErrorOr<CountResult>> Handle(BlindDateCountQuery query, CancellationToken cancellationToken)
         {
             _logger.LogInfo("Fetching all blind date count...");
 
             var count = await _blindDateRepository.GetBlindDateCountAsync();
             _logger.LogInfo($"All blind date count: {count}");
 
-            return new UserCountResult(count);
+            return new CountResult(count);
         }
     }
 }

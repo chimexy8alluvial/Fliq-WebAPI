@@ -7,8 +7,8 @@ using MediatR;
 
 namespace Fliq.Application.DatingEnvironment.Queries.DatingDashboard.SpeedDate
 {
-    public record SpeedDateCountQuery() : IRequest<ErrorOr<UserCountResult>>;
-    public class SpeedDateCountQueryHandler : IRequestHandler<SpeedDateCountQuery, ErrorOr<UserCountResult>>
+    public record SpeedDateCountQuery() : IRequest<ErrorOr<CountResult>>;
+    public class SpeedDateCountQueryHandler : IRequestHandler<SpeedDateCountQuery, ErrorOr<CountResult>>
     {
         private readonly ILoggerManager _logger;
         private readonly ISpeedDatingEventRepository _speedDatingEventRepository;
@@ -18,14 +18,14 @@ namespace Fliq.Application.DatingEnvironment.Queries.DatingDashboard.SpeedDate
             _logger = logger;
         }
 
-        public async Task<ErrorOr<UserCountResult>> Handle(SpeedDateCountQuery query, CancellationToken cancellationToken)
+        public async Task<ErrorOr<CountResult>> Handle(SpeedDateCountQuery query, CancellationToken cancellationToken)
         {
             _logger.LogInfo("Fetching all speed date event count...");
 
             var count = await _speedDatingEventRepository.GetSpeedDateCountAsync();
             _logger.LogInfo($"All speed date event count: {count}");
 
-            return new UserCountResult(count);
+            return new CountResult(count);
         }
     }
 }
