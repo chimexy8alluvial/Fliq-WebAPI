@@ -1,7 +1,7 @@
 ﻿
 namespace Fliq.Domain.Entities.Event.Enums
 {
-    public enum Gender
+    public enum GenderType
     {
         Male,
         Female,
