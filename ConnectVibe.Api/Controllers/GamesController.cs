@@ -1,10 +1,12 @@
 ﻿using Fliq.Application.Common.Hubs;
 using Fliq.Application.Common.Interfaces.UserFeatureActivities;
+using Fliq.Application.DatingEnvironment.Commands.SpeedDating;
 using Fliq.Application.Games.Commands.AcceptGameRequest;
 using Fliq.Application.Games.Commands.AcceptStake;
 using Fliq.Application.Games.Commands.CreateGame;
 using Fliq.Application.Games.Commands.CreateQuestion;
 using Fliq.Application.Games.Commands.CreateStake;
+using Fliq.Application.Games.Commands.GetAllGamesPaginatedListCommand;
 using Fliq.Application.Games.Commands.RejectStake;
 using Fliq.Application.Games.Commands.SendGameRequest;
 using Fliq.Application.Games.Commands.SubmitAnswer;
@@ -20,6 +22,7 @@ using Fliq.Application.Games.Queries.GetTotalGamesPlayed;
 using Fliq.Application.Games.Queries.StakeCount;
 using Fliq.Contracts.DashBoard;
 using Fliq.Contracts.Games;
+using Fliq.Domain.Enums;
 using Mapster;
 using MapsterMapper;
 using MediatR;
@@ -319,6 +322,36 @@ namespace Fliq.Api.Controllers
             return result.Match(
                 matchedProfileResult => Ok(_mapper.Map<UserCountResponse>(result.Value)),
                 errors => Problem(errors)
+            );
+        }
+
+        [HttpGet("GetAllGamesList")]
+        //[Produces(typeof(GetDatingListResponse))]
+        [Authorize(Roles = "SuperAdmin")]
+        public async Task<IActionResult> GetAllGamesList([FromQuery] GetGamesListRequest request)
+        {
+            _logger.LogInformation($"Get All Games List command received: {request}");
+            var command = new GetGamesPaginatedListCommand(request);
+            //var result = await _mediator.Send(query);
+
+            //_logger.LogInfo($"Get All Filtered Dating List Command Executed. Result: {result}");
+
+            //return result.Match(
+            //    result => Ok(result),
+            //    errors => Problem(string.Join("; ", errors.Select(e => e.Description)))
+            //);
+
+            _logger.LogInfo($"End Speed Date request received: {request}");
+            var userId = GetAuthUserId();
+
+            var command = new EndSpeedDatingEventCommand(userId, request.SpeedDateId);
+            var result = await _mediator.Send(command);
+
+            _logger.LogInfo($"End Speed Date Command Executed. Result: {result}");
+
+            return result.Match(
+                result => Ok(_mapper.Map<EndSpeedDatingEventResponse>(result)),
+                errors => Problem(string.Join("; ", errors.Select(e => e.Description)))
             );
         }
 
