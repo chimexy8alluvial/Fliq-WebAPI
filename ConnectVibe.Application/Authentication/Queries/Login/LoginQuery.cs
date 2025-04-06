@@ -44,7 +44,7 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, ErrorOr<Authenticat
 
         var token = _jwtTokenGenerator.GenerateToken(user);
 
-        var Message = $"Logging user with id {user.Id} in";
+        var Message = $"Logged in";
         await _auditTrailService.LogAuditTrail(Message, user);
 
         return new AuthenticationResult(user, token, "");
