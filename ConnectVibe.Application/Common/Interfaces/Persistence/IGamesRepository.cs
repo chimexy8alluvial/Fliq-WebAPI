@@ -1,4 +1,5 @@
 ﻿using Fliq.Application.Games.Common;
+using Fliq.Contracts.Games;
 using Fliq.Domain.Entities.Games;
 
 namespace Fliq.Application.Common.Interfaces.Persistence
@@ -35,6 +36,6 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         Task<int> GetActiveGamesCountAsync();
         Task<int> GetGamersCountAsync();
         Task<int> GetTotalGamesPlayedCountAsync();
-        //Task<(List<GamesListItem> List, int totalCount)> GetAllGamesListAsync(int page, int pageSize, DateTime? datePlayedFrom, DateTime? datePlayedTo, int? status);
+        Task<(List<GamesListItem> List, int totalCount)> GetAllGamesListAsync(int page, int pageSize, DateTime? datePlayedFrom, DateTime? datePlayedTo, int? status);
     }
 }

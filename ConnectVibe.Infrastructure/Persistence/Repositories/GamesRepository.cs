@@ -1,6 +1,9 @@
 ﻿using Dapper;
 using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Pagination;
 using Fliq.Application.Games.Common;
+using Fliq.Contracts.Games;
+using Fliq.Domain.Entities;
 using Fliq.Domain.Entities.Games;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
@@ -173,6 +176,19 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             {
                 var count = await connection.QueryFirstOrDefaultAsync<int>("sp_GetTotalGamesPlayedCount", commandType: CommandType.StoredProcedure);
                 return count;
+            }
+        }
+
+        public async Task<(List<GamesListItem> List, int totalCount)> GetAllGamesListAsync(int page, int pageSize, DateTime? datePlayedFrom, DateTime? datePlayedTo, int? status)
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                //var parameters = CreateDynamicParameters(paginationRequest); ;
+                var sql = "sp_GetAllPaginatedAuditTrails";
+
+                var auditTrails = await connection.QueryAsync<AuditTrail>(sql, commandType: CommandType.StoredProcedure);
+
+                return auditTrails.ToList();
             }
         }
     }

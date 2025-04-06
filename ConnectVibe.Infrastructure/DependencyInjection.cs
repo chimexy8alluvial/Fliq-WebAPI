@@ -84,6 +84,7 @@ namespace Fliq.Infrastructure
             services.AddSingleton<ICustomProfileMapper, CustomProfileMapper>();
             services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
             services.AddScoped<IAuditTrailRepository, AuditTrailRepository>();
+            services.AddScoped<IAuditTrailService, AuditTrailService>();
             services.AddDbContext<FliqDbContext>(options =>
     options.UseSqlServer(configurationManager.GetConnectionString("FliqDbContext") ?? throw new InvalidOperationException("Connection string 'FliqDbContext' not found.")));
             return services;
