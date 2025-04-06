@@ -118,8 +118,11 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         //To be changed to stored procedure
         public User? GetUserByIdIncludingProfile(int id)
         {
-            var user = _dbContext.Users.Include(p => p.UserProfile).ThenInclude(p => p!.Photos).SingleOrDefault(p => p.Id == id);
-          
+            var user = _dbContext.Users.Include(p => p.UserProfile).ThenInclude(up => up.Photos).Include(p => p.UserProfile).
+                ThenInclude(up => up.Gender).Include(p => p.UserProfile).ThenInclude(up => up.Religion).Include(p => p.UserProfile).ThenInclude(up => up.SexualOrientation).
+                Include(p => p.UserProfile).ThenInclude(up => up.EducationStatus).Include(p => p.UserProfile).ThenInclude(up => up.Occupation).
+                Include(p => p.UserProfile).ThenInclude(up => up.HaveKids).
+                Include(p => p.UserProfile).ThenInclude(up => up.WantKids).SingleOrDefault(p => p.Id == id);
             return user;
         }
 
@@ -195,19 +198,19 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                     Religions = (await multi.ReadAsync<Religion>()).ToList(),
                     Ethnicities = (await multi.ReadAsync<Ethnicity>()).ToList(),
                     EducationStatuses = (await multi.ReadAsync<EducationStatus>()).ToList(),
-                    Genders=(await multi.ReadAsync<Gender>()).ToList(),
-                    HaveKids=(await multi.ReadAsync<HaveKids>()).ToList(),
-                    WantKids=(await multi.ReadAsync<WantKids>()).ToList(),
+                    Genders = (await multi.ReadAsync<Gender>()).ToList(),
+                    HaveKids = (await multi.ReadAsync<HaveKids>()).ToList(),
+                    WantKids = (await multi.ReadAsync<WantKids>()).ToList(),
                 };
 
                 if (!result.Occupations.Any() &&
                     !result.Religions.Any() &&
                     !result.Ethnicities.Any() &&
-                    !result.EducationStatuses.Any()&&
-                    !result.Genders.Any()&&
-                    !result.HaveKids.Any()&&
+                    !result.EducationStatuses.Any() &&
+                    !result.Genders.Any() &&
+                    !result.HaveKids.Any() &&
                     !result.WantKids.Any()
-                    
+
                     )
                 {
                     return Error.NotFound(description: "No profile setup data found");
