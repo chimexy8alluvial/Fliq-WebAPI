@@ -43,8 +43,8 @@ namespace Fliq.Application.DatingEnvironment.Commands.BlindDates
                 return Errors.Dating.DateAlreadyRejected;
             }
 
-            var user = _userRepository.GetUserById(command.AdminUserId); //update this to get user by id and role for faster fetch
-            if (user == null)
+            var adminUser = _userRepository.GetUserById(command.AdminUserId); //update this to get user by id and role for faster fetch
+            if (adminUser == null)
             {
                 _logger.LogError($"Admin with Id: {command.AdminUserId} was not found.");
                 return Errors.User.UserNotFound;

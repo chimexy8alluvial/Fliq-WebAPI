@@ -30,7 +30,7 @@ namespace Fliq.Application.DatingEnvironment.Commands.SpeedDating
         public async Task<ErrorOr<Unit>> Handle(RejectSpeedDateCommand command, CancellationToken cancellationToken)
         {
 
-            _logger.LogInfo($"Rejecting speed date with ID: {command.SpeedDateId}");
+            _logger.LogInfo($"Rejecting speed date request with ID: {command.SpeedDateId}");
             var speedDate = await _speedDateRepository.GetByIdAsync(command.SpeedDateId);
             if (speedDate == null)
             {
@@ -40,12 +40,12 @@ namespace Fliq.Application.DatingEnvironment.Commands.SpeedDating
 
             if (speedDate.ContentCreationStatus == (int)ContentCreationStatus.Rejected)
             {
-                _logger.LogError($"Speed date with ID: {command.SpeedDateId} has been rejected already.");
+                _logger.LogError($"Speed date request with ID: {command.SpeedDateId} has been rejected already.");
                 return Errors.Dating.DateAlreadyRejected;
             }
 
-            var user = _userRepository.GetUserById(command.AdminUserId); //update this to get user by id and role for faster fetch
-            if (user == null)
+            var adminUser = _userRepository.GetUserById(command.AdminUserId); //update this to get user by id and role for faster fetch
+            if (adminUser == null)
             {
                 _logger.LogError($"Admin with Id: {command.AdminUserId} was not found.");
                 return Errors.User.UserNotFound;
