@@ -4,6 +4,7 @@ using Fliq.Application.Contents.Commands;
 using Fliq.Application.DatingEnvironment.Commands.SpeedDating;
 using Fliq.Domain.Entities.DatingEnvironment.BlindDates;
 using Fliq.Domain.Entities.DatingEnvironment.SpeedDates;
+using Fliq.Domain.Entities.Games;
 using Fliq.Domain.Enums;
 using MapsterMapper;
 using MediatR;
@@ -46,9 +47,12 @@ namespace Fliq.Api.Controllers
                 case ContentTypeEnum.BlindDate:
                     result = await _mediator.Send(new ApproveContentCommand<BlindDate>(contentId, adminUserId));
                     break;
-                    //Add more cases for other content types
-   
-                   default:
+                case ContentTypeEnum.Game:
+                    result = await _mediator.Send(new ApproveContentCommand<Game>(contentId, adminUserId));
+                    break;
+                //Add more cases for other content types
+
+                default:
                     return BadRequest("Invalid content type");
             }
 

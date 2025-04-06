@@ -8,11 +8,4 @@
         InProgress = 3,
         Done = 4
     }
-
-    public enum GameCreationStatus
-    {
-        Pending = 0,
-        Approved = 1,
-        Rejected = 2,
-    }
 }

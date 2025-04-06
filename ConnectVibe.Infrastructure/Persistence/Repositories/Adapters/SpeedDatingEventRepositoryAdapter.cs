@@ -1,9 +1,7 @@
-﻿
-
-using Fliq.Application.Common.Interfaces.Persistence;
+﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Domain.Entities.DatingEnvironment.SpeedDates;
 
-namespace Fliq.Infrastructure.Persistence.Repositories
+namespace Fliq.Infrastructure.Persistence.Repositories.Adapters
 {
     public class SpeedDatingEventRepositoryAdapter : IGenericRepository<SpeedDatingEvent>
     {

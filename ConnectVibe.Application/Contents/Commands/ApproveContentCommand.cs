@@ -45,8 +45,8 @@ namespace Fliq.Application.Contents.Commands
                 return Errors.Content.ContentAlreadyApproved;
             }
 
-            var aadminUser = _userRepository.GetUserById(command.AdminUserId); //update this to get user by id and role for faster fetch
-            if (aadminUser == null)
+            var adminUser = _userRepository.GetUserById(command.AdminUserId); //update this to get user by id and role for faster fetch
+            if (adminUser == null)
             {
                 _logger.LogError($"Admin with Id: {command.AdminUserId} was not found.");
                 return Errors.User.UserNotFound;
@@ -54,7 +54,7 @@ namespace Fliq.Application.Contents.Commands
 
             content.ContentCreationStatus = ContentCreationStatus.Approved;
             content.ApprovedAt = DateTime.UtcNow;
-            content.ApprovedByUserId = aadminUser.Id;
+            content.ApprovedByUserId = adminUser.Id;
 
             await repository.UpdateAsync(content);
 

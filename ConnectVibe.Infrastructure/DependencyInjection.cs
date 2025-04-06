@@ -11,12 +11,15 @@ using Fliq.Application.Common.Interfaces.Services.PaymentServices;
 using Fliq.Application.Common.Interfaces.Services.SubscriptionServices;
 using Fliq.Application.Explore.Common.Services;
 using Fliq.Application.SchedulingServices.QuartzJobs;
+using Fliq.Domain.Entities.DatingEnvironment.BlindDates;
 using Fliq.Domain.Entities.DatingEnvironment.SpeedDates;
+using Fliq.Domain.Entities.Games;
 using Fliq.Infrastructure.Authentication;
 using Fliq.Infrastructure.Event;
 using Fliq.Infrastructure.Persistence;
 using Fliq.Infrastructure.Persistence.Helper;
 using Fliq.Infrastructure.Persistence.Repositories;
+using Fliq.Infrastructure.Persistence.Repositories.Adapters;
 using Fliq.Infrastructure.Services;
 using Fliq.Infrastructure.Services.AuthServices;
 using Fliq.Infrastructure.Services.EventServices;
@@ -93,6 +96,9 @@ namespace Fliq.Infrastructure
         public static IServiceCollection AddRepositoryAdapters(this IServiceCollection services)
         {
             services.AddScoped<IGenericRepository<SpeedDatingEvent>>(sp => new SpeedDatingEventRepositoryAdapter(sp.GetRequiredService<ISpeedDatingEventRepository>()));
+            services.AddScoped<IGenericRepository<BlindDate>>(sp => new BlindDateRepositoryAdapter(sp.GetRequiredService<IBlindDateRepository>()));
+            services.AddScoped<IGenericRepository<Game>>(sp => new GamesRepositoryAdapter(sp.GetRequiredService<IGamesRepository>()));
+
             return services;
         }
 

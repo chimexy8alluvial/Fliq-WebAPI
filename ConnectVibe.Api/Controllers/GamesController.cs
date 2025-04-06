@@ -276,41 +276,6 @@ namespace Fliq.Api.Controllers
           );
         }
 
-        [Authorize(Roles = "Admin,SuperAdmin")]
-        [HttpPut("approve-game-creation/{gameRequestId}")]
-        public async Task<IActionResult> ApproveGameCreationRequestById(int gameRequestId)
-        {
-            _logger.LogInformation($"Approve game creation request with ID: {gameRequestId} received");
-            var userId = GetAuthUserId();
-
-            var command = new ApproveSpeedDateCommand(gameRequestId, userId);
-            var result = await _mediator.Send(command);
-
-            _logger.LogInformation($"Approve game date with ID: {gameRequestId} executed. Result: {result} ");
-
-            return result.Match(
-              ApproveGameResult => Ok($"Game request with ID: {gameRequestId} was successfully approved"),
-              errors => Problem(errors)
-          );
-        }
-
-        [Authorize(Roles = "Admin,SuperAdmin")]
-        [HttpPut("reject-game-creation/{gameRequestId}")]
-        public async Task<IActionResult> RejectGameCreationRequestById(int gameRequestId)
-        {
-            _logger.LogInformation($"Reject Game with ID: {gameRequestId} received");
-            var userId = GetAuthUserId();
-
-            var command = new RejectGameRequestCommand(gameRequestId, userId);
-            var result = await _mediator.Send(command);
-
-            _logger.LogInformation($"Reject Game with ID: {gameRequestId} executed. Result: {result} ");
-
-            return result.Match(
-              RejectGameResult => Ok($"Speed date request with ID: {gameRequestId} was successfully rejected"),
-              errors => Problem(errors)
-          );
-        }
 
     }
 }
