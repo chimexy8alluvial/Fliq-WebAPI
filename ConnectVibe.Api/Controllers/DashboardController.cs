@@ -38,7 +38,7 @@ namespace Fliq.Api.Controllers
             var result = await _mediator.Send(query);
 
             return result.Match(
-              matchedProfileResult => Ok(_mapper.Map<GetAllPaginatedAuditTrailCommand>(result.Value)),
+              matchedProfileResult => Ok(_mapper.Map<UserCountResponse>(result.Value)),
               errors => Problem(errors)
           );
         }
@@ -52,7 +52,7 @@ namespace Fliq.Api.Controllers
             var result = await _mediator.Send(query);
 
             return result.Match(
-              matchedProfileResult => Ok(_mapper.Map<GetAllPaginatedAuditTrailCommand>(result.Value)),
+              matchedProfileResult => Ok(_mapper.Map<UserCountResponse>(result.Value)),
               errors => Problem(errors)
           );
         }
@@ -66,7 +66,7 @@ namespace Fliq.Api.Controllers
             var result = await _mediator.Send(query);
 
             return result.Match(
-              matchedProfileResult => Ok(_mapper.Map<GetAllPaginatedAuditTrailCommand>(result.Value)),
+              matchedProfileResult => Ok(_mapper.Map<UserCountResponse>(result.Value)),
               errors => Problem(errors)
           );
         }
@@ -80,7 +80,7 @@ namespace Fliq.Api.Controllers
             var result = await _mediator.Send(query);
 
             return result.Match(
-             matchedProfileResult => Ok(_mapper.Map<GetAllPaginatedAuditTrailCommand>(result.Value)),
+             matchedProfileResult => Ok(_mapper.Map<UserCountResponse>(result.Value)),
              errors => Problem(errors)
          );
         }

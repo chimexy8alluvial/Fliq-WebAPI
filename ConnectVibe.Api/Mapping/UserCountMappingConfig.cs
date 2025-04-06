@@ -8,7 +8,7 @@ namespace Fliq.Api.Mapping
     {
         public void Register(TypeAdapterConfig config)
         {
-            config.NewConfig<UserCountResult, GetAllPaginatedAuditTrailCommand>().Map(dest => dest.Count, src => src.Count);
+            config.NewConfig<UserCountResult, UserCountResponse>().Map(dest => dest.Count, src => src.Count);
         }
     }
 }

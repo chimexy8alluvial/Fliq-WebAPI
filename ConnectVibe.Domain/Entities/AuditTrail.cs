@@ -1,7 +1,7 @@
 ﻿
 namespace Fliq.Domain.Entities
 {
-    public class AuditTrail
+    public class AuditTrail : Record
     {
         public int UserId { get; set; }
         public string UserFirstName { get; set; } = string.Empty;

@@ -9,11 +9,14 @@ using Fliq.Application.Games.Commands.RejectStake;
 using Fliq.Application.Games.Commands.SendGameRequest;
 using Fliq.Application.Games.Commands.SubmitAnswer;
 using Fliq.Application.Games.Common;
+using Fliq.Application.Games.Queries.GetActiveGamesCountQuery;
 using Fliq.Application.Games.Queries.GetGame;
 using Fliq.Application.Games.Queries.GetGameHistory;
 using Fliq.Application.Games.Queries.GetGames;
+using Fliq.Application.Games.Queries.GetNumberOfGamersCountQuery;
 using Fliq.Application.Games.Queries.GetQuestions;
 using Fliq.Application.Games.Queries.GetSession;
+using Fliq.Application.Games.Queries.GetTotalGamesPlayed;
 using Fliq.Application.Games.Queries.StakeCount;
 using Fliq.Contracts.DashBoard;
 using Fliq.Contracts.Games;
@@ -23,9 +26,6 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using static Fliq.Application.Games.Queries.GetActiveGamesCountQuery.GetActiveGamesCountQuery;
-using static Fliq.Application.Games.Queries.GetNumberOfGamersCountQuery.GetNumberOfGamersCountQuery;
-using static Fliq.Application.Games.Queries.GetTotalGamesPlayed.GetTotalGamesPlayedCountQuery;
 
 namespace Fliq.Api.Controllers
 {
@@ -272,7 +272,7 @@ namespace Fliq.Api.Controllers
             var result = await _mediator.Send(query);
 
             return result.Match(
-              matchedProfileResult => Ok(_mapper.Map<GetAllPaginatedAuditTrailCommand>(result.Value)),
+              matchedProfileResult => Ok(_mapper.Map<UserCountResponse>(result.Value)),
               errors => Problem(errors)
           );
         }
@@ -283,11 +283,11 @@ namespace Fliq.Api.Controllers
         {
             _logger.LogInformation("Recieved request for active games count");
 
-            var query = new ActiveGamesCountQuery();
+            var query = new GetActiveGamesCountQuery();
             var result = await _mediator.Send(query);
 
             return result.Match(
-                matchedProfileResult => Ok(_mapper.Map<GetAllPaginatedAuditTrailCommand>(result.Value)),
+                matchedProfileResult => Ok(_mapper.Map<UserCountResponse>(result.Value)),
                 errors => Problem(errors)
             );
         }
@@ -298,11 +298,11 @@ namespace Fliq.Api.Controllers
         {
             _logger.LogInformation("Recieved request for number of gamers count");
 
-            var query = new NumberOfGamersCountQuery();
+            var query = new GetNumberOfGamersCountQuery();
             var result = await _mediator.Send(query);
 
             return result.Match(
-                matchedProfileResult => Ok(_mapper.Map<GetAllPaginatedAuditTrailCommand>(result.Value)),
+                matchedProfileResult => Ok(_mapper.Map<UserCountResponse>(result.Value)),
                 errors => Problem(errors)
             );
         }
@@ -313,11 +313,11 @@ namespace Fliq.Api.Controllers
         {
             _logger.LogInformation("Recieved request for total games played count");
 
-            var query = new TotalGamesPlayedCountQuery();
+            var query = new GetTotalGamesPlayedCountQuery();
             var result = await _mediator.Send(query);
 
             return result.Match(
-                matchedProfileResult => Ok(_mapper.Map<GetAllPaginatedAuditTrailCommand>(result.Value)),
+                matchedProfileResult => Ok(_mapper.Map<UserCountResponse>(result.Value)),
                 errors => Problem(errors)
             );
         }

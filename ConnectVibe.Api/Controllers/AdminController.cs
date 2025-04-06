@@ -47,7 +47,11 @@ namespace Fliq.Api.Controllers
         public async Task<IActionResult> DeactivateUser(int UserId)
         {
             _logger.LogInfo($"User Deactivation Request Received for User with Id: {UserId}");
-            var command = new DeactivateUserCommand(UserId);
+
+            var AdminUserId = GetAuthUserId();
+            _logger.LogInfo($"Authenticated user ID: {AdminUserId}");
+
+            var command = new DeactivateUserCommand(UserId, AdminUserId);
             var result = await _mediator.Send(command);
             _logger.LogInfo($"User Deactivation Command Executed. Result:  {result}");
 

@@ -21,12 +21,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         }
         public async Task AddAuditTrailAsync(AuditTrail auditTrail)
         {
-            if (auditTrail == null)
-                throw new ArgumentNullException(nameof(auditTrail));
-
-            auditTrail.IPAddress = auditTrail.IPAddress ?? string.Empty;
-
-            _dbContext.Set<AuditTrail>().Add(auditTrail);
+            _dbContext.Add(auditTrail);
             await _dbContext.SaveChangesAsync();
         }
 
@@ -64,21 +59,21 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
         public async Task<int> GetTotalAuditTrailCountAsync()
         {
-                try
+            try
+            {
+                using (var connection = _connectionFactory.CreateConnection())
                 {
-                    using (var connection = _connectionFactory.CreateConnection())
-                    {
-                        var sql = "SELECT COUNT(*) FROM AuditTrails";
+                    var sql = "SELECT COUNT(*) FROM AuditTrails";
 
-                        var totalCount = await connection.ExecuteScalarAsync<int>(sql);
-                        return totalCount;
-                    }
+                    var totalCount = await connection.ExecuteScalarAsync<int>(sql);
+                    return totalCount;
                 }
-                catch (Exception ex)
-                {
-                    _loggerManager.LogError($"Error fetching total count of audit trails: {ex.Message}");
-                    throw;
-                }
+            }
+            catch (Exception ex)
+            {
+                _loggerManager.LogError($"Error fetching total count of audit trails: {ex.Message}");
+                throw;
+            }
         }
     }
 }

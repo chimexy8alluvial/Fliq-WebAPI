@@ -1,8 +1,8 @@
 ﻿
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.Games.Queries.GetActiveGamesCountQuery;
 using Moq;
-using static Fliq.Application.Games.Queries.GetActiveGamesCountQuery.GetActiveGamesCountQuery;
 
 namespace Fliq.Test.Games.Queries
 {
@@ -11,13 +11,13 @@ namespace Fliq.Test.Games.Queries
     {
         private Mock<IGamesRepository>? _mockGamesRepository;
         private Mock<ILoggerManager>? _mockLogger;
-        private ActiveGamesCountQueryHandler _handler;
+        private GetActiveGamesCountQueryHandler _handler;
         [TestInitialize]
         public void Setup()
         {
             _mockGamesRepository = new Mock<IGamesRepository>();
             _mockLogger = new Mock<ILoggerManager>();
-            _handler = new ActiveGamesCountQueryHandler(
+            _handler = new GetActiveGamesCountQueryHandler(
                 _mockLogger.Object,
                 _mockGamesRepository.Object
             );
@@ -30,7 +30,7 @@ namespace Fliq.Test.Games.Queries
             var activeGamesCount = 5;
             _mockGamesRepository?.Setup(repo => repo.GetActiveGamesCountAsync()).ReturnsAsync(activeGamesCount);
 
-            var query = new ActiveGamesCountQuery();
+            var query = new GetActiveGamesCountQuery();
 
             //Act
             var result = await _handler.Handle(query, CancellationToken.None);
@@ -51,7 +51,7 @@ namespace Fliq.Test.Games.Queries
             //Arrange
             _mockGamesRepository?.Setup(repo => repo.GetActiveGamesCountAsync()).ThrowsAsync(new Exception("Database error"));
 
-            var query = new ActiveGamesCountQuery();
+            var query = new GetActiveGamesCountQuery();
 
             // Act & Assert
             await Assert.ThrowsExceptionAsync<Exception>(async () =>

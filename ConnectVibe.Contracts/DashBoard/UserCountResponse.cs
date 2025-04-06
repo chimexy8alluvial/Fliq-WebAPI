@@ -2,5 +2,5 @@
 
 namespace Fliq.Contracts.DashBoard
 {
-    public record GetAllPaginatedAuditTrailCommand(int Count);
+    public record UserCountResponse(int Count);
 }

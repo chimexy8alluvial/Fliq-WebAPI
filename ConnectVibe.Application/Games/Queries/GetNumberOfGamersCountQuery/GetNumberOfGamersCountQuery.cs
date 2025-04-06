@@ -8,19 +8,17 @@ using MediatR;
 
 namespace Fliq.Application.Games.Queries.GetNumberOfGamersCountQuery
 {
-    public class GetNumberOfGamersCountQuery
-    {
-        public record NumberOfGamersCountQuery() : IRequest<ErrorOr<UserCountResult>>;
-        public class NumberOfGamersCountQueryHandler : IRequestHandler<NumberOfGamersCountQuery, ErrorOr<UserCountResult>>
+    public record GetNumberOfGamersCountQuery() : IRequest<ErrorOr<UserCountResult>>;
+        public class GetNumberOfGamersCountQueryHandler : IRequestHandler<GetNumberOfGamersCountQuery, ErrorOr<UserCountResult>>
         {
             private readonly ILoggerManager _logger;
             private readonly IGamesRepository _gamesRepository;
-            public NumberOfGamersCountQueryHandler(ILoggerManager logger, IGamesRepository gamesRepository)
+            public GetNumberOfGamersCountQueryHandler(ILoggerManager logger, IGamesRepository gamesRepository)
             {
                 _logger = logger;
                 _gamesRepository = gamesRepository;
             }
-            public async Task<ErrorOr<UserCountResult>> Handle(NumberOfGamersCountQuery query, CancellationToken cancellationToken)
+            public async Task<ErrorOr<UserCountResult>> Handle(GetNumberOfGamersCountQuery query, CancellationToken cancellationToken)
             {
                 _logger.LogInfo("Fetching all gamers count ...");
                 var count = await _gamesRepository.GetGamersCountAsync();
@@ -30,5 +28,4 @@ namespace Fliq.Application.Games.Queries.GetNumberOfGamersCountQuery
             }
         }
 
-    }
 }
