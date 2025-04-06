@@ -22,7 +22,7 @@ namespace Fliq.Infrastructure.Migrations
 
                 WHERE 
                     u.IsDeleted = 0
-                AND    g.GenderType = 0 ;
+                AND    g.GenderType = 1 ;
             END;
             ");
         }
