@@ -1,4 +1,6 @@
-﻿using Fliq.Application.Authentication.Commands.CreateAdmin;
+﻿using ErrorOr;
+using Fliq.Application.AuditTrailCommand;
+using Fliq.Application.Authentication.Commands.CreateAdmin;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Users.Commands;
 using Fliq.Application.Users.Queries;
@@ -109,6 +111,20 @@ namespace Fliq.Api.Controllers
 
                 return Ok(result.Value);
             }
+        }
+
+        [HttpGet("get-audit-trails")]
+        public async Task<IActionResult> GetPaginatedAuditTrails([FromQuery] string? name, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        {
+            _logger.LogInfo($"Received request for Get Paginated Audit Trails.");
+
+            var query = new GetPaginatedAuditTrailCommand(pageNumber, pageSize, name);
+            var result = await _mediator.Send(query, HttpContext.RequestAborted);
+
+            if (result.IsError)
+                return BadRequest(result.FirstError.Description);
+
+            return Ok(result.Value);
         }
     }
 }

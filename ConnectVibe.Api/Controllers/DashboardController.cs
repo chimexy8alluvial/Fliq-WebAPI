@@ -1,6 +1,4 @@
-﻿using Fliq.Application.AuditTrailCommand;
-using Fliq.Application.Common.Interfaces.Services;
-using Fliq.Application.Common.Pagination;
+﻿using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.DashBoard.Queries.ActiveUserCount;
 using Fliq.Application.DashBoard.Queries.InActiveUserCount;
 using Fliq.Application.DashBoard.Queries.NewSignUpsCount;
@@ -83,26 +81,6 @@ namespace Fliq.Api.Controllers
              matchedProfileResult => Ok(_mapper.Map<UserCountResponse>(result.Value)),
              errors => Problem(errors)
          );
-        }
-
-        [HttpGet("get-audit-trails")]
-        public async Task<IActionResult> GetPaginatedAuditTrails(
-            [FromQuery] int pageNumber = 1,
-            [FromQuery] int pageSize = 10)
-        {
-            var query = new GetPaginatedAuditTrailCommand
-            {
-                PaginationRequest = new PaginationRequest { PageNumber = pageNumber, PageSize = pageSize }
-            };
-
-            var result = await _mediator.Send(query);
-
-            if (result.IsError)
-            {
-                return BadRequest(result.FirstError.Description);
-            }
-
-            return Ok(result.Value);
         }
     }
 }

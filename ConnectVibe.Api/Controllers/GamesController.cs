@@ -1,10 +1,12 @@
 ﻿using Fliq.Application.Common.Hubs;
 using Fliq.Application.Common.Interfaces.UserFeatureActivities;
+using Fliq.Application.DatingEnvironment.Commands.SpeedDating;
 using Fliq.Application.Games.Commands.AcceptGameRequest;
 using Fliq.Application.Games.Commands.AcceptStake;
 using Fliq.Application.Games.Commands.CreateGame;
 using Fliq.Application.Games.Commands.CreateQuestion;
 using Fliq.Application.Games.Commands.CreateStake;
+using Fliq.Application.Games.Commands.GetAllGamesPaginatedListCommand;
 using Fliq.Application.Games.Commands.RejectStake;
 using Fliq.Application.Games.Commands.SendGameRequest;
 using Fliq.Application.Games.Commands.SubmitAnswer;
@@ -20,6 +22,7 @@ using Fliq.Application.Games.Queries.GetTotalGamesPlayed;
 using Fliq.Application.Games.Queries.StakeCount;
 using Fliq.Contracts.DashBoard;
 using Fliq.Contracts.Games;
+using Fliq.Domain.Enums;
 using Mapster;
 using MapsterMapper;
 using MediatR;
@@ -322,7 +325,22 @@ namespace Fliq.Api.Controllers
             );
         }
 
+        [HttpGet("GetAllGamesList")]
+        [Authorize(Roles = "SuperAdmin,Admin")]
+        public async Task<IActionResult> GetAllGamesList([FromQuery] GetGamesListRequest request)
+        {
+            _logger.LogInformation($"Get all games list request received. Page: {request.Page}, PageSize: {request.PageSize}");
 
+            var command = _mapper.Map<GetGamesPaginatedListCommand>(request);
+
+            var gamesResult = await _mediator.Send(command);
+            _logger.LogInformation($"Get all games list command executed. Result: {gamesResult}");
+
+            return gamesResult.Match(
+                gamesResult => Ok(_mapper.Map<GetGamesListResponse>(gamesResult)),
+                errors => Problem(errors)
+            );
+        }
 
     }
 }

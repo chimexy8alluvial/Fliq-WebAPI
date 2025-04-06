@@ -1,7 +1,7 @@
 ﻿using Dapper;
+using Fliq.Application.AuditTrail.Common;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
-using Fliq.Application.Common.Pagination;
 using Fliq.Domain.Entities;
 using System.Data;
 
@@ -19,59 +19,40 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             _connectionFactory = connectionFactory;
             _loggerManager = loggerManager;
         }
+
         public async Task AddAuditTrailAsync(AuditTrail auditTrail)
         {
             _dbContext.Add(auditTrail);
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<List<AuditTrail>> GetAllAuditTrailsAsync(PaginationRequest paginationRequest)
+        public async Task<(List<AuditTrailListItem> List, int TotalCount)> GetAllAuditTrailsAsync(int pageNumber, int pageSize, string? name)
         {
             try
             {
                 using (var connection = _connectionFactory.CreateConnection())
                 {
-                    _loggerManager.LogInfo($"Fetching paginated audit trails. Page: {paginationRequest.PageNumber}, PageSize: {paginationRequest.PageSize}");
+                    _loggerManager.LogInfo($"Fetching paginated audit trails. Page: {pageNumber}, PageSize: {pageSize}, Name: {name ?? "null"}");
 
-                    var parameters = CreateDynamicParameters(paginationRequest); ;
-                    var sql = "sp_GetAllPaginatedAuditTrails";
+                    var parameters = new
+                    {
+                        Page = pageNumber,   
+                        PageSize = pageSize, 
+                        Name = name           
+                    };
 
-                    var auditTrails = await connection.QueryAsync<AuditTrail>(sql, parameters, commandType: CommandType.StoredProcedure);
-
-                    return auditTrails.ToList();
+                    using (var multi = await connection.QueryMultipleAsync("sp_GetAllPaginatedAuditTrails", parameters, commandType: CommandType.StoredProcedure))
+                    {
+                        var list = (await multi.ReadAsync<AuditTrailListItem>()).AsList();
+                        _loggerManager.LogInfo($"Retrieved {list.Count} audit trails: {System.Text.Json.JsonSerializer.Serialize(list)}");
+                        var totalCount = await multi.ReadSingleAsync<int>();
+                        return (list, totalCount);
+                    }
                 }
             }
             catch (Exception ex)
             {
                 _loggerManager.LogError($"Error fetching paginated audit trails: {ex.Message}");
-                throw;
-            }
-        }
-
-        private static DynamicParameters CreateDynamicParameters(PaginationRequest paginationRequest)
-        {
-            var parameters = new DynamicParameters();
-            parameters.Add("@pageNumber", paginationRequest.PageNumber);
-            parameters.Add("@pageSize", paginationRequest.PageSize);
-
-            return parameters;
-        }
-
-        public async Task<int> GetTotalAuditTrailCountAsync()
-        {
-            try
-            {
-                using (var connection = _connectionFactory.CreateConnection())
-                {
-                    var sql = "SELECT COUNT(*) FROM AuditTrails";
-
-                    var totalCount = await connection.ExecuteScalarAsync<int>(sql);
-                    return totalCount;
-                }
-            }
-            catch (Exception ex)
-            {
-                _loggerManager.LogError($"Error fetching total count of audit trails: {ex.Message}");
                 throw;
             }
         }
