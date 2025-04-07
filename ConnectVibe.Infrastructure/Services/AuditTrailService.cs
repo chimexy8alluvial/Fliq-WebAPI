@@ -1,9 +1,8 @@
-﻿using Fliq.Application.AuditTrail.Common;
+﻿
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Domain.Entities;
 using Microsoft.AspNetCore.Http;
-using Fliq.Application.AuditTrailCommand;
 using System.Net;
 
 namespace Fliq.Infrastructure.Services
