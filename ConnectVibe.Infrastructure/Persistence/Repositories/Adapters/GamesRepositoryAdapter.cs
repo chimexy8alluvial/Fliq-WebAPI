@@ -1,5 +1,4 @@
-﻿
-using Fliq.Application.Common.Interfaces.Persistence;
+﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Domain.Entities.Games;
 
 namespace Fliq.Infrastructure.Persistence.Repositories.Adapters

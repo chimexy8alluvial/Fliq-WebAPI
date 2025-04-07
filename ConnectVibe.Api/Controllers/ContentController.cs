@@ -4,13 +4,15 @@ using Fliq.Application.Contents.Commands;
 using Fliq.Application.DatingEnvironment.Commands.SpeedDating;
 using Fliq.Domain.Entities.DatingEnvironment.BlindDates;
 using Fliq.Domain.Entities.DatingEnvironment.SpeedDates;
+using Fliq.Domain.Entities.Event;
 using Fliq.Domain.Entities.Games;
+using Fliq.Domain.Entities.Prompts;
 using Fliq.Domain.Enums;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
+
 
 namespace Fliq.Api.Controllers
 {
@@ -49,6 +51,12 @@ namespace Fliq.Api.Controllers
                     break;
                 case ContentTypeEnum.Game:
                     result = await _mediator.Send(new ApproveContentCommand<Game>(contentId, adminUserId));
+                    break;
+                case ContentTypeEnum.Prompt:
+                    result = await _mediator.Send(new ApproveContentCommand<PromptQuestion>(contentId, adminUserId));
+                    break;
+                case ContentTypeEnum.Event:
+                    result = await _mediator.Send(new ApproveContentCommand<Events>(contentId, adminUserId));
                     break;
                 //Add more cases for other content types
 
