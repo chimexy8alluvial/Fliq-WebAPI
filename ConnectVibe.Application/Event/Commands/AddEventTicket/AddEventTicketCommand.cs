@@ -5,16 +5,16 @@ using Fliq.Application.Event.Common;
 using Fliq.Application.Notifications.Common.EventCreatedEvents;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Event;
+using Fliq.Domain.Entities.Event.Enums;
 using MediatR;
 
 namespace Fliq.Application.Event.Commands.AddEventTicket
 {
     public class AddEventTicketCommand : IRequest<ErrorOr<CreateEventTicketResult>>
     {
-        public int EventId { get; set; }
+        public List<int> TicketId { get; set; } = default!;
         public int UserId { get; set; }
         public int PaymentId { get; set; }
-        public Dictionary<TicketType, int> TicketQuantities { get; set; } = default!;
     }
 
     public class AddEventTicketCommandHandler : IRequestHandler<AddEventTicketCommand, ErrorOr<CreateEventTicketResult>>
@@ -44,11 +44,50 @@ namespace Fliq.Application.Event.Commands.AddEventTicket
 
         public async Task<ErrorOr<CreateEventTicketResult>> Handle(AddEventTicketCommand command, CancellationToken cancellationToken)
         {
-            var eventDetails = _eventRepository.GetEventById(command.EventId);
+            if (command.TicketId == null || !command.TicketId.Any())
+            {
+                _logger.LogError("No ticket IDs provided in the command.");
+                return Errors.Ticket.NoTicketsSpecified;
+            }
+
+            var ticketsToPurchase = _ticketRepository.GetTicketsByIds(command.TicketId);
+            if (ticketsToPurchase.Count != command.TicketId.Count)
+            {
+                var missingIds = command.TicketId.Except(ticketsToPurchase.Select(t => t.Id)).ToList();
+                _logger.LogError($"Tickets not found for IDs: {string.Join(", ", missingIds)}.");
+                return Errors.Ticket.TicketNotFound;
+            }
+
+            var eventId = ticketsToPurchase.First().EventId;
+            if (ticketsToPurchase.Any(t => t.EventId != eventId))
+            {
+                _logger.LogError("Tickets belong to multiple events, which is not supported.");
+                return Errors.Ticket.MultipleEventsNotSupported;
+            }
+
+            var eventDetails = _eventRepository.GetEventById(eventId);
             if (eventDetails == null)
             {
-                _logger.LogError($"Event with ID {command.EventId} not found.");
+                _logger.LogError($"Event with ID {eventId} not found.");
                 return Errors.Event.EventNotFound;
+            }
+            
+            if (eventDetails.IsDeleted)
+            {
+                _logger.LogError($"Event with ID {eventId} not found.");
+                return Errors.Event.EventNotFound;
+            }
+            
+            if (eventDetails.Status== EventStatus.Cancelled)
+            {
+                _logger.LogError($"Event with ID {eventId} has been cancelled.");
+                return Errors.Event.EventCancelledAlready;
+            }
+            
+            if (eventDetails.Status== EventStatus.Past)
+            {
+                _logger.LogError($"Event with ID {eventId} has ended.");
+                return Errors.Event.EventEndedAlready;
             }
 
             var buyer = _userRepository.GetUserById(command.UserId);
@@ -58,23 +97,17 @@ namespace Fliq.Application.Event.Commands.AddEventTicket
                 return Errors.User.UserNotFound;
             }
 
-            int totalTicketsRequested = command.TicketQuantities.Sum(kv => kv.Value);
+            int totalTicketsRequested = command.TicketId.Count;
             if (eventDetails.Capacity < totalTicketsRequested)
             {
                 _logger.LogError("Insufficient capacity for requested number of tickets.");
                 return Errors.Event.InsufficientCapacity;
             }
 
-            var tickets = _ticketRepository.GetTicketsByEventId(command.EventId);
-            if (tickets == null || !tickets.Any())
+            if (ticketsToPurchase.Any(t => t.SoldOut))
             {
-                _logger.LogInfo($"No tickets found for EventId {command.EventId}.");
-                return Errors.Ticket.NoTicketsAvailable; // Define this error if not already present
-            }
-
-            if (tickets.All(t => t.SoldOut))
-            {
-                _logger.LogInfo($"All tickets for EventId {command.EventId} are already sold out.");
+                var soldOutIds = ticketsToPurchase.Where(t => t.SoldOut).Select(t => t.Id);
+                _logger.LogInfo($"Tickets already sold out: {string.Join(", ", soldOutIds)}.");
                 return Errors.Ticket.TicketAlreadySoldOut;
             }
 
@@ -85,70 +118,51 @@ namespace Fliq.Application.Event.Commands.AddEventTicket
                 return Errors.Payment.PaymentNotFound;
             }
 
-            var newTickets = new List<EventTicket>();
             int startingSeatNumber = eventDetails.OccupiedSeats.Any() ? eventDetails.OccupiedSeats.Max() + 1 : 1;
-
-            foreach (var ticketRequest in command.TicketQuantities)
+            if (startingSeatNumber + totalTicketsRequested - 1 > eventDetails.Capacity)
             {
-                TicketType ticketType = ticketRequest.Key;
-                int quantity = ticketRequest.Value;
-
-                var availableTicketsOfType = tickets
-                    .Where(t => t.TicketType == ticketType && !t.SoldOut)
-                    .ToList();
-
-                if (availableTicketsOfType.Count < quantity)
-                {
-                    _logger.LogInfo($"Not enough {ticketType} tickets available for EventId {command.EventId}. Requested: {quantity}, Available: {availableTicketsOfType.Count}");
-                    return Errors.Ticket.InsufficientAvailableTickets;
-                }
-
-                var ticketsToUse = availableTicketsOfType.Take(quantity).ToList();
-
-                foreach (var ticket in ticketsToUse)
-                {
-                    if (startingSeatNumber > eventDetails.Capacity)
-                    {
-                        _logger.LogError("No available seats left.");
-                        return Errors.Event.NoAvailableSeats;
-                    }
-
-                    var newEventTicket = new EventTicket
-                    {
-                        TicketId = ticket.Id, // Use the existing ticket’s ID
-                        UserId = command.UserId,
-                        PaymentId = command.PaymentId,
-                        SeatNumber = startingSeatNumber
-                    };
-
-                    ticket.SoldOut = true; // Mark the ticket as sold
-                    eventDetails.OccupiedSeats.Add(startingSeatNumber);
-                    newTickets.Add(newEventTicket);
-                    _ticketRepository.Update(ticket); // Update the existing ticket
-
-                    startingSeatNumber++;
-                }
+                _logger.LogError("Not enough available seats left.");
+                return Errors.Event.NoAvailableSeats;
             }
 
+            var newTickets = ticketsToPurchase.Select((ticket, index) =>
+            {
+                ticket.SoldOut = true;
+                eventDetails.OccupiedSeats.Add(startingSeatNumber + index);
+                return new EventTicket
+                {
+                    TicketId = ticket.Id,
+                    UserId = command.UserId,
+                    PaymentId = command.PaymentId,
+                    SeatNumber = startingSeatNumber + index
+                };
+            }).ToList();
+
+            _ticketRepository.UpdateRange(ticketsToPurchase); // Batch update Tickets
+            _ticketRepository.AddEventTickets(newTickets); // Save EventTickets
             eventDetails.Capacity -= totalTicketsRequested;
             _eventRepository.Update(eventDetails);
-            _logger.LogInfo($"Assigned {newTickets.Count} existing tickets for event ID {command.EventId}.");
 
+            _logger.LogInfo($"Assigned {newTickets.Count} tickets for event ID {eventId}.");
+
+            var ticketTypesCount = ticketsToPurchase
+                .GroupBy(t => t.TicketType)
+                .ToDictionary(g => g.Key, g => g.Count());
+            var ticketBreakdown = string.Join(", ", ticketTypesCount.Select(kv => $"{kv.Value} {kv.Key} ticket{(kv.Value > 1 ? "s" : "")}"));
             var notificationTitle = "New Tickets Purchased";
-            var ticketBreakdown = string.Join(", ", command.TicketQuantities.Select(kv => $"{kv.Value} {kv.Key} ticket{(kv.Value > 1 ? "s" : "")}"));
             var notificationMessage = $"You have successfully purchased {newTickets.Count} ticket(s) for the event '{eventDetails.EventTitle}' on {eventDetails.StartDate}.\nBreakdown: {ticketBreakdown}.";
-           
+
             await _mediator.Publish(new TicketPurchasedEvent(
-                        command.UserId,
-                        eventDetails.UserId,  // Organizer ID
-                        eventDetails.Id,
-                        totalTicketsRequested,
-                        eventDetails.EventTitle,
-                        notificationTitle,
-                        notificationMessage,
-                        eventDetails.StartDate.ToString("MMMM dd, yyyy"),
-                        buyer.DisplayName
-                         ), cancellationToken);
+                command.UserId,
+                eventDetails.UserId,
+                eventId,
+                totalTicketsRequested,
+                eventDetails.EventTitle,
+                notificationTitle,
+                notificationMessage,
+                eventDetails.StartDate.ToString("MMMM dd, yyyy"),
+                buyer.DisplayName
+            ), cancellationToken);
 
             return new CreateEventTicketResult(newTickets);
         }

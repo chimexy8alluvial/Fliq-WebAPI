@@ -55,8 +55,22 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         }
 
         public void UpdateEventTicket(EventTicket request)
-        {
+        { 
+            request.DateModified= DateTime.Now;
             _dbContext.Update(request);
+            _dbContext.SaveChanges();
+        }
+
+
+        public void UpdateRange(IEnumerable<Ticket> tickets)
+        {
+            _dbContext.Tickets.UpdateRange(tickets);
+            _dbContext.SaveChanges();
+        }
+
+        public void AddEventTickets(IEnumerable<EventTicket> eventTickets)
+        {
+            _dbContext.EventTickets.AddRange(eventTickets);
             _dbContext.SaveChanges();
         }
 
@@ -64,6 +78,10 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         {
             var result = _dbContext.EventTickets.SingleOrDefault(p => p.Id == id);
             return result;
+        }
+        public List<Ticket> GetTicketsByIds(List<int> ids)
+        {
+            return _dbContext.Tickets.Where(t => ids.Contains(t.Id)).ToList();
         }
 
         public async Task<List<GetEventsTicketsResult>> GetAllEventsTicketsForDashBoardAsync(GetEventsTicketsListRequest request)
