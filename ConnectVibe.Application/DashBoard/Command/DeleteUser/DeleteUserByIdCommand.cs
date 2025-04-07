@@ -6,17 +6,19 @@ using MediatR;
 
 namespace Fliq.Application.DashBoard.Command.DeleteUser
 {
-    public record DeleteUserByIdCommand(int UserId) : IRequest<ErrorOr<Unit>>;
+    public record DeleteUserByIdCommand(int UserId, int AdminUserId) : IRequest<ErrorOr<Unit>>;
 
     public class DeleteUserByIdCommandHandler : IRequestHandler<DeleteUserByIdCommand, ErrorOr<Unit>>
     {
         private readonly IUserRepository _userRepository;
         private readonly ILoggerManager _logger;
+        private readonly IAuditTrailService _auditTrailService;
 
-        public DeleteUserByIdCommandHandler(IUserRepository userRepository, ILoggerManager logger)
+        public DeleteUserByIdCommandHandler(IUserRepository userRepository, ILoggerManager logger, IAuditTrailService auditTrailService)
         {
-            _userRepository = userRepository;           
+            _userRepository = userRepository;
             _logger = logger;
+            _auditTrailService = auditTrailService;
         }
 
         public async Task<ErrorOr<Unit>> Handle(DeleteUserByIdCommand command, CancellationToken cancellationToken)
@@ -25,6 +27,7 @@ namespace Fliq.Application.DashBoard.Command.DeleteUser
 
             _logger.LogInfo($"Deleting user with ID: {command.UserId} ");
 
+            var AdminUser = _userRepository.GetUserById(command.AdminUserId);
 
             var user = _userRepository.GetUserById(command.UserId);
 
@@ -44,9 +47,12 @@ namespace Fliq.Application.DashBoard.Command.DeleteUser
 
             _userRepository.Update(user);
 
-            _logger.LogInfo($"User with ID: {command.UserId} was deleted");     
+            _logger.LogInfo($"User with ID: {command.UserId} was deleted");
 
-                return  Unit.Value;
+            var Message = $"Deleting user with id {user.Id}";
+            await _auditTrailService.LogAuditTrail(Message, AdminUser);
+
+            return  Unit.Value;
             
         }
     }

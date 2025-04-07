@@ -51,7 +51,10 @@ namespace Fliq.Api.Controllers
         {
             _logger.LogInfo($"Delete user with ID: {userId} received");
 
-            var command = new DeleteUserByIdCommand(userId);
+            var AdminUserId = GetAuthUserId();
+            _logger.LogInfo($"Authenticated user ID: {AdminUserId}");
+
+            var command = new DeleteUserByIdCommand(userId, AdminUserId);
             var result = await _mediator.Send(command);
 
             _logger.LogInfo($"Delete user with ID: {userId} executed. Result: {result} ");
@@ -139,7 +142,7 @@ namespace Fliq.Api.Controllers
             _logger.LogInfo($"Received request for Get Paginated Audit Trails.");
 
             var query = new GetPaginatedAuditTrailCommand(pageNumber, pageSize, name);
-            var result = await _mediator.Send(query, HttpContext.RequestAborted);
+            var result = await _mediator.Send(query);
 
             if (result.IsError)
                 return BadRequest(result.FirstError.Description);
