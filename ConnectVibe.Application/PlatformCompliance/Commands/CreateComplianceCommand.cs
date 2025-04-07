@@ -41,10 +41,10 @@ namespace Fliq.Application.PlatformCompliance.Commands
                 OptIn = request.OptIn
             };
 
-          //  await _complianceRepository.AddAsync(compliance); // Assuming you have an AddAsync method
+            await _complianceRepository.AddAsync(compliance); // Assuming you have an AddAsync method
             _logger.LogInfo($"Compliance policy created with ID: {compliance.Id}");
 
-            return new CreateComplianceResult(0);
+            return new CreateComplianceResult(compliance.Id);
         }
     }
 }
