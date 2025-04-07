@@ -135,8 +135,9 @@ namespace Fliq.Application.Event.Commands.AddEventTicket
             _logger.LogInfo($"Assigned {newTickets.Count} existing tickets for event ID {command.EventId}.");
 
             var notificationTitle = "New Tickets Purchased";
-            var notificationMessage = $"You have successfully purchased {newTickets.Count} ticket(s) for the event '{eventDetails.EventTitle}' on {eventDetails.StartDate}.";
-
+            var ticketBreakdown = string.Join(", ", command.TicketQuantities.Select(kv => $"{kv.Value} {kv.Key} ticket{(kv.Value > 1 ? "s" : "")}"));
+            var notificationMessage = $"You have successfully purchased {newTickets.Count} ticket(s) for the event '{eventDetails.EventTitle}' on {eventDetails.StartDate}.\nBreakdown: {ticketBreakdown}.";
+           
             await _mediator.Publish(new TicketPurchasedEvent(
                         command.UserId,
                         eventDetails.UserId,  // Organizer ID

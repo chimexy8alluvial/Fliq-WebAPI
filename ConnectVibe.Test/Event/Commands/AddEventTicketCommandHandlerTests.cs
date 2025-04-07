@@ -156,17 +156,16 @@ namespace Fliq.Test.Event.Commands
         [TestMethod]
         public async Task Handle_ValidCommand_AddsTicketsSuccessfully()
         {
-            // Arrange
             var command = new AddEventTicketCommand
             {
                 EventId = 1,
                 UserId = 100,
                 PaymentId = 200,
                 TicketQuantities = new Dictionary<TicketType, int>
-                {
-                    { TicketType.Regular, 2 },
-                    { TicketType.Vip, 1 }
-                }
+        {
+            { TicketType.Regular, 2 },
+            { TicketType.Vip, 1 }
+        }
             };
 
             var eventDetails = new Events
@@ -175,38 +174,39 @@ namespace Fliq.Test.Event.Commands
                 Capacity = 10,
                 OccupiedSeats = new List<int> { 1, 2 },
                 EventTitle = "Test Event",
-                StartDate = DateTime.Now
+                StartDate = DateTime.Now,
+                UserId = 99
             };
 
             var payment = new Payment { Id = command.PaymentId };
             var user = new User { Id = command.UserId, DisplayName = "Test User" };
+            var availableTickets = new List<Ticket>
+    {
+        new Ticket { Id = 1, TicketType = TicketType.Regular, SoldOut = false },
+        new Ticket { Id = 2, TicketType = TicketType.Regular, SoldOut = false },
+        new Ticket { Id = 3, TicketType = TicketType.Vip, SoldOut = false }
+    };
+
             _userRepositoryMock!.Setup(repo => repo.GetUserById(command.UserId)).Returns(user);
             _eventRepositoryMock!.Setup(repo => repo.GetEventById(command.EventId)).Returns(eventDetails);
+            _ticketRepositoryMock!.Setup(repo => repo.GetTicketsByEventId(command.EventId)).Returns(availableTickets);
             _paymentRepositoryMock!.Setup(repo => repo.GetPaymentById(command.PaymentId)).Returns(payment);
 
-            var availableTickets = new List<Ticket>
-            {
-                new Ticket { Id = 1, TicketType = TicketType.Regular, SoldOut = false },
-                new Ticket { Id = 2, TicketType = TicketType.Regular, SoldOut = false },
-                new Ticket { Id = 3, TicketType = TicketType.Vip, SoldOut = false }
-            };
-            _ticketRepositoryMock!.Setup(repo => repo.GetTicketsByEventId(command.EventId)).Returns(availableTickets);
-
-            // Act
             var result = await _handler!.Handle(command, CancellationToken.None);
 
-            // Assert
             Assert.IsFalse(result.IsError);
-            Assert.AreEqual(3, result.Value.EventTickets.Count);  // Updated to EventTickets
-            Assert.AreEqual(5, eventDetails.OccupiedSeats.Count); // 3 new seats added to existing 2
-            Assert.AreEqual(7, eventDetails.Capacity); // Capacity reduced by 3
+            Assert.AreEqual(3, result.Value.EventTickets.Count);
+            Assert.AreEqual(5, eventDetails.OccupiedSeats.Count);
+            Assert.AreEqual(7, eventDetails.Capacity);
 
             _ticketRepositoryMock.Verify(repo => repo.Update(It.IsAny<Ticket>()), Times.Exactly(3));
             _eventRepositoryMock.Verify(repo => repo.Update(It.IsAny<Events>()), Times.Once);
             _loggerMock!.Verify(logger => logger.LogInfo(It.IsAny<string>()), Times.Once);
-            _mediatorMock!.Verify(m => m.Publish(It.IsAny<TicketPurchasedEvent>(), It.IsAny<CancellationToken>()), Times.Once);
+            _mediatorMock!.Verify(m => m.Publish(
+                It.Is<TicketPurchasedEvent>(e =>
+                    e.Message.Contains("Breakdown: 2 Regular tickets, 1 Vip ticket")),
+                It.IsAny<CancellationToken>()), Times.Once);
         }
     }
 
-   
 }
