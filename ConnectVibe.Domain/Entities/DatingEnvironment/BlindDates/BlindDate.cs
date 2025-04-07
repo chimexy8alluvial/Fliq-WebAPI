@@ -19,6 +19,8 @@ namespace Fliq.Domain.Entities.DatingEnvironment.BlindDates
 
         public string? ImageUrl { get; set; }
 
+        public bool IsFlagged { get; set; }
+
         public bool IsRecordingEnabled { get; set; } = false;
         public string? RecordingUrl { get; set; }
 

@@ -20,6 +20,8 @@ namespace Fliq.Domain.Entities.Prompts
         // This can be used to track if this prompt is a custom prompt or not
         public string? CustomPromptId { get; set; } // Nullable if it's a standard prompt
 
+        public bool IsFlagged { get; set; }
+
         //Track approval status
         public ContentCreationStatus ContentCreationStatus { get; set; } = ContentCreationStatus.Pending;
         public DateTime? ApprovedAt { get; set; }

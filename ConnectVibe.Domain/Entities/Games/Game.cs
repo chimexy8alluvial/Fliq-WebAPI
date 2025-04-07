@@ -10,6 +10,7 @@ namespace Fliq.Domain.Entities.Games
         public bool RequiresLevel { get; set; }
         public bool RequiresTheme { get; set; }
         public bool RequiresCategory { get; set; }
+        public bool IsFlagged { get; set; }
 
         //Track approval status
         public ContentCreationStatus ContentCreationStatus { get; set; } = ContentCreationStatus.Pending;

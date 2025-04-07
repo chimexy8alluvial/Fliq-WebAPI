@@ -20,6 +20,7 @@ namespace Fliq.Domain.Entities.DatingEnvironment.SpeedDates
         public int DurationPerPairingMinutes { get; set; }
 
         public DateStatus Status { get; set; } = DateStatus.Pending;
+        public bool IsFlagged { get; set; }
 
         // Track the creator
         public bool CreatorIsAdmin { get; set; }
