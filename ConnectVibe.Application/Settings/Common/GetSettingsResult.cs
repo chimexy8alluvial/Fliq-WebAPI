@@ -1,4 +1,5 @@
 ﻿using Fliq.Domain.Entities.Settings;
+using Fliq.Domain.Enums;
 
 namespace Fliq.Application.Settings.Common
 {
@@ -7,7 +8,7 @@ namespace Fliq.Application.Settings.Common
     ScreenMode ScreenMode,
     bool RelationAvailability,
     bool ShowMusicAndGameStatus,
-    string Language,
+    Language Language,
     List<NotificationPreference> NotificationPreferences,
     Filter Filter,
     string Name,

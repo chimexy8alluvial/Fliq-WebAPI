@@ -14,8 +14,7 @@ namespace Fliq.Application.Settings.Commands.Update
                 .IsInEnum().WithMessage("Invalid screen mode.");
 
             RuleFor(x => x.Language)
-                .NotEmpty().WithMessage("Language is required.")
-                .MaximumLength(50).WithMessage("Language cannot exceed 50 characters.");
+                .NotNull().WithMessage("Language is required.");
 
             RuleForEach(x => x.NotificationPreferences)
                 .SetValidator(new NotificationPreferenceValidator());

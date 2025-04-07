@@ -33,22 +33,6 @@ namespace Fliq.Api.Mapping
                 .Ignore(dest => dest.Photos)
                 .Map(dest => dest.ProfileTypes, src => src.ProfileTypes);
 
-            config.NewConfig<EthnicityDto, Ethnicity>()
-                .Map(dest => dest.EthnicityType, src => (EthnicityType)src.EthnicityType);
-            config.NewConfig<GenderDto, Gender>()
-                .Map(dest => dest.GenderType, src => (GenderType)src.GenderType);
-            config.NewConfig<HaveKidsDto, HaveKids>()
-                .Map(dest => dest.HaveKidsType, src => (HaveKidsType)src.HaveKidsType);
-            config.NewConfig<WantKidsDto, WantKids>()
-                .Map(dest => dest.WantKidsType, src => (WantKidsType)src.WantKidsType);
-            config.NewConfig<ReligionDto, Religion>()
-                .Map(dest => dest.ReligionType, src => (ReligionType)src.ReligionType);
-            config.NewConfig<SexualOrientationDto, SexualOrientation>()
-                .Map(dest => dest.SexualOrientationType, src => (SexualOrientationType)src.SexualOrientationType);
-            config.NewConfig<EducationStatusDto, EducationStatus>()
-                .Map(dest => dest.EducationLevel, src => (EducationLevel)src.EducationLevel);
-            config.NewConfig<Occupation, OccupationDto>()
-                .Map(dest => dest.OccupationName, src => src.OccupationName);
             config.NewConfig<CreatePromptResponseDto, PromptResponseDto>(); //Add prompt response mapping
             config.NewConfig<ProfilePhoto, ProfilePhotoResponse>();
             config.NewConfig<ProfilePhotoDto, ProfilePhotoMapped>()
@@ -87,21 +71,7 @@ namespace Fliq.Api.Mapping
 
             config.NewConfig<UpdateEthnicityDto, Ethnicity>().IgnoreNullValues(true)
                 .Map(dest => dest.EthnicityType, src => (EthnicityType?)src.EthnicityType);
-            config.NewConfig<UpdateGenderDto, Gender>()
-                .IgnoreNullValues(true)
-                .Map(dest => dest.GenderType, src => (GenderType?)src.GenderType);
-            config.NewConfig<UpdateHaveKidsDto, HaveKids>().IgnoreNullValues(true)
-                .Map(dest => dest.HaveKidsType, src => (HaveKidsType?)src.HaveKidsType);
-            config.NewConfig<UpdateWantKidsDto, WantKids>().IgnoreNullValues(true)
-                .Map(dest => dest.WantKidsType, src => (WantKidsType?)src.WantKidsType);
-            config.NewConfig<UpdateReligionDto, Religion>().IgnoreNullValues(true)
-                .Map(dest => dest.ReligionType, src => (ReligionType?)src.ReligionType);
-            config.NewConfig<UpdateSexualOrientationDto, SexualOrientation>().IgnoreNullValues(true)
-                .Map(dest => dest.SexualOrientationType, src => (SexualOrientationType?)src.SexualOrientationType);
-            config.NewConfig<UpdateEducationStatusDto, EducationStatus>().IgnoreNullValues(true)
-                .Map(dest => dest.EducationLevel, src => (EducationLevel?)src.EducationLevel);
-            config.NewConfig<UpdateOccupationDto, OccupationDto>().IgnoreNullValues(true)
-                .Map(dest => dest.OccupationName, src => src.OccupationName);
+          
             config.NewConfig<ProfilePhoto, ProfilePhotoResponse>();
             config.NewConfig<UpdateProfilePhotoDto, ProfilePhotoMapped>()
                 .IgnoreNullValues(true)
