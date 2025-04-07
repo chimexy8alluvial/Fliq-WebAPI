@@ -19,7 +19,8 @@ namespace Fliq.Infrastructure.Migrations
                 SET NOCOUNT ON;
                 SELECT COUNT(*) AS RecentUsers
                 FROM Users
-                WHERE DateCreated >= DATEADD(DAY, -@Days, GETUTCDATE());
+                WHERE DateCreated >= DATEADD(DAY, -@Days, GETUTCDATE())
+                    AND IsDeleted = 0;
             END;
             ");
         }

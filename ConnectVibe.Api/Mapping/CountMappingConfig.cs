@@ -4,7 +4,11 @@ using Mapster;
 
 namespace Fliq.Api.Mapping
 {
+<<<<<<<< HEAD:ConnectVibe.Api/Mapping/CountMappingConfig.cs
     public class CountMappingConfig : IRegister
+========
+    public class DashBoardCountMappingConfig : IRegister
+>>>>>>>> development:ConnectVibe.Api/Mapping/DashBoardCountMappingConfig.cs
     {
         public void Register(TypeAdapterConfig config)
         {

@@ -1,6 +1,8 @@
 ﻿using ErrorOr;
 using Fliq.Application.Authentication.Commands.CreateAdmin;
 using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.DashBoard.Command.DeleteUser;
+using Fliq.Application.DashBoard.Common;
 using Fliq.Application.Event.Commands.RefundTicket;
 using Fliq.Application.Users.Commands;
 using Fliq.Application.Users.Queries;
@@ -41,6 +43,24 @@ namespace Fliq.Api.Controllers
                 authResult => Ok(_mapper.Map<RegisterResponse>(authResult)),
                 errors => Problem(errors)
             );
+        }
+
+        [Authorize(Roles = "Admin,SuperAdmin")]
+        [HttpPut("delete-user/{userId}")]
+        public async Task<IActionResult> DeleteUserById(int userId)
+        {
+            _logger.LogInfo($"Delete user with ID: {userId} received");
+
+            var command = new DeleteUserByIdCommand(userId);
+            var result = await _mediator.Send(command);
+
+            _logger.LogInfo($"Delete user with ID: {userId} executed. Result: {result} ");
+
+            return result.Match(
+              deleteUserResult => Ok(new DeleteUserResponse( $"User with ID: {userId} was successfully deleted")),
+              errors => Problem(errors)
+          );
+
         }
 
 

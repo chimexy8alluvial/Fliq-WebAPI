@@ -38,7 +38,7 @@ namespace Fliq.Test.Games.Commands
         public async Task Handle_ValidRequest_CreatesGameSessionSuccessfully()
         {
             // Arrange
-            var command = new CreateGameSessionCommand(GameId: 1, Player1Id: 100, Player2Id: 200);
+            var command = new CreateGameSessionCommand(GameId: 1, Player1Id: 100, Player2Id: 200, GameDisconnectionResolutionOption.LastManWins);
 
             _mockGamesRepository?
                 .Setup(repo => repo.CreateGameSession(It.IsAny<GameSession>()))
@@ -64,7 +64,7 @@ namespace Fliq.Test.Games.Commands
         public async Task Handle_ValidRequest_LogsInformationMessages()
         {
             // Arrange
-            var command = new CreateGameSessionCommand(GameId: 1, Player1Id: 100, Player2Id: 200);
+            var command = new CreateGameSessionCommand(GameId: 1, Player1Id: 100, Player2Id: 200, GameDisconnectionResolutionOption.LastManWins);
 
             _mockGamesRepository?
                 .Setup(repo => repo.CreateGameSession(It.IsAny<GameSession>()))
