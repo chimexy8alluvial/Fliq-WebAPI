@@ -45,6 +45,7 @@
     <Folder Include="HelpAndSupport\Queries\GetSupportTickets\" />
     <Folder Include="LiveComms\Queries\" />
     <Folder Include="Notifications\Queries\" />
+    <Folder Include="PlatformCompliance\Queries\" />
     <Folder Include="Prompts\Queries\" />
     <Folder Include="Payments\Queries\" />
   </ItemGroup>
