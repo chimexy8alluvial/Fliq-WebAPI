@@ -5,5 +5,6 @@ namespace Fliq.Application.Common.Interfaces.Persistence
     {
         Task<T?> GetByIdAsync(int id);
         Task UpdateAsync(T entity);
+        Task<int> CountAsync();
     }
 }

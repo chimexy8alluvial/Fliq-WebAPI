@@ -11,5 +11,8 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         void Update(Events request);
 
         List<Events> GetAllEvents();
+
+        Task<int> CountAsync();
+        Task<int> FlaggedCountAsync();
     }
 }

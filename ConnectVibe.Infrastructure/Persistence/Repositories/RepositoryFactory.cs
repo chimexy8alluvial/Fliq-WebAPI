@@ -1,5 +1,4 @@
-﻿
-using Fliq.Application.Common.Interfaces.Persistence;
+﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Domain.Entities.DatingEnvironment.BlindDates;
 using Fliq.Domain.Entities.DatingEnvironment.SpeedDates;
 using Fliq.Domain.Entities.Event;

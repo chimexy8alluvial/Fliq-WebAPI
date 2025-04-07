@@ -90,5 +90,25 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             _dbContext.SpeedDatingEvents.Update(speedDate);
             await _dbContext.SaveChangesAsync();
         }
+
+        public async Task<int> CountAsync()
+        {
+
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_CountSpeedDates", commandType: CommandType.StoredProcedure);
+                return count;
+            }
+        }
+
+        public async Task<int> FlaggedCountAsync()
+        {
+
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_CountFlaggedEvents", commandType: CommandType.StoredProcedure);
+                return count;
+            }
+        }
     }
 }

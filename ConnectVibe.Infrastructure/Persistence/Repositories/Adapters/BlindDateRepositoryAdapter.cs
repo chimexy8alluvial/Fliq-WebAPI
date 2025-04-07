@@ -21,5 +21,15 @@ namespace Fliq.Infrastructure.Persistence.Repositories.Adapters
         {
             await _blindDateRepository.UpdateAsync(blindDate);
         }
+
+        public async Task<int> CountAsync()
+        {
+            return await _blindDateRepository.CountAsync();
+        }
+
+        public async Task<int> FlaggedCountAsync()
+        {
+            return await _blindDateRepository.FlaggedCountAsync();
+        }
     }
 }

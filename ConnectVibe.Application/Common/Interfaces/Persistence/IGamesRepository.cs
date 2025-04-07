@@ -13,6 +13,9 @@ namespace Fliq.Application.Common.Interfaces.Persistence
 
         IEnumerable<Game> GetAllGames();
 
+        Task<int> CountAsync();
+        Task<int> FlaggedCountAsync();
+
         void CreateGameSession(GameSession gameSession);
 
         void UpdateGameSession(GameSession gameSession);

@@ -42,7 +42,6 @@
 
   <ItemGroup>
     <Folder Include="Contents\Common\" />
-    <Folder Include="Contents\Queries\" />
     <Folder Include="HelpAndSupport\Queries\GetSupportTickets\" />
     <Folder Include="LiveComms\Queries\" />
     <Folder Include="Notifications\Queries\" />

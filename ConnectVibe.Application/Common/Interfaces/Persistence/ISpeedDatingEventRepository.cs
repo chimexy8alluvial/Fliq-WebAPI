@@ -12,5 +12,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         Task AddAsync(SpeedDatingEvent speedDate);
         Task UpdateAsync(SpeedDatingEvent speedDate);
         Task DeleteAsync(SpeedDatingEvent speedDate);
+        Task<int> CountAsync();
+        Task<int> FlaggedCountAsync();
     }
 }

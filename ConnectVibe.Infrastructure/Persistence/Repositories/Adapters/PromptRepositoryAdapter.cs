@@ -23,5 +23,15 @@ namespace Fliq.Infrastructure.Persistence.Repositories.Adapters
             await Task.CompletedTask;
             _promptQuestionRepository.AddQuestion(prompts);
         }
+
+        public async Task<int> CountAsync()
+        {
+            return await _promptQuestionRepository.CountAsync();
+        }
+
+        public async Task<int> FlaggedCountAsync()
+        {
+            return await _promptQuestionRepository.FlaggedCountAsync();
+        }
     }
 }

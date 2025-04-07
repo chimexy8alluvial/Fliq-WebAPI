@@ -23,5 +23,14 @@ namespace Fliq.Infrastructure.Persistence.Repositories.Adapters
             await Task.CompletedTask;
              _gamesRepository.UpdateGame(game);
         }
+
+        public async Task<int> CountAsync()
+        {
+            return await _gamesRepository.CountAsync();
+        }
+        public async Task<int> FlaggedCountAsync()
+        {
+            return await _gamesRepository.FlaggedCountAsync();
+        }
     }
 }

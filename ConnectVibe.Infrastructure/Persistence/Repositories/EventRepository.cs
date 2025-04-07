@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Domain.Entities.Event;
+using System.Data;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {
@@ -51,5 +52,26 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                 return results.ToList();
             }
         }
+
+        public async Task<int> CountAsync()
+        {
+
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_CountEvents", commandType: CommandType.StoredProcedure);
+                return count;
+            }
+        }
+
+        public async Task<int>FlaggedCountAsync()
+        {
+
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_CountFlaggedEvents", commandType: CommandType.StoredProcedure);
+                return count;
+            }
+        }
+
     }
 }
