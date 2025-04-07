@@ -1,8 +1,8 @@
 ﻿namespace Fliq.Contracts.Event
 {
     public record PurchaseTicketDto(
-        int PaymentId,
-        int TicketId,
-        int NumberOfTickets
-        );
+       int EventId,
+       int PaymentId,
+       Dictionary<string, int> TicketQuantities
+   );
 }

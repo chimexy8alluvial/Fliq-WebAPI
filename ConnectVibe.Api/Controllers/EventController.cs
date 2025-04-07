@@ -98,6 +98,7 @@ namespace Fliq.Api.Controllers
             );
         }
 
+
         [HttpPost("purchase-ticket")]
         public async Task<IActionResult> PurchaseTicket([FromForm] PurchaseTicketDto request)
         {
@@ -105,11 +106,14 @@ namespace Fliq.Api.Controllers
             var command = _mapper.Map<AddEventTicketCommand>(request);
             command.UserId = GetAuthUserId();
             var ticketResult = await _mediator.Send(command);
-            _logger.LogInfo($" command Executed. Result: {ticketResult}");
+            _logger.LogInfo($"Command Executed. Result: {ticketResult}");
 
             return ticketResult.Match(
-                ticketResult => Ok(_mapper.Map<GetEventTicketResponse>(ticketResult)),
-                errors => Problem(errors)
+                result => Ok(_mapper.Map<GetEventTicketResponse>(result)),
+                errors => Problem(
+                    detail: errors.First().Description,
+                    title: errors.First().Code
+                )
             );
         }
 
