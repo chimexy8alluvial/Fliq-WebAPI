@@ -17,14 +17,6 @@ namespace Fliq.Infrastructure.Migrations
                 type: "int",
                 nullable: false,
                 defaultValue: 0);
-
-            migrationBuilder.AddColumn<bool>(
-                           name: "IsFlagged",
-                           table: "Events",
-                           type: "bit",
-                           nullable: false,
-                           defaultValue: false);
-
         }
 
         /// <inheritdoc />
@@ -32,10 +24,6 @@ namespace Fliq.Infrastructure.Migrations
         {
             migrationBuilder.DropColumn(
                 name: "Status",
-                table: "Events");
-
-            migrationBuilder.DropColumn(
-                name: "IsFlagged",
                 table: "Events");
         }
     }
