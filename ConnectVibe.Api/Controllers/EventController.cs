@@ -2,7 +2,11 @@
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Event.Commands.AddEventReview;
 using Fliq.Application.Event.Commands.AddEventTicket;
+using Fliq.Application.Event.Commands.ApproveEvent;
+using Fliq.Application.Event.Commands.CancelEvent;
+using Fliq.Application.Event.Commands.DeleteEvent;
 using Fliq.Application.Event.Commands.EventCreation;
+using Fliq.Application.Event.Commands.FlagEvent;
 using Fliq.Application.Event.Commands.Tickets;
 using Fliq.Application.Event.Commands.UpdateEvent;
 using Fliq.Application.Event.Commands.UpdateTicket;
@@ -15,6 +19,7 @@ using Fliq.Contracts.Event.ResponseDtos;
 using Fliq.Contracts.Event.UpdateDtos;
 using MapsterMapper;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Fliq.Api.Controllers
@@ -167,6 +172,78 @@ namespace Fliq.Api.Controllers
                 ticket => Ok(_mapper.Map<List<GetCurrencyResponse>>(ticket)),
                 errors => Problem(errors)
             );
+        }
+
+        [Authorize(Roles = "Admin,SuperAdmin")]
+        [HttpPut("flag-event/{eventId}")]
+        public async Task<IActionResult> FlagEventById(int eventId)
+        {
+            _logger.LogInfo($"Flag event with ID: {eventId} received");
+
+            var command = new FlagEventCommand(eventId);
+            var result = await _mediator.Send(command);
+
+            _logger.LogInfo($"Flag event with ID: {eventId} executed. Result: {result} ");
+
+            return result.Match(
+              flagEventResult => Ok(new EventCommandResponse($"Event with ID: {eventId} was successfully flagged")),
+              errors => Problem(errors)
+          );
+
+        }    
+        
+        [Authorize(Roles = "Admin,SuperAdmin")]
+        [HttpPut("cancel-event/{eventId}")]
+        public async Task<IActionResult> CancelEventById(int eventId)
+        {
+            _logger.LogInfo($"Cancel event with ID: {eventId} received");
+
+            var command = new CancelEventCommand(eventId);
+            var result = await _mediator.Send(command);
+
+            _logger.LogInfo($"Cancel event with ID: {eventId} executed. Result: {result} ");
+
+            return result.Match(
+              cancelEventResult => Ok(new EventCommandResponse($"Event with ID: {eventId} was successfully cancelled")),
+              errors => Problem(errors)
+          );
+
+        }
+        
+        [Authorize(Roles = "Admin,SuperAdmin")]
+        [HttpPut("approve-event/{eventId}")]
+        public async Task<IActionResult> ApproveEventById(int eventId)
+        {
+            _logger.LogInfo($"Approve event with ID: {eventId} received");
+
+            var command = new ApproveEventCommand(eventId);
+            var result = await _mediator.Send(command);
+
+            _logger.LogInfo($"Approve event with ID: {eventId} executed. Result: {result} ");
+
+            return result.Match(
+              cancelEventResult => Ok(new EventCommandResponse($"Event with ID: {eventId} was successfully approved")),
+              errors => Problem(errors)
+          );
+
+        } 
+        
+        [Authorize(Roles = "Admin,SuperAdmin")]
+        [HttpPut("delete-event/{eventId}")]
+        public async Task<IActionResult> DeleteEventById(int eventId)
+        {
+            _logger.LogInfo($"Delete event with ID: {eventId} received");
+
+            var command = new DeleteEventCommand(eventId);
+            var result = await _mediator.Send(command);
+
+            _logger.LogInfo($"Delete event with ID: {eventId} executed. Result: {result} ");
+
+            return result.Match(
+              deleteEventResult => Ok(new EventCommandResponse($"Event with ID: {eventId} was successfully deleted")),
+              errors => Problem(errors)
+          );
+
         }
     }
 }

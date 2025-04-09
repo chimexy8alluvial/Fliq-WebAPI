@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Fliq.Application.Games.Commands.SubmitAnswer
 {
-    public record SubmitAnswerCommand(int SessionId, int Player1Score, int Player2Score, bool Completed)
+    public record SubmitAnswerCommand(int SessionId, int Player1Score, int Player2Score, bool Completed, int? LastManId)
        : IRequest<ErrorOr<SubmitAnswerResult>>;
 
     public class SubmitAnswerCommandHandler : IRequestHandler<SubmitAnswerCommand, ErrorOr<SubmitAnswerResult>>
@@ -41,19 +41,19 @@ namespace Fliq.Application.Games.Commands.SubmitAnswer
                 return Errors.Games.GameNotFound;
             }
 
+            int? winnerId = null;
+            if (session.DisconnectionResolutionOption == GameDisconnectionResolutionOption.LastManWins)
+            {
+                winnerId = request.LastManId;
+                session.WinnerId = request.LastManId;
+            }
+
             // Update game session status and scores
             session.Player1Score = request.Player1Score;
             session.Player2Score = request.Player2Score;
             session.Status = GameStatus.Done;
 
             _gamesRepository.UpdateGameSession(session);
-
-            // Determine the winner
-            int? winnerId = null;
-            if (session.Player1Score > session.Player2Score)
-                winnerId = session.Player1Id;
-            else if (session.Player2Score > session.Player1Score)
-                winnerId = session.Player2Id;
 
             // Handle stake resolution if there is a stake
             if (session.Stake != null && session.Stake.StakeStatus == StakeStatus.Pending)

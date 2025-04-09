@@ -8,5 +8,6 @@ namespace Fliq.Domain.Entities.Games
         public int RequesterId { get; set; }
         public int RecipientId { get; set; }
         public GameStatus Status { get; set; } = GameStatus.Pending;
+        public GameDisconnectionResolutionOption GameDisconnectionResolutionOption { get; set; } = GameDisconnectionResolutionOption.LastManWins;
     }
 }

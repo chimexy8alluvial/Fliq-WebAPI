@@ -1,4 +1,5 @@
-﻿using Fliq.Domain.Entities.Event;
+﻿using Fliq.Application.DashBoard.Common;
+using Fliq.Domain.Entities.Event;
 
 namespace Fliq.Application.Common.Interfaces.Persistence
 {
@@ -11,6 +12,14 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         void Update(Events request);
 
         List<Events> GetAllEvents();
+        Task<IEnumerable<GetEventsResult>> GetAllEventsForDashBoardAsync(GetEventsListRequest query);
+        Task<IEnumerable<GetEventsResult>> GetAllFlaggedEventsForDashBoardAsync(GetEventsListRequest query);
+         
+
+        //Count Queries
+        Task<int> CountAllEvents();
+        Task<int> CountAllEventsWithPendingApproval();
+        Task<int> CountAllSponsoredEvents();
 
         Task<int> CountAsync();
         Task<int> FlaggedCountAsync();

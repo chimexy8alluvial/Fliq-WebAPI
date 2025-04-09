@@ -7,7 +7,7 @@ namespace Fliq.Domain.Entities.Event
         public string BusinessName { get; set; } = default!;
         public string BusinessAddress { get; set; } = default!;
         public string BusinessType { get; set; } = default!;
-        public string ContactInfromation { get; set; } = default!;
+        public string ContactInformation { get; set; } = default!;
         public SponsoringPlan SponsoringPlan { get; set; } = default!;
         public TargetAudienceType TargetAudienceType { get; set; } = default!;
 
