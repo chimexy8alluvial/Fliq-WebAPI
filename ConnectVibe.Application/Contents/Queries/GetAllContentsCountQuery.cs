@@ -10,9 +10,9 @@ using MediatR;
 
 namespace Fliq.Application.Contents.Queries
 {
-    public record GetAllContentsCountQuery() : IRequest<ErrorOr<UserCountResult>>;
+    public record GetAllContentsCountQuery() : IRequest<ErrorOr<CountResult>>;
 
-    public class GetAllContentsCountQueryHandler : IRequestHandler<GetAllContentsCountQuery, ErrorOr<UserCountResult>>
+    public class GetAllContentsCountQueryHandler : IRequestHandler<GetAllContentsCountQuery, ErrorOr<CountResult>>
     {
         private readonly IRepositoryFactory _repositoryFactory;
 
@@ -21,7 +21,7 @@ namespace Fliq.Application.Contents.Queries
             _repositoryFactory = repositoryFactory;
         }
 
-        public async Task<ErrorOr<UserCountResult>> Handle(GetAllContentsCountQuery request, CancellationToken cancellationToken)
+        public async Task<ErrorOr<CountResult>> Handle(GetAllContentsCountQuery request, CancellationToken cancellationToken)
         {
             var contentTypes = new Dictionary<Type, Func<Task<int>>>
         {
@@ -38,7 +38,7 @@ namespace Fliq.Application.Contents.Queries
                 totalCount += await countFunc();
             }
 
-            return new UserCountResult(totalCount);
+            return new CountResult(totalCount);
         }
     }
 }
