@@ -61,5 +61,23 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             var result = _dbContext.EventTickets.SingleOrDefault(p => p.Id == id);
             return result;
         }
+
+        
+        public void UpdateRange(IEnumerable<Ticket> tickets)
+        {
+            _dbContext.Tickets.UpdateRange(tickets);
+            _dbContext.SaveChanges();
+        }
+
+        public void AddEventTickets(IEnumerable<EventTicket> eventTickets)
+        {
+            _dbContext.EventTickets.AddRange(eventTickets);
+            _dbContext.SaveChanges();
+        }
+     
+        public List<Ticket> GetTicketsByIds(List<int> ids)
+        {
+            return _dbContext.Tickets.Where(t => ids.Contains(t.Id)).ToList();
+        }
     }
 }

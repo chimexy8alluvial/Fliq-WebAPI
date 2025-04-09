@@ -1,16 +1,17 @@
 ﻿namespace Fliq.Contracts.Event
 {
     public record PurchaseTicketDto(
-        int EventId,
-
-        int PaymentId,
-        int TicketId,
-        int NumberOfTickets
+       
+       List<PurchaseTicketDetail> PurchaseTicketDetailList,
+        int PaymentId
+        
         );
 
 
-    public class PurchaseTicketDetails
+    public class PurchaseTicketDetail
     {
-        public string Email { get; set; }
+        public int UserId { get; set; }
+        public string? Email { get; set; }
+        public int TicketId { get; set; }
     }
 }
