@@ -9,6 +9,8 @@ using Fliq.Application.DatingEnvironment.Queries.BlindDates;
 using Fliq.Application.DatingEnvironment.Queries.SpeedDates;
 using Fliq.Application.HelpAndSupport.Queries.GetSupportTickets;
 using Fliq.Contracts.Dating;
+using Fliq.Domain.Entities.DatingEnvironment.BlindDates;
+using Fliq.Domain.Entities.DatingEnvironment.SpeedDates;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -163,7 +165,9 @@ namespace Fliq.Api.Controllers
             );
         }
 
-        [HttpGet]
+        [HttpGet("blind-date-list")]
+        [Authorize(Roles ="Admin,SuperAdmin")]
+        [Produces(typeof(PaginationResponse<BlindDate>))]
         public async Task<IActionResult> GetPaginatedBlindDatesForAdmin(
            [FromQuery] int pageNumber = 1,
            [FromQuery] int pageSize = 10,
@@ -264,7 +268,9 @@ namespace Fliq.Api.Controllers
             );
         }
 
-
+        [HttpGet("speed-date-list")]
+        [Authorize(Roles = "Admin,SuperAdmin")]
+        [Produces(typeof(PaginationResponse<SpeedDatingEvent>))]
         [HttpGet]
         public async Task<IActionResult> GetPaginatedSpeedDatesForAdmin(
            [FromQuery] int pageNumber = 1,

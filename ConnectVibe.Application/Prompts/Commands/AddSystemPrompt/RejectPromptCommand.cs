@@ -38,7 +38,7 @@ namespace Fliq.Application.Prompts.Commands.AddSystemPrompt
                 return Errors.Prompts.QuestionNotFound;
             }
 
-            if (promptQuestion.ContentCreationStatus == (int)ContentCreationStatus.Rejected)
+            if (promptQuestion.ContentCreationStatus == ContentCreationStatus.Rejected)
             {
                 _logger.LogError($"Prompt with ID: {command.PromptId} has been rejected already.");
                 return Errors.Prompts.PromptAlreadyRejected;
@@ -51,7 +51,7 @@ namespace Fliq.Application.Prompts.Commands.AddSystemPrompt
                 return Errors.User.UserNotFound;
             }
 
-            promptQuestion.ContentCreationStatus = (int)ContentCreationStatus.Rejected;
+            promptQuestion.ContentCreationStatus = ContentCreationStatus.Rejected;
 
             _promptQuestionRepository.AddQuestion(promptQuestion); //update
 

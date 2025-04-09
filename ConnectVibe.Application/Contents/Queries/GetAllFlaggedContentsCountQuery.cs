@@ -26,11 +26,11 @@ namespace Fliq.Application.Contents.Queries
         {
             var contentTypes = new Dictionary<Type, Func<Task<int>>>
         {
-            { typeof(SpeedDatingEvent),  () => ( _repositoryFactory.GetRepository<SpeedDatingEvent>())() },
-            { typeof(BlindDate),  () => ( _repositoryFactory.GetRepository<BlindDate>()).CountAsync() },
-            { typeof(PromptQuestion),  () => ( _repositoryFactory.GetRepository<PromptQuestion>()).CountAsync() },
-            { typeof(Game), () => ( _repositoryFactory.GetRepository<Game>()).CountAsync() },
-            { typeof(Events), () => ( _repositoryFactory.GetRepository<Events>()).CountAsync() }
+            { typeof(SpeedDatingEvent),  () => ( _repositoryFactory.GetRepository<SpeedDatingEvent>()).FlaggedCountAsync() },
+            { typeof(BlindDate),  () => ( _repositoryFactory.GetRepository<BlindDate>()).FlaggedCountAsync() },
+            { typeof(PromptQuestion),  () => ( _repositoryFactory.GetRepository<PromptQuestion>()).FlaggedCountAsync() },
+            { typeof(Game), () => ( _repositoryFactory.GetRepository<Game>()).FlaggedCountAsync() },
+            { typeof(Events), () => ( _repositoryFactory.GetRepository<Events>()).FlaggedCountAsync() }
         };
 
             var totalCount = 0;

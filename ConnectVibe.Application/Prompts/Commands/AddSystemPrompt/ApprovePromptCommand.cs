@@ -1,6 +1,4 @@
-﻿
-
-using ErrorOr;
+﻿using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Domain.Common.Errors;
@@ -39,7 +37,7 @@ namespace Fliq.Application.Prompts.Commands.AddSystemPrompt
                 return Errors.Prompts.QuestionNotFound;
             }
 
-            if (promptQuestion.ContentCreationStatus == (int)ContentCreationStatus.Approved)
+            if (promptQuestion.ContentCreationStatus == ContentCreationStatus.Approved)
             {
                 _logger.LogError($"Prompt with ID: {command.PromptId} has been approved already.");
                 return Errors.Prompts.PromptAlreadyApproved;
@@ -52,7 +50,7 @@ namespace Fliq.Application.Prompts.Commands.AddSystemPrompt
                 return Errors.User.UserNotFound;
             }
 
-            promptQuestion.ContentCreationStatus = (int)ContentCreationStatus.Approved;
+            promptQuestion.ContentCreationStatus = ContentCreationStatus.Approved;
 
              _promptQuestionRepository.AddQuestion(promptQuestion); //update
 

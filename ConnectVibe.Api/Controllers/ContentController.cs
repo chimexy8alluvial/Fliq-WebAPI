@@ -1,6 +1,5 @@
 ﻿using ErrorOr;
 using Fliq.Application.Common.Interfaces.Services;
-using Fliq.Application.Common.Models;
 using Fliq.Application.Contents.Commands;
 using Fliq.Application.Contents.Queries;
 using Fliq.Contracts.Contents;
