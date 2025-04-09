@@ -2,6 +2,6 @@
 {
     public enum HelpRequestType
     {
-        Billing,
+        Billing,Games
     }
 }

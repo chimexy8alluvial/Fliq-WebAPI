@@ -11,7 +11,7 @@ namespace Fliq.Application.Event.Commands.AddEventTicket
 {
     public class AddEventTicketCommand : IRequest<ErrorOr<CreateEventTicketResult>>
     {
-        public int TicketId { get; set; }
+        public int EventId { get; set; }
         public int UserId { get; set; }
         public int PaymentId { get; set; }
         public int NumberOfTickets { get; set; }
