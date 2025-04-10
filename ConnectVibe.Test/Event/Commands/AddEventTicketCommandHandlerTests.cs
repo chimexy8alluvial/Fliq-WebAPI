@@ -50,7 +50,7 @@ namespace Fliq.Test.Event.Commands
             var command = new AddEventTicketCommand
             {
                 UserId = 100,
-                purchaseTicketDetail = new List<PurchaseTicketDetail>
+                PurchaseTicketDetail = new List<PurchaseTicketDetail>
                 {
                     new PurchaseTicketDetail { UserId = 100, TicketId = 0 } // Invalid TicketId
                 },
@@ -73,7 +73,7 @@ namespace Fliq.Test.Event.Commands
             var command = new AddEventTicketCommand
             {
                 UserId = 100,
-                purchaseTicketDetail = new List<PurchaseTicketDetail>
+                PurchaseTicketDetail = new List<PurchaseTicketDetail>
                 {
                     new PurchaseTicketDetail { UserId = 100, TicketId = 1 }
                 },
@@ -99,7 +99,7 @@ namespace Fliq.Test.Event.Commands
             var command = new AddEventTicketCommand
             {
                 UserId = 100,
-                purchaseTicketDetail = new List<PurchaseTicketDetail>
+                PurchaseTicketDetail = new List<PurchaseTicketDetail>
                 {
                     new PurchaseTicketDetail { UserId = 100, TicketId = 1 }
                 },
@@ -125,7 +125,7 @@ namespace Fliq.Test.Event.Commands
             var command = new AddEventTicketCommand
             {
                 UserId = 100,
-                purchaseTicketDetail = new List<PurchaseTicketDetail>
+                PurchaseTicketDetail = new List<PurchaseTicketDetail>
                 {
                     new PurchaseTicketDetail { UserId = 100, TicketId = 1 }
                 },
@@ -153,7 +153,7 @@ namespace Fliq.Test.Event.Commands
             var command = new AddEventTicketCommand
             {
                 UserId = 100, // Buyer
-                purchaseTicketDetail = new List<PurchaseTicketDetail>
+                PurchaseTicketDetail = new List<PurchaseTicketDetail>
                 {
                     new PurchaseTicketDetail { UserId = 100, TicketId = 1 }, // Buyer
                     new PurchaseTicketDetail { UserId = 200, TicketId = 2 },

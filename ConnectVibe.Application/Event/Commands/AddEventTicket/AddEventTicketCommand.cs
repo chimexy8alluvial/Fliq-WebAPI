@@ -14,10 +14,9 @@ namespace Fliq.Application.Event.Commands.AddEventTicket
     public class AddEventTicketCommand : IRequest<ErrorOr<CreateEventTicketResult>>
     {
         public int UserId { get; set; }
-        public List<PurchaseTicketDetail> purchaseTicketDetail { get; set; } = default!;
+        public List<PurchaseTicketDetail> PurchaseTicketDetail { get; set; } = default!;
         public int PaymentId { get; set; }
     }
-
 
     public class AddEventTicketCommandHandler : IRequestHandler<AddEventTicketCommand, ErrorOr<CreateEventTicketResult>>
     {
@@ -46,14 +45,14 @@ namespace Fliq.Application.Event.Commands.AddEventTicket
 
         public async Task<ErrorOr<CreateEventTicketResult>> Handle(AddEventTicketCommand command, CancellationToken cancellationToken)
         {
-            if (command.purchaseTicketDetail == null || !command.purchaseTicketDetail.Any() ||
-                !command.purchaseTicketDetail.All(ptd => ptd.TicketId > 0))
+            if (command.PurchaseTicketDetail == null || !command.PurchaseTicketDetail.Any() ||
+                !command.PurchaseTicketDetail.All(ptd => ptd.TicketId > 0))
             {
                 _logger.LogError("No valid ticket IDs provided in the command.");
                 return Errors.Ticket.NoTicketsSpecified;
             }
 
-            var ticketIds = command.purchaseTicketDetail.Select(ptd => ptd.TicketId).ToList();
+            var ticketIds = command.PurchaseTicketDetail.Select(ptd => ptd.TicketId).ToList();
             var ticketsToPurchase = _ticketRepository.GetTicketsByIds(ticketIds);
 
             if (ticketsToPurchase.Count != ticketIds.Count)
@@ -127,7 +126,7 @@ namespace Fliq.Application.Event.Commands.AddEventTicket
             var newTickets = ticketsToPurchase.Select((ticket, index) => new EventTicket
             {
                 TicketId = ticket.Id,
-                UserId = command.purchaseTicketDetail[index].UserId ?? 0,
+                UserId = command.PurchaseTicketDetail[index].UserId ?? 0,
                 PaymentId = command.PaymentId,
                 SeatNumber = startingSeatNumber + index
             }).ToList();
@@ -145,7 +144,7 @@ namespace Fliq.Application.Event.Commands.AddEventTicket
 
             _logger.LogInfo($"Assigned {newTickets.Count} tickets for event ID {eventId}.");
 
-            var ticketAssignments = command.purchaseTicketDetail
+            var ticketAssignments = command.PurchaseTicketDetail
                 .Zip(ticketsToPurchase, (detail, ticket) => new TicketDetail
                 {
                     UserId = detail.UserId,
@@ -154,10 +153,10 @@ namespace Fliq.Application.Event.Commands.AddEventTicket
                 })
                 .ToList();
 
-            foreach (var assignment in ticketAssignments.Where(ta => ta.UserId.HasValue && ta.UserId > 0 && ta.UserId != command.UserId))
+            foreach (var assignment in ticketAssignments.Where(ta => ta.UserId.HasValue && ta.UserId > 0 /*&& ta.UserId != command.UserId*/))
             {
-                var userNotificationTitle = "Ticket Assigned to You";
-                var userNotificationMessage = $"You've been assigned a {assignment.TicketType} ticket " +
+                var userNotificationTitle = "Your Ticket Purchase Confirmation";
+                var userNotificationMessage = $"A {assignment.TicketType} ticket has been purchased for you" +
                                              $"for '{eventDetails.EventTitle}' on {eventDetails.StartDate} " +
                                              $"by {buyer.DisplayName}.";
 
