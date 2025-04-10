@@ -5,7 +5,7 @@
        int UserId,
        List<PurchaseTicketDetail> PurchaseTicketDetailList,
         int PaymentId
-        
+
         );
 
     public class PurchaseTicketDetail
