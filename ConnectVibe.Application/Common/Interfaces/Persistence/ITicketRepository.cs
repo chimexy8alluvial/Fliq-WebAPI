@@ -31,14 +31,7 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         Task<int> GetVVipTicketCountAsync(int eventId);
         Task<int> GetOtherTicketCountAsync(int eventId);
         Task<int> GetTotalTicketCountAsync(int eventId);
-        Task<int> GetMondayTicketCountAsync(int eventId, TicketType? ticketType);
-        Task<int> GetTuesdayTicketCountAsync(int eventId, TicketType? ticketType);
-        Task<int> GetWednesdayTicketCountAsync(int eventId, TicketType? ticketType);
-        Task<int> GetThursdayTicketCountAsync(int eventId, TicketType? ticketType);
-        Task<int> GetFridayTicketCountAsync(int eventId, TicketType? ticketType);
-        Task<int> GetSaturdayTicketCountAsync(int eventId, TicketType? ticketType);
-        Task<int> GetSundayTicketCountAsync(int eventId, TicketType? ticketType);
-        Task<decimal> GetEventTicketGrossRevenueAsync(int eventId);
+        Task<Dictionary<DayOfWeek, int>> GetWeeklyTicketCountAsync(int eventId, DateTime? startDate, DateTime? endDate, TicketType? ticketType); Task<decimal> GetEventTicketGrossRevenueAsync(int eventId);
         Task<decimal> GetEventTicketNetRevenueAsync(int eventId);
     }
 }

@@ -215,93 +215,39 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             }
         }
 
-        public async Task<int> GetMondayTicketCountAsync(int eventId, TicketType? ticketType)
+        public async Task<Dictionary<DayOfWeek, int>> GetWeeklyTicketCountAsync(int eventId, DateTime? startDate, DateTime? endDate, TicketType? ticketType)
         {
             using (var connection = _connectionFactory.CreateConnection())
             {
-                var count = await connection.ExecuteScalarAsync<int>(
-                    "GetEventMondayTicketCount",
-                    new
-                    {
-                        EventId = eventId,
-                        TicketType = ticketType // Nullable int, maps to INT NULL in SQL
-                    },
+                // Default to last 7 days if dates are null
+                var effectiveEndDate = endDate ?? DateTime.UtcNow.Date; // Today, normalized to midnight UTC
+                var effectiveStartDate = startDate ?? effectiveEndDate.AddDays(-6); // 7 days total, inclusive
+
+                var parameters = new DynamicParameters();
+                parameters.Add("EventId", eventId);
+                parameters.Add("StartDate", effectiveStartDate, dbType: DbType.Date);
+                parameters.Add("EndDate", effectiveEndDate, dbType: DbType.Date);
+                parameters.Add("TicketType", (int?)ticketType);
+
+                var results = await connection.QueryAsync<(int DayOfWeek, int TicketCount)>(
+                    "GetEventWeeklyTicketCount",
+                    parameters,
                     commandType: CommandType.StoredProcedure);
-                return count;
+
+                var dailyCounts = Enum.GetValues(typeof(DayOfWeek))
+                    .Cast<DayOfWeek>()
+                    .ToDictionary(day => day, day => 0);
+
+                foreach (var result in results)
+                {
+                    var dayOfWeek = (DayOfWeek)((result.DayOfWeek + 5) % 7);
+                    dailyCounts[dayOfWeek] = result.TicketCount;
+                }
+
+                return dailyCounts;
             }
         }
 
-        public async Task<int> GetTuesdayTicketCountAsync(int eventId, TicketType? ticketType)
-        {
-            using (var connection = _connectionFactory.CreateConnection())
-            {
-                var count = await connection.ExecuteScalarAsync<int>(
-                    "GetEventTuesdayTicketCount",
-                    new { EventId = eventId, TicketType = ticketType },
-                    commandType: CommandType.StoredProcedure);
-                return count;
-            }
-        }
-
-        public async Task<int> GetWednesdayTicketCountAsync(int eventId, TicketType? ticketType)
-        {
-            using (var connection = _connectionFactory.CreateConnection())
-            {
-                var count = await connection.ExecuteScalarAsync<int>(
-                    "GetEventWednesdayTicketCount",
-                    new { EventId = eventId, TicketType = ticketType },
-                    commandType: CommandType.StoredProcedure);
-                return count;
-            }
-        }
-
-        public async Task<int> GetThursdayTicketCountAsync(int eventId, TicketType? ticketType)
-        {
-            using (var connection = _connectionFactory.CreateConnection())
-            {
-                var count = await connection.ExecuteScalarAsync<int>(
-                    "GetEventThursdayTicketCount",
-                    new { EventId = eventId, TicketType = ticketType },
-                    commandType: CommandType.StoredProcedure);
-                return count;
-            }
-        }
-
-        public async Task<int> GetFridayTicketCountAsync(int eventId, TicketType? ticketType)
-        {
-            using (var connection = _connectionFactory.CreateConnection())
-            {
-                var count = await connection.ExecuteScalarAsync<int>(
-                    "GetEventFridayTicketCount",
-                    new { EventId = eventId, TicketType = ticketType },
-                    commandType: CommandType.StoredProcedure);
-                return count;
-            }
-        }
-
-        public async Task<int> GetSaturdayTicketCountAsync(int eventId, TicketType? ticketType)
-        {
-            using (var connection = _connectionFactory.CreateConnection())
-            {
-                var count = await connection.ExecuteScalarAsync<int>(
-                    "GetEventSaturdayTicketCount",
-                    new { EventId = eventId, TicketType = ticketType },
-                    commandType: CommandType.StoredProcedure);
-                return count;
-            }
-        }
-
-        public async Task<int> GetSundayTicketCountAsync(int eventId, TicketType? ticketType)
-        {
-            using (var connection = _connectionFactory.CreateConnection())
-            {
-                var count = await connection.ExecuteScalarAsync<int>(
-                    "GetEventSundayTicketCount",
-                    new { EventId = eventId, TicketType = ticketType },
-                    commandType: CommandType.StoredProcedure);
-                return count;
-            }
-        }
 
         public async Task<decimal> GetEventTicketGrossRevenueAsync(int eventId)
         {

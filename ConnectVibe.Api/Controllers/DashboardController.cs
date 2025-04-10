@@ -27,6 +27,7 @@ using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Fliq.Application.DashBoard.Queries.DailyTicketCount;
+using Mapster;
 
 namespace Fliq.Api.Controllers
 {
@@ -323,88 +324,22 @@ namespace Fliq.Api.Controllers
             );
         }
 
-        [HttpGet("monday-ticket-count")]
-        public async Task<IActionResult> GetMondayTicketCount([FromQuery] int eventId, [FromQuery] TicketType? ticketType = null)
+        [HttpGet("weekly-ticket-count")]
+        public async Task<IActionResult> GetWeeklyTicketCount(
+             [FromQuery] int eventId,
+             [FromQuery] DateTime? startDate,
+             [FromQuery] DateTime? endDate,
+             [FromQuery] TicketType? ticketType = null)
         {
-            _logger.LogInfo($"Received request for Monday ticket count for EventId: {eventId}, TicketType: {ticketType?.ToString() ?? "All"}");
+            _logger.LogInfo($"Received request for weekly ticket counts for EventId: {eventId}, " +
+                            $"Date Range: {startDate?.ToString("yyyy-MM-dd") ?? "Default Start"} to {endDate?.ToString("yyyy-MM-dd") ?? "Default End"}, " +
+                            $"TicketType: {ticketType?.ToString() ?? "All"}");
 
-            var query = new GetMondayEventTicketCountQuery(eventId, ticketType);
+            var query = new GetWeeklyEventTicketCountQuery(eventId, startDate, endDate, ticketType);
             var result = await _mediator.Send(query);
 
             return result.Match(
-                matchedResult => Ok(_mapper.Map<CountResponse>(result.Value)),
-                errors => Problem(errors)
-            );
-        }
-
-        [HttpGet("tuesday-ticket-count")]
-        public async Task<IActionResult> GetTuesdayTicketCount([FromQuery] int eventId, [FromQuery] TicketType? ticketType = null)
-        {
-            _logger.LogInfo($"Received request for Tuesday ticket count for EventId: {eventId}, TicketType: {ticketType?.ToString() ?? "All"}");
-            var query = new GetTuesdayEventTicketCountQuery(eventId, ticketType);
-            var result = await _mediator.Send(query);
-            return result.Match(
-                matchedResult => Ok(_mapper.Map<CountResponse>(result.Value)),
-                errors => Problem(errors)
-            );
-        }
-
-        [HttpGet("wednesday-ticket-count")]
-        public async Task<IActionResult> GetWednesdayTicketCount([FromQuery] int eventId, [FromQuery] TicketType? ticketType = null)
-        {
-            _logger.LogInfo($"Received request for Wednesday ticket count for EventId: {eventId}, TicketType: {ticketType?.ToString() ?? "All"}");
-            var query = new GetWednesdayEventTicketCountQuery(eventId, ticketType);
-            var result = await _mediator.Send(query);
-            return result.Match(
-                matchedResult => Ok(_mapper.Map<CountResponse>(result.Value)),
-                errors => Problem(errors)
-            );
-        }
-
-        [HttpGet("thursday-ticket-count")]
-        public async Task<IActionResult> GetThursdayTicketCount([FromQuery] int eventId, [FromQuery] TicketType? ticketType = null)
-        {
-            _logger.LogInfo($"Received request for Thursday ticket count for EventId: {eventId}, TicketType: {ticketType?.ToString() ?? "All"}");
-            var query = new GetThursdayEventTicketCountQuery(eventId, ticketType);
-            var result = await _mediator.Send(query);
-            return result.Match(
-                matchedResult => Ok(_mapper.Map<CountResponse>(result.Value)),
-                errors => Problem(errors)
-            );
-        }
-
-        [HttpGet("friday-ticket-count")]
-        public async Task<IActionResult> GetFridayTicketCount([FromQuery] int eventId, [FromQuery] TicketType? ticketType = null)
-        {
-            _logger.LogInfo($"Received request for Friday ticket count for EventId: {eventId}, TicketType: {ticketType?.ToString() ?? "All"}");
-            var query = new GetFridayEventTicketCountQuery(eventId, ticketType);
-            var result = await _mediator.Send(query);
-            return result.Match(
-                matchedResult => Ok(_mapper.Map<CountResponse>(result.Value)),
-                errors => Problem(errors)
-            );
-        }
-
-        [HttpGet("saturday-ticket-count")]
-        public async Task<IActionResult> GetSaturdayTicketCount([FromQuery] int eventId, [FromQuery] TicketType? ticketType = null)
-        {
-            _logger.LogInfo($"Received request for Saturday ticket count for EventId: {eventId}, TicketType: {ticketType?.ToString() ?? "All"}");
-            var query = new GetSaturdayEventTicketCountQuery(eventId, ticketType);
-            var result = await _mediator.Send(query);
-            return result.Match(
-                matchedResult => Ok(_mapper.Map<CountResponse>(result.Value)),
-                errors => Problem(errors)
-            );
-        }
-
-        [HttpGet("sunday-ticket-count")]
-        public async Task<IActionResult> GetSundayTicketCount([FromQuery] int eventId, [FromQuery] TicketType? ticketType = null)
-        {
-            _logger.LogInfo($"Received request for Sunday ticket count for EventId: {eventId}, TicketType: {ticketType?.ToString() ?? "All"}");
-            var query = new GetSundayEventTicketCountQuery(eventId, ticketType);
-            var result = await _mediator.Send(query);
-            return result.Match(
-                matchedResult => Ok(_mapper.Map<CountResponse>(result.Value)),
+                matchedResult => Ok(matchedResult.Adapt<WeeklyCountResponse>()), // Map with Mapster
                 errors => Problem(errors)
             );
         }

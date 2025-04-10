@@ -5,26 +5,32 @@
 namespace Fliq.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class GetEventSaturdayTicketCount_SP : Migration
+    public partial class GetEventWeeklyTicketCount_SP : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@"
-             CREATE PROCEDURE [dbo].[GetEventSaturdayTicketCount]
+            CREATE PROCEDURE [dbo].[GetEventWeeklyTicketCount]
                 @EventId INT,
+                @StartDate DATE = NULL,
+                @EndDate DATE = NULL,
                 @TicketType INT = NULL
             AS
             BEGIN
                 SET NOCOUNT ON;
 
-                SELECT COUNT(*)
+                SELECT 
+                    DATEPART(WEEKDAY, et.DateCreated) AS DayOfWeek,
+                    COUNT(*) AS TicketCount
                 FROM [dbo].[EventTickets] et
                 INNER JOIN [dbo].[Tickets] t ON et.TicketId = t.Id
                 WHERE t.EventId = @EventId
-                AND DATEPART(WEEKDAY, et.DateCreated) = 7 -- Saturday (using EventTicket's DateCreated)
+                AND (@StartDate IS NULL OR et.DateCreated >= @StartDate)
+                AND (@EndDate IS NULL OR et.DateCreated <= @EndDate)
                 AND (@TicketType IS NULL OR t.TicketType = @TicketType)
-                AND et.IsRefunded = 0; -- Updated to use EventTicket's IsRefunded
+                AND et.IsRefunded = 0
+                GROUP BY DATEPART(WEEKDAY, et.DateCreated);
             END
              ");
         }
@@ -32,7 +38,7 @@ namespace Fliq.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql("DROP PROCEDURE IF EXISTS sp_GetEventSaturdayTicketCount;");
+            migrationBuilder.Sql("DROP PROCEDURE IF EXISTS sp_GetEventWeeklyTicketCount;");
         }
     }
 }
