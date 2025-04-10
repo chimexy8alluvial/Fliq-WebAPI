@@ -13,7 +13,7 @@ namespace Fliq.Infrastructure.Migrations
         {
             migrationBuilder.Sql(@"
 CREATE PROCEDURE sp_GetAllFilteredBlindDatingList
-   @Title NVARCHAR(255) = NULL,
+     @Title NVARCHAR(255) = NULL,
     @Type INT = NULL,
     @CreatedBy NVARCHAR(255) = NULL,
     @SubscriptionType NVARCHAR(50) = NULL,
@@ -42,7 +42,7 @@ BEGIN
     SELECT 
         bd.Title AS Title,
         0 AS Type,
-        u.DisplayName + '\n' + u.Email + '\n' AS CreatedBy,
+        u.FirstName + '' + u.LastName + '\n' + u.Email + '' AS CreatedBy,
         CASE 
             WHEN sub.IsActive = 1 THEN sub.ProductId 
             ELSE NULL 
@@ -56,7 +56,7 @@ BEGIN
         AND (@Title IS NULL OR bd.Title LIKE '%' + @Title + '%')
         AND (@Type IS NULL OR 0 = @Type)
         AND (@CreatedBy IS NULL 
-            OR u.DisplayName LIKE '%' + @CreatedBy + '%'
+            OR u.FirstName LIKE '%' + @CreatedBy + '%'
             OR u.Email LIKE '%' + @CreatedBy + '%')
         AND (@SubscriptionType IS NULL OR sub.ProductId = @SubscriptionType)
         AND (@Duration IS NULL OR bd.Duration = @Duration)

@@ -45,7 +45,7 @@ namespace Fliq.Application.DatingEnvironment.Helper
                 return (new List<DatingListItems>(), 0);
             }
 
-            // Calculate proportional split based on total available events
+            // Calculate equal distribution based on total available events
             int targetBlindPerPage, targetSpeedPerPage;
 
             if (totalBlindCount == 0)
@@ -62,51 +62,117 @@ namespace Fliq.Application.DatingEnvironment.Helper
             }
             else
             {
-                // Both types exist, distribute proportionally
-                double blindRatio = (double)totalBlindCount / totalCount;
-                targetBlindPerPage = (int)Math.Ceiling(command.PageSize * blindRatio);
+                // Both types exist, distribute equally
+                targetBlindPerPage = command.PageSize / 2;
                 targetSpeedPerPage = command.PageSize - targetBlindPerPage;
+
+                // Calculate remaining events of each type for this page
+                int remainingBlindEvents = Math.Max(0, totalBlindCount - ((command.Page - 1) * targetBlindPerPage));
+                int remainingSpeedEvents = Math.Max(0, totalSpeedCount - ((command.Page - 1) * targetSpeedPerPage));
+
+                if (remainingBlindEvents <= 0)
+                {
+                    // No more blind dating events available for this page, give all slots to speed dating
+                    targetBlindPerPage = 0;
+                    targetSpeedPerPage = command.PageSize;
+                }
+                else if (remainingSpeedEvents <= 0)
+                {
+                    // No more speed dating events available for this page, give all slots to blind dating
+                    targetBlindPerPage = command.PageSize;
+                    targetSpeedPerPage = 0;
+                }
+                else if (remainingBlindEvents < targetBlindPerPage)
+                {
+                    // Not enough blind dating events left to fill the target, adjust allocation
+                    targetBlindPerPage = remainingBlindEvents;
+                    targetSpeedPerPage = command.PageSize - targetBlindPerPage;
+                }
+                else if (remainingSpeedEvents < targetSpeedPerPage)
+                {
+                    // Not enough speed dating events left to fill the target, adjust allocation
+                    targetSpeedPerPage = remainingSpeedEvents;
+                    targetBlindPerPage = command.PageSize - targetSpeedPerPage;
+                }
+
+                logger.LogInfo($"Page {command.Page}: Distributing as {targetBlindPerPage} blind dating and {targetSpeedPerPage} speed dating events");
             }
 
             // Calculate start indices for each type
-            int blindStart = (command.Page - 1) * targetBlindPerPage;
-            int speedStart = (command.Page - 1) * targetSpeedPerPage;
+            int blindStart = (command.Page - 1) * (command.PageSize / 2);
+            int speedStart = (command.Page - 1) * (command.PageSize / 2);
+
+            // Adjust for uneven page size
+            if (command.PageSize % 2 != 0)
+            {
+                // Add extra slot to blind dating for odd-numbered pages, speed dating for even-numbered pages
+                if (command.Page % 2 == 1)
+                {
+                    blindStart = (command.Page - 1) * ((command.PageSize / 2) + 1) +
+                                 (command.Page - 1) / 2;
+                    speedStart = (command.Page - 1) * (command.PageSize / 2) -
+                                 (command.Page - 1) / 2;
+                }
+                else
+                {
+                    blindStart = (command.Page - 1) * (command.PageSize / 2) -
+                                 ((command.Page - 2) / 2);
+                    speedStart = (command.Page - 1) * ((command.PageSize / 2) + 1) +
+                                 ((command.Page - 2) / 2);
+                }
+            }
 
             var allEvents = new List<DatingListItems>();
 
             // Fetch BlindDating events
             if ((!command.Type.HasValue || command.Type == DatingType.BlindDating) && targetBlindPerPage > 0 && blindStart < totalBlindCount)
             {
-                logger.LogInfo($"Fetching {targetBlindPerPage} blind dating events for page {command.Page}");
-                int blindPage = (blindStart / targetBlindPerPage) + 1;
+                logger.LogInfo($"Fetching {targetBlindPerPage} blind dating events starting from index {blindStart}");
+
+                // Determine the actual page number in the blind dating repository
+                int blindPage = (blindStart / (command.PageSize / 2)) + 1;
+                int blindOffset = blindStart % (command.PageSize / 2);
+
+                // Adjust page and size to account for the offset
+                int adjustedBlindPageSize = targetBlindPerPage + blindOffset;
 
                 var (blindDates, _) = await blindDateRepository.GetAllFilteredListAsync(
                     command.Title, command.Type, command.Duration, command.SubscriptionType,
                     command.DateCreatedFrom, command.DateCreatedTo, command.CreatedBy,
-                    Page: blindPage, PageSize: targetBlindPerPage);
+                    Page: blindPage, PageSize: adjustedBlindPageSize);
 
                 if (blindDates != null && blindDates.Any())
                 {
-                    allEvents.AddRange(blindDates);
-                    logger.LogInfo($"Retrieved {blindDates.Count} blind dating events for page {command.Page}");
+                    // Skip any offset items and take only what we need
+                    var selectedBlindDates = blindDates.Skip(blindOffset).Take(targetBlindPerPage).ToList();
+                    allEvents.AddRange(selectedBlindDates);
+                    logger.LogInfo($"Retrieved {selectedBlindDates.Count} blind dating events for page {command.Page}");
                 }
             }
 
             // Fetch SpeedDating events
             if ((!command.Type.HasValue || command.Type == DatingType.SpeedDating) && targetSpeedPerPage > 0 && speedStart < totalSpeedCount)
             {
-                logger.LogInfo($"Fetching {targetSpeedPerPage} speed dating events for page {command.Page}");
-                int speedPage = (speedStart / targetSpeedPerPage) + 1;
+                logger.LogInfo($"Fetching {targetSpeedPerPage} speed dating events starting from index {speedStart}");
+
+                // Determine the actual page number in the speed dating repository
+                int speedPage = (speedStart / (command.PageSize / 2)) + 1;
+                int speedOffset = speedStart % (command.PageSize / 2);
+
+                // Adjust page and size to account for the offset
+                int adjustedSpeedPageSize = targetSpeedPerPage + speedOffset;
 
                 var (speedDates, _) = await speedDatingEventRepository.GetAllFilteredListAsync(
                     command.Title, command.Type, command.Duration, command.SubscriptionType,
                     command.DateCreatedFrom, command.DateCreatedTo, command.CreatedBy,
-                    Page: speedPage, PageSize: targetSpeedPerPage);
+                    Page: speedPage, PageSize: adjustedSpeedPageSize);
 
                 if (speedDates != null && speedDates.Any())
                 {
-                    allEvents.AddRange(speedDates);
-                    logger.LogInfo($"Retrieved {speedDates.Count} speed dating events for page {command.Page}");
+                    // Skip any offset items and take only what we need
+                    var selectedSpeedDates = speedDates.Skip(speedOffset).Take(targetSpeedPerPage).ToList();
+                    allEvents.AddRange(selectedSpeedDates);
+                    logger.LogInfo($"Retrieved {selectedSpeedDates.Count} speed dating events for page {command.Page}");
                 }
             }
 
