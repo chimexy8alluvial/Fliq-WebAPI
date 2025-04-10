@@ -15,6 +15,7 @@ using Fliq.Application.Games.Queries.GetActiveGamesCountQuery;
 using Fliq.Application.Games.Queries.GetGame;
 using Fliq.Application.Games.Queries.GetGameHistory;
 using Fliq.Application.Games.Queries.GetGames;
+using Fliq.Application.Games.Queries.GetIssuesReportedCount;
 using Fliq.Application.Games.Queries.GetNumberOfGamersCountQuery;
 using Fliq.Application.Games.Queries.GetQuestions;
 using Fliq.Application.Games.Queries.GetSession;
@@ -317,6 +318,21 @@ namespace Fliq.Api.Controllers
             _logger.LogInformation("Recieved request for total games played count");
 
             var query = new GetTotalGamesPlayedCountQuery();
+            var result = await _mediator.Send(query);
+
+            return result.Match(
+                matchedProfileResult => Ok(_mapper.Map<CountResponse>(result.Value)),
+                errors => Problem(errors)
+            );
+        }
+
+        [HttpGet("games-issues-reported-count")]
+        [Authorize(Roles = "SuperAdmin,Admin")]
+        public async Task<IActionResult> GetGamesIssuesReportedCount()
+        {
+            _logger.LogInformation("Recieved request for games issues reported count");
+
+            var query = new GetGamesIssuesReportedCountQuery();
             var result = await _mediator.Send(query);
 
             return result.Match(

@@ -1,9 +1,7 @@
 ﻿using Dapper;
 using Fliq.Application.Common.Interfaces.Persistence;
-using Fliq.Application.Common.Pagination;
 using Fliq.Application.Games.Common;
 using Fliq.Contracts.Games;
-using Fliq.Domain.Entities;
 using Fliq.Domain.Entities.Games;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
@@ -174,7 +172,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         {
             using (var connection = _connectionFactory.CreateConnection())
             {
-                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_GetTotalGamesPlayedCount", commandType: CommandType.StoredProcedure);
+                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_GetTotalGamesPlayedCounts", commandType: CommandType.StoredProcedure);
                 return count;
             }
         }
@@ -201,6 +199,15 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                     var totalCount = await multi.ReadSingleAsync<int>();
                     return (list, totalCount);
                 }
+            }
+        }
+
+        public async Task<int> GetGamesIssuesReportedCountAsync()
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_GetGamesIssuesReportedCount", commandType: CommandType.StoredProcedure);
+                return count;
             }
         }
     }
