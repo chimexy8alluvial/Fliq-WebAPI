@@ -33,13 +33,18 @@ namespace Fliq.Infrastructure.Migrations
                         up.DOB,
                         g.Id AS GenderId,
                         g.GenderType,
+                        up.IsSexualOrientationVisible,
+                        up.IsEducationStatusVisible,
+                        up.IsEthnicityVisible,
+                        up.IsOccupationVisible,
+                        up.IsReligionVisible,
                         g.IsVisible AS GenderVisible,
-            			oc.Id AS OccupationId,
-            			oc.OccupationName AS OccupationName,
-            			oc.IsVisible AS OccupationVisible,
-            			ed.Id AS EducationStatusId,
-            			ed.EducationLevel AS EducationLevel,
-            			ed.IsVisible AS EducationVisible,
+                        oc.Id AS OccupationId,
+                        oc.OccupationName AS OccupationName,
+                        oc.IsVisible AS OccupationVisible,
+                        ed.Id AS EducationStatusId,
+                        ed.EducationLevel AS EducationLevel,
+                        ed.IsVisible AS EducationVisible,
                         so.Id AS SexualOrientationId,
                         so.SexualOrientationType,
                         so.IsVisible AS SexualOrientationVisible,
@@ -60,28 +65,28 @@ namespace Fliq.Infrastructure.Migrations
                         loc.Lng,
                         loc.IsVisible AS LocationVisible,
                         up.AllowNotifications,
-                        up.Passions,
-            			up.ProfileTypes,
+                        up.PassionsJson AS Passions,
+                        up.ProfileTypeJson AS ProfileTypes,
                         up.DateCreated,
-            			up.DateModified,
-            			up.IsDeleted,
-            			up.Id,
+                        up.DateModified,
+                        up.IsDeleted,
+                        up.Id,
 
-                  (
-                    SELECT
-                        pr.Id,
-                        pr.ResponseType,
-					    pr.PromptQuestionId
-                    FROM dbo.PromptResponse pr
-                    WHERE pr.UserProfileId = up.Id
-                    FOR JSON PATH
-                ) AS PromptResponses,
+                        (
+                            SELECT
+                                pr.Id,
+                                pr.ResponseType,
+                                pr.PromptQuestionId
+                            FROM dbo.PromptResponse pr
+                            WHERE pr.UserProfileId = up.Id
+                            FOR JSON PATH
+                        ) AS PromptResponses,
                         ROW_NUMBER() OVER (ORDER BY up.DateCreated DESC) AS Row_Num
                     FROM dbo.UserProfiles up
 
                     LEFT JOIN Gender g ON up.GenderId = g.Id
-            		LEFT JOIN Occupation oc ON up.OccupationId = oc.Id
-            		LEFT JOIN EducationStatus ed ON up.EducationStatusId = ed.Id
+                    LEFT JOIN Occupation oc ON up.OccupationId = oc.Id
+                    LEFT JOIN EducationStatus ed ON up.EducationStatusId = ed.Id
                     LEFT JOIN SexualOrientation so ON up.SexualOrientationId = so.Id
                     LEFT JOIN Religion r ON up.ReligionId = r.Id
                     LEFT JOIN Ethnicity e ON up.EthnicityId = e.Id
@@ -92,12 +97,12 @@ namespace Fliq.Infrastructure.Migrations
                     AND EXISTS
                     (
                         SELECT 1 FROM OPENJSON(@profileTypes) AS jsonProfileTypes
-                        WHERE up.ProfileTypes LIKE '%' + jsonProfileTypes.value + '%'
+                        WHERE up.ProfileTypeJson LIKE '%' + jsonProfileTypes.value + '%'
                     )
                     AND (@filterByDating IS NULL OR
-                        (up.ProfileTypes LIKE '%"" + CAST(0 AS NVARCHAR(MAX)) + @""%'))
+                        (up.ProfileTypeJson LIKE '%"" + CAST(0 AS NVARCHAR(MAX)) + @""%'))
                     AND (@filterByFriendship IS NULL OR
-                        (up.ProfileTypes LIKE '%"" + CAST(1 AS NVARCHAR(MAX)) + @""%'))
+                        (up.ProfileTypeJson LIKE '%"" + CAST(1 AS NVARCHAR(MAX)) + @""%'))
                 ),
                 RecordCount AS
                 (
@@ -109,8 +114,8 @@ namespace Fliq.Infrastructure.Migrations
                 CROSS JOIN RecordCount
                 WHERE Row_Num BETWEEN @from_row AND (@from_row + @pageSize - 1)
                 ORDER BY DateCreated DESC;
-             END"
-               );
+            END"
+            );
         }
 
         /// <inheritdoc />
