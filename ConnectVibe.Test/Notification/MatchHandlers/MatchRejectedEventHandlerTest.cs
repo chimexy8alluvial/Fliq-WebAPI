@@ -1,6 +1,4 @@
-﻿
-
-using Fliq.Application.Common.Interfaces.Persistence;
+﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services.NotificationServices;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Notifications.Common.MatchEvents;
@@ -12,24 +10,25 @@ namespace Fliq.Test.Notification.MatchHandlers
     [TestClass]
     public class MatchRejectedEventHandlerTest
     {
-        private NotificationEventHandler? _handler;
-        private Mock<IUserRepository>? _userRepositoryMock;
         private Mock<INotificationRepository>? _notificationRepositoryMock;
         private Mock<IPushNotificationService>? _firebaseServiceMock;
-        private Mock<ILoggerManager>? _loggerManagerMock;
+        private Mock<IEmailService>? _emailServiceMock;
+        private Mock<ILoggerManager>? _loggerMock;
+        private NotificationEventHandler? _handler;
 
         [TestInitialize]
         public void Setup()
         {
-            _userRepositoryMock = new Mock<IUserRepository>();
             _notificationRepositoryMock = new Mock<INotificationRepository>();
             _firebaseServiceMock = new Mock<IPushNotificationService>();
-            _loggerManagerMock = new Mock<ILoggerManager>();
-
+            _emailServiceMock = new Mock<IEmailService>();
+            _loggerMock = new Mock<ILoggerManager>();
             _handler = new NotificationEventHandler(
                 _notificationRepositoryMock.Object,
                 _firebaseServiceMock.Object,
-                _loggerManagerMock.Object);
+                _emailServiceMock.Object,
+                _loggerMock.Object
+            );
         }
 
         [TestMethod]
@@ -43,7 +42,7 @@ namespace Fliq.Test.Notification.MatchHandlers
                 .ReturnsAsync(new List<string> { token }); // User has tokens
 
             // Act
-            await _handler.Handle(matchRejectedEvent, CancellationToken.None);
+            await _handler!.Handle(matchRejectedEvent, CancellationToken.None);
 
             // Assert
             _firebaseServiceMock?.Verify(service => service.SendNotificationAsync(
@@ -55,7 +54,7 @@ namespace Fliq.Test.Notification.MatchHandlers
                 null, // No action URL
                 null), Times.Once);
 
-            _loggerManagerMock?.Verify(logger => logger.LogInfo(
+            _loggerMock?.Verify(logger => logger.LogInfo(
                 It.Is<string>(msg => msg.Contains("Notification sent for match rejection to UserId: 1"))), Times.Once);
         }
     }

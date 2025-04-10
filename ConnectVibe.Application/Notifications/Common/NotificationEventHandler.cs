@@ -9,15 +9,20 @@ using MediatR;
 namespace Fliq.Application.Notifications.Common
 {
     public class NotificationEventHandler : INotificationHandler<MatchAcceptedEvent>,INotificationHandler<MatchRejectedEvent>,
-                                            INotificationHandler<MatchRequestEvent>, INotificationHandler<EventCreatedEvent>, INotificationHandler<EventReviewSubmittedEvent>
+                                            INotificationHandler<MatchRequestEvent>, INotificationHandler<EventCreatedEvent>,
+                                            INotificationHandler<EventReviewSubmittedEvent>,  INotificationHandler<TicketPurchasedEvent>
+
+
     {
         private readonly INotificationRepository _notificationRepository;
         private readonly IPushNotificationService _firebaseNotificationService;
+        private readonly IEmailService _emailService;
         private readonly ILoggerManager _logger;
-        public NotificationEventHandler(INotificationRepository notificationRepository, IPushNotificationService firebaseNotificationService, ILoggerManager logger)
+        public NotificationEventHandler(INotificationRepository notificationRepository, IPushNotificationService firebaseNotificationService, IEmailService emailService, ILoggerManager logger)
         {
             _notificationRepository = notificationRepository;
             _firebaseNotificationService = firebaseNotificationService;
+            _emailService = emailService;
             _logger = logger;
         }
 
@@ -175,30 +180,55 @@ namespace Fliq.Application.Notifications.Common
                 notification.OrganizerId,
                 "New Ticket Purchased",
                 $"{notification.BuyerName} purchased {notification.NumberOfTickets} ticket(s) for your event '{notification.EventTitle}'.",
-               notification.ImageUrl,
+                notification.ImageUrl,
                 notification.ActionUrl,
                 notification.ButtonText,
                 cancellationToken
             );
+
+            // Notify Ticket Assignees from TicketDetails
+            if (notification.TicketDetails != null && notification.TicketDetails.Any())
+            {
+                foreach (var ticket in notification.TicketDetails)
+                {
+                    if (ticket.UserId.HasValue && ticket.UserId.Value != notification.BuyerId) // Avoid duplicate for buyer
+                    {
+                        await HandleNotificationAsync(
+                            ticket.UserId.Value,
+                            "Ticket Assigned",
+                            $"You’ve been assigned a {ticket.TicketType} ticket for '{notification.EventTitle}' on {notification.EventDate}.",
+                            notification.ImageUrl,
+                            notification.ActionUrl,
+                            notification.ButtonText,
+                            cancellationToken
+                        );
+                    }
+                    else if (!string.IsNullOrEmpty(ticket.Email))
+                    {
+                        await _emailService.SendEmailAsync(
+                            ticket.Email,
+                            "Ticket Assigned",
+                            $"You’ve been assigned a {ticket.TicketType} ticket for '{notification.EventTitle}' on {notification.EventDate}."
+                        );
+                        _logger.LogInfo($"Email sent to {ticket.Email} for ticket assignment.");
+                    }
+                }
+            }
 
             _logger.LogInfo($"Notifications sent for ticket purchase: BuyerId {notification.BuyerId}, OrganizerId {notification.OrganizerId}.");
         }
 
         private async Task HandleNotificationAsync(int userId, string title, string message, string? imageUrl, string? actionUrl, string? buttonText, CancellationToken cancellationToken)
         {
-    
-            // Retrieve device tokens for the user
             var deviceTokens = await _notificationRepository.GetDeviceTokensByUserIdAsync(userId);
 
             if (deviceTokens == null || !deviceTokens.Any())
             {
                 _logger.LogInfo($"No registered device tokens for UserId: {userId}");
-                return; // Exit if there are no tokens
+                return;
             }
 
             _logger.LogInfo($"Device tokens retrieved for UserId: {userId}: {string.Join(", ", deviceTokens)}");
-
-            // Send notification to Firebase if there are tokens available
             await _firebaseNotificationService.SendNotificationAsync(title, message, deviceTokens, userId, imageUrl, actionUrl, buttonText);
             _logger.LogInfo($"Notification sent for event to UserId: {userId}");
         }

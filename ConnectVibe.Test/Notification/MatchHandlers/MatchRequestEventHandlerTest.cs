@@ -10,24 +10,25 @@ namespace Fliq.Test.Notification.MatchHandlers
     [TestClass]
     public class MatchRequestEventHandlerTest
     {
-        private NotificationEventHandler? _handler;
-        private Mock<IUserRepository>? _userRepositoryMock;
         private Mock<INotificationRepository>? _notificationRepositoryMock;
         private Mock<IPushNotificationService>? _firebaseServiceMock;
-        private Mock<ILoggerManager>? _loggerManagerMock;
+        private Mock<IEmailService>? _emailServiceMock;
+        private Mock<ILoggerManager>? _loggerMock;
+        private NotificationEventHandler? _handler;
 
         [TestInitialize]
         public void Setup()
         {
-            _userRepositoryMock = new Mock<IUserRepository>();
             _notificationRepositoryMock = new Mock<INotificationRepository>();
             _firebaseServiceMock = new Mock<IPushNotificationService>();
-            _loggerManagerMock = new Mock<ILoggerManager>();
-
+            _emailServiceMock = new Mock<IEmailService>();
+            _loggerMock = new Mock<ILoggerManager>();
             _handler = new NotificationEventHandler(
                 _notificationRepositoryMock.Object,
                 _firebaseServiceMock.Object,
-                _loggerManagerMock.Object);
+                _emailServiceMock.Object,
+                _loggerMock.Object
+            );
         }
 
         [TestMethod]
@@ -81,7 +82,7 @@ namespace Fliq.Test.Notification.MatchHandlers
                 .ReturnsAsync(new List<string>());
 
             // Act
-            await _handler.Handle(notification, CancellationToken.None);
+            await _handler!.Handle(notification, CancellationToken.None);
 
             // Assert
             _firebaseServiceMock?.Verify(service => service.SendNotificationAsync(

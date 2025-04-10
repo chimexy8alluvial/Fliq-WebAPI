@@ -108,7 +108,7 @@ namespace Fliq.Test.Event.Commands
 
             _ticketRepositoryMock!.Setup(repo => repo.GetTicketsByIds(It.IsAny<List<int>>()))
                 .Returns(new List<Ticket> { new Ticket { Id = 1, EventId = 1, SoldOut = false } });
-            _eventRepositoryMock!.Setup(repo => repo.GetEventById(1)).Returns((Events)null!);
+            _eventRepositoryMock!.Setup(repo => repo.GetEventById(1)).Returns((Events?)null);
 
             // Act
             var result = await _handler!.Handle(command, CancellationToken.None);
@@ -136,7 +136,7 @@ namespace Fliq.Test.Event.Commands
                 .Returns(new List<Ticket> { new Ticket { Id = 1, EventId = 1, SoldOut = false } });
             _eventRepositoryMock!.Setup(repo => repo.GetEventById(1))
                 .Returns(new Events { Id = 1, Capacity = 10, Status = EventStatus.Upcoming, OccupiedSeats = new List<int>() });
-            _userRepositoryMock!.Setup(repo => repo.GetUserById(command.UserId)).Returns((User)null!);
+            _userRepositoryMock!.Setup(repo => repo.GetUserById(command.UserId)).Returns((User?)null);
 
             // Act
             var result = await _handler!.Handle(command, CancellationToken.None);
@@ -150,14 +150,15 @@ namespace Fliq.Test.Event.Commands
         public async Task Handle_ValidCommandWithMixedAssignments_AddsTicketsAndNotifiesCorrectly()
         {
             // Arrange
+            var eventStartDate = DateTime.Now.AddDays(1);
             var command = new AddEventTicketCommand
             {
                 UserId = 100, // Buyer
                 PurchaseTicketDetail = new List<PurchaseTicketDetail>
                 {
                     new PurchaseTicketDetail { UserId = 100, TicketId = 1 }, // Buyer
-                    new PurchaseTicketDetail { UserId = 200, TicketId = 2 },
-                    new PurchaseTicketDetail { UserId = null, Email = "guest@example.com", TicketId = 3 }
+                    new PurchaseTicketDetail { UserId = 200, TicketId = 2 }, // Another user
+                    new PurchaseTicketDetail { UserId = null, Email = "guest@example.com", TicketId = 3 } // Guest via email
                 },
                 PaymentId = 200
             };
@@ -174,58 +175,75 @@ namespace Fliq.Test.Event.Commands
                 Capacity = 10,
                 OccupiedSeats = new List<int> { 1, 2 },
                 EventTitle = "Test Event",
-                StartDate = DateTime.Now.AddDays(1),
-                UserId = 300,
+                StartDate = eventStartDate,
+                UserId = 300, // Organizer
                 Status = EventStatus.Upcoming
             };
+            var buyer = new User { Id = 100, DisplayName = "John Doe" };
+            var payment = new Payment { Id = 200 };
 
             _ticketRepositoryMock!.Setup(repo => repo.GetTicketsByIds(It.IsAny<List<int>>())).Returns(tickets);
-            _userRepositoryMock!.Setup(repo => repo.GetUserById(command.UserId)).Returns(new User { Id = 100, DisplayName = "John Doe" });
+            _userRepositoryMock!.Setup(repo => repo.GetUserById(command.UserId)).Returns(buyer);
             _eventRepositoryMock!.Setup(repo => repo.GetEventById(1)).Returns(eventDetails);
-            _paymentRepositoryMock!.Setup(repo => repo.GetPaymentById(command.PaymentId)).Returns(new Payment { Id = 200 });
+            _paymentRepositoryMock!.Setup(repo => repo.GetPaymentById(command.PaymentId)).Returns(payment);
 
             // Act
             var result = await _handler!.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.IsFalse(result.IsError);
-            Assert.AreEqual(5, eventDetails.OccupiedSeats.Count);
-            Assert.AreEqual(7, eventDetails.Capacity);
+            Assert.AreEqual(5, eventDetails.OccupiedSeats.Count); // 2 initial + 3 new
+            Assert.AreEqual(7, eventDetails.Capacity); // 10 - 3 tickets
 
             _eventRepositoryMock.Verify(repo => repo.Update(It.IsAny<Events>()), Times.Once());
             _ticketRepositoryMock.Verify(repo => repo.UpdateRange(It.IsAny<List<Ticket>>()), Times.Once());
             _ticketRepositoryMock.Verify(repo => repo.AddEventTickets(It.IsAny<List<EventTicket>>()), Times.Once());
-            _loggerMock!.Verify(logger => logger.LogInfo(It.IsAny<string>()), Times.Once());
+            _loggerMock!.Verify(logger => logger.LogInfo($"Assigned {3} tickets for event ID {1}."), Times.Once());
 
-            // Verify individual notification for User 200
+            // 1. Individual notification for User 200
             _mediatorMock!.Verify(x => x.Publish(
                 It.Is<TicketPurchasedEvent>(e =>
                     e.SpecificUserId == 200 &&
-                    e.SpecificTicketType == "VIP" &&
-                    e.Message.Contains("VIP ticket")),
+                    e.SpecificTicketType == "Vip" &&
+                    e.Message == $"A Vip ticket has been purchased for you for 'Test Event' on {eventStartDate:MMMM dd, yyyy} by John Doe." &&
+                    e.BuyerId == 100 &&
+                    e.OrganizerId == 300 &&
+                    e.EventId == 1),
                 It.IsAny<CancellationToken>()), Times.Once());
 
-            // Verify email notification for guest@example.com
+            // 2. Email notification for guest@example.com
             _mediatorMock.Verify(x => x.Publish(
                 It.Is<TicketPurchasedEvent>(e =>
                     e.Email == "guest@example.com" &&
-                    e.SpecificTicketType == "Premium" &&
-                    e.Message.Contains("Premium ticket")),
+                    e.SpecificTicketType == "VVip" &&
+                    e.Message == $"A VVip ticket has been purchased for you for 'Test Event' on {eventStartDate:MMMM dd, yyyy} by John Doe." &&
+                    e.BuyerId == 100 &&
+                    e.OrganizerId == 300 &&
+                    e.EventId == 1),
                 It.IsAny<CancellationToken>()), Times.Once());
 
-            // Verify buyer notification (only one for User 100)
+            // 3. Buyer notification (summary)
             _mediatorMock.Verify(x => x.Publish(
                 It.Is<TicketPurchasedEvent>(e =>
-                    e.SpecificUserId == null &&
-                    e.TicketDetails!.Count == 3 &&
-                    e.Message.Contains("User 100: General, User 200: VIP, guest@example.com: Premium")),
+                    e.BuyerId == 100 &&
+                    e.OrganizerId == 300 &&
+                    e.EventId == 1 &&
+                    e.NumberOfTickets == 3 &&
+                    e.TicketDetails != null &&
+                    e.TicketDetails.Count == 3 &&
+                    e.Message == $"You have successfully purchased 3 ticket(s) for the event 'Test Event' on {eventStartDate:MMMM dd, yyyy}.\n" +
+                                 "Breakdown: 1 Regular ticket, 1 Vip ticket, 1 VVip ticket\n" +
+                                 "Assigned to: User 100: Regular, User 200: Vip, guest@example.com: VVip" &&
+                    e.TicketDetails.Any(td => td.UserId == 100 && td.TicketType == "Regular") &&
+                    e.TicketDetails.Any(td => td.UserId == 200 && td.TicketType == "Vip") &&
+                    e.TicketDetails.Any(td => td.Email == "guest@example.com" && td.TicketType == "VVip")),
                 It.IsAny<CancellationToken>()), Times.Once());
 
-            // Verify no individual notification for User 100 (buyer)
+            // 4. No duplicate individual notification for User 100
             _mediatorMock.Verify(x => x.Publish(
                 It.Is<TicketPurchasedEvent>(e =>
                     e.SpecificUserId == 100 &&
-                    e.SpecificTicketType == "General"),
+                    e.SpecificTicketType == "Regular"),
                 It.IsAny<CancellationToken>()), Times.Never());
         }
     }
