@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fliq.Infrastructure.Migrations
 {
     [DbContext(typeof(FliqDbContext))]
-    [Migration("20250330165555_initial_migration")]
+    [Migration("20250130165555_initial_migration")]
     partial class initial_migration
     {
         /// <inheritdoc />
