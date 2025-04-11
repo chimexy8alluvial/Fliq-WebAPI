@@ -1,5 +1,6 @@
 ﻿using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.DashBoard.Common;
+using Fliq.Application.DashBoard.Common.UnifiedSearch;
 using Fliq.Application.DashBoard.Queries.ActiveUserCount;
 using Fliq.Application.DashBoard.Queries.EventsCount;
 using Fliq.Application.DashBoard.Queries.EventsWithPendingApproval;
@@ -11,6 +12,7 @@ using Fliq.Application.DashBoard.Queries.MaleUsersCount;
 using Fliq.Application.DashBoard.Queries.NewSignUpsCount;
 using Fliq.Application.DashBoard.Queries.OtherUsersCount;
 using Fliq.Application.DashBoard.Queries.SponsoredEventsCount;
+using Fliq.Application.DashBoard.Queries.UnifiedSearch;
 using Fliq.Application.DashBoard.Queries.UsersCount;
 using Fliq.Contracts.DashBoard;
 using MapsterMapper;
@@ -226,6 +228,18 @@ namespace Fliq.Api.Controllers
                errors => Problem(errors)
            );
          }
+
+        [HttpGet("search")]
+        public async Task<ActionResult<UnifiedSearchResult>> Search([FromQuery] string term)
+        {
+            if (string.IsNullOrWhiteSpace(term) || term.Length < 3)
+            {
+                return BadRequest("Search term must be at least 3 characters");
+            }
+
+            var result = await _mediator.Send(new UnifiedSearchQuery(term));
+            return Ok(result.Value);
+        }
 
     }
 }

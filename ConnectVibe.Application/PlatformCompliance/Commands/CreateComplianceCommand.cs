@@ -38,7 +38,6 @@ namespace Fliq.Application.PlatformCompliance.Commands
                 Description = request.Description,
                 VersionNumber = request.VersionNumber,
                 EffectiveDate = request.EffectiveDate,
-                OptIn = request.OptIn
             };
 
             await _complianceRepository.AddAsync(compliance); // Assuming you have an AddAsync method

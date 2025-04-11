@@ -11,6 +11,5 @@ namespace Fliq.Domain.Entities.PlatformCompliance
         public string Description { get; set; } = default!;
         public string VersionNumber { get; set; } = default!;
         public DateTime EffectiveDate { get; set; } = default!;
-        public bool OptIn {  get; set; }
     }
 }

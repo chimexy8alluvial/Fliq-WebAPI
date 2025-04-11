@@ -86,6 +86,7 @@ namespace Fliq.Infrastructure
             services.AddScoped<IBlindDateRepository, BlindDateRepository>();
             services.AddScoped<ISpeedDateParticipantRepository, SpeedDateParticipantRepository>();
             services.AddScoped<ISpeedDatingEventRepository, SpeedDatingEventRepository>();
+            services.AddScoped<ISearchRepository, SearchRepository>();
             services.AddScoped<IRepositoryFactory, RepositoryFactory>();
             services.AddScoped<IComplianceRepository, ComplianceRepository>();
             services.AddSingleton<ICustomProfileMapper, CustomProfileMapper>();
