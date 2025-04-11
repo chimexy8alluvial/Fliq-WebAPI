@@ -1,7 +1,9 @@
 ﻿using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Domain.Common.Errors;
 using MediatR;
+using Error = ErrorOr.Error;
 
 namespace Fliq.Application.DashBoard.Queries
 {
@@ -10,12 +12,14 @@ namespace Fliq.Application.DashBoard.Queries
     public class GetEventTicketGrossRevenueQueryHandler : IRequestHandler<GetEventTicketGrossRevenueQuery, ErrorOr<decimal>>
     {
         private readonly ITicketRepository _ticketRepository;
+        private readonly IEventRepository _eventRepository;
         private readonly ILoggerManager _logger;
 
-        public GetEventTicketGrossRevenueQueryHandler(ITicketRepository ticketRepository, ILoggerManager logger)
+        public GetEventTicketGrossRevenueQueryHandler(ITicketRepository ticketRepository, ILoggerManager logger, IEventRepository eventRepository)
         {
             _ticketRepository = ticketRepository;
             _logger = logger;
+            _eventRepository = eventRepository;
         }
 
         public async Task<ErrorOr<decimal>> Handle(GetEventTicketGrossRevenueQuery query, CancellationToken cancellationToken)
@@ -23,6 +27,13 @@ namespace Fliq.Application.DashBoard.Queries
             try
             {
                 _logger.LogInfo($"Fetching gross revenue for EventId: {query.EventId}");
+
+                var eventFromDb = _eventRepository.GetEventById(query.EventId);
+                if (eventFromDb == null)
+                {
+                    _logger.LogError($"Event with ID: {query.EventId} was not found.");
+                    return Errors.Event.EventNotFound;
+                }
 
                 var revenue = await _ticketRepository.GetEventTicketGrossRevenueAsync(query.EventId);
                 _logger.LogInfo($"Gross revenue for EventId {query.EventId}: {revenue}");

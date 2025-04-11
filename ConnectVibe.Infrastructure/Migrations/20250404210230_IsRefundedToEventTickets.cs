@@ -18,10 +18,7 @@ namespace Fliq.Infrastructure.Migrations
                  nullable: false,
                  defaultValue: false);
 
-            migrationBuilder.DropColumn(
-                name: "IsRefunded",
-                table: "Tickets");
-
+           
         }
 
         /// <inheritdoc />

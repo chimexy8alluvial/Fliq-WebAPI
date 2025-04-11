@@ -28,12 +28,13 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Fliq.Application.DashBoard.Queries.DailyTicketCount;
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Fliq.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Roles = "Admin,SuperAdmin")]
+    [Authorize(Roles = "Admin,SuperAdmin")]
     public class DashboardController : ApiBaseController
     {
         private readonly ISender _mediator;
@@ -238,7 +239,7 @@ namespace Fliq.Api.Controllers
           );
         }
 
-        [HttpGet("dashboard-tickets")]
+        [HttpGet("dashboard-all-event-tickets")]
         public async Task<IActionResult> GetEventsTicketsForDashboard([FromQuery] GetEventsTicketsListRequest request)
         {
             _logger.LogInfo($"Get Events Tickets Request Received: {request}");
@@ -254,7 +255,7 @@ namespace Fliq.Api.Controllers
             );
         }
 
-        [HttpGet("regular-ticket-count")]
+        [HttpGet("{eventId}/regular-ticket-count")]
         public async Task<IActionResult> GetRegularTicketCount([FromQuery] int eventId)
         {
             _logger.LogInfo($"Received request for regular ticket count for EventId: {eventId}");
@@ -268,7 +269,7 @@ namespace Fliq.Api.Controllers
             );
         }
 
-        [HttpGet("vip-ticket-count")]
+        [HttpGet("{eventId}/vip-ticket-count")]
         public async Task<IActionResult> GetVipTicketCount([FromQuery] int eventId)
         {
             _logger.LogInfo($"Received request for VIP ticket count for EventId: {eventId}");
@@ -282,7 +283,7 @@ namespace Fliq.Api.Controllers
             );
         }
 
-        [HttpGet("vvip-ticket-count")]
+        [HttpGet("{eventId}/vvip-ticket-count")]
         public async Task<IActionResult> GetVVipTicketCount([FromQuery] int eventId)
         {
             _logger.LogInfo($"Received request for VVIP ticket count for EventId: {eventId}");
@@ -296,7 +297,7 @@ namespace Fliq.Api.Controllers
             );
         }
 
-        [HttpGet("other-ticket-count")]
+        [HttpGet("{eventId}/other-ticket-count")]
         public async Task<IActionResult> GetOtherTicketCount([FromQuery] int eventId)
         {
             _logger.LogInfo($"Received request for Other ticket count for EventId: {eventId}");
@@ -310,7 +311,7 @@ namespace Fliq.Api.Controllers
             );
         }
 
-        [HttpGet("total-ticket-count")]
+        [HttpGet("{eventId}/total-ticket-count")]
         public async Task<IActionResult> GetTotalTicketCount([FromQuery] int eventId)
         {
             _logger.LogInfo($"Received request for total ticket count for EventId: {eventId}");
@@ -324,7 +325,7 @@ namespace Fliq.Api.Controllers
             );
         }
 
-        [HttpGet("weekly-ticket-count")]
+        [HttpGet("{eventId}/weekly-ticket-count")]
         public async Task<IActionResult> GetWeeklyTicketCount(
              [FromQuery] int eventId,
              [FromQuery] DateTime? startDate,
@@ -344,7 +345,7 @@ namespace Fliq.Api.Controllers
             );
         }
 
-        [HttpGet("gross-revenue")]
+        [HttpGet("{eventId}/gross-revenue")]
         public async Task<IActionResult> GetEventTicketGrossRevenue([FromQuery] int eventId)
         {
             _logger.LogInfo($"Received request for gross revenue for EventId: {eventId}");
@@ -369,7 +370,7 @@ namespace Fliq.Api.Controllers
             );
         }
 
-        [HttpPost("refund")]
+        [HttpPost("refund-ticket")]
         public async Task<IActionResult> RefundTicket([FromBody] RefundTicketCommand command)
         {
             ErrorOr<RefundTicketResult> result = await _mediator.Send(command);

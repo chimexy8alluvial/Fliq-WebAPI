@@ -4,6 +4,8 @@ using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Pagination;
 using Fliq.Application.DashBoard.Common;
 using MediatR;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using Error = ErrorOr.Error;
 
 namespace Fliq.Application.DashBoard.Queries.GetAllEvents
 {
