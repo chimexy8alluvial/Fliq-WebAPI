@@ -337,7 +337,7 @@ namespace Fliq.Api.Controllers
                             $"TicketType: {ticketType?.ToString() ?? "All"}");
 
             var query = new GetWeeklyEventTicketCountQuery(eventId, startDate, endDate, ticketType);
-            var result = await _mediator.Send(query);
+            var result = await _mediator.Send(query, HttpContext.RequestAborted);
 
             return result.Match(
                 matchedResult => Ok(matchedResult.Adapt<WeeklyCountResponse>()), // Map with Mapster

@@ -61,7 +61,7 @@ namespace Fliq.Application.Event.Commands.FlagEvent.Tests
             // Assert
             Assert.IsTrue(result.IsError);
             Assert.AreEqual(Errors.Event.EventFlaggedAlready, result.FirstError);
-            _loggerMock?.Verify(x => x.LogError($"Event with ID: {command.EventId} has been flagged already."), Times.Once());
+            _loggerMock?.Verify(x => x.LogInfo($"Event with ID: {command.EventId} has been flagged already."), Times.Once());
         }
 
         [TestMethod]

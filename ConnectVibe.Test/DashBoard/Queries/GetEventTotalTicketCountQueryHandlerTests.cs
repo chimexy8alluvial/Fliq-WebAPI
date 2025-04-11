@@ -2,7 +2,6 @@
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.DashBoard.Common;
-using Fliq.Application.DashBoard.Queries.GetAllEvents;
 using Fliq.Application.DashBoard.Queries.TotalTicketCount;
 using Moq;
 

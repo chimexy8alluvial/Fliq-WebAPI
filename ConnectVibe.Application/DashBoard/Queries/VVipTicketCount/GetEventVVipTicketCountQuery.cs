@@ -43,7 +43,7 @@ namespace Fliq.Application.DashBoard.Queries.VVipTicketCount
             catch (Exception ex)
             {
                 _logger.LogError($"Error fetching VVIP ticket count for EventId {query.EventId}: {ex.Message}");
-                return Error.Failure("GetVVipTicketCountFailed", $"Failed to fetch VVIP ticket count: {ex.Message}");
+                return Errors.Ticket.VVipCountFetchFailed(ex.Message);
             }
         }
     }

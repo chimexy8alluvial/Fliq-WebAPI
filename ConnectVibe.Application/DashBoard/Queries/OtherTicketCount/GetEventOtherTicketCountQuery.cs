@@ -45,7 +45,8 @@ namespace Fliq.Application.DashBoard.Queries.OtherTicketCount
             catch (Exception ex)
             {
                 _logger.LogError($"Error fetching other ticket count for EventId {query.EventId}: {ex.Message}");
-                return Error.Failure("GetOtherTicketCountFailed", $"Failed to fetch other ticket count: {ex.Message}");
+                return Errors.Ticket.OtherCountFetchFailed(ex.Message);
+
             }
         }
     }

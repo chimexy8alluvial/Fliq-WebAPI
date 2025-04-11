@@ -27,6 +27,28 @@ namespace Fliq.Domain.Common.Errors
             public static Error InsufficientAvailableTickets => Error.Failure(
              code: "Ticket.InsufficientAvailableTickets",
              description: "Insufficient Available Tickets.");
+
+            public static Error WeeklyCountFetchFailed(string message) =>Error.Failure(
+                code: "Ticket.WeeklyCount.FetchFailed",
+                description: $"Failed to fetch weekly ticket counts: {message}");
+            public static Error GrossRevenueFetchFailed(string message) => Error.Failure(
+                code: "Ticket.GrossRevenue.FetchFailed", 
+                description: $"Failed to fetch gross revenue: {message}");
+            public static Error NetRevenueFetchFailed(string message) =>
+                Error.Failure(code: "Ticket.NetRevenue.FetchFailed",
+                    description: $"Failed to fetch net revenue: {message}");
+            public static Error OtherCountFetchFailed(string message) =>
+                Error.Failure(code: "Ticket.OtherCount.FetchFailed",
+                    description: $"Failed to fetch other ticket count: {message}");
+            public static Error RegularCountFetchFailed(string message) =>
+                Error.Failure(code: "Ticket.RegularCount.FetchFailed",
+                    description: $"Failed to fetch regular ticket count: {message}");
+            public static Error VipCountFetchFailed(string message) =>
+                Error.Failure(code: "Ticket.VipCount.FetchFailed",
+                    description: $"Failed to fetch VIP ticket count: {message}");
+            public static Error VVipCountFetchFailed(string message) =>
+                Error.Failure(code: "Ticket.VVipCount.FetchFailed", 
+                    description: $"Failed to fetch VVIP ticket count: {message}");
         }
     }
 }

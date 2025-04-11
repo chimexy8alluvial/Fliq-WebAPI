@@ -4,7 +4,6 @@ using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.DashBoard.Common;
 using Fliq.Domain.Common.Errors;
 using MediatR;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using Error = ErrorOr.Error;
 
 namespace Fliq.Application.DashBoard.Queries.RegularTicketCount
@@ -47,7 +46,8 @@ namespace Fliq.Application.DashBoard.Queries.RegularTicketCount
             catch (Exception ex)
             {
                 _logger.LogError($"Error fetching regular ticket count for EventId {query.EventId}: {ex.Message}");
-                return Error.Failure("GetRegularTicketCountFailed", $"Failed to fetch regular ticket count: {ex.Message}");
+                return Errors.Ticket.RegularCountFetchFailed(ex.Message);
+
             }
         }
     }

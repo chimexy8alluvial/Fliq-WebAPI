@@ -215,18 +215,18 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             }
         }
 
-        public async Task<Dictionary<DayOfWeek, int>> GetWeeklyTicketCountAsync(int eventId, DateTime? startDate, DateTime? endDate, TicketType? ticketType)
+        public async Task<Dictionary<DayOfWeek, int>> GetWeeklyTicketCountAsync(
+        int eventId,
+        DateTime? startDate,
+        DateTime? endDate,
+        TicketType? ticketType)
         {
             using (var connection = _connectionFactory.CreateConnection())
             {
-                // Default to last 7 days if dates are null
-                var effectiveEndDate = endDate ?? DateTime.UtcNow.Date; // Today, normalized to midnight UTC
-                var effectiveStartDate = startDate ?? effectiveEndDate.AddDays(-6); // 7 days total, inclusive
-
                 var parameters = new DynamicParameters();
                 parameters.Add("EventId", eventId);
-                parameters.Add("StartDate", effectiveStartDate, dbType: DbType.Date);
-                parameters.Add("EndDate", effectiveEndDate, dbType: DbType.Date);
+                parameters.Add("StartDate", startDate, dbType: DbType.Date);
+                parameters.Add("EndDate", endDate, dbType: DbType.Date);
                 parameters.Add("TicketType", (int?)ticketType);
 
                 var results = await connection.QueryAsync<(int DayOfWeek, int TicketCount)>(
@@ -234,19 +234,12 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                     parameters,
                     commandType: CommandType.StoredProcedure);
 
-                var dailyCounts = Enum.GetValues(typeof(DayOfWeek))
-                    .Cast<DayOfWeek>()
-                    .ToDictionary(day => day, day => 0);
-
-                foreach (var result in results)
-                {
-                    var dayOfWeek = (DayOfWeek)((result.DayOfWeek + 5) % 7);
-                    dailyCounts[dayOfWeek] = result.TicketCount;
-                }
-
-                return dailyCounts;
+                return results.ToDictionary(
+                    r => (DayOfWeek)r.DayOfWeek,
+                    r => r.TicketCount);
             }
         }
+
 
 
         public async Task<decimal> GetEventTicketGrossRevenueAsync(int eventId)

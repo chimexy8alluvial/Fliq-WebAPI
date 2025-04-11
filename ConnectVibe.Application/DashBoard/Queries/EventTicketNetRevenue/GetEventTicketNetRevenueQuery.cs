@@ -44,7 +44,7 @@ namespace Fliq.Application.DashBoard.Queries
             catch (Exception ex)
             {
                 _logger.LogError($"Error fetching net revenue for EventId {query.EventId}: {ex.Message}");
-                return Error.Failure("GetNetRevenueFailed", $"Failed to fetch net revenue: {ex.Message}");
+                return Errors.Ticket.NetRevenueFetchFailed(ex.Message);
             }
         }
     }

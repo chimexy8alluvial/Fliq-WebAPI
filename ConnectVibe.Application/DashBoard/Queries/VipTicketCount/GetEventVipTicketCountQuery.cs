@@ -4,7 +4,6 @@ using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.DashBoard.Common;
 using Fliq.Domain.Common.Errors;
 using MediatR;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using Error = ErrorOr.Error;
 
 namespace Fliq.Application.DashBoard.Queries.VipTicketCount
@@ -47,7 +46,8 @@ namespace Fliq.Application.DashBoard.Queries.VipTicketCount
             catch (Exception ex)
             {
                 _logger.LogError($"Error fetching VIP ticket count for EventId {query.EventId}: {ex.Message}");
-                return Error.Failure("GetVipTicketCountFailed", $"Failed to fetch VIP ticket count: {ex.Message}");
+                return Errors.Ticket.VipCountFetchFailed(ex.Message);
+
             }
         }
     }
