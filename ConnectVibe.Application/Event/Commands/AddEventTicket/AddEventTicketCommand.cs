@@ -5,6 +5,7 @@ using Fliq.Application.Event.Common;
 using Fliq.Application.Notifications.Common.EventCreatedEvents;
 using Fliq.Contracts.Event;
 using Fliq.Domain.Common.Errors;
+using Fliq.Domain.Entities;
 using Fliq.Domain.Entities.Event;
 using Fliq.Domain.Entities.Event.Enums;
 using MediatR;
@@ -35,15 +36,62 @@ namespace Fliq.Application.Event.Commands.AddEventTicket
             IUserRepository userRepository,
             IMediator mediator)
         {
-            _eventRepository = eventRepository;
-            _logger = logger;
-            _ticketRepository = ticketRepository;
-            _paymentRepository = paymentRepository;
-            _userRepository = userRepository;
-            _mediator = mediator;
+            _eventRepository = eventRepository ?? throw new ArgumentNullException(nameof(eventRepository));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _ticketRepository = ticketRepository ?? throw new ArgumentNullException(nameof(ticketRepository));
+            _paymentRepository = paymentRepository ?? throw new ArgumentNullException(nameof(paymentRepository));
+            _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
+            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
 
         public async Task<ErrorOr<CreateEventTicketResult>> Handle(AddEventTicketCommand command, CancellationToken cancellationToken)
+        {
+            // Validate command
+            var validationResult = ValidateCommand(command);
+            if (validationResult.IsError)
+                return validationResult.FirstError;
+
+            // Extract and validate tickets
+            var ticketsResult = await ExtractAndValidateTickets(command);
+            if (ticketsResult.IsError)
+                return ticketsResult.FirstError;
+
+            var (ticketsToPurchase, totalTicketsRequested) = ticketsResult.Value;
+
+            // Validate event
+            var eventResult = await ValidateEvent(ticketsToPurchase.First().EventId);
+            if (eventResult.IsError)
+                return eventResult.FirstError;
+
+            var eventDetails = eventResult.Value;
+
+            // Validate buyer
+            var buyerResult = ValidateBuyer(command.UserId);
+            if (buyerResult.IsError)
+                return buyerResult.FirstError;
+
+            var buyer = buyerResult.Value;
+
+            // Validate payment
+            var paymentResult = ValidatePayment(command.PaymentId);
+            if (paymentResult.IsError)
+                return paymentResult.FirstError;
+
+            // Process ticket purchase
+            var newTicketsResult = await ProcessTicketPurchase(command, ticketsToPurchase, eventDetails, totalTicketsRequested);
+            if (newTicketsResult.IsError)
+                return newTicketsResult.FirstError;
+
+            var newTickets = newTicketsResult.Value;
+
+            // Publish notifications
+            await PublishNotifications(command, eventDetails, buyer, ticketsToPurchase, cancellationToken);
+
+            _logger.LogInfo($"Assigned {newTickets.Count} tickets for event ID {eventDetails.Id}.");
+            return new CreateEventTicketResult(newTickets);
+        }
+
+        private ErrorOr<Success> ValidateCommand(AddEventTicketCommand command)
         {
             if (command.PurchaseTicketDetail == null || !command.PurchaseTicketDetail.Any() ||
                 !command.PurchaseTicketDetail.All(ptd => ptd.TicketId > 0))
@@ -51,25 +99,42 @@ namespace Fliq.Application.Event.Commands.AddEventTicket
                 _logger.LogError("No valid ticket IDs provided in the command.");
                 return Errors.Ticket.NoTicketsSpecified;
             }
+            return Result.Success;
+        }
 
+        private async Task<ErrorOr<(List<Ticket> Tickets, int TotalTicketsRequested)>> ExtractAndValidateTickets(AddEventTicketCommand command)
+        {
             var ticketIds = command.PurchaseTicketDetail.Select(ptd => ptd.TicketId).ToList();
-            var ticketsToPurchase = _ticketRepository.GetTicketsByIds(ticketIds);
+            var totalTicketsRequested = ticketIds.Count;
 
-            if (ticketsToPurchase.Count != ticketIds.Count)
+            var tickets = await _ticketRepository.GetTicketsByIdsAsync(ticketIds);
+            if (tickets.Count != ticketIds.Count)
             {
-                var missingIds = ticketIds.Except(ticketsToPurchase.Select(t => t.Id)).ToList();
+                var missingIds = ticketIds.Except(tickets.Select(t => t.Id));
                 _logger.LogError($"Tickets not found for IDs: {string.Join(", ", missingIds)}.");
                 return Errors.Ticket.TicketNotFound;
             }
 
-            var eventId = ticketsToPurchase.First().EventId;
-            if (ticketsToPurchase.Any(t => t.EventId != eventId))
+            var eventId = tickets.First().EventId;
+            if (tickets.Any(t => t.EventId != eventId))
             {
                 _logger.LogError("Tickets belong to multiple events, which is not supported.");
                 return Errors.Ticket.MultipleEventsNotSupported;
             }
 
-            var eventDetails = _eventRepository.GetEventById(eventId);
+            if (tickets.Any(t => t.SoldOut))
+            {
+                var soldOutIds = tickets.Where(t => t.SoldOut).Select(t => t.Id);
+                _logger.LogInfo($"Tickets already sold out: {string.Join(", ", soldOutIds)}.");
+                return Errors.Ticket.TicketAlreadySoldOut;
+            }
+
+            return (tickets, totalTicketsRequested);
+        }
+
+        private async Task<ErrorOr<Events>> ValidateEvent(int eventId)
+        {
+            var eventDetails = await _eventRepository.GetEventByIdAsync(eventId);
             if (eventDetails == null || eventDetails.IsDeleted)
             {
                 _logger.LogError($"Event with ID {eventId} not found.");
@@ -88,32 +153,41 @@ namespace Fliq.Application.Event.Commands.AddEventTicket
                 return Errors.Event.EventEndedAlready;
             }
 
-            var buyer = _userRepository.GetUserById(command.UserId);
+            return eventDetails;
+        }
+
+        private ErrorOr<User> ValidateBuyer(int userId)
+        {
+            var buyer = _userRepository.GetUserById(userId);
             if (buyer == null)
             {
-                _logger.LogError($"Buyer with ID {command.UserId} not found.");
+                _logger.LogError($"Buyer with ID {userId} not found.");
                 return Errors.User.UserNotFound;
             }
+            return buyer;
+        }
 
-            int totalTicketsRequested = ticketIds.Count;
+        private ErrorOr<Payment> ValidatePayment(int paymentId)
+        {
+            var payment = _paymentRepository.GetPaymentById(paymentId);
+            if (payment == null)
+            {
+                _logger.LogError($"Payment with ID {paymentId} not found.");
+                return Errors.Payment.PaymentNotFound;
+            }
+            return payment;
+        }
+
+        private async Task<ErrorOr<List<EventTicket>>> ProcessTicketPurchase(
+            AddEventTicketCommand command,
+            List<Ticket> ticketsToPurchase,
+            Events eventDetails,
+            int totalTicketsRequested)
+        {
             if (eventDetails.Capacity < totalTicketsRequested)
             {
                 _logger.LogError("Insufficient capacity for requested number of tickets.");
                 return Errors.Event.InsufficientCapacity;
-            }
-
-            if (ticketsToPurchase.Any(t => t.SoldOut))
-            {
-                var soldOutIds = ticketsToPurchase.Where(t => t.SoldOut).Select(t => t.Id).ToList();
-                _logger.LogInfo($"Tickets already sold out: {string.Join(", ", soldOutIds)}.");
-                return Errors.Ticket.TicketAlreadySoldOut;
-            }
-
-            var payment = _paymentRepository.GetPaymentById(command.PaymentId);
-            if (payment == null)
-            {
-                _logger.LogError($"Payment with ID {command.PaymentId} not found.");
-                return Errors.Payment.PaymentNotFound;
             }
 
             int startingSeatNumber = eventDetails.OccupiedSeats.Any() ? eventDetails.OccupiedSeats.Max() + 1 : 1;
@@ -123,27 +197,34 @@ namespace Fliq.Application.Event.Commands.AddEventTicket
                 return Errors.Event.NoAvailableSeats;
             }
 
-            var newTickets = ticketsToPurchase.Select((ticket, index) => new EventTicket
-            {
-                TicketId = ticket.Id,
-                UserId = command.PurchaseTicketDetail[index].UserId ?? 0,
-                PaymentId = command.PaymentId,
-                SeatNumber = startingSeatNumber + index
-            }).ToList();
+            var newTickets = command.PurchaseTicketDetail
+                .Select((detail, index) => new EventTicket
+                {
+                    TicketId = detail.TicketId,
+                    UserId = detail.UserId ?? 0,
+                    PaymentId = command.PaymentId,
+                    SeatNumber = startingSeatNumber + index
+                })
+                .ToList();
 
-            foreach (var ticket in ticketsToPurchase)
-            {
-                ticket.SoldOut = true;
-            }
+            ticketsToPurchase.ForEach(t => t.SoldOut = true);
+            await _ticketRepository.UpdateRangeAsync(ticketsToPurchase);
+            await _ticketRepository.AddEventTicketsAsync(newTickets);
 
-            _ticketRepository.UpdateRange(ticketsToPurchase);
-            _ticketRepository.AddEventTickets(newTickets);
             eventDetails.Capacity -= totalTicketsRequested;
             eventDetails.OccupiedSeats.AddRange(Enumerable.Range(startingSeatNumber, totalTicketsRequested));
-            _eventRepository.Update(eventDetails);
+             _eventRepository.Update(eventDetails);
 
-            _logger.LogInfo($"Assigned {newTickets.Count} tickets for event ID {eventId}.");
+            return newTickets;
+        }
 
+        private async Task PublishNotifications(
+            AddEventTicketCommand command,
+            Events eventDetails,
+            User buyer,
+            List<Ticket> ticketsToPurchase,
+            CancellationToken cancellationToken)
+        {
             var ticketAssignments = command.PurchaseTicketDetail
                 .Zip(ticketsToPurchase, (detail, ticket) => new TicketDetail
                 {
@@ -153,72 +234,80 @@ namespace Fliq.Application.Event.Commands.AddEventTicket
                 })
                 .ToList();
 
-            foreach (var assignment in ticketAssignments.Where(ta => ta.UserId.HasValue && ta.UserId > 0 /*&& ta.UserId != command.UserId*/))
-            {
-                var userNotificationTitle = "Your Ticket Purchase Confirmation";
-                var userNotificationMessage = $"A {assignment.TicketType} ticket has been purchased for you" +
-                                             $"for '{eventDetails.EventTitle}' on {eventDetails.StartDate} " +
-                                             $"by {buyer.DisplayName}.";
+            var notificationTasks = new List<Task>();
 
-                await _mediator.Publish(new TicketPurchasedEvent(
-                    assignment.UserId!.Value,
+            // User notifications (excluding buyer)
+            notificationTasks.AddRange(ticketAssignments
+                .Where(ta => ta.UserId.HasValue && ta.UserId > 0 && ta.UserId != command.UserId)
+                .Select(ta => _mediator.Publish(new TicketPurchasedEvent(
+                    ta.UserId!.Value,
                     command.UserId,
                     eventDetails.UserId,
-                    eventId,
+                    eventDetails.Id,
                     eventDetails.EventTitle,
                     eventDetails.StartDate.ToString("MMMM dd, yyyy"),
                     buyer.DisplayName,
-                    assignment.TicketType!,
-                    userNotificationTitle,
-                    userNotificationMessage
-                ), cancellationToken);
-            }
+                    ta.TicketType!,
+                    "Your Ticket Purchase Confirmation",
+                    $"A {ta.TicketType} ticket has been purchased for you for '{eventDetails.EventTitle}' on {eventDetails.StartDate} by {buyer.DisplayName}."
+                ), cancellationToken)));
 
-            foreach (var assignment in ticketAssignments.Where(ta => !ta.UserId.HasValue && !string.IsNullOrEmpty(ta.Email)))
-            {
-                var emailNotificationTitle = "Your Ticket Purchase Confirmation";
-                var emailNotificationMessage = $"A {assignment.TicketType} ticket has been purchased for you " +
-                                              $"for '{eventDetails.EventTitle}' on {eventDetails.StartDate} " +
-                                              $"by {buyer.DisplayName}.";
-
-                await _mediator.Publish(new TicketPurchasedEvent(
-                    assignment.Email!,
+            // Email notifications
+            notificationTasks.AddRange(ticketAssignments
+                .Where(ta => !ta.UserId.HasValue && !string.IsNullOrEmpty(ta.Email))
+                .Select(ta => _mediator.Publish(new TicketPurchasedEvent(
+                    ta.Email!,
                     command.UserId,
                     eventDetails.UserId,
-                    eventId,
+                    eventDetails.Id,
                     eventDetails.EventTitle,
                     eventDetails.StartDate.ToString("MMMM dd, yyyy"),
                     buyer.DisplayName,
-                    assignment.TicketType!,
-                    emailNotificationTitle,
-                    emailNotificationMessage
-                ), cancellationToken);
+                    ta.TicketType!,
+                    "Your Ticket Purchase Confirmation",
+                    $"A {ta.TicketType} ticket has been purchased for you for '{eventDetails.EventTitle}' on {eventDetails.StartDate} by {buyer.DisplayName}."
+                ), cancellationToken)));
+
+            // Buyer-specific notification for their own tickets
+            var buyerTickets = ticketAssignments.Where(ta => ta.UserId == command.UserId).ToList();
+            if (buyerTickets.Any())
+            {
+                var buyerTicketTypes = string.Join(", ", buyerTickets.Select(bt => $"{bt.TicketType}"));
+                notificationTasks.Add(_mediator.Publish(new TicketPurchasedEvent(
+                    command.UserId,
+                    command.UserId,
+                    eventDetails.UserId,
+                    eventDetails.Id,
+                    eventDetails.EventTitle,
+                    eventDetails.StartDate.ToString("MMMM dd, yyyy"),
+                    buyer.DisplayName,
+                    buyerTickets.First().TicketType!,
+                    "Your Personal Ticket Confirmation",
+                    $"You have been assigned {buyerTickets.Count} ticket(s) for '{eventDetails.EventTitle}' on {eventDetails.StartDate}: {buyerTicketTypes}."
+                ), cancellationToken));
             }
 
+            // General buyer notification (summary)
             var ticketTypesCount = ticketsToPurchase
-                 .GroupBy(t => t.TicketType)
-                 .ToDictionary(g => g.Key.ToString(), g => g.Count());
+                .GroupBy(t => t.TicketType)
+                .ToDictionary(g => g.Key.ToString(), g => g.Count());
             var ticketBreakdown = string.Join(", ", ticketTypesCount.Select(kv => $"{kv.Value} {kv.Key} ticket{(kv.Value > 1 ? "s" : "")}"));
-            var buyerNotificationTitle = "New Tickets Purchased";
-            var buyerNotificationMessage = $"You have successfully purchased {newTickets.Count} ticket(s) " +
-                                          $"for the event '{eventDetails.EventTitle}' on {eventDetails.StartDate}.\n" +
-                                          $"Breakdown: {ticketBreakdown}\n" +
-                                          $"Assigned to: {string.Join(", ", ticketAssignments.Select(ta => ta.UserId.HasValue ? $"User {ta.UserId}: {ta.TicketType}" : $"{ta.Email}: {ta.TicketType}"))}";
+            var assignedTo = string.Join(", ", ticketAssignments.Select(ta => ta.UserId.HasValue ? $"User {ta.UserId}: {ta.TicketType}" : $"{ta.Email}: {ta.TicketType}"));
 
-            await _mediator.Publish(new TicketPurchasedEvent(
+            notificationTasks.Add(_mediator.Publish(new TicketPurchasedEvent(
                 command.UserId,
                 eventDetails.UserId,
-                eventId,
-                totalTicketsRequested,
+                eventDetails.Id,
+                ticketAssignments.Count,
                 eventDetails.EventTitle,
                 eventDetails.StartDate.ToString("MMMM dd, yyyy"),
                 buyer.DisplayName,
                 ticketAssignments,
-                buyerNotificationTitle,
-                buyerNotificationMessage
-            ), cancellationToken);
+                "New Tickets Purchased",
+                $"You have successfully purchased {ticketAssignments.Count} ticket(s) for the event '{eventDetails.EventTitle}' on {eventDetails.StartDate}.\nBreakdown: {ticketBreakdown}\nAssigned to: {assignedTo}"
+            ), cancellationToken));
 
-            return new CreateEventTicketResult(newTickets);
+            await Task.WhenAll(notificationTasks);
         }
     }
 }

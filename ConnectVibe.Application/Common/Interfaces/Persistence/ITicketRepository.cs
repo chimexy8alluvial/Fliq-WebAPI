@@ -1,5 +1,4 @@
 ﻿using Fliq.Domain.Entities.Event;
-using Microsoft.EntityFrameworkCore;
 
 namespace Fliq.Application.Common.Interfaces.Persistence
 {
@@ -19,8 +18,8 @@ namespace Fliq.Application.Common.Interfaces.Persistence
 
         EventTicket? GetEventTicketById(int id);
 
-        List<Ticket> GetTicketsByIds(List<int> ids);
-        void UpdateRange(IEnumerable<Ticket> tickets);
-        void AddEventTickets(IEnumerable<EventTicket> eventTickets);
+        Task<List<Ticket>> GetTicketsByIdsAsync(List<int> ids);
+        Task UpdateRangeAsync(IEnumerable<Ticket> tickets); 
+        Task AddEventTicketsAsync(IEnumerable<EventTicket> eventTickets);
     }
 }

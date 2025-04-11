@@ -8,6 +8,7 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         void Add(Events events);
 
         Events? GetEventById(int Id);
+        Task<Events?> GetEventByIdAsync(int Id);
 
         void Update(Events request);
 

@@ -9,6 +9,9 @@ namespace Fliq.Domain.Common.Errors
             public static Error TicketNotFound => Error.Failure(
              code: "Ticket.TicketNotFound",
              description: "Ticket not found.");
+            public static Error PurchaseFailed => Error.Failure(
+             code: "Ticket.PurchaseFailed",
+             description: "Ticket purchase failed.");
             public static Error NoTicketsAvailable => Error.Failure(
              code: "Ticket.NoTicketsAvailable",
              description: "No Tickets Available.");

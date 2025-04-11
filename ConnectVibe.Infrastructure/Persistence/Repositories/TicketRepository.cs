@@ -1,5 +1,6 @@
 ﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Domain.Entities.Event;
+using Microsoft.EntityFrameworkCore;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {
@@ -63,21 +64,23 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         }
 
         
-        public void UpdateRange(IEnumerable<Ticket> tickets)
+        public Task UpdateRangeAsync(IEnumerable<Ticket> tickets)
         {
             _dbContext.Tickets.UpdateRange(tickets);
             _dbContext.SaveChanges();
+            return Task.CompletedTask;
         }
 
-        public void AddEventTickets(IEnumerable<EventTicket> eventTickets)
+        public Task AddEventTicketsAsync(IEnumerable<EventTicket> eventTickets)
         {
             _dbContext.EventTickets.AddRange(eventTickets);
             _dbContext.SaveChanges();
+            return Task.CompletedTask;
         }
      
-        public List<Ticket> GetTicketsByIds(List<int> ids)
+        public async Task<List<Ticket>> GetTicketsByIdsAsync(List<int> ids)
         {
-            return _dbContext.Tickets.Where(t => ids.Contains(t.Id)).ToList();
+            return await _dbContext.Tickets.Where(t => ids.Contains(t.Id)).ToListAsync();
         }
     }
 }
