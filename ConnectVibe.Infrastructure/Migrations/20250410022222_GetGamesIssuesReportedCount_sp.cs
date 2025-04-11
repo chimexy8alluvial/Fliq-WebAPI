@@ -16,7 +16,7 @@ AS
 BEGIN
     SET NOCOUNT ON;
     
-    SELECT COUNT(*) AS TicketCount
+    SELECT COUNT(*) AS GamesIssuesReportedCount
     FROM SupportTickets
     WHERE RequestType = 1
     AND IsDeleted = 0 
