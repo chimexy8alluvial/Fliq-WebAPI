@@ -29,6 +29,7 @@ BEGIN
     CREATE TABLE #FilteredSpeedDates
     (
         RowNum INT IDENTITY(1,1),
+        Id INT,
         Title NVARCHAR(255),
         Type INT,
         CreatedBy NVARCHAR(255),
@@ -38,8 +39,9 @@ BEGIN
     );
     
     INSERT INTO #FilteredSpeedDates
-    (Title, Type, CreatedBy, SubscriptionType, Duration, DateCreated)
+    (Id, Title, Type, CreatedBy, SubscriptionType, Duration, DateCreated)
     SELECT 
+        sd.Id AS Id,
         sd.Title AS Title,
         0 AS Type,
         u.FirstName + ' ' + u.LastName + CHAR(13) + CHAR(10) + u.Email AS CreatedBy,
@@ -67,6 +69,7 @@ BEGIN
     SELECT @TotalCount = COUNT(*) FROM #FilteredSpeedDates;
     
     SELECT 
+        Id,
         Title,
         Type,
         CreatedBy,

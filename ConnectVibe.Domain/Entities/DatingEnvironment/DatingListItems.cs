@@ -4,6 +4,7 @@ namespace Fliq.Domain.Entities.DatingEnvironment
 {
     public class DatingListItems
     {
+        public int Id { get; set; }
         public string? Title { get; set; }
         public DatingType? Type { get; set; }
         public string? CreatedBy { get; set; }

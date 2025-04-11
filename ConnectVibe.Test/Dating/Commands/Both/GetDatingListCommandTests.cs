@@ -47,14 +47,14 @@ namespace Fliq.Test.DatingEnvironment.Commands
 
             var blindEvents = new List<DatingListItems>
             {
-                new DatingListItems {Title = "Blind Date 1", Type = DatingType.BlindDating, CreatedBy = "User3", SubscriptionType = "Premium", Duration = TimeSpan.FromHours(2), DateCreated = DateTime.Now },
-                new DatingListItems {Title = "Blind Date 2", Type = DatingType.BlindDating, CreatedBy = "User4", SubscriptionType = "Premium", Duration = TimeSpan.FromHours(2), DateCreated = DateTime.Now }
+                new DatingListItems {Id = 1, Title = "Blind Date 1", Type = DatingType.BlindDating, CreatedBy = "User3", SubscriptionType = "Premium", Duration = TimeSpan.FromHours(2), DateCreated = DateTime.Now },
+                new DatingListItems {Id = 2, Title = "Blind Date 2", Type = DatingType.BlindDating, CreatedBy = "User4", SubscriptionType = "Premium", Duration = TimeSpan.FromHours(2), DateCreated = DateTime.Now }
             };
 
             var speedEvents = new List<DatingListItems>
             {
-                new DatingListItems {Title = "Speed Date 1", Type = DatingType.SpeedDating, CreatedBy = "User5", SubscriptionType = "Premium", Duration = TimeSpan.FromHours(2), DateCreated = DateTime.Now },
-                new DatingListItems {Title = "Speed Date 2", Type = DatingType.SpeedDating, CreatedBy = "User6", SubscriptionType = "Premium", Duration = TimeSpan.FromHours(2), DateCreated = DateTime.Now }
+                new DatingListItems {Id = 1, Title = "Speed Date 1", Type = DatingType.SpeedDating, CreatedBy = "User5", SubscriptionType = "Premium", Duration = TimeSpan.FromHours(2), DateCreated = DateTime.Now },
+                new DatingListItems {Id = 2, Title = "Speed Date 2", Type = DatingType.SpeedDating, CreatedBy = "User6", SubscriptionType = "Premium", Duration = TimeSpan.FromHours(2), DateCreated = DateTime.Now }
             };
 
             var totalBlindCount = 2;
@@ -172,7 +172,7 @@ namespace Fliq.Test.DatingEnvironment.Commands
 
             var blindEvents = new List<DatingListItems> 
             {
-                    new DatingListItems {Title = "Blind Date 1", Type = DatingType.BlindDating, CreatedBy = "User3", SubscriptionType = "Premium", Duration = TimeSpan.FromHours(2), DateCreated = DateTime.Now }
+                    new DatingListItems {Id = 1, Title = "Blind Date 1", Type = DatingType.BlindDating, CreatedBy = "User3", SubscriptionType = "Premium", Duration = TimeSpan.FromHours(2), DateCreated = DateTime.Now }
             };
 
             _mockBlindDateRepository?.Setup(r => r.GetAllFilteredListAsync(

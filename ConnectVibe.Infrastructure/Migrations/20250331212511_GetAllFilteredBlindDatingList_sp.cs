@@ -13,7 +13,7 @@ namespace Fliq.Infrastructure.Migrations
         {
             migrationBuilder.Sql(@"
 CREATE PROCEDURE sp_GetAllFilteredBlindDatingList
-     @Title NVARCHAR(255) = NULL,
+    @Title NVARCHAR(255) = NULL,
     @Type INT = NULL,
     @CreatedBy NVARCHAR(255) = NULL,
     @SubscriptionType NVARCHAR(50) = NULL,
@@ -29,6 +29,7 @@ BEGIN
     CREATE TABLE #FilteredBlindDates
     (
         RowNum INT IDENTITY(1,1),
+        Id INT,
         Title NVARCHAR(255),
         Type INT,
         CreatedBy NVARCHAR(255),
@@ -38,10 +39,11 @@ BEGIN
     );
     
     INSERT INTO #FilteredBlindDates
-    (Title, Type, CreatedBy, SubscriptionType, Duration, DateCreated)
+    (Id, Title, Type, CreatedBy, SubscriptionType, Duration, DateCreated)
     SELECT 
+        bd.Id AS Id,
         bd.Title AS Title,
-        0 AS Type,
+        1 AS Type,
         u.FirstName + ' ' + u.LastName + CHAR(13) + CHAR(10) + u.Email AS CreatedBy,
         CASE 
             WHEN sub.IsActive = 1 THEN sub.ProductId 
@@ -67,6 +69,7 @@ BEGIN
     SELECT @TotalCount = COUNT(*) FROM #FilteredBlindDates;
     
     SELECT 
+        Id,
         Title,
         Type,
         CreatedBy,
