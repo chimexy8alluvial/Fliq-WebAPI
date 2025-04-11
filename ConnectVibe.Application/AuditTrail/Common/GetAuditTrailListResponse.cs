@@ -20,7 +20,7 @@ namespace Fliq.Application.AuditTrail.Common
 
     public class AuditTrailListItem
     {
-        public int Id { get; set; }
+        public int UserId { get; set; }
         public string? Name { get; set; }  
         public string? Email { get; set; }       
         public string? AccessType { get; set; }  
