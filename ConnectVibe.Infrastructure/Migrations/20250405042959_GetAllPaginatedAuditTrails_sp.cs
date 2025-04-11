@@ -25,6 +25,7 @@ BEGIN
     CREATE TABLE #AuditTrailsList
     (
         RowNum INT IDENTITY(1,1),
+        Id INT,
         UserId INT,              
         Name NVARCHAR(255),
         Email NVARCHAR(255),
@@ -34,8 +35,9 @@ BEGIN
     );
 
     INSERT INTO #AuditTrailsList
-    (UserId, Name, Email, AccessType, IPAddress, AuditAction)
+    (Id, UserId, Name, Email, AccessType, IPAddress, AuditAction)
     SELECT
+        at.Id,
         at.UserId,                
         at.UserFirstName + ' ' + at.UserLastName AS Name,
         at.UserEmail AS Email,
@@ -49,6 +51,7 @@ BEGIN
     SELECT @TotalCount = COUNT(*) FROM #AuditTrailsList;
 
     SELECT 
+        Id,
         UserId,                     
         Name,
         Email,

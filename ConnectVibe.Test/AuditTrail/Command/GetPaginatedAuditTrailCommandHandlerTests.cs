@@ -32,6 +32,7 @@ namespace Fliq.Test.AuditTrail.Commands
             {
                 new AuditTrailListItem
                 {
+                    Id = 1,
                     UserId = 1,
                     Name = "John Doe",
                     Email = "john.doe@example.com",
@@ -41,6 +42,7 @@ namespace Fliq.Test.AuditTrail.Commands
                 },
                 new AuditTrailListItem
                 {
+                    Id = 2,
                     UserId = 2,
                     Name = "Jane Smith",
                     Email = "jane.smith@example.com",
@@ -71,6 +73,7 @@ namespace Fliq.Test.AuditTrail.Commands
             Assert.AreEqual(command.PageSize, response.PageSize, "Expected the correct page size");
 
             var firstTrail = response.Data.ElementAt(0);
+            Assert.AreEqual(1, firstTrail.Id);
             Assert.AreEqual(1, firstTrail.UserId);
             Assert.AreEqual("John Doe", firstTrail.Name);
             Assert.AreEqual("john.doe@example.com", firstTrail.Email);
