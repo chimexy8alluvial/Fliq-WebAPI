@@ -29,13 +29,13 @@ namespace Fliq.Infrastructure.Migrations
                         e.EventTitle,
                         u.FirstName + ' ' + u.LastName AS CreatedBy,
                         CASE 
-                            WHEN e.Status = 4 THEN 4  -- Cancelled
-                            WHEN e.Status = 0 THEN 0  -- PendingApproval
-                            WHEN e.StartDate > @CurrentDate THEN 1  -- Upcoming
-                            WHEN e.StartDate <= @CurrentDate AND e.EndDate >= @CurrentDate THEN 2  -- Ongoing
-                            ELSE 3  -- Past
+                            WHEN e.Status = 4 THEN 'Cancelled'
+                            WHEN e.Status = 0 THEN 'PendingApproval'
+                            WHEN e.StartDate > @CurrentDate THEN 'Upcoming'
+                            WHEN e.StartDate <= @CurrentDate AND e.EndDate >= @CurrentDate THEN 'Ongoing'
+                            ELSE 'Past'
                         END AS Status,
-                        COUNT(t.Id) AS Attendees,
+                        COUNT(et.Id) AS Attendees, -- Changed to EventTickets
                         CASE 
                             WHEN e.SponsoredEvent = 1 THEN 'sponsored' 
                             ELSE 'free' 
@@ -44,6 +44,7 @@ namespace Fliq.Infrastructure.Migrations
                     FROM Events e
                     INNER JOIN Users u ON e.UserId = u.Id
                     LEFT JOIN Tickets t ON e.Id = t.EventId
+                    LEFT JOIN EventTickets et ON et.TicketId = t.Id -- Changed to EventTickets
                     LEFT JOIN [dbo].[LocationDetails] ld ON e.LocationId = ld.LocationId
                     LEFT JOIN [dbo].[LocationResult] lr ON ld.Id = lr.LocationDetailId -- Join to get FormattedAddress
                     WHERE 
