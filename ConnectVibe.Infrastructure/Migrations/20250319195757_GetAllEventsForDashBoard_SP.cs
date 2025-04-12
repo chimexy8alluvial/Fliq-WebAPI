@@ -25,7 +25,7 @@ namespace Fliq.Infrastructure.Migrations
 
                         DECLARE @CurrentDate DATETIME = GETDATE();
 
-                        SELECT 
+                        SELECT DISTINCT
                             e.EventTitle,
                             u.FirstName + ' ' + u.LastName AS CreatedBy,  -- Combined FirstName and LastName
                             CASE 

@@ -25,7 +25,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     DECLARE @CurrentDate DATETIME = GETDATE();
 
-                    SELECT 
+                    SELECT DISTINCT
                         e.EventTitle,
                         u.FirstName + ' ' + u.LastName AS CreatedBy,
                         CASE 
@@ -44,7 +44,8 @@ namespace Fliq.Infrastructure.Migrations
                     FROM Events e
                     INNER JOIN Users u ON e.UserId = u.Id
                     LEFT JOIN Tickets t ON e.Id = t.EventId
-                    LEFT JOIN LocationDetails ld ON e.LocationId = ld.LocationId
+                    LEFT JOIN [dbo].[LocationDetails] ld ON e.LocationId = ld.LocationId
+                    LEFT JOIN [dbo].[LocationResults] lr ON ld.LocationId = lr.LocationId
                     WHERE 
                         e.IsDeleted = 0
                         AND e.IsFlagged = 1  -- Only flagged events
@@ -59,7 +60,7 @@ namespace Fliq.Infrastructure.Migrations
                             END = @Status)
                         AND (@startDate IS NULL OR e.StartDate >= @startDate)
                         AND (@endDate IS NULL OR e.EndDate <= @endDate)
-                        AND (@location IS NULL OR ld.Status LIKE '%' + @location + '%')
+                         AND (@location IS NULL OR lr.FormattedAddress LIKE '%' + @location + '%')
                     GROUP BY 
                         e.EventTitle,
                         u.FirstName,

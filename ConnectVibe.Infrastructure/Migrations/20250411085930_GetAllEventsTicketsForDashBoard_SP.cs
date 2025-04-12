@@ -24,7 +24,7 @@ namespace Fliq.Infrastructure.Migrations
                     SET NOCOUNT ON;
 
                     WITH EventTicketsCTE AS (
-                        SELECT 
+                        SELECT DISTINCT -- Avoid duplicates from multiple LocationResults
                             e.EventTitle,
                             CreatedBy = u.FirstName + ' ' + u.LastName,
                             EventStatus = CASE e.Status
