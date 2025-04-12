@@ -52,7 +52,7 @@ namespace Fliq.Infrastructure.Migrations
                             [dbo].[Events] e
                             INNER JOIN [dbo].[Users] u ON e.UserId = u.Id
                             LEFT JOIN [dbo].[LocationDetails] ld ON e.LocationId = ld.LocationId
-                            LEFT JOIN [dbo].[LocationResults] lr ON ld.LocationId = lr.LocationId -- Join to get FormattedAddress
+                            LEFT JOIN [dbo].[LocationResult] lr ON ld.Id = lr.LocationDetailId -- Join to get FormattedAddress
                         WHERE 
                             (@Category IS NULL OR e.EventCategory = @Category) -- Compare with enum value
                             AND (@StartDate IS NULL OR e.StartDate >= @StartDate)

@@ -2894,7 +2894,7 @@ namespace Fliq.Infrastructure.Migrations
                 {
                     b.Navigation("PromptQuestions");
                 });
-
+           
             modelBuilder.Entity("Fliq.Domain.Entities.Role", b =>
                 {
                     b.Navigation("Users");

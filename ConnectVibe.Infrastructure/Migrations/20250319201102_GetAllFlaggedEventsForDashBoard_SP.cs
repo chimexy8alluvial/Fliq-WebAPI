@@ -45,7 +45,7 @@ namespace Fliq.Infrastructure.Migrations
                     INNER JOIN Users u ON e.UserId = u.Id
                     LEFT JOIN Tickets t ON e.Id = t.EventId
                     LEFT JOIN [dbo].[LocationDetails] ld ON e.LocationId = ld.LocationId
-                    LEFT JOIN [dbo].[LocationResults] lr ON ld.LocationId = lr.LocationId
+                    LEFT JOIN [dbo].[LocationResult] lr ON ld.Id = lr.LocationDetailId -- Join to get FormattedAddress
                     WHERE 
                         e.IsDeleted = 0
                         AND e.IsFlagged = 1  -- Only flagged events
