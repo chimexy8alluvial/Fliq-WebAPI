@@ -79,18 +79,18 @@ namespace Fliq.Application.Tests.DashBoard.Queries.GetAllEvents
             var endDate = DateTime.UtcNow.AddDays(1);
             var query = new GetAllEventsTicketsQuery(
                 paginationRequest,
-                EventCategory.Paid, // Updated to use EventCategory enum
+                EventCategory.Paid,
                 "SoldOut",
                 startDate,
                 endDate,
-                "New York"
+                "New York" // Test with a city name
             );
 
             var createdOn = DateTime.UtcNow;
             var expectedResults = new List<GetEventsTicketsResult>
-            {
-                new GetEventsTicketsResult("Music Fest", "Jane Smith", "Ongoing", "sponsored", 100, createdOn)
-            };
+    {
+        new GetEventsTicketsResult("Music Fest", "Jane Smith", "Ongoing", "sponsored", 100, createdOn)
+    };
 
             _ticketRepositoryMock!
                 .Setup(x => x.GetAllEventsTicketsForDashBoardAsync(It.Is<GetEventsTicketsListRequest>(
