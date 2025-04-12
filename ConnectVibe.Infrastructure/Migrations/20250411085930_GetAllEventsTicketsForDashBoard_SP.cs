@@ -51,12 +51,13 @@ namespace Fliq.Infrastructure.Migrations
                         FROM 
                             [dbo].[Events] e
                             INNER JOIN [dbo].[Users] u ON e.UserId = u.Id
-                            LEFT JOIN LocationDetails ld ON e.LocationId = ld.LocationId
+                            LEFT JOIN [dbo].[LocationDetails] ld ON e.LocationId = ld.LocationId
+                            LEFT JOIN [dbo].[LocationResults] lr ON ld.LocationId = lr.LocationId -- Join to get FormattedAddress
                         WHERE 
                             (@Category IS NULL OR e.EventCategory = @Category) -- Compare with enum value
                             AND (@StartDate IS NULL OR e.StartDate >= @StartDate)
                             AND (@EndDate IS NULL OR e.EndDate <= @EndDate)
-                            AND (@Location IS NULL OR ld.Status LIKE '%' + @Location + '%')
+                            AND (@Location IS NULL OR lr.FormattedAddress LIKE '%' + @Location + '%') -- Updated filter
                             AND (
                                 @StatusFilter IS NULL 
                                 OR (@StatusFilter = 'SoldOut' AND (

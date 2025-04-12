@@ -44,7 +44,8 @@ namespace Fliq.Infrastructure.Migrations
                         FROM Events e
                         INNER JOIN Users u ON e.UserId = u.Id
                         LEFT JOIN Tickets t ON e.Id = t.EventId
-                        LEFT JOIN LocationDetails ld ON e.LocationId = ld.LocationId
+                        LEFT JOIN [dbo].[LocationDetails] ld ON e.LocationId = ld.LocationId
+                        LEFT JOIN [dbo].[LocationResults] lr ON ld.LocationId = lr.LocationId -- Join to get FormattedAddress
                         WHERE 
                             e.IsDeleted = 0
                             AND (@category IS NULL OR e.EventCategory = @category)
@@ -58,7 +59,7 @@ namespace Fliq.Infrastructure.Migrations
                                 END = @Status)
                             AND (@startDate IS NULL OR e.StartDate >= @startDate)
                             AND (@endDate IS NULL OR e.EndDate <= @endDate)
-                            AND (@location IS NULL OR ld.Status LIKE '%' + @location + '%')
+                            AND (@Location IS NULL OR lr.FormattedAddress LIKE '%' + @Location + '%') -- Updated filter
                         GROUP BY 
                             e.EventTitle,
                             u.FirstName,
