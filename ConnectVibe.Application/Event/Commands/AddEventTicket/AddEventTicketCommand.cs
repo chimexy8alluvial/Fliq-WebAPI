@@ -36,12 +36,12 @@ namespace Fliq.Application.Event.Commands.AddEventTicket
             IUserRepository userRepository,
             IMediator mediator)
         {
-            _eventRepository = eventRepository ?? throw new ArgumentNullException(nameof(eventRepository));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _ticketRepository = ticketRepository ?? throw new ArgumentNullException(nameof(ticketRepository));
-            _paymentRepository = paymentRepository ?? throw new ArgumentNullException(nameof(paymentRepository));
-            _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            _eventRepository = eventRepository;
+            _logger = logger;
+            _ticketRepository = ticketRepository;
+            _paymentRepository = paymentRepository;
+            _userRepository = userRepository;
+            _mediator = mediator;
         }
 
         public async Task<ErrorOr<CreateEventTicketResult>> Handle(AddEventTicketCommand command, CancellationToken cancellationToken)
