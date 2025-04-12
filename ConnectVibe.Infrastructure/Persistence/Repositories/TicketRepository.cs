@@ -139,7 +139,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
             parameters.Add("@PageNumber", request.PaginationRequest.PageNumber);
             parameters.Add("@PageSize", request.PaginationRequest.PageSize);
-            parameters.Add("@Category", request.Category);
+            parameters.Add("@Category", request.Category.HasValue ? (int)request.Category.Value : null); // Convert enum to int
             parameters.Add("@StatusFilter", request.StatusFilter);
             parameters.Add("@StartDate", request.StartDate);
             parameters.Add("@EndDate", request.EndDate);

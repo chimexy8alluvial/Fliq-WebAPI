@@ -29,6 +29,7 @@ using Microsoft.AspNetCore.Mvc;
 using Fliq.Application.DashBoard.Queries.DailyTicketCount;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
+using Fliq.Application.Tests.DashBoard.Queries.GetEventsTicket;
 
 namespace Fliq.Api.Controllers
 {

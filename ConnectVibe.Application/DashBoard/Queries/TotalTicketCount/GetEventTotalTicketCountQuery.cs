@@ -2,6 +2,7 @@
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.DashBoard.Common;
+using Fliq.Domain.Common.Errors;
 using MediatR;
 
 namespace Fliq.Application.DashBoard.Queries.TotalTicketCount
@@ -33,7 +34,7 @@ namespace Fliq.Application.DashBoard.Queries.TotalTicketCount
             catch (Exception ex)
             {
                 _logger.LogError($"Error fetching total ticket count for EventId {query.EventId}: {ex.Message}");
-                return Error.Failure("GetTotalTicketCountFailed", $"Failed to fetch other ticket count: {ex.Message}");
+                return Errors.Ticket.GetTotalTicketCountFailed( ex.Message);
             }
         }
     }

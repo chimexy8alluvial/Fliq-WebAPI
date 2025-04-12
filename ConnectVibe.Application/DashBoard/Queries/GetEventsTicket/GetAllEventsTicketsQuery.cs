@@ -3,20 +3,19 @@ using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Pagination;
 using Fliq.Application.DashBoard.Common;
+using Fliq.Domain.Common.Errors;
+using Fliq.Domain.Entities.Event.Enums;
 using MediatR;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using Error = ErrorOr.Error;
 
-namespace Fliq.Application.DashBoard.Queries.GetAllEvents
+namespace Fliq.Application.Tests.DashBoard.Queries.GetEventsTicket
 {
     public record GetAllEventsTicketsQuery(
-        PaginationRequest PaginationRequest = default!,
-        string? Category = null,
-        string? StatusFilter = null, 
-        DateTime? StartDate = null,
-        DateTime? EndDate = null,
-        string? Location = null) : IRequest<ErrorOr<List<GetEventsTicketsResult>>>;
-
+                    PaginationRequest PaginationRequest = default!,
+                    EventCategory? Category = null, 
+                    string? StatusFilter = null,
+                    DateTime? StartDate = null,
+                    DateTime? EndDate = null,
+                    string? Location = null) : IRequest<ErrorOr<List<GetEventsTicketsResult>>>;
     public class GetAllEventsTicketsQueryHandler : IRequestHandler<GetAllEventsTicketsQuery, ErrorOr<List<GetEventsTicketsResult>>>
     {
         private readonly ITicketRepository _ticketRepository;
@@ -37,7 +36,7 @@ namespace Fliq.Application.DashBoard.Queries.GetAllEvents
                 var request = new GetEventsTicketsListRequest
                 {
                     PaginationRequest = query.PaginationRequest,
-                    Category = query.Category,
+                    Category = query.Category, 
                     StatusFilter = query.StatusFilter,
                     StartDate = query.StartDate,
                     EndDate = query.EndDate,
@@ -53,10 +52,7 @@ namespace Fliq.Application.DashBoard.Queries.GetAllEvents
             catch (Exception ex)
             {
                 _logger.LogError($"Error fetching events with tickets: {ex.Message}");
-                return new List<Error>
-                {
-                    Error.Failure("GetEventsTicketsFailed", $"Failed to fetch events with tickets: {ex.Message}")
-                };
+                return Errors.Ticket.GetEventsTicketsFailed(ex.Message);
             }
         }
     }

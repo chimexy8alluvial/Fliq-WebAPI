@@ -4,7 +4,6 @@ using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.DashBoard.Common;
 using Fliq.Domain.Common.Errors;
 using MediatR;
-using Error = ErrorOr.Error;
 
 namespace Fliq.Application.DashBoard.Queries.RegularTicketCount
 {

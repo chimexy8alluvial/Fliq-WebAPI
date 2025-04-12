@@ -48,7 +48,13 @@ namespace Fliq.Domain.Common.Errors
                     description: $"Failed to fetch VIP ticket count: {message}");
             public static Error VVipCountFetchFailed(string message) =>
                 Error.Failure(code: "Ticket.VVipCount.FetchFailed", 
-                    description: $"Failed to fetch VVIP ticket count: {message}");
+                    description: $"Failed to fetch VVIP ticket count: {message}"); 
+            public static Error GetEventsTicketsFailed(string message) =>
+                Error.Failure(code: "GetEventsTicketsFailed", 
+                    description: $"Failed to get all events tickets: {message}");
+            public static Error GetTotalTicketCountFailed(string message) =>
+                Error.Failure(code: "Ticket.GetTotalTicketCount.Failed", 
+                    description: $"Failed to get total tickets count: {message}");
         }
     }
 }
