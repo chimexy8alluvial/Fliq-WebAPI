@@ -44,7 +44,7 @@ BEGIN
         sd.Id AS Id,
         sd.Title AS Title,
         0 AS Type,
-        u.FirstName + ' ' + u.LastName + CHAR(13) + CHAR(10) + u.Email AS CreatedBy,
+        u.FirstName + ' ' + u.LastName + ' ' + ' ' + u.Email AS CreatedBy,
         CASE 
             WHEN sub.IsActive = 1 THEN sub.ProductId 
             ELSE NULL 
