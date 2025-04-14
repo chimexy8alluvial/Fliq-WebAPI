@@ -1,13 +1,14 @@
 ﻿using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.PlatformCompliance.Commands;
 using Fliq.Application.PlatformCompliance.Queries;
-using Fliq.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Fliq.Api.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class ComplianceController : ApiBaseController
     {
         private readonly ISender _mediator;
