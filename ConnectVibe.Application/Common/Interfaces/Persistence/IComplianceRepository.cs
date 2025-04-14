@@ -10,7 +10,7 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         Task AddAsync(Compliance compliance);
         Task UpdateAsync(Compliance compliance);
         Task<Compliance?> GetByIdAsync(int id);
-        Task<Compliance?> GetLatestComplianceByTypeAsync(ComplianceType complianceType);
-        Task<List<Compliance>> GetAllCompliancesByTypeAsync(ComplianceType complianceType);
+        Task<Compliance?> GetLatestComplianceByTypeAsync(int complianceTypeId);
+        Task<List<Compliance>> GetAllCompliancesByTypeAsync(int complianceTypeId);
     }
 }

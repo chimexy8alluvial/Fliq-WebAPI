@@ -22,27 +22,30 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<UserConsentAction?> GetUserConsentForComplianceTypeAsync(int userId, ComplianceType complianceType)
+        public async Task<UserConsentAction?> GetUserConsentForComplianceTypeAsync(int userId, int complianceTypeId)
         {
             return await _dbContext.UserConsentActions
                 .Where(u => !u.IsDeleted && u.UserId == userId)
                 .Include(u => u.Compliance)
-                .Where(u => u.Compliance.ComplianceType == complianceType)
+                .Where(u => u.Compliance.ComplianceTypeId == complianceTypeId)
                 .OrderByDescending(u => u.DateCreated)
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<List<UserConsentAction>> GetUserConsentsHistoryAsync(int userId, ComplianceType? complianceType = null)
+        public async Task<List<UserConsentAction>> GetUserConsentsHistoryAsync(int userId, int? complianceTypeId = null)
         {
-            var query = _dbContext.UserConsentActions
+            // Start with the base query
+            IQueryable<UserConsentAction> query = _dbContext.UserConsentActions
                 .Where(u => !u.IsDeleted && u.UserId == userId)
                 .Include(u => u.Compliance);
 
-            if (complianceType.HasValue)
+            // Apply the compliance type filter if provided
+            if (complianceTypeId.HasValue)
             {
-                query = (Microsoft.EntityFrameworkCore.Query.IIncludableQueryable<UserConsentAction, Compliance>)query.Where(u => u.Compliance.ComplianceType == complianceType.Value);
+                query = query.Where(u => u.Compliance.ComplianceTypeId == complianceTypeId.Value);
             }
 
+            // Execute the query
             return await query
                 .OrderByDescending(u => u.DateCreated)
                 .ToListAsync();

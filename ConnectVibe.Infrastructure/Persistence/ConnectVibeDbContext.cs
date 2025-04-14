@@ -82,6 +82,7 @@ namespace Fliq.Infrastructure.Persistence
         public DbSet<HaveKids> HaveKids { get; set; }
         
         public DbSet<Compliance> Compliances { get; set; } = null!;
+        public DbSet<ComplianceType> ComplianceTypes { get; set; } = null!;
         public DbSet<UserConsentAction> UserConsentActions { get; set; } = null!;
 
     }

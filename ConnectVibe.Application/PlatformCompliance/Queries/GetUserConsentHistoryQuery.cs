@@ -4,13 +4,13 @@ using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Enums;
 using MediatR;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
 
 namespace Fliq.Application.PlatformCompliance.Queries
 {
     public record GetUserConsentHistoryQuery(
     int UserId,
-    ComplianceType? ComplianceType = null
+    int? ComplianceTypeId = null
     ) : IRequest<ErrorOr<List<UserConsentHistoryDto>>>;
 
     public class UserConsentHistoryDto
@@ -19,7 +19,7 @@ namespace Fliq.Application.PlatformCompliance.Queries
         public DateTime ConsentDate { get; set; }
         public bool OptIn { get; set; }
         public string IPAddress { get; set; } = string.Empty;
-        public ComplianceType ComplianceType { get; set; }
+        public int ComplianceTypeId { get; set; }
         public string VersionNumber { get; set; } = string.Empty;
     }
 
@@ -45,7 +45,7 @@ namespace Fliq.Application.PlatformCompliance.Queries
             }
 
             var consentHistory = await _userConsentRepository.GetUserConsentsHistoryAsync(
-                request.UserId, request.ComplianceType);
+                request.UserId, request.ComplianceTypeId);
 
             return consentHistory.Select(c => new UserConsentHistoryDto
             {
@@ -53,7 +53,7 @@ namespace Fliq.Application.PlatformCompliance.Queries
                 ConsentDate = c.DateCreated,
                 OptIn = c.OptIn,
                 IPAddress = c.IPAddress,
-                ComplianceType = c.Compliance.ComplianceType,
+                ComplianceTypeId = c.Compliance.ComplianceTypeId,
                 VersionNumber = c.Compliance.VersionNumber
             }).ToList();
         }

@@ -49,9 +49,9 @@ namespace Fliq.Api.Controllers
 
         [HttpGet("consent/status")]
         [Authorize]
-        public async Task<IActionResult> GetConsentStatus([FromQuery] int userId, [FromQuery] ComplianceType complianceType)
+        public async Task<IActionResult> GetConsentStatus([FromQuery] int userId, [FromQuery] int ComplianceTypeId)
         {
-            var query = new GetUserConsentStatusQuery(userId, complianceType);
+            var query = new GetUserConsentStatusQuery(userId, ComplianceTypeId);
             var result = await _mediator.Send(query);
 
             return result.Match(
@@ -61,9 +61,9 @@ namespace Fliq.Api.Controllers
 
         [HttpGet("consent/history")]
         [Authorize]
-        public async Task<IActionResult> GetConsentHistory([FromQuery] int userId, [FromQuery] ComplianceType? complianceType = null)
+        public async Task<IActionResult> GetConsentHistory([FromQuery] int userId, [FromQuery] int? ComplianceTypeId = null)
         {
-            var query = new GetUserConsentHistoryQuery(userId, complianceType);
+            var query = new GetUserConsentHistoryQuery(userId, ComplianceTypeId);
             var result = await _mediator.Send(query);
 
             return result.Match(

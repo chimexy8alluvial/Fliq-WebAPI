@@ -10,7 +10,7 @@ namespace Fliq.Application.PlatformCompliance.Queries
 {
     public record GetUserConsentStatusQuery(
         int UserId,
-        ComplianceType ComplianceType
+        int ComplianceTypeId
     ) : IRequest<ErrorOr<UserConsentStatusResult>>;
 
     public class GetUserConsentStatusQueryHandler : IRequestHandler<GetUserConsentStatusQuery, ErrorOr<UserConsentStatusResult>>
@@ -29,7 +29,7 @@ namespace Fliq.Application.PlatformCompliance.Queries
         public async Task<ErrorOr<UserConsentStatusResult>> Handle(GetUserConsentStatusQuery request, CancellationToken cancellationToken)
         {
             // Get the latest version of this compliance type
-            var latestCompliance = await _complianceRepository.GetLatestComplianceByTypeAsync(request.ComplianceType);
+            var latestCompliance = await _complianceRepository.GetLatestComplianceByTypeAsync(request.ComplianceTypeId);
             if (latestCompliance == null)
             {
                 return Errors.Compliance.ComplianceNotFound;
@@ -37,7 +37,7 @@ namespace Fliq.Application.PlatformCompliance.Queries
 
             // Get the user's most recent consent for this compliance type
             var userConsent = await _userConsentRepository.GetUserConsentForComplianceTypeAsync(
-                request.UserId, request.ComplianceType);
+                request.UserId, request.ComplianceTypeId);
 
             // If no consent found, they need to review
             if (userConsent == null)

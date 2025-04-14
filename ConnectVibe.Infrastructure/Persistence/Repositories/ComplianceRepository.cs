@@ -1,6 +1,5 @@
 ﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Domain.Entities.PlatformCompliance;
-using Fliq.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
@@ -43,19 +42,19 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             .FirstOrDefaultAsync();
         }
 
-        public async Task<Compliance?> GetLatestComplianceByTypeAsync(ComplianceType complianceType)
+        public async Task<Compliance?> GetLatestComplianceByTypeAsync(int complianceTypeId)
         {
             return await _dbContext.Compliances
-                .Where(c => !c.IsDeleted && c.ComplianceType == complianceType)
+                .Where(c => !c.IsDeleted && c.ComplianceTypeId == complianceTypeId)
                 .OrderByDescending(c => c.EffectiveDate)
                 .ThenByDescending(c => c.Id)
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<List<Compliance>> GetAllCompliancesByTypeAsync(ComplianceType complianceType)
+        public async Task<List<Compliance>> GetAllCompliancesByTypeAsync(int complianceTypeId)
         {
             return await _dbContext.Compliances
-                .Where(c => !c.IsDeleted && c.ComplianceType == complianceType)
+                .Where(c => !c.IsDeleted && c.ComplianceTypeId == complianceTypeId)
                 .OrderByDescending(c => c.EffectiveDate)
                 .ToListAsync();
         }
