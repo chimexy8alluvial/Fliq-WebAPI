@@ -4,6 +4,7 @@ using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Pagination;
 using Fliq.Application.Explore.Common;
 using Fliq.Domain.Common.Errors;
+using Fliq.Domain.Entities;
 using Fliq.Domain.Entities.Event;
 using Fliq.Domain.Entities.Event.Enums;
 using MediatR;
@@ -37,14 +38,58 @@ namespace Fliq.Application.Explore.Queries
             _logger = logger;
         }
 
-
-
         public async Task<ErrorOr<ExploreEventsResult>> Handle(ExploreEventsQuery query, CancellationToken cancellationToken)
         {
             _logger.LogInfo($"Starting ExploreEventsQuery handling for user {query.UserId}.");
 
-            // Get logged-in user
-            var user = _userRepository.GetUserById(query.UserId);
+            // Validate user, profile, and location
+            var validationResult = ValidateUserProfileAndLocation(query.UserId);
+            if (validationResult.IsError)
+            {
+                return validationResult.Errors;
+            }
+
+            var user = validationResult.Value;
+
+            // Fetch events based on filters
+            _logger.LogInfo($"Fetching events for user {user.Id} with filters: Distance={query.MaxDistanceKm}, Category={query.Category}, Type={query.EventType}, Creator={query.CreatorId}, Status={query.Status}");
+
+            try
+            {
+                var (events, totalCount) = await _eventRepository.GetEventsAsync(
+                    userLocation: user.UserProfile!.Location!.LocationDetail,
+                    maxDistanceKm: query.MaxDistanceKm,
+                    userProfile: user.UserProfile,
+                    category: query.Category,
+                    eventType: query.EventType,
+                    creatorId: query.CreatorId,
+                    status: query.Status,
+                    pagination: new PaginationRequest(query.PageNumber, query.PageSize)
+                );
+
+                // Ensure events is never null
+                var eventList = events?.ToList() ?? new List<Events>();
+                var paginatedEvents = new PaginationResponse<Events>(
+                    eventList,
+                    totalCount,
+                    query.PageNumber,
+                    query.PageSize
+                );
+
+                _logger.LogInfo($"Fetched {totalCount} events for user {user.Id}. Page {query.PageNumber} has {eventList.Count} items.");
+
+                return new ExploreEventsResult(paginatedEvents);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to fetch events for user {user.Id}: {ex.Message}\nStackTrace: {ex.StackTrace}");
+                return Error.Failure(description: $"Failed to fetch events: {ex.Message}");
+            }
+        }
+
+        private ErrorOr<User> ValidateUserProfileAndLocation(int userId)
+        {
+            var user = _userRepository.GetUserById(userId);
             if (user == null)
             {
                 _logger.LogWarn("User not found");
@@ -57,45 +102,13 @@ namespace Fliq.Application.Explore.Queries
                 return Errors.Profile.ProfileNotFound;
             }
 
-            // Validate location
             if (user.UserProfile.Location?.LocationDetail == null)
             {
                 _logger.LogWarn($"User location not found for user {user.Id}");
                 return Error.Failure(code: "Profile.LocationNotFound", description: "User location is not configured.");
             }
 
-            // Fetch events based on filters
-            _logger.LogInfo($"Fetching events for user {user.Id} with filters: Distance={query.MaxDistanceKm}, Category={query.Category}, Type={query.EventType}, Creator={query.CreatorId}, Status={query.Status}");
-
-            try
-            {
-                var (events, totalCount) = await _eventRepository.GetEventsAsync(
-                    userLocation: user.UserProfile.Location.LocationDetail,
-                    maxDistanceKm: query.MaxDistanceKm,
-                    userProfile: user.UserProfile,
-                    category: query.Category,
-                    eventType: query.EventType,
-                    creatorId: query.CreatorId,
-                    status: query.Status, // Pass the new status parameter
-                    pagination: new PaginationRequest(query.PageNumber, query.PageSize)
-                );
-
-                var paginatedEvents = new PaginationResponse<Events>(
-                    events ?? new List<Events>(),
-                    totalCount,
-                    query.PageNumber,
-                    query.PageSize
-                );
-
-                _logger.LogInfo($"Fetched {totalCount} events for user {user.Id}. Page {query.PageNumber} has {paginatedEvents.Data.Count()} items.");
-
-                return new ExploreEventsResult(paginatedEvents);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Failed to fetch events for user {user.Id}: {ex.Message}");
-                return Error.Failure(description: $"Failed to fetch events: {ex.Message}");
-            }
+            return user;
         }
     }
 }
