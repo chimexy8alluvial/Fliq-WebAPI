@@ -487,6 +487,9 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsRefunded")
+                        .HasColumnType("bit");
+
                     b.Property<int>("PaymentId")
                         .HasColumnType("int");
 
@@ -800,6 +803,9 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<DateTime?>("DateModified")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("GameDisconnectionResolutionOption")
+                        .HasColumnType("int");
+
                     b.Property<int>("GameId")
                         .HasColumnType("int");
 
@@ -834,6 +840,9 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<DateTime?>("DateModified")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("DisconnectionResolutionOption")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("EndTime")
                         .HasColumnType("datetime2");
 
@@ -859,6 +868,9 @@ namespace Fliq.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("WinnerId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -1316,9 +1328,8 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<DateTime?>("DateModified")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("GenderType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("GenderType")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -2190,9 +2201,6 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<bool>("IsEmailValidated")
                         .HasColumnType("bit");
 
-                    b.Property<int>("Language")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("LastActiveAt")
                         .HasColumnType("datetime2");
 
@@ -2436,7 +2444,7 @@ namespace Fliq.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("Fliq.Domain.Entities.Event.Ticket", "Ticket")
-                        .WithMany()
+                        .WithMany("EventTickets")
                         .HasForeignKey("TicketId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -2845,6 +2853,8 @@ namespace Fliq.Infrastructure.Migrations
             modelBuilder.Entity("Fliq.Domain.Entities.Event.Ticket", b =>
                 {
                     b.Navigation("Discounts");
+
+                    b.Navigation("EventTickets");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Games.GameSession", b =>
@@ -2884,7 +2894,7 @@ namespace Fliq.Infrastructure.Migrations
                 {
                     b.Navigation("PromptQuestions");
                 });
-
+           
             modelBuilder.Entity("Fliq.Domain.Entities.Role", b =>
                 {
                     b.Navigation("Users");

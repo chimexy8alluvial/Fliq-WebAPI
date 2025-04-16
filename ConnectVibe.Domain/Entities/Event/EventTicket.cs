@@ -8,6 +8,7 @@
 
         public int UserId { get; set; }
         public User User { get; set; } = default!;
+        public bool IsRefunded { get; set; } = default!;
 
         public int PaymentId { get; set; }
         public Payment Payment { get; set; } = default!;

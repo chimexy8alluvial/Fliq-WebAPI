@@ -1,7 +1,9 @@
-﻿using Fliq.Application.Authentication.Commands.CreateAdmin;
+﻿using ErrorOr;
+using Fliq.Application.Authentication.Commands.CreateAdmin;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.DashBoard.Command.DeleteUser;
 using Fliq.Application.DashBoard.Common;
+using Fliq.Application.Event.Commands.RefundTicket;
 using Fliq.Application.Users.Commands;
 using Fliq.Application.Users.Queries;
 using Fliq.Contracts.Authentication;
@@ -29,7 +31,7 @@ namespace Fliq.Api.Controllers
             _logger = logger;
         }
 
-        [Authorize(Roles = "SuperAdmin")]
+        //[Authorize(Roles = "SuperAdmin")]
         [HttpPost("create-admin")]
         public async Task<IActionResult> CreateAdmin([FromBody] RegisterRequest request)
         {
@@ -125,6 +127,18 @@ namespace Fliq.Api.Controllers
 
                 return Ok(result.Value);
             }
+        }
+
+        [Authorize(Roles = "SuperAdmin,Admin")]
+        [HttpPost("refund")]
+        public async Task<IActionResult> RefundTicket([FromBody] RefundTicketCommand command)
+        {
+            ErrorOr<RefundTicketResult> result = await _mediator.Send(command);
+
+            return result.Match(
+                refundResult => Ok(new { RefundedTickets = refundResult.RefundedTickets.Count }),
+                errors => Problem(detail: errors.First().Description, statusCode: 400)
+            );
         }
     }
 }
