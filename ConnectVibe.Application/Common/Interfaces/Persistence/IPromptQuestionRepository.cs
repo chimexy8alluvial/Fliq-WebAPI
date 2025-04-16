@@ -10,5 +10,8 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         PromptQuestion? GetQuestionByIdAsync(int questionId);
         IEnumerable<PromptQuestion> GetPromptQuestionsByCategory(int categoryId);
         bool QuestionExistInCategory(int categoryId, string QuestionText);
+
+        Task<int> CountAsync();
+        Task<int> FlaggedCountAsync();
     }
 }

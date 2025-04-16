@@ -57,6 +57,14 @@ namespace Fliq.Domain.Common.Errors
          code: "BlindDate.BlindDateNotOngoing;",
          description: "This Session is not ongoing");
 
+            public static Error DateAlreadyApproved => Error.Conflict(
+      code: "Date.DateAlreadyApproved;",
+      description: "This Date Request is already Approved");
+
+            public static Error DateAlreadyRejected => Error.Conflict(
+     code: "Date.DateAlreadyApproved;",
+     description: "This Date Request is already Rejected");
+
         }
     }
 }
