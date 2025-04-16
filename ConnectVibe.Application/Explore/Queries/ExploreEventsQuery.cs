@@ -38,6 +38,8 @@ namespace Fliq.Application.Explore.Queries
             _logger = logger;
         }
 
+
+
         public async Task<ErrorOr<ExploreEventsResult>> Handle(ExploreEventsQuery query, CancellationToken cancellationToken)
         {
             _logger.LogInfo($"Starting ExploreEventsQuery handling for user {query.UserId}.");
@@ -57,7 +59,7 @@ namespace Fliq.Application.Explore.Queries
             try
             {
                 var (events, totalCount) = await _eventRepository.GetEventsAsync(
-                    userLocation: user.UserProfile!.Location!.LocationDetail,
+                    userLocation: user.UserProfile!.Location!.LocationDetail!,
                     maxDistanceKm: query.MaxDistanceKm,
                     userProfile: user.UserProfile,
                     category: query.Category,
@@ -68,7 +70,7 @@ namespace Fliq.Application.Explore.Queries
                 );
 
                 // Ensure events is never null
-                var eventList = events?.ToList() ?? new List<Events>();
+                var eventList = events ?? new List<Events>();
                 var paginatedEvents = new PaginationResponse<Events>(
                     eventList,
                     totalCount,
@@ -76,19 +78,20 @@ namespace Fliq.Application.Explore.Queries
                     query.PageSize
                 );
 
-                _logger.LogInfo($"Fetched {totalCount} events for user {user.Id}. Page {query.PageNumber} has {eventList.Count} items.");
+                _logger.LogInfo($"Fetched {totalCount} events for user {user.Id}. Page {query.PageNumber} has {paginatedEvents.Data.Count()} items.");
 
                 return new ExploreEventsResult(paginatedEvents);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Failed to fetch events for user {user.Id}: {ex.Message}\nStackTrace: {ex.StackTrace}");
+                _logger.LogError($"Failed to fetch events for user {user.Id}: {ex.Message}");
                 return Error.Failure(description: $"Failed to fetch events: {ex.Message}");
             }
         }
 
         private ErrorOr<User> ValidateUserProfileAndLocation(int userId)
         {
+            // Get logged-in user
             var user = _userRepository.GetUserById(userId);
             if (user == null)
             {
