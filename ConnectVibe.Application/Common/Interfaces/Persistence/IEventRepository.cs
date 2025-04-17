@@ -1,5 +1,6 @@
 ﻿using Fliq.Application.Common.Pagination;
 using Fliq.Application.DashBoard.Common;
+using Fliq.Contracts.Explore;
 using Fliq.Domain.Entities.Event;
 using Fliq.Domain.Entities.Event.Enums;
 using Fliq.Domain.Entities.Profile;
@@ -18,16 +19,18 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         Task<IEnumerable<GetEventsResult>> GetAllEventsForDashBoardAsync(GetEventsListRequest query);
         Task<IEnumerable<GetEventsResult>> GetAllFlaggedEventsForDashBoardAsync(GetEventsListRequest query);
 
-        Task<(IEnumerable<Events> Data, int TotalCount)> GetEventsAsync(
-           LocationDetail? userLocation,
+        Task<(IEnumerable<EventWithDisplayName> Data, int TotalCount)> GetEventsAsync(
+        LocationDetail? userLocation,
         double? maxDistanceKm,
         UserProfile? userProfile,
         EventCategory? category,
         EventType? eventType,
-        int? creatorId,
-        EventStatus? status, 
+        string? createdBy,
+        EventStatus? status,
+        bool? includeReviews,
+        int? minRating,
         PaginationRequest pagination
-        );
+    );
 
 
         //Count Queries

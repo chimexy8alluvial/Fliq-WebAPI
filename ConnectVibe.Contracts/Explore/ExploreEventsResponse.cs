@@ -1,10 +1,8 @@
-﻿using Fliq.Contracts.Profile;
-
-namespace Fliq.Contracts.Explore
+﻿namespace Fliq.Contracts.Explore
 {
     public record ExploreEventsResponse
     {
-        public IEnumerable<EventDto> Items { get; init; } = Enumerable.Empty<EventDto>();
+        public IEnumerable<EventWithDisplayName> Items { get; init; } = Enumerable.Empty<EventWithDisplayName>();
         public int TotalCount { get; init; }
         public int PageNumber { get; init; }
         public int PageSize { get; init; }
@@ -12,8 +10,5 @@ namespace Fliq.Contracts.Explore
         public bool HasNextPage { get; init; }
         public bool HasPreviousPage { get; init; }
     }
-
-   
-
    
 }
