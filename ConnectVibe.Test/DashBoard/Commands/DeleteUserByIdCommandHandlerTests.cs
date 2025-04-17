@@ -12,6 +12,7 @@ public class DeleteUserByIdCommandHandlerTests
     private Mock<IUserRepository>? _userRepositoryMock;
     private Mock<IMapper>? _mapperMock;
     private Mock<ILoggerManager>? _loggerMock;
+    private Mock<IAuditTrailService>? _auditTrailServiceMock;
     private DeleteUserByIdCommandHandler? _handler;
 
     [TestInitialize]
@@ -20,17 +21,21 @@ public class DeleteUserByIdCommandHandlerTests
         _userRepositoryMock = new Mock<IUserRepository>();
         _mapperMock = new Mock<IMapper>();
         _loggerMock = new Mock<ILoggerManager>();
+        _auditTrailServiceMock = new Mock<IAuditTrailService>();
         _handler = new DeleteUserByIdCommandHandler(
-            _userRepositoryMock.Object,          
-            _loggerMock.Object);
+            _userRepositoryMock.Object,
+            _loggerMock.Object,
+            _auditTrailServiceMock.Object
+            );
     }
 
     [TestMethod]
     public async Task Handle_ValidUserId_DeletesUserAndReturnsSuccess()
     {
         // Arrange
+        int AdminUserId = 2;
         int userId = 1;
-        var command = new DeleteUserByIdCommand(userId);
+        var command = new DeleteUserByIdCommand(userId, AdminUserId);
         var user = new User { Id = userId, DisplayName = "TestUser", IsDeleted = false };
 
         _userRepositoryMock?.Setup(r => r.GetUserById(userId)).Returns(user);
@@ -54,7 +59,8 @@ public class DeleteUserByIdCommandHandlerTests
     {
         // Arrange
         int userId = 1;
-        var command = new DeleteUserByIdCommand(userId);
+        int AdminUserId = 2;
+        var command = new DeleteUserByIdCommand(userId, AdminUserId);
 
         _userRepositoryMock?.Setup(r => r.GetUserById(userId)).Returns((User)null!);
 
@@ -72,8 +78,9 @@ public class DeleteUserByIdCommandHandlerTests
     public async Task Handle_AlreadyDeletedUser_ReturnsUserAlreadyDeletedError()
     {
         // Arrange
+        int AdminUserId = 2;
         int userId = 1;
-        var command = new DeleteUserByIdCommand(userId);
+        var command = new DeleteUserByIdCommand(userId, AdminUserId);
         var user = new User { Id = userId, DisplayName = "TestUser", IsDeleted = true };
 
         _userRepositoryMock?.Setup(r => r.GetUserById(userId)).Returns(user);
@@ -92,8 +99,9 @@ public class DeleteUserByIdCommandHandlerTests
     public async Task Handle_LogsInformation_AtStartAndEnd()
     {
         // Arrange
+        int AdminUserId = 2;
         int userId = 1;
-        var command = new DeleteUserByIdCommand(userId);
+        var command = new DeleteUserByIdCommand(userId, AdminUserId);
         var user = new User { Id = userId, DisplayName = "TestUser", IsDeleted = false };
 
         _userRepositoryMock?.Setup(r => r.GetUserById(userId)).Returns(user);

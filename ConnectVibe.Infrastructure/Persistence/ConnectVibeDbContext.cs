@@ -78,7 +78,9 @@ namespace Fliq.Infrastructure.Persistence
         public DbSet<SpeedDatingParticipant> SpeedDatingParticipanticipants { get; set; } = null!;
         public DbSet<Gender> Genders { get; set; }
         public DbSet<WantKids> WantKids { get; set; }
-        public DbSet<HaveKids> HaveKids { get; set; } 
+        public DbSet<HaveKids> HaveKids { get; set; }
+
+        public DbSet<AuditTrail> AuditTrails { get; set; }
 
     }
 }

@@ -12,8 +12,9 @@ namespace Fliq.Test.Users.Commands
    [TestClass]
     public class DeactivateUserCommandHandlerTest
     {
-        private Mock<IUserRepository> _mockUserRepository;
-        private Mock<ILoggerManager> _mockLoggerManager;
+        private Mock<IUserRepository>? _mockUserRepository;
+        private Mock<ILoggerManager>? _mockLoggerManager;
+        private Mock<IAuditTrailService>? _auditTrailService;
         private DeactivateUserCommandHandler _handler;
 
         [TestInitialize]
@@ -21,10 +22,12 @@ namespace Fliq.Test.Users.Commands
         {
             _mockUserRepository = new Mock<IUserRepository>();
             _mockLoggerManager = new Mock<ILoggerManager>();
+            _auditTrailService = new Mock<IAuditTrailService>();
 
             _handler = new DeactivateUserCommandHandler(
                 _mockUserRepository.Object,
-                _mockLoggerManager.Object
+                _mockLoggerManager.Object,
+                _auditTrailService.Object
             );
         }
 
@@ -33,6 +36,7 @@ namespace Fliq.Test.Users.Commands
         {
             // Arrange
             var userId = 1;
+            var AdminUserId = 1;
             var user = new User { Id = userId, IsActive = true };
 
             _mockUserRepository
@@ -40,7 +44,7 @@ namespace Fliq.Test.Users.Commands
                 .Returns(user); // User exists
 
             // Act
-            var result = await _handler.Handle(new DeactivateUserCommand(userId), CancellationToken.None);
+            var result = await _handler.Handle(new DeactivateUserCommand(userId, AdminUserId), CancellationToken.None);
 
             // Assert
             Assert.IsFalse(result.IsError);
@@ -56,13 +60,14 @@ namespace Fliq.Test.Users.Commands
         {
             // Arrange
             var userId = 99;
+            var AdminUserId = 100;
 
             _mockUserRepository
                 .Setup(repo => repo.GetUserById(userId))
                 .Returns((User)null); // User does not exist
 
             // Act
-            var result = await _handler.Handle(new DeactivateUserCommand(userId), CancellationToken.None);
+            var result = await _handler.Handle(new DeactivateUserCommand(userId, AdminUserId), CancellationToken.None);
 
             // Assert
             Assert.IsTrue(result.IsError);

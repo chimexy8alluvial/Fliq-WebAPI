@@ -14,6 +14,7 @@ namespace Fliq.Test.MatchProfile.Queries
         private Mock<IMatchProfileRepository>? _mockMatchRepository;
         private Mock<IUserRepository>? _mockUserRepository;
         private Mock<ILoggerManager>? _mockLoggerManager;
+        private Mock<IAuditTrailService>? _mockAuditTrailService;
         private GetRecentUsersMatchQueryHandler? _handler;
 
         [TestInitialize]
@@ -22,11 +23,13 @@ namespace Fliq.Test.MatchProfile.Queries
             _mockMatchRepository = new Mock<IMatchProfileRepository>();
             _mockUserRepository = new Mock<IUserRepository>();
             _mockLoggerManager = new Mock<ILoggerManager>();
+            _mockAuditTrailService = new Mock<IAuditTrailService>();
 
             _handler = new GetRecentUsersMatchQueryHandler(
                 _mockMatchRepository.Object,
                 _mockLoggerManager.Object,
-                _mockUserRepository.Object
+                _mockUserRepository.Object,
+                _mockAuditTrailService.Object
             );
         }
 

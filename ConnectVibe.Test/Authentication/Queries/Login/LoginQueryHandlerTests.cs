@@ -15,6 +15,7 @@ namespace Fliq.Test.Authentication.Queries.Login
         private Mock<IJwtTokenGenerator>? _jwtTokenGeneratorMock;
         private Mock<IUserRepository>? _userRepositoryMock;
         private Mock<ILoggerManager>? _loggerManagerMock;
+        private Mock<IAuditTrailService>? _auditTrailServiceMock;
 
         [TestInitialize]
         public void Setup()
@@ -22,11 +23,13 @@ namespace Fliq.Test.Authentication.Queries.Login
             _jwtTokenGeneratorMock = new Mock<IJwtTokenGenerator>();
             _userRepositoryMock = new Mock<IUserRepository>();
             _loggerManagerMock = new Mock<ILoggerManager>();
+            _auditTrailServiceMock = new Mock<IAuditTrailService>();
 
             _handler = new LoginQueryHandler(
                 _jwtTokenGeneratorMock.Object,
                 _userRepositoryMock.Object,
-                _loggerManagerMock.Object);
+                _loggerManagerMock.Object,
+                _auditTrailServiceMock.Object);
         }
 
         [TestMethod]

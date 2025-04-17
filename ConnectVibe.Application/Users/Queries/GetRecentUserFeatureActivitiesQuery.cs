@@ -17,13 +17,15 @@ namespace Fliq.Application.Users.Queries
         private readonly IUserRepository _userRepository;
         private readonly ILoggerManager _logger;
         private readonly IMapper _mapper;
+        private readonly IAuditTrailService _auditTrailService;
 
-        public GetRecentUserFeatureActivitiesQueryHandler(IUserFeatureActivityRepository userFeatureActivityRepository, IUserRepository userRepository, ILoggerManager logger, IMapper mapper)
+        public GetRecentUserFeatureActivitiesQueryHandler(IUserFeatureActivityRepository userFeatureActivityRepository, IUserRepository userRepository, ILoggerManager logger, IMapper mapper, IAuditTrailService auditTrailService)
         {
             _userFeatureActivityRepository = userFeatureActivityRepository;
             _userRepository = userRepository;
             _logger = logger;
             _mapper = mapper;
+            _auditTrailService = auditTrailService;
         }
 
         public async Task<ErrorOr<List<GetRecentUserFeatureActivityResult>>> Handle(GetRecentUserFeatureActivitiesQuery query, CancellationToken cancellationToken)
@@ -50,6 +52,9 @@ namespace Fliq.Application.Users.Queries
             _logger.LogInfo($"Fetching {limit} Recent Feature Activities for User with ID {query.UserId}");
             var recentFeatureActivities =  _mapper.Map<List<GetRecentUserFeatureActivityResult>>( await _userFeatureActivityRepository.GetRecentUserFeatureActivitiesAsync(query.UserId, limit));
             _logger.LogInfo($"{recentFeatureActivities.Count}Recent Feature Activities for User with ID {query.UserId}");
+
+            var Message = $"Getting Recent User Feature Activity Result for {query.UserId}";
+            await _auditTrailService.LogAuditTrail(Message, adminUser);
 
             return recentFeatureActivities;
 
