@@ -12,145 +12,36 @@ namespace Fliq.Infrastructure.Migrations
         {
             migrationBuilder.Sql(@"
                 CREATE OR ALTER PROCEDURE sp_GetEvents
-                @p_user_lat FLOAT,
-                @p_user_lng FLOAT,
-                @p_max_distance_km FLOAT,
-                @p_gender VARCHAR(50),
-                @p_race VARCHAR(100),
-                @p_passions VARCHAR(500),
-                @p_category INT,
-                @p_event_type INT,
-                @p_created_by VARCHAR(100),
-                @p_status INT,
-                @p_include_reviews BIT,
-                @p_min_rating INT,
-                @p_page_number INT,
-                @p_page_size INT,
-                @p_total_count INT OUTPUT,
-                @p_events NVARCHAR(MAX) OUTPUT
-            AS
-            BEGIN
-                SET NOCOUNT ON;
+                               @p_user_lat FLOAT,
+                    @p_user_lng FLOAT,
+                    @p_max_distance_km FLOAT,
+                    @p_gender VARCHAR(50),
+                    @p_race VARCHAR(100),
+                    @p_passions VARCHAR(500),
+                    @p_category INT,
+                    @p_event_type INT,
+                    @p_creator_id INT,
+                    @p_page_number INT,
+                    @p_page_size INT,
+                    @p_total_count INT OUTPUT,
+                    @p_events NVARCHAR(MAX) OUTPUT
+                AS
+                BEGIN
+                    SET NOCOUNT ON;
 
-                DECLARE @offset INT = (@p_page_number - 1) * @p_page_size;
-                DECLARE @point GEOGRAPHY;
-                IF @p_user_lat IS NOT NULL AND @p_user_lng IS NOT NULL
-                    SET @point = GEOGRAPHY::Point(@p_user_lat, @p_user_lng, 4326);
+                    DECLARE @offset INT = (@p_page_number - 1) * @p_page_size;
+                    DECLARE @point GEOGRAPHY;
+                    IF @p_user_lat IS NOT NULL AND @p_user_lng IS NOT NULL
+                        SET @point = GEOGRAPHY::Point(@p_user_lat, @p_user_lng, 4326);
 
-                -- Count total
-                SELECT @p_total_count = COUNT(*)
-                FROM Events e
-                JOIN Locations l ON e.Id = l.EventId
-                LEFT JOIN EventCriteria ec ON e.Id = ec.EventId
-                LEFT JOIN Users u ON e.UserId = u.Id
-                WHERE (@p_status IS NULL OR e.Status = @p_status)
-                AND (@p_max_distance_km IS NULL OR 
-                     GEOGRAPHY::Point(l.Latitude, l.Longitude, 4326).STDistance(@point) / 1000 <= @p_max_distance_km)
-                AND (@p_gender IS NULL OR ec.Gender = @p_gender)
-                AND (@p_race IS NULL OR ec.Race = @p_race)
-                AND (@p_passions IS NULL OR 
-                     (
-                         (CHARINDEX('music', LOWER(@p_passions)) > 0 AND ec.EventType = 0) OR
-                         (CHARINDEX('movies', LOWER(@p_passions)) > 0 AND ec.EventType = 1) OR
-                         (CHARINDEX('comedy', LOWER(@p_passions)) > 0 AND ec.EventType = 2) OR
-                         (CHARINDEX('entertainment', LOWER(@p_passions)) > 0 AND ec.EventType = 3)
-                     ))
-                AND (@p_category IS NULL OR e.EventCategory = @p_category)
-                AND (@p_event_type IS NULL OR e.EventType = @p_event_type)
-                AND (@p_created_by IS NULL OR u.DisplayName LIKE '%' + @p_created_by + '%');
-
-                -- Fetch paginated events as JSON
-                SET @p_events = (
-                    SELECT
-                        Id = e.Id,
-                        EventTitle = e.EventTitle,
-                        EventDescription = e.EventDescription,
-                        EventType = CASE e.EventType
-                            WHEN 0 THEN 'Physical'
-                            WHEN 1 THEN 'Live'
-                            ELSE NULL
-                        END,
-                        EventCategory = CASE e.EventCategory
-                            WHEN 0 THEN 'Free'
-                            WHEN 1 THEN 'Paid'
-                            ELSE NULL
-                        END,
-                        Status = CASE e.Status
-                            WHEN 0 THEN 'PendingApproval'
-                            WHEN 1 THEN 'Upcoming'
-                            WHEN 2 THEN 'Ongoing'
-                            WHEN 3 THEN 'Past'
-                            WHEN 4 THEN 'Cancelled'
-                            ELSE NULL
-                        END,
-                        StartDate = e.StartDate,
-                        EndDate = e.EndDate,
-                        CreatedBy = ISNULL(u.DisplayName, 'Unknown'),
-                        Location = (
-                            SELECT
-                                Lat = l.Latitude,
-                                Lng = l.Longitude,
-                                IsVisible = CAST(1 AS BIT),
-                                LocationDetail = (
-                                    SELECT
-                                        Status = 'OK',
-                                        Results = (
-                                            SELECT
-                                                FormattedAddress = l.FormattedAddress,
-                                                Geometry = (
-                                                    SELECT
-                                                        Location = (
-                                                            SELECT
-                                                                Lat = l.Latitude,
-                                                                Lng = l.Longitude
-                                                            FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
-                                                        ),
-                                                        LocationType = 'APPROXIMATE'
-                                                    FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
-                                                ),
-                                                AddressComponents = JSON_QUERY('[]'),
-                                                Types = JSON_QUERY('[]'),
-                                                PlaceId = ''
-                                            FOR JSON PATH
-                                        )
-                                    FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
-                                )
-                            FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
-                        ),
-                        EventCriteria = (
-                            SELECT
-                                EventType = CASE ec.EventType
-                                    WHEN 0 THEN 'Music'
-                                    WHEN 1 THEN 'Movies'
-                                    WHEN 2 THEN 'Comedy'
-                                    WHEN 3 THEN 'Entertainment'
-                                    ELSE NULL
-                                END,
-                                Gender = ec.Gender,
-                                Race = ec.Race
-                            FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
-                        ),
-                        Reviews = CASE 
-                            WHEN @p_include_reviews = 1 THEN (
-                                SELECT
-                                    UserId = er.UserId,
-                                    EventId = er.EventId,
-                                    Rating = er.Rating,
-                                    Comments = er.Comments
-                                FROM EventReview er
-                                WHERE er.EventId = e.Id
-                                AND (@p_min_rating IS NULL OR er.Rating >= @p_min_rating)
-                                FOR JSON PATH
-                            )
-                            ELSE JSON_QUERY('[]')
-                        END
+                    -- Count total
+                    SELECT @p_total_count = COUNT(*)
                     FROM Events e
-                    JOIN Locations l ON e.Id = l.EventId
-                    LEFT JOIN EventCriteria ec ON e.Id = ec.EventId
-                    LEFT JOIN Users u ON e.UserId = u.Id
-                    WHERE (@p_status IS NULL OR e.Status = @p_status)
+                    JOIN Location l ON e.LocationId = l.Id
+                    LEFT JOIN EventCriterias ec ON ec.Id = e.EventCriteriaId
+                    WHERE e.Status IN (1, 2) -- Upcoming, Ongoing
                     AND (@p_max_distance_km IS NULL OR 
-                         GEOGRAPHY::Point(l.Latitude, l.Longitude, 4326).STDistance(@point) / 1000 <= @p_max_distance_km)
+                         GEOGRAPHY::Point(l.Lat, l.Lng, 4326).STDistance(@point) / 1000 <= @p_max_distance_km)
                     AND (@p_gender IS NULL OR ec.Gender = @p_gender)
                     AND (@p_race IS NULL OR ec.Race = @p_race)
                     AND (@p_passions IS NULL OR 
@@ -160,6 +51,98 @@ namespace Fliq.Infrastructure.Migrations
                              (CHARINDEX('comedy', LOWER(@p_passions)) > 0 AND ec.EventType = 2) OR
                              (CHARINDEX('entertainment', LOWER(@p_passions)) > 0 AND ec.EventType = 3)
                          ))
+                    AND (@p_category IS NULL OR e.EventCategory = @p_category)
+                    AND (@p_event_type IS NULL OR e.EventType = @p_event_type)
+                    AND (@p_creator_id IS NULL OR e.UserId = @p_creator_id);
+
+                    -- Fetch paginated events as JSON
+                    SET @p_events = (
+                        SELECT
+                            Id = e.Id,
+                            EventTitle = e.EventTitle,
+                            EventDescription = e.EventDescription,
+                            EventType = CASE e.EventType
+                                WHEN 0 THEN 'Physical'
+                                WHEN 1 THEN 'Live'
+                                ELSE NULL
+                            END,
+                            EventCategory = CASE e.EventCategory
+                                WHEN 0 THEN 'Free'
+                                WHEN 1 THEN 'Paid'
+                                ELSE NULL
+                            END,
+                            Status = CASE e.Status
+                                WHEN 0 THEN 'PendingApproval'
+                                WHEN 1 THEN 'Upcoming'
+                                WHEN 2 THEN 'Ongoing'
+                                WHEN 3 THEN 'Past'
+                                WHEN 4 THEN 'Cancelled'
+                                ELSE NULL
+                            END,
+                            StartDate = e.StartDate,
+                            EndDate = e.EndDate,
+                            UserId = e.UserId,
+                            Location = (
+                                SELECT
+                                    Lat = l.Lat,
+                                    Lng = l.Lng,
+                                    IsVisible = CAST(1 AS BIT),
+                                    LocationDetail = (
+                                        SELECT
+                                            Results = (
+                                                SELECT
+                                                    FormattedAddress = lr.FormattedAddress,
+                                                    Geometry = (
+                                                        SELECT
+                                                            Location = (
+                                                                SELECT
+                                                                    Lat = l.Lat,
+                                                                    Lng = l.Lng
+                                                                FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
+                                                            ),
+                                                            LocationType = 'APPROXIMATE'
+                                                        FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
+                                                    ),
+                                                    AddressComponents = JSON_QUERY('[]'),
+                                                    Types = JSON_QUERY('[]'),
+                                                    PlaceId = ''
+                                                FOR JSON PATH
+                                            ),
+                                            Status = 'OK'
+                                        FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
+                                    )
+                                FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
+                            ),
+                            EventCriteria = (
+                                SELECT
+                                    EventType = CASE ec.EventType
+                                        WHEN 0 THEN 'Music'
+                                        WHEN 1 THEN 'Movies'
+                                        WHEN 2 THEN 'Comedy'
+                                        WHEN 3 THEN 'Entertainment'
+                                        ELSE NULL
+                                    END,
+                                    Gender = ec.Gender,
+                                    Race = ec.Race
+                                FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
+                            )
+                        FROM Events e
+                       JOIN Location l ON e.LocationId = l.Id
+                       LEFT JOIN EventCriterias ec ON ec.Id = e.EventCriteriaId
+	                   LEFT JOIN LocationDetails ld ON l.Id = ld.LocationId
+	                   LEFT JOIN LocationResult lr ON ld.Id = lr.LocationDetailId
+                        WHERE e.Status IN (1, 2)
+                        AND (@p_max_distance_km IS NULL OR 
+                             GEOGRAPHY::Point(l.Lat, l.Lng, 4326).STDistance(@point) / 1000 <= @p_max_distance_km)
+                        AND (@p_gender IS NULL OR ec.Gender = @p_gender)
+                        AND (@p_race IS NULL OR ec.Race = @p_race)
+                        AND (@p_passions IS NULL OR 
+                             (
+                                 (CHARINDEX('music', LOWER(@p_passions)) > 0 AND ec.EventType = 0) OR
+                                 (CHARINDEX('movies', LOWER(@p_passions)) > 0 AND ec.EventType = 1) OR
+                                 (CHARINDEX('comedy', LOWER(@p_passions)) > 0 AND ec.EventType = 2) OR
+                                 (CHARINDEX('entertainment', LOWER(@p_passions)) > 0 AND ec.EventType = 3)
+                             ))
                     AND (@p_category IS NULL OR e.EventCategory = @p_category)
                     AND (@p_event_type IS NULL OR e.EventType = @p_event_type)
                     AND (@p_created_by IS NULL OR u.DisplayName LIKE '%' + @p_created_by + '%')
