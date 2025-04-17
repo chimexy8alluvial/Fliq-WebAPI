@@ -106,54 +106,56 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             return parameters;
         }
 
-        public async Task<(IEnumerable<EventWithDisplayName> Data, int TotalCount)> GetEventsAsync(
-                LocationDetail? userLocation,
-                double? maxDistanceKm,
-                UserProfile? userProfile,
-                EventCategory? category,
-                EventType? eventType,
-                string? createdBy,
-                EventStatus? status,
-                bool? includeReviews,
-                int? minRating,
-                PaginationRequest pagination)
+        public async Task<(List<EventWithDisplayName> events, int totalCount)> GetEventsAsync(
+             LocationDetail? userLocation,
+             double? maxDistanceKm,
+             UserProfile? userProfile,
+             EventCategory? category,
+             EventType? eventType,
+             string? createdBy,
+             string? eventTitle,
+             EventStatus? status,
+             bool? includeReviews,
+             int? minRating,
+             PaginationRequest pagination)
         {
-            using var connection = _connectionFactory.CreateConnection() as SqlConnection;
-            if (connection == null)
-                throw new InvalidOperationException("Connection is not a SqlConnection.");
+            using var connection = _connectionFactory.CreateConnection();
+            var parameters = FilterDynamicParams(
+                userLocation,
+                maxDistanceKm,
+                userProfile,
+                category,
+                eventType,
+                createdBy,
+                eventTitle,
+                status,
+                includeReviews,
+                minRating,
+                pagination);
 
-            var parameters = FilterDynamicParams(userLocation, maxDistanceKm, userProfile, category, eventType, createdBy, status, includeReviews, minRating, pagination);
+            await connection.ExecuteAsync("sp_GetEvents", parameters, commandType: CommandType.StoredProcedure);
 
-            await connection.OpenAsync();
-
-            await connection.ExecuteAsync(
-                "sp_GetEvents",
-                parameters,
-                commandType: CommandType.StoredProcedure
-            );
-
-            int totalCount = parameters.Get<int>("p_total_count");
-            string? jsonEvents = parameters.Get<string>("p_events");
-
+            var totalCount = parameters.Get<int>("@p_total_count");
+            var jsonEvents = parameters.Get<string>("@p_events");
             var events = string.IsNullOrEmpty(jsonEvents)
                 ? new List<EventWithDisplayName>()
                 : JsonConvert.DeserializeObject<List<EventWithDisplayName>>(jsonEvents) ?? new List<EventWithDisplayName>();
 
-            await connection.CloseAsync();
             return (events, totalCount);
         }
 
         private static DynamicParameters FilterDynamicParams(
-            LocationDetail? userLocation,
-            double? maxDistanceKm,
-            UserProfile? userProfile,
-            EventCategory? category,
-            EventType? eventType,
-            string? createdBy,
-            EventStatus? status,
-            bool? includeReviews,
-            int? minRating,
-            PaginationRequest pagination)
+             LocationDetail? userLocation,
+             double? maxDistanceKm,
+             UserProfile? userProfile,
+             EventCategory? category,
+             EventType? eventType,
+             string? createdBy,
+             string? eventTitle, 
+             EventStatus? status,
+             bool? includeReviews,
+             int? minRating,
+             PaginationRequest pagination)
         {
             var parameters = new DynamicParameters();
             parameters.Add("@p_user_lat", userLocation?.Location?.Lat ?? userLocation?.Results.FirstOrDefault()?.Geometry.Location.Lat ?? (object)DBNull.Value);
@@ -165,11 +167,12 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             parameters.Add("@p_category", category.HasValue ? (int)category.Value : (object)DBNull.Value);
             parameters.Add("@p_event_type", eventType.HasValue ? (int)eventType.Value : (object)DBNull.Value);
             parameters.Add("@p_created_by", createdBy ?? (object)DBNull.Value);
+            parameters.Add("@p_event_title", eventTitle ?? (object)DBNull.Value);
             parameters.Add("@p_status", status.HasValue ? (int)status.Value : (object)DBNull.Value);
             parameters.Add("@p_include_reviews", includeReviews.HasValue ? includeReviews.Value : (object)DBNull.Value);
             parameters.Add("@p_min_rating", minRating ?? (object)DBNull.Value);
             parameters.Add("@p_page_number", pagination.PageNumber);
-            parameters.Add("@p_page_size", pagination.PageSize);
+            parameters.Add("@p_page_size", Math.Min(pagination.PageSize, 5)); // Cap at 5
             parameters.Add("@p_total_count", dbType: DbType.Int32, direction: ParameterDirection.Output);
             parameters.Add("@p_events", dbType: DbType.String, direction: ParameterDirection.Output);
             return parameters;
