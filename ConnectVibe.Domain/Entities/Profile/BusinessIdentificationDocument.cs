@@ -6,7 +6,7 @@
         public User? User { get; set; }
         public int BusinessDocumentTypeId { get; set; }
         public BusinessDocumentType? BusinessDocumentType { get; set; }
-        public string FrontDocumentUrl { get; set; }
+        public string FrontDocumentUrl { get; set; } = string.Empty;
         public string? BackDocumentUrl { get; set; }
         public DateTime UploadedDate { get; set; } = DateTime.UtcNow;
         public bool IsVerified { get; set; } = false;
