@@ -40,7 +40,7 @@ namespace Fliq.Application.Event.Commands.FlagEvent
 
             if (eventFromDb.IsFlagged)
             {
-                _logger.LogError($"Event with ID: {command.EventId} has been flagged already.");
+                _logger.LogInfo($"Event with ID: {command.EventId} has been flagged already.");
                 return Errors.Event.EventFlaggedAlready;
             }
 
