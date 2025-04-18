@@ -13,6 +13,10 @@ namespace Fliq.Domain.Entities.DatingEnvironment.SpeedDates
 
         public DateTime? StartSessionTime { get; set; }
         public DateTime? EndSessionTime { get; set; }
+        public TimeSpan? Duration =>
+        StartSessionTime.HasValue && EndSessionTime.HasValue
+        ? EndSessionTime - StartSessionTime
+        : null;
 
         public string? ImageUrl { get; set; }
         public int MinAge { get; set; }
@@ -24,6 +28,8 @@ namespace Fliq.Domain.Entities.DatingEnvironment.SpeedDates
 
         public int LocationId { get; set; }
         public Location Location { get; set; } = default!;
+        public int CreatedByUserId { get; set; }
+        public User CreatedByUser { get; set; } = default!;
 
         public List<SpeedDatingParticipant> Participants { get; set; } = new();
     }

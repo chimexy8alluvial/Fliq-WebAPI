@@ -1,13 +1,11 @@
-﻿
-
-using Fliq.Application.Common.Interfaces.Persistence;
+﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.DatingEnvironment.Commands.BlindDateCategory;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.DatingEnvironment.BlindDates;
 using Moq;
 
-namespace Fliq.Test.Dating.Commands
+namespace Fliq.Test.Dating.Commands.BlindDating
 {
     [TestClass]
     public class AddBlindDateCategoryCommandHandlerTest

@@ -12,9 +12,9 @@ namespace Fliq.Test.Dating.Commands.SpeedDating
     [TestClass]
     public class EndSpeedDatingEventCommandHandlerTests
     {
-        private Mock<ISpeedDatingEventRepository> _mockSpeedDateRepository;
-        private Mock<ISpeedDateParticipantRepository> _mockSpeedDateParticipantRepository;
-        private Mock<ILoggerManager> _mockLogger;
+        private Mock<ISpeedDatingEventRepository>? _mockSpeedDateRepository;
+        private Mock<ISpeedDateParticipantRepository>? _mockSpeedDateParticipantRepository;
+        private Mock<ILoggerManager>? _mockLogger;
         private EndSpeedDateCommandHandler _handler;
 
         [TestInitialize]
@@ -34,7 +34,7 @@ namespace Fliq.Test.Dating.Commands.SpeedDating
         {
             // Arrange
             var command = new EndSpeedDatingEventCommand(1, 1);
-            _mockSpeedDateRepository.Setup(repo => repo.GetByIdAsync(1)).ReturnsAsync((SpeedDatingEvent)null);
+            _mockSpeedDateRepository?.Setup(repo => repo.GetByIdAsync(1)).ReturnsAsync((SpeedDatingEvent)null);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -50,7 +50,7 @@ namespace Fliq.Test.Dating.Commands.SpeedDating
             // Arrange
             var command = new EndSpeedDatingEventCommand(1, 1);
             var speedDate = new SpeedDatingEvent { Id = 1, Status = DateStatus.Completed };
-            _mockSpeedDateRepository.Setup(repo => repo.GetByIdAsync(1)).ReturnsAsync(speedDate);
+            _mockSpeedDateRepository?.Setup(repo => repo.GetByIdAsync(1)).ReturnsAsync(speedDate);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -68,8 +68,8 @@ namespace Fliq.Test.Dating.Commands.SpeedDating
             var speedDate = new SpeedDatingEvent { Id = 1, Status = DateStatus.Ongoing };
             var creator = new SpeedDatingParticipant { UserId = 2 }; // Different user ID
 
-            _mockSpeedDateRepository.Setup(repo => repo.GetByIdAsync(1)).ReturnsAsync(speedDate);
-            _mockSpeedDateParticipantRepository.Setup(repo => repo.GetCreatorByBlindDateId(1)).ReturnsAsync(creator);
+            _mockSpeedDateRepository?.Setup(repo => repo.GetByIdAsync(1)).ReturnsAsync(speedDate);
+            _mockSpeedDateParticipantRepository?.Setup(repo => repo.GetCreatorByBlindDateId(1)).ReturnsAsync(creator);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -87,9 +87,9 @@ namespace Fliq.Test.Dating.Commands.SpeedDating
             var speedDate = new SpeedDatingEvent { Id = 1, Status = DateStatus.Ongoing };
             var creator = new SpeedDatingParticipant { UserId = 1 }; // Same as command user ID
 
-            _mockSpeedDateRepository.Setup(repo => repo.GetByIdAsync(1)).ReturnsAsync(speedDate);
-            _mockSpeedDateParticipantRepository.Setup(repo => repo.GetCreatorByBlindDateId(1)).ReturnsAsync(creator);
-            _mockSpeedDateRepository.Setup(repo => repo.UpdateAsync(speedDate)).Returns(Task.CompletedTask);
+            _mockSpeedDateRepository?.Setup(repo => repo.GetByIdAsync(1)).ReturnsAsync(speedDate);
+            _mockSpeedDateParticipantRepository?.Setup(repo => repo.GetCreatorByBlindDateId(1)).ReturnsAsync(creator);
+            _mockSpeedDateRepository?.Setup(repo => repo.UpdateAsync(speedDate)).Returns(Task.CompletedTask);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);

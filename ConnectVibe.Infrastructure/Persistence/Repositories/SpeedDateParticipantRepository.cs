@@ -1,16 +1,19 @@
 ﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Domain.Entities.DatingEnvironment.SpeedDates;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {
     public class SpeedDateParticipantRepository : ISpeedDateParticipantRepository
     {
         private readonly FliqDbContext _dbContext;
+        private readonly IDbConnectionFactory _connectionFactory;
 
-        public SpeedDateParticipantRepository(FliqDbContext dbContext)
+        public SpeedDateParticipantRepository(FliqDbContext dbContext, IDbConnectionFactory connectionFactory)
         {
             _dbContext = dbContext;
+            _connectionFactory = connectionFactory;
         }
 
         public async Task<SpeedDatingParticipant?> GetByIdAsync(int id)
@@ -72,5 +75,6 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             return await _dbContext.SpeedDatingParticipanticipants
                           .FirstOrDefaultAsync(c => c.SpeedDatingEventId == speedDateId && c.IsCreator);
         }
+
     }
 }

@@ -14,7 +14,7 @@ using Fliq.Domain.Entities.Profile;
 using Fliq.Application.Common.Models;
 using Fliq.Domain.Entities.DatingEnvironment.BlindDates;
 
-namespace Fliq.Test.Dating.Commands
+namespace Fliq.Test.Dating.Commands.BlindDating
 {
     [TestClass]
     public class CreateBlindDateCommandHandlerTests
@@ -61,7 +61,7 @@ namespace Fliq.Test.Dating.Commands
                 CategoryId: 1,
                 Location: location,
                   LocationDetail: locationDetail,
-                BlindDateImage: new DatePhotoMapped( CreateMockFormFile()),
+                BlindDateImage: new DatePhotoMapped(CreateMockFormFile()),
                 IsOneOnOne: false,
                 NumberOfParticipants: 10,
                 IsRecordingEnabled: true,
@@ -76,15 +76,15 @@ namespace Fliq.Test.Dating.Commands
             var blindDateEntity = new BlindDate { Id = 1, Title = "Speed Dating Night" };
             var locationResponse = new LocationQueryResponse
             {
-                PlusCode = new Fliq.Application.Common.Models.PlusCode { CompoundCode = "FakeCode", GlobalCode = "GlobalCode123" },
+                PlusCode = new Application.Common.Models.PlusCode { CompoundCode = "FakeCode", GlobalCode = "GlobalCode123" },
                 Results = new List<Result>
                 {
                     new Result
                     {
                         FormattedAddress = "123 Fake Street, Faketown, Fakestate",
-                        Geometry = new Fliq.Application.Common.Models.Geometry
+                        Geometry = new Application.Common.Models.Geometry
                         {
-                            Location = new Fliq.Application.Common.Models.Locationn
+                            Location = new Application.Common.Models.Locationn
                             {
                                 Lat = 40.7128,
                                 Lng = -74.0060

@@ -13,6 +13,6 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         Task<SpeedDatingParticipant?> GetCreatorByBlindDateId(int blindDateId);
         Task UpdateAsync(SpeedDatingParticipant participant);
 
-       Task<int> CountByBlindDateId(int blindDateId);
+        Task<int> CountByBlindDateId(int blindDateId);
     }
 }

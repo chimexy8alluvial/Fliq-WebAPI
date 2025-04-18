@@ -1,6 +1,4 @@
-﻿
-
-using Fliq.Application.Common.Hubs;
+﻿using Fliq.Application.Common.Hubs;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Interfaces.Services.LocationServices;
@@ -12,7 +10,7 @@ using MapsterMapper;
 using Microsoft.AspNetCore.SignalR;
 using Moq;
 
-namespace Fliq.Test.Dating.Commands
+namespace Fliq.Test.Dating.Commands.BlindDating
 {
     [TestClass]
     public class JoinBlindDateCommandHandlerTests
