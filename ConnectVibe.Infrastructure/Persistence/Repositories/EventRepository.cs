@@ -145,23 +145,23 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         }
 
         private static DynamicParameters FilterDynamicParams(
-             LocationDetail? userLocation,
-             double? maxDistanceKm,
-             UserProfile? userProfile,
-             EventCategory? category,
-             EventType? eventType,
-             string? createdBy,
-             string? eventTitle, 
-             EventStatus? status,
-             bool? includeReviews,
-             int? minRating,
-             PaginationRequest pagination)
+                LocationDetail? userLocation,
+                double? maxDistanceKm,
+                UserProfile? userProfile,
+                EventCategory? category,
+                EventType? eventType,
+                string? createdBy,
+                string? eventTitle,
+                EventStatus? status,
+                bool? includeReviews,
+                int? minRating,
+                PaginationRequest pagination)
         {
             var parameters = new DynamicParameters();
             parameters.Add("@p_user_lat", userLocation?.Location?.Lat ?? userLocation?.Results.FirstOrDefault()?.Geometry.Location.Lat ?? (object)DBNull.Value);
             parameters.Add("@p_user_lng", userLocation?.Location?.Lng ?? userLocation?.Results.FirstOrDefault()?.Geometry.Location.Lng ?? (object)DBNull.Value);
             parameters.Add("@p_max_distance_km", maxDistanceKm ?? (object)DBNull.Value);
-            parameters.Add("@p_gender", userProfile?.Gender?.GenderType ?? (object)DBNull.Value);
+            parameters.Add("@p_gender", userProfile?.Gender?.GenderType.ToString() ?? (object)DBNull.Value); // Explicitly convert enum to string
             parameters.Add("@p_race", userProfile?.Ethnicity?.EthnicityType ?? (object)DBNull.Value);
             parameters.Add("@p_passions", userProfile?.Passions.Any() == true ? string.Join(",", userProfile.Passions) : (object)DBNull.Value);
             parameters.Add("@p_category", category.HasValue ? (int)category.Value : (object)DBNull.Value);

@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
-using Fliq.Application.Common.Interfaces.Persistence;
+﻿using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Pagination;
 using Fliq.Application.Explore.Common;
@@ -15,6 +8,7 @@ using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities;
 using Fliq.Domain.Entities.Event.Enums;
 using Fliq.Domain.Entities.Profile;
+using Moq;
 
 namespace Fliq.Application.Tests.Explore.Queries
 {
@@ -62,7 +56,7 @@ namespace Fliq.Application.Tests.Explore.Queries
                 UserProfile = new UserProfile
                 {
                     Location = new Location { LocationDetail = new LocationDetail { Location = new Location { Lat = 40.7128, Lng = -74.0060 } } },
-                    Gender = new Gender { GenderType = "Male" },
+                    Gender = new Gender { GenderType = GenderType.Male },
                     Ethnicity = new Ethnicity { EthnicityType = "Asian" },
                     Passions = new List<string> { "music", "comedy" }
                 }
@@ -120,7 +114,7 @@ namespace Fliq.Application.Tests.Explore.Queries
             _eventRepositoryMock.Setup(repo => repo.GetEventsAsync(
                 It.Is<LocationDetail>(ld => ld.Location.Lat == 40.7128 && ld.Location.Lng == -74.0060),
                 It.Is<double?>(d => d == 10.0),
-                It.Is<UserProfile>(up => up.Gender.GenderType == "Male" && up.Ethnicity!.EthnicityType == "Asian"),
+                It.Is<UserProfile>(up => up.Gender.GenderType == GenderType.Male && up.Ethnicity!.EthnicityType == "Asian"), // Update to enum
                 It.Is<EventCategory?>(c => c == EventCategory.Free),
                 It.Is<EventType?>(t => t == EventType.Live),
                 It.Is<string>(cb => cb == "John"),
@@ -146,6 +140,7 @@ namespace Fliq.Application.Tests.Explore.Queries
             Assert.AreEqual("John Doe", eventData.CreatedBy);
             Assert.IsNull(eventData.GetType().GetProperty("UserId")); // Verify UserId is not present
             Assert.AreEqual("Comedy", eventData.EventCriteria?.EventType);
+            Assert.AreEqual("Male", eventData.EventCriteria?.Gender);
             Assert.AreEqual(2, eventData.Reviews.Count);
             Assert.IsTrue(eventData.Reviews.All(r => r.Rating >= 4));
             Assert.AreEqual(4, eventData.Reviews[0].Rating);

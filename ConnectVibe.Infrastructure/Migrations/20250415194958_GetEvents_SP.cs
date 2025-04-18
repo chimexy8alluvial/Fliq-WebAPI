@@ -21,7 +21,7 @@ namespace Fliq.Infrastructure.Migrations
                 @p_category INT,
                 @p_event_type INT,
                 @p_created_by VARCHAR(100),
-                @p_event_title VARCHAR(100), -- New parameter
+                @p_event_title VARCHAR(100),
                 @p_status INT,
                 @p_include_reviews BIT,
                 @p_min_rating INT,
@@ -35,8 +35,18 @@ namespace Fliq.Infrastructure.Migrations
 
                 DECLARE @offset INT = (@p_page_number - 1) * @p_page_size;
                 DECLARE @point GEOGRAPHY;
+                DECLARE @gender_int INT;
+
                 IF @p_user_lat IS NOT NULL AND @p_user_lng IS NOT NULL
                     SET @point = GEOGRAPHY::Point(@p_user_lat, @p_user_lng, 4326);
+
+                -- Map string gender to integer (if database uses numeric values)
+                SET @gender_int = CASE 
+                    WHEN @p_gender = 'Male' THEN 1
+                    WHEN @p_gender = 'Female' THEN 2
+                    WHEN @p_gender = 'Both' THEN 3
+                    ELSE NULL
+                END;
 
                 -- Count total
                 SELECT @p_total_count = COUNT(*)
@@ -47,7 +57,7 @@ namespace Fliq.Infrastructure.Migrations
                 WHERE (@p_status IS NULL OR e.Status = @p_status)
                     AND (@p_max_distance_km IS NULL OR 
                          GEOGRAPHY::Point(l.Lat, l.Lng, 4326).STDistance(@point) / 1000 <= @p_max_distance_km)
-                    AND (@p_gender IS NULL OR ec.Gender = @p_gender)
+                    AND (@p_gender IS NULL OR ec.Gender = @gender_int) -- Use integer gender
                     AND (@p_race IS NULL OR ec.Race = @p_race)
                     AND (@p_passions IS NULL OR 
                          (
@@ -128,7 +138,12 @@ namespace Fliq.Infrastructure.Migrations
                                     WHEN 3 THEN 'Entertainment'
                                     ELSE NULL
                                 END,
-                                Gender = ec.Gender,
+                                Gender = CASE ec.Gender
+                                    WHEN 1 THEN 'Male'
+                                    WHEN 2 THEN 'Female'
+                                    WHEN 3 THEN 'Both'
+                                    ELSE NULL
+                                END,
                                 Race = ec.Race
                             FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
                         ),
@@ -155,7 +170,7 @@ namespace Fliq.Infrastructure.Migrations
                     WHERE (@p_status IS NULL OR e.Status = @p_status)
                         AND (@p_max_distance_km IS NULL OR 
                              GEOGRAPHY::Point(l.Lat, l.Lng, 4326).STDistance(@point) / 1000 <= @p_max_distance_km)
-                        AND (@p_gender IS NULL OR ec.Gender = @p_gender)
+                        AND (@p_gender IS NULL OR ec.Gender = @gender_int) -- Use integer gender
                         AND (@p_race IS NULL OR ec.Race = @p_race)
                         AND (@p_passions IS NULL OR 
                              (
