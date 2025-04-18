@@ -4,6 +4,7 @@ using Fliq.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fliq.Infrastructure.Migrations
 {
     [DbContext(typeof(FliqDbContext))]
-    partial class FliqDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250416150153_DropBusinessEntity")]
+    partial class DropBusinessEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -69,35 +72,6 @@ namespace Fliq.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("AuditTrails");
-                });
-
-            modelBuilder.Entity("Fliq.Domain.Entities.BusinessDocumentType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DateModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("HasFrontAndBack")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("BusinessDocumentTypes");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.DatingEnvironment.BlindDates.BlindDate", b =>
@@ -1337,54 +1311,6 @@ namespace Fliq.Infrastructure.Migrations
                     b.ToTable("AddressComponent");
                 });
 
-            modelBuilder.Entity("Fliq.Domain.Entities.Profile.BusinessIdentificationDocument", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("BackDocumentUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("BusinessDocumentTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DateModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("FrontDocumentUrl")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsVerified")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("UploadedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("VerifiedDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BusinessDocumentTypeId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("BusinessIdentificationDocuments");
-                });
-
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.EducationStatus", b =>
                 {
                     b.Property<int>("Id")
@@ -1778,9 +1704,6 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<bool>("AllowNotifications")
                         .HasColumnType("bit");
 
-                    b.Property<int>("BusinessIdentificationDocumentId")
-                        .HasColumnType("int");
-
                     b.Property<string>("CompletedSections")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -1860,8 +1783,6 @@ namespace Fliq.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BusinessIdentificationDocumentId");
 
                     b.HasIndex("EducationStatusId");
 
@@ -2069,6 +1990,13 @@ namespace Fliq.Infrastructure.Migrations
                             DateCreated = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsDeleted = false,
                             Name = "User"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            DateCreated = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsDeleted = false,
+                            Name = "Business"
                         });
                 });
 
@@ -2298,21 +2226,6 @@ namespace Fliq.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Address")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("BusinessName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("BusinessType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CompanyBio")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ContactInformation")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
@@ -2742,25 +2655,6 @@ namespace Fliq.Infrastructure.Migrations
                         .HasForeignKey("LocationResultId");
                 });
 
-            modelBuilder.Entity("Fliq.Domain.Entities.Profile.BusinessIdentificationDocument", b =>
-                {
-                    b.HasOne("Fliq.Domain.Entities.BusinessDocumentType", "BusinessDocumentType")
-                        .WithMany()
-                        .HasForeignKey("BusinessDocumentTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Fliq.Domain.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("BusinessDocumentType");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.Geometry", b =>
                 {
                     b.HasOne("Fliq.Domain.Entities.Profile.Locationn", "Location")
@@ -2807,12 +2701,6 @@ namespace Fliq.Infrastructure.Migrations
 
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.UserProfile", b =>
                 {
-                    b.HasOne("Fliq.Domain.Entities.Profile.BusinessIdentificationDocument", "BusinessIdentificationDocument")
-                        .WithMany()
-                        .HasForeignKey("BusinessIdentificationDocumentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Fliq.Domain.Entities.Profile.EducationStatus", "EducationStatus")
                         .WithMany()
                         .HasForeignKey("EducationStatusId");
@@ -2860,8 +2748,6 @@ namespace Fliq.Infrastructure.Migrations
                         .HasForeignKey("WantKidsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("BusinessIdentificationDocument");
 
                     b.Navigation("EducationStatus");
 

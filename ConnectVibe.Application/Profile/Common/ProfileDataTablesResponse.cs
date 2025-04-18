@@ -11,5 +11,6 @@ namespace Fliq.Application.Profile.Common
         public List<Gender> Genders { get; set; } = new List<Gender>();
         public List<HaveKids> HaveKids { get; set; } = new List<HaveKids>();
         public List<WantKids> WantKids { get; set; } = new List<WantKids>();
+        public List<BusinessIdentificationDocument> BusinessIdentificationDocuments { get; set; } = new List<BusinessIdentificationDocument>();
     }
 }

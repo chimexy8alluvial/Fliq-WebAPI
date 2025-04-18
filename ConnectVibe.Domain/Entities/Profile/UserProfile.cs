@@ -20,6 +20,7 @@ namespace Fliq.Domain.Entities.Profile
         public bool IsOccupationVisible { get; set; }
         public int? ReligionId { get; set; }
         public bool IsReligionVisible { get; set; }
+        public int BusinessIdentificationDocumentId { get; set; }
 
         public DateTime DOB { get; set; }
         public Gender Gender { get; set; } = default!;
@@ -32,6 +33,7 @@ namespace Fliq.Domain.Entities.Profile
         public HaveKids HaveKids { get; set; }  =default!;
         public WantKids WantKids { get; set; } =default!;
         public Location? Location { get; set; } = default!;
+        public BusinessIdentificationDocument? BusinessIdentificationDocument { get; set; }
         public bool AllowNotifications { get; set; }
         public List<ProfilePhoto>? Photos { get; set; } = new();
 

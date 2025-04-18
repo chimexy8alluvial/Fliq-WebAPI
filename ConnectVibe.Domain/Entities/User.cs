@@ -18,8 +18,13 @@ namespace Fliq.Domain.Entities
         public DateTime LastActiveAt { get; set; } = DateTime.UtcNow;
         public int RoleId { get; set; }
         public string PhoneNumber { get; set; } = string.Empty;
+        public string? ContactInformation { get; set; } = string.Empty;
         public UserProfile? UserProfile { get; set; }
         public Role? Role { get; set; }
+        public string? BusinessName { get; set; } = string.Empty;
+        public string? BusinessType { get; set; } = string.Empty;
+        public string? Address { get; set; } = string.Empty;
+        public string? CompanyBio { get; set; } = string.Empty;
         public List<Payment>? Payments { get; set; }
         public List<Subscription>? Subscriptions { get; set; }
         public List<MatchRequest>? MatchRequests { get; set; }
