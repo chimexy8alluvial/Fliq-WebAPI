@@ -116,7 +116,7 @@ namespace Fliq.Application.Event.Commands.EventCreation
             RuleFor(x => x.TicketDescription)
                 .NotEmpty().WithMessage("Ticket Description is required.");
 
-            RuleFor(x => x.TicketType)
+            RuleFor(x => x.TicketCategory)
                 .NotEmpty().WithMessage("Ticket Type is required.");
 
             RuleFor(x => x.Currency)

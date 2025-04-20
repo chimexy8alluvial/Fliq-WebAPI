@@ -42,7 +42,7 @@ namespace Fliq.Test.Event.Commands
             {
                 EventId = 1,
                 TicketName = "VIP Ticket",
-                TicketType = TicketType.Vip,
+                TicketCategory = TicketCategory.Vip,
                 Amount = 100.0m
             };
 
@@ -64,7 +64,7 @@ namespace Fliq.Test.Event.Commands
             {
                 EventId = 1,
                 TicketName = "General Admission",
-                TicketType = TicketType.Regular,
+                TicketCategory = TicketCategory.Regular,
                 TicketDescription = "Standard entry ticket",
                 EventDate = DateTime.UtcNow,
                 CurrencyId = 1,
@@ -82,7 +82,7 @@ namespace Fliq.Test.Event.Commands
             var ticket = new Ticket
             {
                 TicketName = command.TicketName,
-                TicketType = command.TicketType,
+                TicketCategory = command.TicketCategory,
                 Amount = command.Amount
             };
 
@@ -106,7 +106,7 @@ namespace Fliq.Test.Event.Commands
             {
                 EventId = 1,
                 TicketName = "Early Bird",
-                TicketType = TicketType.Regular,
+                TicketCategory = TicketCategory.Regular,
                 TicketDescription = "Discounted ticket for early buyers",
                 EventDate = DateTime.UtcNow,
                 CurrencyId = 1,
@@ -126,7 +126,7 @@ namespace Fliq.Test.Event.Commands
             var ticket = new Ticket
             {
                 TicketName = command.TicketName,
-                TicketType = command.TicketType,
+                TicketCategory = command.TicketCategory,
                 Amount = command.Amount,
                 Discounts = command.Discounts
             };

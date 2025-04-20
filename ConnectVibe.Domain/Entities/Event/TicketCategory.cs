@@ -1,6 +1,6 @@
 ﻿namespace Fliq.Domain.Entities.Event
 {
-    public enum TicketType
+    public enum TicketCategory
     {
         Regular,
         Vip,

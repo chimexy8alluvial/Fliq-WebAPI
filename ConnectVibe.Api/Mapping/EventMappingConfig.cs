@@ -1,5 +1,5 @@
 ﻿using Fliq.Application.Event.Commands.AddEventReview;
-using Fliq.Application.Event.Commands.AddEventTicket;
+////using Fliq.Application.Event.Commands.AddEventTicket;
 using Fliq.Application.Event.Commands.EventCreation;
 using Fliq.Application.Event.Commands.Tickets;
 using Fliq.Application.Event.Commands.UpdateEvent;
@@ -39,7 +39,7 @@ namespace Fliq.Api.Mapping
                 .Map(dest => dest.Type, src => (DiscountType?)src.Type);
 
             config.NewConfig<AddTicketDto, AddTicketCommand>();
-            config.NewConfig<PurchaseTicketDto, AddEventTicketCommand>();
+            //config.NewConfig<PurchaseTicketDto, AddEventTicketCommand>();
             config.NewConfig<AddEventReviewDto, AddEventReviewCommand>();
             config.NewConfig<AddReviewResult, GetEventResponse>();
             config.NewConfig<EventInviteeDto, EventInvitee>();
@@ -47,7 +47,7 @@ namespace Fliq.Api.Mapping
                 .Map(dest => dest.Gender, src => (GenderType)src.Gender)
                 .Map(dest => dest.EventType, src => (Event_Type)src.EventType);
             config.NewConfig<TicketDto, Ticket>()
-                .Map(dest => dest.TicketType, src => (TicketType)src.TicketType);
+                .Map(dest => dest.TicketCategory, src => (TicketCategory)src.TicketCategory);
             config.NewConfig<DiscountDto, Discount>()
                 .Map(dest => dest.Type, src => (DiscountType)src.Type);
             config.NewConfig<SponsoredEventDetailsDto, SponsoredEventDetail>()

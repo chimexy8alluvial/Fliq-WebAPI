@@ -14,7 +14,7 @@ namespace Fliq.Application.Event.Commands.UpdateTicket
         public int EventId { get; set; }
         public int Id { get; set; }
         public string? TicketName { get; set; }
-        public TicketType? TicketType { get; set; }
+        public TicketCategory? TicketCategory { get; set; }
         public string? TicketDescription { get; set; }
         public DateTime? EventDate { get; set; }
         public int? CurrencyId { get; set; }

@@ -17,5 +17,9 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         void UpdateEventTicket(EventTicket request);
 
         EventTicket? GetEventTicketById(int id);
+
+        Task<List<Ticket>> GetTicketsByIdsAsync(List<int> ids);
+        Task UpdateRangeAsync(IEnumerable<Ticket> tickets); 
+        Task AddEventTicketsAsync(IEnumerable<EventTicket> eventTickets);
     }
 }

@@ -9,6 +9,27 @@ namespace Fliq.Domain.Common.Errors
             public static Error TicketNotFound => Error.Failure(
              code: "Ticket.TicketNotFound",
              description: "Ticket not found.");
+            public static Error PurchaseFailed => Error.Failure(
+             code: "Ticket.PurchaseFailed",
+             description: "Ticket purchase failed.");
+            public static Error NoTicketsAvailable => Error.Failure(
+             code: "Ticket.NoTicketsAvailable",
+             description: "No Tickets Available.");
+            public static Error NoTicketsSpecified => Error.Failure(
+             code: "Ticket.NoTicketsSpecified",
+             description: "No Tickets Specified.");
+            public static Error MultipleEventsNotSupported => Error.Failure(
+             code: "Ticket.MultipleEventsNotSupported",
+             description: "Multiple Events Not Supported.");
+            public static Error TicketAlreadyRefunded => Error.Failure(
+             code: "Ticket.TicketAlreadyRefunded",
+             description: "Ticket already refunded.");
+            public static Error TicketAlreadySoldOut => Error.Failure(
+             code: "Ticket.TicketAlreadySoldOut",
+             description: "Ticket already soldout.");
+            public static Error InsufficientAvailableTickets => Error.Failure(
+             code: "Ticket.InsufficientAvailableTickets",
+             description: "Insufficient Available Tickets.");
         }
     }
 }

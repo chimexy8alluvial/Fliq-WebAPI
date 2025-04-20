@@ -13,7 +13,7 @@ namespace Fliq.Application.Event.Commands.Tickets
     {
         public int EventId { get; set; }
         public string TicketName { get; set; } = default!;
-        public TicketType TicketType { get; set; } = default!;
+        public TicketCategory TicketCategory { get; set; } = default!;
         public string TicketDescription { get; set; } = default!;
         public DateTime EventDate { get; set; }
         public int CurrencyId { get; set; } = default!;

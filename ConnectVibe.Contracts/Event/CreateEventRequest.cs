@@ -4,7 +4,7 @@ namespace Fliq.Contracts.Event
 {
     public record CreateEventRequest
     (
-        int EventType,
+    int EventType,
     string EventTitle,
     string EventDescription,
     int EventCategory,

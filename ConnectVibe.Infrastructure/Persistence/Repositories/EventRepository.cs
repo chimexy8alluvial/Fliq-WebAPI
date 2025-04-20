@@ -2,6 +2,7 @@
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.DashBoard.Common;
 using Fliq.Domain.Entities.Event;
+using Microsoft.EntityFrameworkCore;
 using System.Data;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
@@ -39,6 +40,12 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         public Events? GetEventById(int id)
         {
             var result = _dbContext.Events.SingleOrDefault(p => p.Id == id);
+            return result;
+        }
+        
+        public async Task<Events?> GetEventByIdAsync(int id)
+        {
+            var result = await _dbContext.Events.SingleOrDefaultAsync(p => p.Id == id);
             return result;
         }
 

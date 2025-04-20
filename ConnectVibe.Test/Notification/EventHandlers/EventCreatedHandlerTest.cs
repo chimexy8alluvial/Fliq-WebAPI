@@ -12,22 +12,25 @@ namespace Fliq.Test.Notification.EventHandlers
         [TestClass]
         public class EventCreatedEventHandlerTest
         {
-            private NotificationEventHandler? _handler;
             private Mock<INotificationRepository>? _notificationRepositoryMock;
             private Mock<IPushNotificationService>? _firebaseServiceMock;
-            private Mock<ILoggerManager>? _loggerManagerMock;
+            private Mock<IEmailService>? _emailServiceMock;
+            private Mock<ILoggerManager>? _loggerMock;
+            private NotificationEventHandler? _handler;
 
             [TestInitialize]
             public void Setup()
             {
                 _notificationRepositoryMock = new Mock<INotificationRepository>();
                 _firebaseServiceMock = new Mock<IPushNotificationService>();
-                _loggerManagerMock = new Mock<ILoggerManager>();
-
+                _emailServiceMock = new Mock<IEmailService>();
+                _loggerMock = new Mock<ILoggerManager>();
                 _handler = new NotificationEventHandler(
                     _notificationRepositoryMock.Object,
                     _firebaseServiceMock.Object,
-                    _loggerManagerMock.Object);
+                    _emailServiceMock.Object,
+                    _loggerMock.Object
+                );
             }
 
             [TestMethod]

@@ -10,24 +10,25 @@ namespace Fliq.Test.Notification.MatchHandlers
     [TestClass]
     public class MatchAcceptedEventHandlers
     {
-        private NotificationEventHandler? _handler;
-        private Mock<IUserRepository>? _userRepositoryMock;
         private Mock<INotificationRepository>? _notificationRepositoryMock;
         private Mock<IPushNotificationService>? _firebaseServiceMock;
-        private Mock<ILoggerManager>? _loggerManagerMock;
+        private Mock<IEmailService>? _emailServiceMock;
+        private Mock<ILoggerManager>? _loggerMock;
+        private NotificationEventHandler? _handler;
 
         [TestInitialize]
         public void Setup()
         {
-            _userRepositoryMock = new Mock<IUserRepository>();
             _notificationRepositoryMock = new Mock<INotificationRepository>();
             _firebaseServiceMock = new Mock<IPushNotificationService>();
-            _loggerManagerMock = new Mock<ILoggerManager>();
-
+            _emailServiceMock = new Mock<IEmailService>();
+            _loggerMock = new Mock<ILoggerManager>();
             _handler = new NotificationEventHandler(
                 _notificationRepositoryMock.Object,
                 _firebaseServiceMock.Object,
-                _loggerManagerMock.Object);
+                _emailServiceMock.Object,
+                _loggerMock.Object
+            );
         }
 
         [TestMethod]
@@ -51,7 +52,7 @@ namespace Fliq.Test.Notification.MatchHandlers
                 .ReturnsAsync(new List<string> { token2 }); // Tokens for accepter
 
             // Act
-            await _handler.Handle(matchAcceptedEvent, CancellationToken.None);
+            await _handler!.Handle(matchAcceptedEvent, CancellationToken.None);
 
             // Assert
 
@@ -76,7 +77,7 @@ namespace Fliq.Test.Notification.MatchHandlers
                 "View Profile"), Times.Once);
 
             // Optionally, verify the log was written
-            _loggerManagerMock?.Verify(logger => logger.LogInfo(
+            _loggerMock?.Verify(logger => logger.LogInfo(
                 "Notification sent for match acceptance to AccepterUserId: 2 and InitiatorUserId: 1"), Times.Once);
         }
     }

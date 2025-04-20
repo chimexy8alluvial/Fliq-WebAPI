@@ -3,7 +3,7 @@
     public class Ticket : Record
     {
         public string? TicketName { get; set; } = default!;
-        public TicketType TicketType { get; set; } = default!;
+        public TicketCategory TicketCategory { get; set; } = default!;
         public string TicketDescription { get; set; } = default!;
         public DateTime EventDate { get; set; }
         public Currency Currency { get; set; } = default!;
