@@ -11,7 +11,7 @@
         public string BuyerName { get; }
         public List<TicketDetail>? TicketDetails { get; }
         public int? SpecificUserId { get; }
-        public string? SpecificTicketType { get; }
+        public string? SpecificTicketCategory { get; } 
         public string? Email { get; } // New field for email notifications
 
         // Constructor for individual user notification (UserId-based)
@@ -23,7 +23,7 @@
             string eventTitle,
             string eventDate,
             string buyerName,
-            string ticketType,
+            string ticketCategory, 
             string title,
             string message)
             : base(userId, title, message)
@@ -36,7 +36,7 @@
             EventDate = eventDate;
             BuyerName = buyerName;
             SpecificUserId = userId;
-            SpecificTicketType = ticketType;
+            SpecificTicketCategory = ticketCategory; 
             TicketDetails = null;
             Email = null;
         }
@@ -50,7 +50,7 @@
             string eventTitle,
             string eventDate,
             string buyerName,
-            string ticketType,
+            string ticketCategory, 
             string title,
             string message)
             : base(0, title, message) // UserId = 0 since it’s email-based
@@ -63,7 +63,7 @@
             EventDate = eventDate;
             BuyerName = buyerName;
             SpecificUserId = null;
-            SpecificTicketType = ticketType;
+            SpecificTicketCategory = ticketCategory; 
             TicketDetails = null;
             Email = email;
         }
@@ -91,15 +91,15 @@
             BuyerName = buyerName;
             TicketDetails = ticketDetails;
             SpecificUserId = null;
-            SpecificTicketType = null;
+            SpecificTicketCategory = null; 
             Email = null;
         }
     }
 
     public record TicketDetail
     {
-        public int? UserId { get; init; } // Nullable to match PurchaseTicketDetail
-        public string? TicketType { get; init; }
-        public string? Email { get; init; } // Added for email-based assignments
+        public int? UserId { get; init; } 
+        public string? TicketCategory { get; init; } 
+        public string? Email { get; init; } 
     }
 }

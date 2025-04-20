@@ -196,7 +196,7 @@ namespace Fliq.Application.Notifications.Common
                         await HandleNotificationAsync(
                             ticket.UserId.Value,
                             "Ticket Assigned",
-                            $"You’ve been assigned a {ticket.TicketType} ticket for '{notification.EventTitle}' on {notification.EventDate}.",
+                            $"You’ve been assigned a {ticket.TicketCategory} ticket for '{notification.EventTitle}' on {notification.EventDate}.",
                             notification.ImageUrl,
                             notification.ActionUrl,
                             notification.ButtonText,
@@ -208,7 +208,7 @@ namespace Fliq.Application.Notifications.Common
                         await _emailService.SendEmailAsync(
                             ticket.Email,
                             "Ticket Assigned",
-                            $"You’ve been assigned a {ticket.TicketType} ticket for '{notification.EventTitle}' on {notification.EventDate}."
+                            $"You’ve been assigned a {ticket.TicketCategory} ticket for '{notification.EventTitle}' on {notification.EventDate}."
                         );
                         _logger.LogInfo($"Email sent to {ticket.Email} for ticket assignment.");
                     }

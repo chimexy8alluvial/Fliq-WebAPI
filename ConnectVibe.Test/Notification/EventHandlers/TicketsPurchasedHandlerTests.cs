@@ -37,9 +37,9 @@ namespace Fliq.Test.Notification.EventHandlers
             // Arrange
             var ticketDetails = new List<TicketDetail>
             {
-                new TicketDetail { UserId = 100, TicketType = "Regular" }, // Buyer (will be skipped in TicketDetails loop)
-                new TicketDetail { UserId = 200, TicketType = "Vip" },     // Another user
-                new TicketDetail { Email = "guest@example.com", TicketType = "VVip" } // Guest via email
+                new TicketDetail { UserId = 100, TicketCategory = "Regular" }, // Buyer (will be skipped in TicketDetails loop)
+                new TicketDetail { UserId = 200, TicketCategory = "Vip" },     // Another user
+                new TicketDetail { Email = "guest@example.com", TicketCategory = "VVip" } // Guest via email
             };
 
             var ticketPurchasedEvent = new TicketPurchasedEvent(
