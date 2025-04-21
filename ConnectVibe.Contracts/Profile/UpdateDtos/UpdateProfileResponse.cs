@@ -15,5 +15,6 @@ namespace Fliq.Contracts.Profile.UpdateDtos
      bool AllowNotifications = false,
      List<string> Passions = default!,
     List<UpdateProfilePhotoResponse> Photos = default!,
+    UpdateBusinessIdentificationDocumentResponse BusinessIdentificationDocument = default!,
         List<PromptResponseDto> PromptResponses = default!);
 }

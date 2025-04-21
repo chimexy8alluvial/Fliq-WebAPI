@@ -8,19 +8,19 @@ using Moq;
 namespace Fliq.Application.Tests.BusinessDocumentType.Command
 {
     [TestClass]
-    public class DeleteBusinessDocumentTypeCommandHandlerTests
+    public class DeleteBusinessIdentificationDocumentTypeCommandHandlerTests
     {
-        private Mock<IBusinessDocumentTypeRepository>? _documentRepositoryMock;
+        private Mock<IBusinessIdentificationDocumentTypeRepository>? _documentRepositoryMock;
         private Mock<ILoggerManager>? _loggerMock;
-        private DeleteBusinessDocumentTypeCommandHandler _handler;
+        private DeleteBusinessIdentificationDocumentTypeCommandHandler _handler;
 
         [TestInitialize]
         public void Setup()
         {
-            _documentRepositoryMock = new Mock<IBusinessDocumentTypeRepository>();
+            _documentRepositoryMock = new Mock<IBusinessIdentificationDocumentTypeRepository>();
             _loggerMock = new Mock<ILoggerManager>();
-            _handler = new DeleteBusinessDocumentTypeCommandHandler(
-                _documentRepositoryMock.Object, 
+            _handler = new DeleteBusinessIdentificationDocumentTypeCommandHandler(
+                _documentRepositoryMock.Object,
                 _loggerMock.Object
             );
         }
@@ -29,8 +29,8 @@ namespace Fliq.Application.Tests.BusinessDocumentType.Command
         public async Task Handle_ValidId_DeletesDocumentType_ReturnsDeleted()
         {
             // Arrange
-            var command = new DeleteBusinessDocumentTypeCommand(1);
-            var documentType = new Fliq.Domain.Entities.BusinessDocumentType { Id = 1, Name = "CAC Certificate", HasFrontAndBack = false };
+            var command = new DeleteBusinessIdentificationDocumentTypeCommand(1);
+            var documentType = new Fliq.Domain.Entities.BusinessIdentificationDocumentType { Id = 1, Name = "CAC Certificate", HasFrontAndBack = false };
             _documentRepositoryMock?.Setup(r => r.GetByIdAsync(1)).ReturnsAsync(documentType);
             _documentRepositoryMock?.Setup(r => r.IsInUseAsync(1)).ReturnsAsync(false);
             _documentRepositoryMock?.Setup(r => r.DeleteAsync(1)).Returns(Task.CompletedTask);
@@ -51,8 +51,8 @@ namespace Fliq.Application.Tests.BusinessDocumentType.Command
         public async Task Handle_InvalidId_ReturnsNotFoundError()
         {
             // Arrange
-            var command = new DeleteBusinessDocumentTypeCommand(999);
-            _documentRepositoryMock?.Setup(r => r.GetByIdAsync(999)).ReturnsAsync((Domain.Entities.BusinessDocumentType)null);
+            var command = new DeleteBusinessIdentificationDocumentTypeCommand(999);
+            _documentRepositoryMock?.Setup(r => r.GetByIdAsync(999)).ReturnsAsync((Domain.Entities.BusinessIdentificationDocumentType)null);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -71,8 +71,8 @@ namespace Fliq.Application.Tests.BusinessDocumentType.Command
         public async Task Handle_InUseDocumentType_ReturnsInUseError()
         {
             // Arrange
-            var command = new DeleteBusinessDocumentTypeCommand(1);
-            var documentType = new Fliq.Domain.Entities.BusinessDocumentType { Id = 1, Name = "CAC Certificate", HasFrontAndBack = false };
+            var command = new DeleteBusinessIdentificationDocumentTypeCommand(1);
+            var documentType = new Fliq.Domain.Entities.BusinessIdentificationDocumentType { Id = 1, Name = "CAC Certificate", HasFrontAndBack = false };
             _documentRepositoryMock?.Setup(r => r.GetByIdAsync(1))
                 .ReturnsAsync(documentType);
             _documentRepositoryMock?.Setup(r => r.IsInUseAsync(1))

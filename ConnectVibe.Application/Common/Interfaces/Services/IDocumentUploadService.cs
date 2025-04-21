@@ -12,6 +12,7 @@ namespace Fliq.Application.Common.Interfaces.Services
         public bool Success { get; init; }
         public string? FrontDocumentUrl { get; init; }
         public string? BackDocumentUrl { get; init; }
+        public string? ErrorMessage { get; init; }
     }
 }
 

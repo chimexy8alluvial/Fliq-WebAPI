@@ -21,6 +21,7 @@ namespace Fliq.Application.Profile.Commands.Update
         public int UserId { get; set; }
         public List<string>? Passions { get; set; } = new();
         public string? ProfileDescription { get; set; }
+        public BusinessIdentificationDocumentMapped? BusinessIdentificationDocuments { get; set; }
         public List<ProfilePhotoMapped>? Photos { get; set; } = new();
         public List<ProfileType>? ProfileTypes { get; set; } = new();
         public DateTime? DOB { get; set; }
@@ -46,9 +47,12 @@ namespace Fliq.Application.Profile.Commands.Update
         private readonly ILocationService _locationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILoggerManager _loggerManager;
+        private readonly IBusinessIdentificationDocumentRepository _bloginessIdentificationDocumentRepository;
+        private readonly IDocumentUploadService _documentUploadService;
+        private readonly IBusinessIdentificationDocumentTypeRepository _businessIdentificationDocumentTypeRepository;
         private const int UnauthorizedUserId = -1;
 
-        public UpdateProfileCommandHandler(IMapper mapper, IMediaServices mediaService, IProfileRepository profileRepository, IUserRepository userRepository, ILocationService locationService, IHttpContextAccessor httpContextAccessor,  ILoggerManager loggerManager)
+        public UpdateProfileCommandHandler(IMapper mapper, IMediaServices mediaService, IProfileRepository profileRepository, IUserRepository userRepository, ILocationService locationService, IHttpContextAccessor httpContextAccessor, ILoggerManager loggerManager, IBusinessIdentificationDocumentRepository bloginessIdentificationDocumentRepository, IDocumentUploadService documentUploadService, IBusinessIdentificationDocumentTypeRepository businessIdentificationDocumentTypeRepository)
         {
             _mapper = mapper;
             _mediaService = mediaService;
@@ -57,6 +61,9 @@ namespace Fliq.Application.Profile.Commands.Update
             _locationService = locationService;
             _httpContextAccessor = httpContextAccessor;
             _loggerManager = loggerManager;
+            _bloginessIdentificationDocumentRepository = bloginessIdentificationDocumentRepository;
+            _documentUploadService = documentUploadService;
+            _businessIdentificationDocumentTypeRepository = businessIdentificationDocumentTypeRepository;
         }
 
         public async Task<ErrorOr<CreateProfileResult>> Handle(UpdateProfileCommand command, CancellationToken cancellationToken)
@@ -98,6 +105,52 @@ namespace Fliq.Application.Profile.Commands.Update
                     }
                 }
             }
+
+            //Handle BusinessIdentificationDocument Update
+
+            if (command.BusinessIdentificationDocuments != null)
+            {
+                var documentTypeId = command.BusinessIdentificationDocuments.BusinessIdentificationDocumentTypeId;
+
+                // Validate document type
+                var documentTypeExists = await _businessIdentificationDocumentTypeRepository.DocumentTypeExists(documentTypeId);
+                if (!documentTypeExists)
+                {
+                    _loggerManager.LogWarn($"Invalid DocumentTypeId: {documentTypeId}");
+                    return Errors.Document.InvalidDocumentType;
+                }
+
+                // Validate front document
+                if (command.BusinessIdentificationDocuments.BusinessIdentificationDocumentFront == null)
+                {
+                    _loggerManager.LogError("FrontPage is required.");
+                    return Errors.Document.MissingFront;
+                }
+
+                // Upload documents
+                var uploadResult = await _documentUploadService.UploadDocumentsAsync(
+                    documentTypeId,
+                    command.BusinessIdentificationDocuments.BusinessIdentificationDocumentFront,
+                    command.BusinessIdentificationDocuments.BusinessIdentificationDocumentBack
+                );
+
+                if (!uploadResult.Success)
+                {
+                    _loggerManager.LogError($"Failed to upload business documents: {uploadResult.ErrorMessage}");
+                    return Errors.Document.InvalidDocument;
+                }
+
+                // Replace existing BusinessIdentificationDocument
+                updatedProfile.BusinessIdentificationDocument = new BusinessIdentificationDocument
+                {
+                    BusinessIdentificationDocumentTypeId = documentTypeId,
+                    FrontDocumentUrl = uploadResult.FrontDocumentUrl,
+                    BackDocumentUrl = uploadResult.BackDocumentUrl,
+                    UploadedDate = DateTime.UtcNow,
+                    IsVerified = false,
+                };
+            }
+
 
             // Handle Location Update
             if (command.Location != null)

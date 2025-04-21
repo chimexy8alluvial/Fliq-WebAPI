@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {
-    public class BusinessDocumentRepository : IBusinessDocumentRepository
+    public class BusinessIdentificationDocumentRepository : IBusinessIdentificationDocumentRepository
     {
         private readonly FliqDbContext _dbContext;
         private readonly ILoggerManager _logger;
-        public BusinessDocumentRepository(FliqDbContext dbContext, ILoggerManager logger)
+        public BusinessIdentificationDocumentRepository(FliqDbContext dbContext, ILoggerManager logger)
         {
             _dbContext = dbContext;
             _logger = logger;
@@ -21,7 +21,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                 throw new ArgumentNullException(nameof(businessDocument));
             }
 
-            _logger.LogInfo($"Adding business identification document for user ID: {businessDocument.UserId}, document type ID: {businessDocument.BusinessDocumentTypeId}");
+            //_logger.LogInfo($"Adding business identification document for user ID: {businessDocument.UserId}, document type ID: {businessDocument.BusinessIdentificationDocumentTypeId}");
             _dbContext.BusinessIdentificationDocuments.Add(businessDocument);
         }
 
@@ -38,17 +38,17 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
         public async Task<BusinessIdentificationDocument> GetByIdAsync(int id)
         {
-            return await _dbContext.BusinessIdentificationDocuments.Include(bd => bd.BusinessDocumentType)
+            return await _dbContext.BusinessIdentificationDocuments.Include(bd => bd.BusinessIdentificationDocumentType)
                 .FirstOrDefaultAsync(bd => bd.Id == id);
         }
 
-        public async Task<IEnumerable<BusinessIdentificationDocument>> GetByUserIdAsync(int userId)
-        {
-            return await _dbContext.BusinessIdentificationDocuments
-                .Include(bd => bd.BusinessDocumentType)
-                .Where(bd => bd.UserId == userId)
-                .ToListAsync();
-        }
+        //public async Task<IEnumerable<BusinessIdentificationDocument>> GetByUserIdAsync(int userId)
+        //{
+        //    return await _dbContext.BusinessIdentificationDocuments
+        //        .Include(bd => bd.BusinessIdentificationDocumentType)
+        //        .Where(bd => bd.UserId == userId)
+        //        .ToListAsync();
+        //}
 
         public void Update(BusinessIdentificationDocument businessDocument)
         {

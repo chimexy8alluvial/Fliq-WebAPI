@@ -5,7 +5,7 @@
 namespace Fliq.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class ModifyGetAllProfileData_sp : Migration
+    public partial class modifyGetAllProfileData_sp : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -51,7 +51,7 @@ CREATE OR ALTER PROCEDURE sp_GetAllProfileData
         FROM EducationStatus
         WHERE IsDeleted = 0;
 
-        -- BusinessDocumentType
+        -- BusinessIdentificationDocuments
         SELECT *
         FROM BusinessIdentificationDocuments
         WHERE IsDeleted = 0;

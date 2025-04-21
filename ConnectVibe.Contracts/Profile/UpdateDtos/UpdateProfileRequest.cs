@@ -5,6 +5,7 @@
       List<string>? Passions,
     List<UpdateProfilePhotoDto>? Photos,
     List<UpdateProfileTypeDto>? profileTypes,
+    UpdateBusinessIdentificationDocumentDto? BusinessIdentificationDocument,
     string? ProfileDescription,
      UpdateGenderDto? Gender,
      UpdateSexualOrientationDto? SexualOrientation,

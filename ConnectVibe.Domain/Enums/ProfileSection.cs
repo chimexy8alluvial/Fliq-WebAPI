@@ -4,6 +4,7 @@
     {
         BasicInfo,
         Photos,
+        BusinessIdentificationDocument,
         Location,
         Interests,
         Preferences,

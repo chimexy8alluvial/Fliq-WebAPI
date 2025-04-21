@@ -8,22 +8,22 @@ using Fliq.Domain.Common.Errors;
 
 namespace Fliq.Application.BusinessDocumentType.Query
 {
-    public record GetBusinessDocumentTypeByIdQuery(int Id) : IRequest<ErrorOr<BusinessDocumentTypeResponse>>;
+    public record GetBusinessIdentificationDocumentTypeByIdQuery(int Id) : IRequest<ErrorOr<BusinessIdentificationDocumentTypeResponse>>;
 
-    public class GetBusinessDocumentTypeByIdQueryHandler : IRequestHandler<GetBusinessDocumentTypeByIdQuery, ErrorOr<BusinessDocumentTypeResponse>>
+    public class GetBusinessIdentificationDocumentTypeByIdQueryHandler : IRequestHandler<GetBusinessIdentificationDocumentTypeByIdQuery, ErrorOr<BusinessIdentificationDocumentTypeResponse>>
     {
-        private readonly IBusinessDocumentTypeRepository _documentTypeRepository;
+        private readonly IBusinessIdentificationDocumentTypeRepository _documentTypeRepository;
         private readonly ILoggerManager _logger;
 
-        public GetBusinessDocumentTypeByIdQueryHandler(
-            IBusinessDocumentTypeRepository documentTypeRepository,
+        public GetBusinessIdentificationDocumentTypeByIdQueryHandler(
+            IBusinessIdentificationDocumentTypeRepository documentTypeRepository,
             ILoggerManager logger)
         {
             _documentTypeRepository = documentTypeRepository;
             _logger = logger;
         }
 
-        public async Task<ErrorOr<BusinessDocumentTypeResponse>> Handle(GetBusinessDocumentTypeByIdQuery query, CancellationToken cancellationToken)
+        public async Task<ErrorOr<BusinessIdentificationDocumentTypeResponse>> Handle(GetBusinessIdentificationDocumentTypeByIdQuery query, CancellationToken cancellationToken)
         {
             _logger.LogInfo($"Retrieving document type with ID: {query.Id}");
 
@@ -34,7 +34,7 @@ namespace Fliq.Application.BusinessDocumentType.Query
                 return Errors.BusinessDocumentType.NotFound;
             }
 
-            var result = documentType.Adapt<BusinessDocumentTypeResponse>();
+            var result = documentType.Adapt<BusinessIdentificationDocumentTypeResponse>();
             _logger.LogInfo($"Retrieved document type: {result.Name} (ID: {result.Id})");
 
             return result;

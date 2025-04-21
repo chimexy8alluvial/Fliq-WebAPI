@@ -8,18 +8,18 @@ using Moq;
 namespace Fliq.Application.Tests.BusinessDocumentType.Query
 {
     [TestClass]
-    public class GetBusinessDocumentTypeByIdQueryHandlerTests
+    public class GetBusinessIdentificationDocumentTypeByIdQueryHandlerTests
     {
-        private Mock<IBusinessDocumentTypeRepository>? _documentRepositoryMock;
+        private Mock<IBusinessIdentificationDocumentTypeRepository>? _documentRepositoryMock;
         private Mock<ILoggerManager>? _loggerMock;
-        private GetBusinessDocumentTypeByIdQueryHandler _handler;
+        private GetBusinessIdentificationDocumentTypeByIdQueryHandler _handler;
 
         [TestInitialize]
         public void Setup()
         {
-            _documentRepositoryMock = new Mock<IBusinessDocumentTypeRepository>();
+            _documentRepositoryMock = new Mock<IBusinessIdentificationDocumentTypeRepository>();
             _loggerMock = new Mock<ILoggerManager>();
-            _handler = new GetBusinessDocumentTypeByIdQueryHandler(
+            _handler = new GetBusinessIdentificationDocumentTypeByIdQueryHandler(
                 _documentRepositoryMock.Object,
                 _loggerMock.Object
             );
@@ -29,8 +29,8 @@ namespace Fliq.Application.Tests.BusinessDocumentType.Query
         public async Task Handle_ValidId_ReturnsDocumentType()
         {
             // Arrange
-            var query = new GetBusinessDocumentTypeByIdQuery(1);
-            var documentType = new Fliq.Domain.Entities.BusinessDocumentType { Id = 1, Name = "CAC Certificate", HasFrontAndBack = false };
+            var query = new GetBusinessIdentificationDocumentTypeByIdQuery(1);
+            var documentType = new Fliq.Domain.Entities.BusinessIdentificationDocumentType { Id = 1, Name = "CAC Certificate", HasFrontAndBack = false };
             _documentRepositoryMock?.Setup(r => r.GetByIdAsync(1))
                 .ReturnsAsync(documentType);
 
@@ -51,8 +51,8 @@ namespace Fliq.Application.Tests.BusinessDocumentType.Query
         public async Task Handle_InvalidId_ReturnsNotFoundError()
         {
             // Arrange
-            var query = new GetBusinessDocumentTypeByIdQuery(999);
-            _documentRepositoryMock?.Setup(r => r.GetByIdAsync(999)).ReturnsAsync((Domain.Entities.BusinessDocumentType)null);
+            var query = new GetBusinessIdentificationDocumentTypeByIdQuery(999);
+            _documentRepositoryMock?.Setup(r => r.GetByIdAsync(999)).ReturnsAsync((Domain.Entities.BusinessIdentificationDocumentType)null);
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);

@@ -6,22 +6,22 @@ using Fliq.Domain.Common.Errors;
 
 namespace Fliq.Application.BusinessDocumentType.Command
 {
-    public record DeleteBusinessDocumentTypeCommand(int Id) : IRequest<ErrorOr<Deleted>>;
+    public record DeleteBusinessIdentificationDocumentTypeCommand(int Id) : IRequest<ErrorOr<Deleted>>;
 
-    public class DeleteBusinessDocumentTypeCommandHandler : IRequestHandler<DeleteBusinessDocumentTypeCommand, ErrorOr<Deleted>>
+    public class DeleteBusinessIdentificationDocumentTypeCommandHandler : IRequestHandler<DeleteBusinessIdentificationDocumentTypeCommand, ErrorOr<Deleted>>
     {
-        private readonly IBusinessDocumentTypeRepository _documentTypeRepository;
+        private readonly IBusinessIdentificationDocumentTypeRepository _documentTypeRepository;
         private readonly ILoggerManager _logger;
 
-        public DeleteBusinessDocumentTypeCommandHandler(
-            IBusinessDocumentTypeRepository documentTypeRepository,
+        public DeleteBusinessIdentificationDocumentTypeCommandHandler(
+            IBusinessIdentificationDocumentTypeRepository documentTypeRepository,
             ILoggerManager logger)
         {
             _documentTypeRepository = documentTypeRepository;
             _logger = logger;
         }
 
-        public async Task<ErrorOr<Deleted>> Handle(DeleteBusinessDocumentTypeCommand command, CancellationToken cancellationToken)
+        public async Task<ErrorOr<Deleted>> Handle(DeleteBusinessIdentificationDocumentTypeCommand command, CancellationToken cancellationToken)
         {
             _logger.LogInfo($"Deleting document type with ID: {command.Id}");
 

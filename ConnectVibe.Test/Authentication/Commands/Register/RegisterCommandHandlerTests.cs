@@ -44,7 +44,7 @@ namespace Fliq.Test.Authentication.Commands.Register
         public async Task Handle_UserAlreadyExists_ReturnsDuplicateEmailError()
         {
             // Arrange
-            var command = new RegisterCommand("John", "Doe", "johndoe", "johndoe@example.com", "password", Language.English, ScreenMode.White, "23412345678");
+            var command = new RegisterCommand("John", "Doe", "johndoe", "John Construction Ltd.", "Construction And Engineering", "20th Floor, Adeniyi Complex", "00000000000", "Anything Building", "johndoe@example.com", "password", Language.English, ScreenMode.White, "23412345678");
             var existingUser = new User { Email = command.Email, IsEmailValidated = true };
 
             _userRepositoryMock?.Setup(repo => repo.GetUserByEmail(command.Email))
@@ -62,7 +62,7 @@ namespace Fliq.Test.Authentication.Commands.Register
         public async Task Handle_NewUser_CreatesUserAndSendsOtp()
         {
             // Arrange
-            var command = new RegisterCommand("John", "Doe", "johndoe", "johndoe@example.com", "password", Language.English, ScreenMode.White, "23412345678");
+            var command = new RegisterCommand("John", "Doe", "johndoe","John Construction Ltd.", "Construction And Engineering", "20th Floor, Adeniyi Complex", "00000000000", "Anything Building", "johndoe@example.com", "password", Language.English, ScreenMode.White, "23412345678");
             User newUser = null;
 
             _userRepositoryMock?.Setup(repo => repo.GetUserByEmail(command.Email))
@@ -92,7 +92,7 @@ namespace Fliq.Test.Authentication.Commands.Register
         public async Task Handle_ExistingUserButEmailNotValidated_CreatesUserAndSendsOtp()
         {
             // Arrange
-            var command = new RegisterCommand("John", "Doe", "johndoe", "johndoe@example.com", "password", Language.English, ScreenMode.White, "23412345678");
+            var command = new RegisterCommand("John", "Doe", "johndoe", "John Construction Ltd.", "Construction And Engineering", "20th Floor, Adeniyi Complex", "00000000000", "Anything Building", "johndoe@example.com", "password", Language.English, ScreenMode.White, "23412345678");
             var existingUser = new User { Email = command.Email, IsEmailValidated = false };
 
             _userRepositoryMock?.Setup(repo => repo.GetUserByEmail(command.Email))

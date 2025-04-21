@@ -2,7 +2,7 @@
 
 namespace Fliq.Application.BusinessDocumentType.Common
 {
-    public record BusinessDocumentTypeRequest
+    public record BusinessIdentificationDocumentTypeRequest
     {
         public string Name { get; init; } = string.Empty;
         public bool HasFrontAndBack { get; init; }
@@ -13,9 +13,9 @@ namespace Fliq.Application.BusinessDocumentType.Common
         }
     }
 
-    public class BusinessDocumentTypeRequestValidator : AbstractValidator<BusinessDocumentTypeRequest>
+    public class BusinessIdentificationDocumentTypeRequestValidator : AbstractValidator<BusinessIdentificationDocumentTypeRequest>
     {
-        public BusinessDocumentTypeRequestValidator()
+        public BusinessIdentificationDocumentTypeRequestValidator()
         {
             RuleFor(x => x.Name)
                 .NotEmpty()

@@ -26,6 +26,9 @@ namespace Fliq.Test.Profile.Commands.Update
         private Mock<ILocationService>? _locationServiceMock;
         private Mock<IHttpContextAccessor>? _httpContextAccessorMock;
         private Mock<ILoggerManager>? _loggerManagerMock;
+        private Mock<IDocumentUploadService>? _documentUploadServiceMock;
+        private Mock<IBusinessIdentificationDocumentRepository>? _businessIdentificationDocumentRepositoryMock;
+        private Mock<IBusinessIdentificationDocumentTypeRepository>? _businessIdentificationDocumentTypeRepositoryMock;
         private UpdateProfileCommandHandler? _handler;
 
         [TestInitialize]
@@ -38,6 +41,9 @@ namespace Fliq.Test.Profile.Commands.Update
             _locationServiceMock = new Mock<ILocationService>();
             _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
             _loggerManagerMock = new Mock<ILoggerManager>();
+            _documentUploadServiceMock = new Mock<IDocumentUploadService>();
+            _businessIdentificationDocumentRepositoryMock = new Mock<IBusinessIdentificationDocumentRepository>();
+            _businessIdentificationDocumentTypeRepositoryMock = new Mock<IBusinessIdentificationDocumentTypeRepository>();
 
             _handler = new UpdateProfileCommandHandler(
                 _mapperMock.Object,
@@ -46,7 +52,10 @@ namespace Fliq.Test.Profile.Commands.Update
                 _userRepositoryMock.Object,
                 _locationServiceMock.Object,
                 _httpContextAccessorMock.Object,
-                _loggerManagerMock.Object
+                _loggerManagerMock.Object,
+                _businessIdentificationDocumentRepositoryMock.Object,
+                _documentUploadServiceMock.Object,
+                _businessIdentificationDocumentTypeRepositoryMock.Object
             );
         }
 
@@ -241,6 +250,182 @@ namespace Fliq.Test.Profile.Commands.Update
             // Assert
             _profileRepositoryMock?.Verify(x => x.Update(userProfile), Times.Once);
             _loggerManagerMock?.Verify(x => x.LogInfo(It.IsAny<string>()), Times.Exactly(2));
+        }
+
+        [TestMethod]
+        public async Task Handle_BusinessDocumentWithInvalidDocumentType_ReturnsInvalidDocumentTypeError()
+        {
+            // Arrange
+            var mockFile = new Mock<IFormFile>();
+            var command = new UpdateProfileCommand
+            {
+                UserId = 1,
+                BusinessIdentificationDocuments = new BusinessIdentificationDocumentMapped
+                {
+                    BusinessIdentificationDocumentTypeId = 999, // Invalid ID
+                    BusinessIdentificationDocumentFront = mockFile.Object,
+                    BusinessIdentificationDocumentBack = mockFile.Object
+                }
+            };
+
+            var userProfile = new UserProfile();
+
+            _userRepositoryMock?.Setup(x => x.GetUserById(It.IsAny<int>())).Returns(new User());
+            _profileRepositoryMock?.Setup(x => x.GetProfileByUserId(It.IsAny<int>())).Returns(userProfile);
+            _businessIdentificationDocumentTypeRepositoryMock?.Setup(x => x.DocumentTypeExists(999))
+                .ReturnsAsync(false);
+            _loggerManagerMock?.Setup(x => x.LogWarn(It.IsAny<string>()));
+
+            // Act
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            Assert.IsTrue(result.IsError);
+            Assert.AreEqual(Errors.Document.InvalidDocumentType, result.FirstError);
+            _businessIdentificationDocumentTypeRepositoryMock?.Verify(x => x.DocumentTypeExists(999), Times.Once);
+            _loggerManagerMock?.Verify(x => x.LogWarn(It.IsAny<string>()), Times.Once);
+        }
+
+        [TestMethod]
+        public async Task Handle_BusinessDocumentMissingFront_ReturnsMissingFrontError()
+        {
+            // Arrange
+            var command = new UpdateProfileCommand
+            {
+                UserId = 1,
+                BusinessIdentificationDocuments = new BusinessIdentificationDocumentMapped
+                {
+                    BusinessIdentificationDocumentTypeId = 1,
+                    BusinessIdentificationDocumentFront = null, // Missing front document
+                    BusinessIdentificationDocumentBack = Mock.Of<IFormFile>()
+                }
+            };
+
+            var userProfile = new UserProfile();
+
+            _userRepositoryMock?.Setup(x => x.GetUserById(It.IsAny<int>())).Returns(new User());
+            _profileRepositoryMock?.Setup(x => x.GetProfileByUserId(It.IsAny<int>())).Returns(userProfile);
+            _businessIdentificationDocumentTypeRepositoryMock?.Setup(x => x.DocumentTypeExists(1))
+                .ReturnsAsync(true);
+            _loggerManagerMock?.Setup(x => x.LogError(It.IsAny<string>()));
+
+            // Act
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            Assert.IsTrue(result.IsError);
+            Assert.AreEqual(Errors.Document.MissingFront, result.FirstError);
+            _loggerManagerMock?.Verify(x => x.LogError("FrontPage is required."), Times.Once);
+        }
+
+        [TestMethod]
+        public async Task Handle_BusinessDocumentUploadFailure_ReturnsInvalidDocumentError()
+        {
+            // Arrange
+            var mockFrontFile = new Mock<IFormFile>();
+            var mockBackFile = new Mock<IFormFile>();
+
+            var command = new UpdateProfileCommand
+            {
+                UserId = 1,
+                BusinessIdentificationDocuments = new BusinessIdentificationDocumentMapped
+                {
+                    BusinessIdentificationDocumentTypeId = 1,
+                    BusinessIdentificationDocumentFront = mockFrontFile.Object,
+                    BusinessIdentificationDocumentBack = mockBackFile.Object
+                }
+            };
+
+            var userProfile = new UserProfile();
+
+            _userRepositoryMock?.Setup(x => x.GetUserById(It.IsAny<int>())).Returns(new User());
+            _profileRepositoryMock?.Setup(x => x.GetProfileByUserId(It.IsAny<int>())).Returns(userProfile);
+            _businessIdentificationDocumentTypeRepositoryMock?.Setup(x => x.DocumentTypeExists(1))
+                .ReturnsAsync(true);
+
+            var failedUploadResult = new DocumentUploadResult
+            {
+                Success = false,
+                ErrorMessage = "Failed to upload document"
+            };
+
+            _documentUploadServiceMock?.Setup(x => x.UploadDocumentsAsync(
+                It.IsAny<int>(),
+                It.IsAny<IFormFile>(),
+                It.IsAny<IFormFile>()))
+                .ReturnsAsync(failedUploadResult);
+
+            _loggerManagerMock?.Setup(x => x.LogError(It.IsAny<string>()));
+
+            // Act
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            Assert.IsTrue(result.IsError);
+            Assert.AreEqual(Errors.Document.InvalidDocument, result.FirstError);
+            _documentUploadServiceMock?.Verify(x => x.UploadDocumentsAsync(
+                1,
+                mockFrontFile.Object,
+                mockBackFile.Object), Times.Once);
+            //_loggerManagerMock?.Verify(x => x.LogError(It.Equals("Failed to upload business documents")), Times.Once);
+        }
+
+        [TestMethod]
+        public async Task Handle_BusinessDocumentUploadSuccess_UpdatesProfileWithDocument()
+        {
+            // Arrange
+            var mockFrontFile = new Mock<IFormFile>();
+            var mockBackFile = new Mock<IFormFile>();
+
+            var command = new UpdateProfileCommand
+            {
+                UserId = 1,
+                BusinessIdentificationDocuments = new BusinessIdentificationDocumentMapped
+                {
+                    BusinessIdentificationDocumentTypeId = 1,
+                    BusinessIdentificationDocumentFront = mockFrontFile.Object,
+                    BusinessIdentificationDocumentBack = mockBackFile.Object
+                }
+            };
+
+            var userProfile = new UserProfile();
+
+            _userRepositoryMock?.Setup(x => x.GetUserById(It.IsAny<int>())).Returns(new User());
+            _profileRepositoryMock?.Setup(x => x.GetProfileByUserId(It.IsAny<int>())).Returns(userProfile);
+            _businessIdentificationDocumentTypeRepositoryMock?.Setup(x => x.DocumentTypeExists(1))
+                .ReturnsAsync(true);
+
+            var successUploadResult = new DocumentUploadResult
+            {
+                Success = true,
+                FrontDocumentUrl = "https://example.com/front.pdf",
+                BackDocumentUrl = "https://example.com/back.pdf"
+            };
+
+            _documentUploadServiceMock?.Setup(x => x.UploadDocumentsAsync(
+                It.IsAny<int>(),
+                It.IsAny<IFormFile>(),
+                It.IsAny<IFormFile>()))
+                .ReturnsAsync(successUploadResult);
+
+            _loggerManagerMock?.Setup(x => x.LogInfo(It.IsAny<string>()));
+
+            // Act
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            Assert.IsFalse(result.IsError);
+            _documentUploadServiceMock?.Verify(x => x.UploadDocumentsAsync(
+                1,
+                mockFrontFile.Object,
+                mockBackFile.Object), Times.Once);
+            _profileRepositoryMock?.Verify(x => x.Update(It.Is<UserProfile>(p =>
+                p.BusinessIdentificationDocument != null &&
+                p.BusinessIdentificationDocument.FrontDocumentUrl == "https://example.com/front.pdf" &&
+                p.BusinessIdentificationDocument.BackDocumentUrl == "https://example.com/back.pdf" &&
+                p.BusinessIdentificationDocument.BusinessIdentificationDocumentTypeId == 1 &&
+                p.BusinessIdentificationDocument.IsVerified == false
+            )), Times.Once);
         }
     }
 }

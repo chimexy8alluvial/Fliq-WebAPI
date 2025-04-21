@@ -1,5 +1,4 @@
-﻿using Fliq.Application.Authentication.Business.Command.Register;
-using Fliq.Application.Authentication.Commands.ChangePassword;
+﻿using Fliq.Application.Authentication.Commands.ChangePassword;
 using Fliq.Application.Authentication.Commands.PasswordCreation;
 using Fliq.Application.Authentication.Commands.PasswordReset;
 using Fliq.Application.Authentication.Commands.Register;
@@ -46,20 +45,6 @@ namespace Fliq.Api.Controllers
             _logger.LogInfo($"Register Command Executed. Result: {authResult}");
             return authResult.Match(
                 authResult => Ok(_mapper.Map<RegisterResponse>(authResult)),
-                errors => Problem(errors)
-            );
-        }
-
-        [HttpPost("register-business")]
-        [Consumes("multipart/form-data")]
-        public async Task<IActionResult> RegisterBusiness([FromForm] RegisterBusinessRequest request)
-        {
-            _logger.LogInfo($"Register Business Request Received: {request}");
-            var command = _mapper.Map<RegisterBusinessCommand>(request);
-            var authResult = await _mediator.Send(command);
-            _logger.LogInfo($"Register Business Command Executed. Result: {authResult}");
-            return authResult.Match(
-                authResult => Ok(_mapper.Map<RegisterBusinessResponse>(authResult)),
                 errors => Problem(errors)
             );
         }

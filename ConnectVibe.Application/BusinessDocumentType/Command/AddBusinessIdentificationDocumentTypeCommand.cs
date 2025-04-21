@@ -9,36 +9,36 @@ using Fliq.Domain.Common.Errors;
 
 namespace Fliq.Application.BusinessDocumentType.Command
 {
-    public record AddBusinessDocumentTypeCommand(
+    public record AddBusinessIdentificationDocumentTypeCommand(
        string Name,
        bool HasFrontAndBack
-   ) : IRequest<ErrorOr<BusinessDocumentTypeResponse>>;
+   ) : IRequest<ErrorOr<BusinessIdentificationDocumentTypeResponse>>;
 
-    public class AddBusinessDocumentTypeCommandHandler : IRequestHandler<AddBusinessDocumentTypeCommand, ErrorOr<BusinessDocumentTypeResponse>>
+    public class AddBusinessIdentificationDocumentTypeCommandHandler : IRequestHandler<AddBusinessIdentificationDocumentTypeCommand, ErrorOr<BusinessIdentificationDocumentTypeResponse>>
     {
-        private readonly IBusinessDocumentTypeRepository _documentRepository;
+        private readonly IBusinessIdentificationDocumentTypeRepository _documentRepository;
         private readonly ILoggerManager _logger;
-        public AddBusinessDocumentTypeCommandHandler(IBusinessDocumentTypeRepository documentRepository, ILoggerManager logger)
+        public AddBusinessIdentificationDocumentTypeCommandHandler(IBusinessIdentificationDocumentTypeRepository documentRepository, ILoggerManager logger)
         {
             _documentRepository = documentRepository;
             _logger = logger;
         }
-        public async Task<ErrorOr<BusinessDocumentTypeResponse>> Handle(AddBusinessDocumentTypeCommand command, CancellationToken cancellationToken)
+        public async Task<ErrorOr<BusinessIdentificationDocumentTypeResponse>> Handle(AddBusinessIdentificationDocumentTypeCommand command, CancellationToken cancellationToken)
         {
             _logger.LogInfo($"Adding document type: {command.Name}");
-            var existing =  _documentRepository.GetAllBusinessDocumentTypesAsync();
+            var existing = _documentRepository.GetAllBusinessIdentificationDocumentTypesAsync();
             if (existing.Any(d => d.Name.Equals(command.Name, StringComparison.OrdinalIgnoreCase)))
             {
                 _logger.LogWarn($"Document type already exists: {command.Name}");
                 return Errors.BusinessDocumentType.DuplicateName;
             }
-            var documentType = new Fliq.Domain.Entities.BusinessDocumentType
+            var documentType = new Fliq.Domain.Entities.BusinessIdentificationDocumentType
             {
                 Name = command.Name,
                 HasFrontAndBack = command.HasFrontAndBack
             };
-            await _documentRepository.AddBusinessDocumentTypeAsync(documentType);
-            var result = documentType.Adapt<BusinessDocumentTypeResponse>();
+            await _documentRepository.AddBusinessIdentificationDocumentTypeAsync(documentType);
+            var result = documentType.Adapt<BusinessIdentificationDocumentTypeResponse>();
             _logger.LogInfo($"Document type added successfully: {result.Name} (ID: {result.Id})");
             return result;
         }

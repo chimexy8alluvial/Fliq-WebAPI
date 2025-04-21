@@ -8,12 +8,12 @@ namespace Fliq.Infrastructure.Services
 {
     public class DocumentUploadService : IDocumentUploadService
     {
-        private readonly IBusinessDocumentTypeRepository _documentTypeRepository;
+        private readonly IBusinessIdentificationDocumentTypeRepository _documentIdentificationTypeRepository;
         private readonly IMediaServices _mediaServices;
         private readonly ILoggerManager _logger;
-        public DocumentUploadService(IBusinessDocumentTypeRepository documentTypeRepository, IMediaServices mediaServices, ILoggerManager logger)
+        public DocumentUploadService(IBusinessIdentificationDocumentTypeRepository documentIdentificationTypeRepository, IMediaServices mediaServices, ILoggerManager logger)
         {
-            _documentTypeRepository = documentTypeRepository;
+            _documentIdentificationTypeRepository = documentIdentificationTypeRepository;
             _mediaServices = mediaServices;
             _logger = logger;
         }
@@ -22,7 +22,7 @@ namespace Fliq.Infrastructure.Services
             _logger.LogInfo($"Uploading documents for document type ID: {documentTypeId}");
 
             // Validate document type
-            var documentType = await _documentTypeRepository.GetByIdAsync(documentTypeId);
+            var documentType = await _documentIdentificationTypeRepository.GetByIdAsync(documentTypeId);
             if (documentType == null || documentType.IsDeleted)
             {
                 _logger.LogWarn($"Document type not found or deleted: ID {documentTypeId}");
@@ -33,14 +33,14 @@ namespace Fliq.Infrastructure.Services
             if (frontDocument == null)
             {
                 _logger.LogError("Front document is required.");
-                return new DocumentUploadResult { Success = false };
+                return new DocumentUploadResult { Success = false, ErrorMessage = "Front document is required."  };
             }
 
             // Validate back document based on HasFrontAndBack
             if (documentType.HasFrontAndBack && backDocument == null)
             {
                 _logger.LogError("Back document is required for document type with front and back.");
-                return new DocumentUploadResult { Success = false };
+                return new DocumentUploadResult { Success = false, ErrorMessage = "Back document is required for document type with front and back." };
             }
             if (!documentType.HasFrontAndBack && backDocument != null)
             {
@@ -69,7 +69,7 @@ namespace Fliq.Infrastructure.Services
                     if (string.IsNullOrEmpty(backDocumentUrl))
                     {
                         _logger.LogError("Failed to upload back document.");
-                        return new DocumentUploadResult { Success = false };
+                        return new DocumentUploadResult { Success = false, ErrorMessage = "Failed to upload back document." };
                     }
                 }
 

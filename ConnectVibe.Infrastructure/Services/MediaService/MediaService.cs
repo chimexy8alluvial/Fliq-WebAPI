@@ -50,6 +50,14 @@ namespace Fliq.Infrastructure.Services.MediaService
             // Check if the document is a PDF or other accepted document format
             var validDocumentExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".mp4", ".mov", ".avi", ".mkv", ".mp3", ".wav", ".pdf", ".doc" };
             var extension = Path.GetExtension(mediaToUpload.FileName).ToLowerInvariant();
+            _logger.LogInfo($"Uploading file: {mediaToUpload.FileName}, Size: {mediaToUpload.Length}");
+            _logger.LogInfo($"File extension: {extension}");
+
+            if (!validDocumentExtensions.Contains(extension))
+            {
+                _logger.LogWarn($"Document upload failed: Invalid file extension '{extension}'");
+                return null;
+            }
 
             if (!validDocumentExtensions.Contains(extension))
             {
@@ -104,7 +112,7 @@ namespace Fliq.Infrastructure.Services.MediaService
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError($"Document upload failed: {ex.Message}");
+                    _logger.LogError($"Document upload failed: {ex.Message}, StackTrace: {ex.StackTrace}");
                     return null;
                 }
             }
@@ -246,17 +254,29 @@ namespace Fliq.Infrastructure.Services.MediaService
             // Saving the Media to a Local Directory
             if (docUpload == null || docUpload.Length == 0)
             {
+                _logger.LogWarn("Local document upload failed: File is null or empty.");
                 return null;
             }
 
-            var filePath = Path.Combine(_documentPath, docUpload.FileName);
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await docUpload.CopyToAsync(stream);
-            }
+            // Ensure the directory exists
+            Directory.CreateDirectory(_documentPath);
 
-            var fileUrl = filePath;
-            return fileUrl;
+            var filePath = Path.Combine(_documentPath, docUpload.FileName);
+            try
+            {
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await docUpload.CopyToAsync(stream);
+                }
+
+                _logger.LogInfo($"Document saved locally: {filePath}");
+                return filePath;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Local document upload failed: {ex.Message}");
+                return null;
+            }
         }
     }
 }

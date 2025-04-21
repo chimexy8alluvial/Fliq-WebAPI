@@ -2,10 +2,10 @@
 {
     public class BusinessIdentificationDocument : Record
     {
-        public int UserId { get; set; }
-        public User? User { get; set; }
-        public int BusinessDocumentTypeId { get; set; }
-        public BusinessDocumentType? BusinessDocumentType { get; set; }
+        //    public int? UserProfileId { get; set; } 
+        //    public UserProfile? UserProfile { get; set; }
+        public int BusinessIdentificationDocumentTypeId { get; set; }
+        public BusinessIdentificationDocumentType? BusinessIdentificationDocumentType { get; set; }
         public string FrontDocumentUrl { get; set; } = string.Empty;
         public string? BackDocumentUrl { get; set; }
         public DateTime UploadedDate { get; set; } = DateTime.UtcNow;

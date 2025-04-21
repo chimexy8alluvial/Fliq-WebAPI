@@ -35,6 +35,10 @@ namespace Fliq.Api.Mapping
 
             config.NewConfig<CreatePromptResponseDto, PromptResponseDto>(); //Add prompt response mapping
             config.NewConfig<ProfilePhoto, ProfilePhotoResponse>();
+            config.NewConfig<BusinessIdentificationDocument, BusinessIdentificationDocumentResponse>();
+            config.NewConfig<BusinessIdentificationDocumentDto, BusinessIdentificationDocumentMapped>()
+                .Map(dest => dest.BusinessIdentificationDocumentFront, src => src.BusinessIdentificationDocumentFront)
+                .Map(dest => dest.BusinessIdentificationDocumentBack, src => src.BusinessIdentificationDocumentBack);
             config.NewConfig<ProfilePhotoDto, ProfilePhotoMapped>()
                 .Map(dest => dest.ImageFile, src => src.ImageFile)
                  .AfterMapping(async (src, dest) =>
@@ -80,6 +84,11 @@ namespace Fliq.Api.Mapping
                  {
                      dest.ImageFile = await CloneFile(src.ImageFile);
                  });
+            config.NewConfig<BusinessIdentificationDocument, BusinessIdentificationDocumentResponse>();
+            config.NewConfig<UpdateBusinessIdentificationDocumentDto, BusinessIdentificationDocumentMapped>()
+                .IgnoreNullValues(true)
+                .Map(dest => dest.BusinessIdentificationDocumentFront, src => src.BusinessIdentificationDocumentFront)
+                .Map(dest => dest.BusinessIdentificationDocumentBack, src => src.BusinessIdentificationDocumentBack);
             //config.NewConfig<UserProfile, ProfileResponse>();
             config.NewConfig<CreateProfileResult, UpdateProfileResponse>()
                 .Map(dest => dest, src => src.Profile)

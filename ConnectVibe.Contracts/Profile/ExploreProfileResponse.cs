@@ -10,6 +10,7 @@ namespace Fliq.Contracts.Profile
      OccupationDto Occupation,
      EducationStatusDto EducationStatus,
      List<ProfileTypeDto> ProfileTypes,
+     BusinessIdentificationDocumentResponse BusinessIdentificationDocument,
      EthnicityDto Ethnicity,
      HaveKidsDto HaveKids,
      WantKidsDto WantKids,

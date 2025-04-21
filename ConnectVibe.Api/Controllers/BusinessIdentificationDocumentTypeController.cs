@@ -11,12 +11,12 @@ namespace Fliq.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BusinessDocumentTypeController : ApiBaseController
+    public class BusinessIdentificationDocumentTypeController : ApiBaseController
     {
         private readonly IMediator _mediator;
         private readonly ILoggerManager _logger;
         private readonly IMapper _mapper;
-        public BusinessDocumentTypeController(IMediator mediator, ILoggerManager logger, IMapper mapper)
+        public BusinessIdentificationDocumentTypeController(IMediator mediator, ILoggerManager logger, IMapper mapper)
         {
             _mediator = mediator;
             _logger = logger;
@@ -25,25 +25,25 @@ namespace Fliq.Api.Controllers
 
         [HttpPost("add-business-document-type")]
         [Authorize(Roles = "SuperAdmin,Admin")]
-        public async Task<IActionResult> AddBusinessDocumentType([FromBody] BusinessDocumentTypeRequest request)
+        public async Task<IActionResult> AddBusinessIdentificationDocumentType([FromBody] BusinessIdentificationDocumentTypeRequest request)
         {
             _logger.LogInfo($"Adding document type: {request.Name}");
 
-            var command = _mapper.Map<AddBusinessDocumentTypeCommand>(request);
+            var command = _mapper.Map<AddBusinessIdentificationDocumentTypeCommand>(request);
 
             var result = await _mediator.Send(command);
 
             return result.Match(
-                documentType => CreatedAtAction(nameof(GetAllBusinessDocumentTypes), null, documentType),
+                documentType => CreatedAtAction(nameof(GetAllBusinessIdentificationDocumentTypes), null, documentType),
                 errors => Problem(errors));
         }
 
         [HttpGet("get-all-business-document-types")]
-        public async Task<IActionResult> GetAllBusinessDocumentTypes()
+        public async Task<IActionResult> GetAllBusinessIdentificationDocumentTypes()
         {
             _logger.LogInfo("Retrieving all business document types");
 
-            var result = await _mediator.Send(new GetAllBusinessDocumentTypesQuery());
+            var result = await _mediator.Send(new GetAllBusinessIdentificationDocumentTypesQuery());
 
             return result.Match(
                 documentTypes => Ok(documentTypes),
@@ -51,10 +51,10 @@ namespace Fliq.Api.Controllers
         }
 
         [HttpGet("get-business-document-type-by-id{id}")]
-        public async Task<IActionResult> GetBusinessDocumentTypeById(int id, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetBusinessIdentificationDocumentTypeById(int id, CancellationToken cancellationToken)
         {
             _logger.LogInfo($"Retrieving document type with ID: {id}");
-            var result = await _mediator.Send(new GetBusinessDocumentTypeByIdQuery(id), cancellationToken);
+            var result = await _mediator.Send(new GetBusinessIdentificationDocumentTypeByIdQuery(id), cancellationToken);
             return result.Match(
                 documentType => Ok(documentType),
                 errors => Problem(errors));
@@ -65,7 +65,7 @@ namespace Fliq.Api.Controllers
         public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
         {
             _logger.LogInfo($"Deleting document type with ID: {id}");
-            var result = await _mediator.Send(new DeleteBusinessDocumentTypeCommand(id), cancellationToken);
+            var result = await _mediator.Send(new DeleteBusinessIdentificationDocumentTypeCommand(id), cancellationToken);
             return result.Match(
                 _ => NoContent(),
                 errors => Problem(errors));

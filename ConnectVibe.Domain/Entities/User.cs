@@ -23,7 +23,7 @@ namespace Fliq.Domain.Entities
         public Role? Role { get; set; }
         public string? BusinessName { get; set; } = string.Empty;
         public string? BusinessType { get; set; } = string.Empty;
-        public string? Address { get; set; } = string.Empty;
+        public string? BusinessAddress { get; set; } = string.Empty;
         public string? CompanyBio { get; set; } = string.Empty;
         public List<Payment>? Payments { get; set; }
         public List<Subscription>? Subscriptions { get; set; }
