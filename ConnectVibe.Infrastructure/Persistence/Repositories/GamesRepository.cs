@@ -191,7 +191,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                 };
 
                 using (var multi = await connection.QueryMultipleAsync(
-                    "sp_GetAllFilteredGamesList",
+                    "sp_GetPaginatedGamesList",
                     parameters,
                     commandType: CommandType.StoredProcedure))
                 {
