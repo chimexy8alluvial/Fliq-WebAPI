@@ -3,7 +3,6 @@ using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services.PaymentServices;
 using Fliq.Application.Payments.Common;
 using Fliq.Domain.Entities;
-using Environment = Fliq.Domain.Entities.Environment;
 
 namespace Fliq.Infrastructure.Services.PaymentServices
 {
@@ -33,8 +32,7 @@ namespace Fliq.Infrastructure.Services.PaymentServices
                     Currency = payload.Event.Currency,
                     PaymentDate = DateTimeOffset.FromUnixTimeMilliseconds(payload.Event.PurchasedAtMs).UtcDateTime,
                     Status = PaymentStatus.Success,
-                    Method = PaymentMethod.Unkmown,
-                    Environment = payload.Event.Environment == "PRODUCTION" ? Environment.Production : Environment.Sandbox
+                    Method = PaymentMethod.Unknown,
                 };
                 _paymentRepository.Add(payment);
                 return true;
@@ -62,7 +60,33 @@ namespace Fliq.Infrastructure.Services.PaymentServices
                     PaymentDate = DateTimeOffset.FromUnixTimeMilliseconds(payload.Event.PurchasedAtMs).UtcDateTime,
                     Status = PaymentStatus.Success,
                     Method = PaymentMethod.ApplePay,
-                    Environment = payload.Event.Environment == "PRODUCTION" ? Environment.Production : Environment.Sandbox
+                };
+                _paymentRepository.Add(payment);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return false;
+            }
+        }
+
+        public async Task<bool> ProcessCancellationOrExpirationAsync(RevenueCatWebhookPayload payload)
+        {
+            try
+            {
+                await Task.CompletedTask;
+                var payment = new Payment
+                {
+                    UserId = int.Parse(payload.Event.AppUserId),
+                    Provider = PaymentProvider.RevenueCat,
+                    TransactionId = payload.Event.TransactionId,
+                    ProductId = payload.Event.ProductId,
+                    Amount = payload.Event.Price,
+                    Currency = payload.Event.Currency,
+                    PaymentDate = DateTimeOffset.FromUnixTimeMilliseconds(payload.Event.PurchasedAtMs).UtcDateTime,
+                    Status = PaymentStatus.Success,
+                    Method = PaymentMethod.ApplePay,
                 };
                 _paymentRepository.Add(payment);
                 return true;
