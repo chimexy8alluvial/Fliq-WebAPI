@@ -14,10 +14,6 @@ namespace Fliq.Domain.Common.Errors
           code: "SubscriptionPlanPrice.AlreadyExist",
           description: "Subscription Plan Price already exists");
 
-            public static Error DuplicateSubscriptionPlanPrice => Error.Conflict(
-code: "SubscriptionPlanPrice.AlreadyExist",
-description: "Subscription Plan Price already exists");
-
 
         }
     }
