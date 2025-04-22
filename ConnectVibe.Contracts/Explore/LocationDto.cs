@@ -1,12 +1,6 @@
 ﻿namespace Fliq.Contracts.Explore
 {
-    public class LocationDto
-    {
-        public double Lat { get; init; }
-        public double Lng { get; init; }
-        public bool IsVisible { get; init; }
-        public LocationDetailDto? LocationDetail { get; init; }
-    }
+   
 
     public class LocationDetailDto
     {
