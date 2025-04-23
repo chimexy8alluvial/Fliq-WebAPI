@@ -16,8 +16,7 @@ namespace Fliq.Domain.Common.Errors
 
             public static Error AlreadyExists => Error.Validation(
                 code: "Document.AlreadyExists",
-                description: "The business Identification document already exists for the user"
-            );
+                description: "The business Identification document already exists for the user");
 
             public static Error MissingFront => Error.Validation(
                 code: "Document.MissingFront",

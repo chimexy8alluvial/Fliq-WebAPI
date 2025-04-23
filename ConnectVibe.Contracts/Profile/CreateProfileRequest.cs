@@ -6,7 +6,7 @@ namespace Fliq.Contracts.Profile
     DateTime? DOB,
     List<string>? Passions,
     List<ProfilePhotoDto>? Photos,
-    BusinessIdentificationDocumentDto BusinessIdentificationDocument,
+    BusinessIdentificationDocumentDto? BusinessIdentificationDocument,
     List<ProfileTypeDto>? ProfileTypes,
     string? ProfileDescription,
     GenderType? GenderId,

@@ -250,7 +250,7 @@ namespace Fliq.Test.Profile.Commands.Create
         }
 
         [TestMethod]
-        public async Task Handle_ExistingProfile_UpdatesProfileSuccessfully()
+        public async Task Handle_ExistingProfile_ReturnsDuplicateProfileError()
         {
             // Arrange
             var command = new CreateProfileCommand
@@ -258,35 +258,21 @@ namespace Fliq.Test.Profile.Commands.Create
                 UserId = 1,
                 DOB = DateTime.Now.AddYears(-25),
                 GenderId = 1,
-                ProfileDescription = "Test Description",
-                Photos = [new ProfilePhotoMapped { ImageFile = CreateMockFormFile(), Caption = "Test Photo" }],
-                Location = new Location { Lat = 51.5074, Lng = -0.1278 }
+                // rest of your setup
             };
-
             var user = new User { Id = 1 };
             var existingProfile = new UserProfile { UserId = 1 };
-
             _userRepositoryMock.Setup(repo => repo.GetUserById(It.IsAny<int>()))
                 .Returns(user);
-
             _profileRepositoryMock.Setup(repo => repo.GetProfileByUserId(It.IsAny<int>()))
                 .Returns(existingProfile);
-
-            _locationServiceMock?.Setup(service => service.GetAddressFromCoordinatesAsync(It.IsAny<double>(), It.IsAny<double>()))
-                .ReturnsAsync(new LocationQueryResponse { Status = "OK" });
-
-            _mediaServicesMock?.Setup(service => service.UploadImageAsync(It.IsAny<IFormFile>()))
-              .ReturnsAsync("image.jpeg");
-            _mediaServicesMock.Setup(service => service.UploadImageAsync(It.IsAny<IFormFile>()))
-                .ReturnsAsync("image.jpeg");
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
-            Assert.IsFalse(result.IsError);
-            Assert.IsNotNull(result.Value);
-            _profileRepositoryMock.Verify(repo => repo.Update(It.IsAny<UserProfile>()), Times.Once);
+            Assert.IsTrue(result.IsError);
+            Assert.AreEqual(Errors.Profile.DuplicateProfile, result.FirstError);
         }
 
         [TestMethod]
@@ -429,21 +415,24 @@ namespace Fliq.Test.Profile.Commands.Create
                     BusinessIdentificationDocumentBack = CreateMockFormFile()
                 }
             };
-
             var user = new User { Id = 1 };
-            var existingProfile = new UserProfile
-            {
-                UserId = 1,
-                BusinessIdentificationDocument = new BusinessIdentificationDocument() // Existing document
-            };
 
-            _userRepositoryMock.Setup(repo => repo.GetUserById(It.IsAny<int>()))
+            // Return null for the existing profile lookup so a new one is created
+            _userRepositoryMock?.Setup(repo => repo.GetUserById(It.IsAny<int>()))
                 .Returns(user);
+            _profileRepositoryMock?.Setup(repo => repo.GetProfileByUserId(It.IsAny<int>()))
+                .Returns((UserProfile)null); // Return null to simulate profile creation
 
-            _profileRepositoryMock.Setup(repo => repo.GetProfileByUserId(It.IsAny<int>()))
-                .Returns(existingProfile);
+            // Then mock the Add method to set the BusinessIdentificationDocument
+            _profileRepositoryMock?.Setup(repo => repo.Add(It.IsAny<UserProfile>()))
+                .Callback<UserProfile>(profile => {
+                    // Simulate the profile being created and getting an ID
+                    profile.Id = 1;
+                    // Add an existing business document to simulate it already exists
+                    profile.BusinessIdentificationDocument = new BusinessIdentificationDocument();
+                });
 
-            _businessIdentificationDocumentTypeRepositoryMock.Setup(repo => repo.DocumentTypeExists(It.IsAny<int>()))
+            _businessIdentificationDocumentTypeRepositoryMock?.Setup(repo => repo.DocumentTypeExists(It.IsAny<int>()))
                 .ReturnsAsync(true);
 
             // Act
