@@ -1,23 +1,23 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace Fliq.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class BlindDateCount_sp : Migration
+    public partial class modifySpeedDateCount_sp : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@"
-CREATE OR ALTER PROCEDURE sp_BlindDatingCount
+CREATE OR ALTER PROCEDURE sp_SpeedDatingCount
 AS
 BEGIN
     SET NOCOUNT ON;
-    SELECT COUNT(*) AS TotalBlindDates 
-    FROM BlindDates;
+    SELECT COUNT(*) AS TotalSpeedDates 
+    FROM SpeedDatingEvents
+    WHERE IsDeleted = 0;
 END
 ");
         }
@@ -25,7 +25,7 @@ END
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql("DROP PROCEDURE IF EXISTS sp_BlindDatingCount;");
+            migrationBuilder.Sql("DROP PROCEDURE IF EXISTS sp_SpeedDatingCount;");
         }
     }
 }

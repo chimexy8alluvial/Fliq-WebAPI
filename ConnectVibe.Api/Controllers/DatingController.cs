@@ -164,6 +164,7 @@ namespace Fliq.Api.Controllers
         }
 
         [HttpGet("blind-date-count")]
+        [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> GetBlindDateCount()
         {
             _logger.LogInfo("Recieved request for blind date count");
@@ -263,6 +264,7 @@ namespace Fliq.Api.Controllers
         }
 
         [HttpGet("speed-date-count")]
+        [Authorize(Roles = "SuperAdnmin, Admin")]
         public async Task<IActionResult> GetSpeedDateCount()
         {
             _logger.LogInfo("Recieved request for speed date count");
@@ -278,7 +280,7 @@ namespace Fliq.Api.Controllers
 
         [HttpPut("DeleteMultipleDateOptions")]
         [Produces(typeof(DeleteDatingEventResponse))]
-        [Authorize(Roles = "SuperAdmin")]
+        [Authorize(Roles = "Admin, SuperAdmin")]
 
         public async Task<IActionResult> DeleteMutipleDateOptions([FromBody] DeleteDatingEventRequest request)
         {
@@ -296,7 +298,7 @@ namespace Fliq.Api.Controllers
         }
 
         [HttpGet("GetAllFilteredDatingList")]
-        [Authorize(Roles = "SuperAdmin")]
+        [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> GetAllFilteredDatingList([FromQuery] GetDatingListRequest request)
         {
             _logger.LogInfo($"Get All Filtered Dating List request received: {request}");
