@@ -58,9 +58,6 @@ namespace Fliq.Application.Users.Commands
                 return Errors.Jobs.JobNotFound;
             }
 
-            //var Message = $"Logging user with id {user.Id} in";
-            //await _auditTrailService.LogAuditTrail(Message, adminUser);
-
             return new Success();
         }
     }

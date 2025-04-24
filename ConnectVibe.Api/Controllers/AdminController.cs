@@ -1,5 +1,4 @@
-﻿using ErrorOr;
-using Fliq.Application.AuditTrailCommand;
+﻿using Fliq.Application.AuditTrailCommand;
 using Fliq.Application.Authentication.Commands.CreateAdmin;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.DashBoard.Command.DeleteUser;
