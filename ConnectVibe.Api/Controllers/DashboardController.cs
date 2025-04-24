@@ -30,6 +30,7 @@ using Fliq.Application.DashBoard.Queries.DailyTicketCount;
 using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Fliq.Application.Tests.DashBoard.Queries.GetEventsTicket;
+using Fliq.Contracts.Common;
 
 namespace Fliq.Api.Controllers
 {
@@ -371,25 +372,24 @@ namespace Fliq.Api.Controllers
             );
         }
 
-        [HttpPost("refund-ticket")]
-        public async Task<IActionResult> RefundTicket([FromBody] RefundTicketCommand command)
-        {
-            ErrorOr<RefundTicketResult> result = await _mediator.Send(command);
-
-            return result.Match(
-                refundResult => Ok(new { RefundedTickets = refundResult.RefundedTickets.Count }),
-                errors => Problem(detail: errors.First().Description, statusCode: 400)
-            );
-        }
-
+       
         [HttpPost("stop-sales")]
-        public async Task<IActionResult> StopTicketSales([FromBody] StopTicketSalesCommand command)
+        public async Task<IActionResult> StopTicketSales([FromBody] StopTicketSalesRequest request)
         {
+            var command = new StopTicketSalesCommand ( request.EventId );
             ErrorOr<StopTicketSalesResult> result = await _mediator.Send(command);
 
-            return result.Match(
-                stopResult => Ok(new { UpdatedTicketCount = stopResult.UpdatedTicketCount }),
-                errors => Problem(detail: errors.First().Description, statusCode: 400)
+            // Parenthesize the ternary operator to fix CS8361
+            _logger.LogInfo($"Stop ticket sales executed for EventId: {request.EventId}. Affected tickets: {(result.IsError ? 0 : result.Value.AffectedTicketCount)}.");
+
+            return result.Match<IActionResult>(
+                stopResult => Ok(new BasicActionResponse($"Stopped ticket sales for event with ID {request.EventId}. Affected {stopResult.AffectedTicketCount} unsold tickets.")),
+                errors => errors.First().Type switch
+                {
+                    ErrorType.NotFound => NotFound(new { detail = errors.First().Description }),
+                    ErrorType.Conflict => Conflict(new { detail = errors.First().Description }),
+                    _ => BadRequest(new { detail = errors.First().Description })
+                }
             );
         }
     }

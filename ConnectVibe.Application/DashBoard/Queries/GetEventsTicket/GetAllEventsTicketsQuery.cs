@@ -45,7 +45,7 @@ namespace Fliq.Application.Tests.DashBoard.Queries.GetEventsTicket
 
                 var results = await _ticketRepository.GetAllEventsTicketsForDashBoardAsync(request);
 
-                _logger.LogInfo($"Got {results.Count()} events with tickets for page {query.PaginationRequest.PageNumber}");
+                _logger.LogInfo($"Got {results.Count} events with tickets for page {query.PaginationRequest.PageNumber}");
 
                 return results.ToList();
             }

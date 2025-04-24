@@ -18,12 +18,12 @@ namespace Fliq.Infrastructure.Migrations
             BEGIN
                 SET NOCOUNT ON;
 
-                SELECT 
-                    Id, TicketName, TicketType, TicketDescription, EventDate, 
-                    CurrencyId, Amount, MaximumLimit, SoldOut, EventId,
-                    DateCreated, DateModified, IsDeleted
-                FROM [dbo].[Tickets]
-                WHERE EventId = @EventId;
+               SELECT 
+                   *
+                FROM [dbo].[Tickets] t
+	             INNER JOIN [dbo].[Events] e ON e.Id = t.EventId
+                WHERE EventId = @EventId
+	             AND e.IsDeleted = 0;
             END
              ");
         }

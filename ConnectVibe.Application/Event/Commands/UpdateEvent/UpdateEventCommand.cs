@@ -78,8 +78,8 @@ namespace Fliq.Application.Event.Commands.UpdateEvent
         public async Task<ErrorOr<CreateEventResult>> Handle(UpdateEventCommand command, CancellationToken cancellationToken)
         {
             _logger.LogInfo($"Updating Event with Id: {command.EventId}");
-            var eventFromDb = _eventRepository.GetEventById(command.EventId);
-            if (eventFromDb == null)
+            var eventDetails = _eventRepository.GetEventById(command.EventId);
+            if (eventDetails == null)
             {
                 _logger.LogError($"Event with Id: {command.EventId} was not found.");
                 return Errors.Event.EventNotFound;
@@ -92,7 +92,7 @@ namespace Fliq.Application.Event.Commands.UpdateEvent
                 return Errors.User.UserNotFound;
             }
 
-            var eventToUpdate = command.Adapt(eventFromDb);
+            var eventToUpdate = command.Adapt(eventDetails);
 
             if (command.MediaDocuments is not null)
             {
@@ -133,14 +133,14 @@ namespace Fliq.Application.Event.Commands.UpdateEvent
 
             _eventRepository.Update(eventToUpdate);
 
-            if(command.EventTitle != eventFromDb.EventTitle || command.StartDate != eventFromDb.StartDate || command.Location != eventFromDb.Location)
+            if(command.EventTitle != eventDetails.EventTitle || command.StartDate != eventDetails.StartDate || command.Location != eventDetails.Location)
             {
                 // Trigger Organizer Notification
                 var organizerName = $"{user.FirstName} {user.LastName}";
 
                 await _mediator.Publish(new EventCreatedEvent(
                     user.Id,
-                    eventFromDb.Id,
+                    eventDetails.Id,
                     user.Id,
                     organizerName,
                     Enumerable.Empty<int>(), // Organizer-only notification

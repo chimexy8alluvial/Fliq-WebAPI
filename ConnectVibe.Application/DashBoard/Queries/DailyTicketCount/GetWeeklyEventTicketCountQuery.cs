@@ -33,8 +33,8 @@ namespace Fliq.Application.DashBoard.Queries.DailyTicketCount
 
         public async Task<ErrorOr<WeeklyCountResult>> Handle(GetWeeklyEventTicketCountQuery query, CancellationToken cancellationToken)
         {
-            var eventFromDb =  _eventRepository.GetEventById(query.EventId);
-            if (eventFromDb == null)
+            var eventDetail =  _eventRepository.GetEventById(query.EventId);
+            if (eventDetail == null)
             {
                 _logger.LogError($"Event with ID: {query.EventId} was not found.");
                 return Errors.Event.EventNotFound;

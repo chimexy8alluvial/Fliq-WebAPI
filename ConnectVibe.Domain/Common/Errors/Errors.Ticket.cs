@@ -23,7 +23,10 @@ namespace Fliq.Domain.Common.Errors
              description: "Ticket already refunded."); 
             public static Error TicketAlreadySoldOut => Error.Failure(
              code: "Ticket.TicketAlreadySoldOut",
-             description: "Ticket already soldout.");
+             description: "Ticket already soldout."); 
+            public static Error TicketSalesAlreadyStopped => Error.Failure(
+             code: "Ticket.TicketSalesAlreadyStopped",
+             description: "Ticket sales already stopped.");
             public static Error InsufficientAvailableTickets => Error.Failure(
              code: "Ticket.InsufficientAvailableTickets",
              description: "Insufficient Available Tickets.");

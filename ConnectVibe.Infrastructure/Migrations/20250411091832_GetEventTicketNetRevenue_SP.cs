@@ -30,8 +30,10 @@ namespace Fliq.Infrastructure.Migrations
                         ), 0) AS NetRevenue
                     FROM [dbo].[EventTickets] et
                     INNER JOIN [dbo].[Tickets] t ON et.TicketId = t.Id
+                     INNER JOIN [dbo].[Events] e ON e.Id = t.EventId
                     LEFT JOIN [dbo].[Discount] d ON d.TicketId = t.Id AND d.IsDeleted = 0
-                    WHERE t.EventId = @EventId;
+                    WHERE t.EventId = @EventId
+                      AND e.IsDeleted = 0;
                 END;
              ");
         }

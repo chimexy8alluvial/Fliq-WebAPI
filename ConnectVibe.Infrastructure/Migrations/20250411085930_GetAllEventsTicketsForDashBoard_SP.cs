@@ -55,6 +55,7 @@ namespace Fliq.Infrastructure.Migrations
                             LEFT JOIN [dbo].[LocationResult] lr ON ld.Id = lr.LocationDetailId -- Join to get FormattedAddress
                         WHERE 
                             (@Category IS NULL OR e.EventCategory = @Category) -- Compare with enum value
+                            AND e.IsDeleted = 0
                             AND (@StartDate IS NULL OR e.StartDate >= @StartDate)
                             AND (@EndDate IS NULL OR e.EndDate <= @EndDate)
                             AND (@Location IS NULL OR lr.FormattedAddress LIKE '%' + @Location + '%') -- Updated filter

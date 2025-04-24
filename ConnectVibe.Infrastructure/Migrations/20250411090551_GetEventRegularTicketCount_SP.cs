@@ -21,8 +21,10 @@ namespace Fliq.Infrastructure.Migrations
                 SELECT COUNT(*)
                 FROM [dbo].[EventTickets] et
                 INNER JOIN [dbo].[Tickets] t ON et.TicketId = t.Id
+                INNER JOIN [dbo].[Events] e ON e.Id = t.EventId
                 WHERE t.EventId = @EventId
-                AND et.IsRefunded = 0
+                AND e.IsDeleted = 0
+               AND et.IsRefunded = 0 -- Updated to use EventTicket's IsRefunded
                 AND t.TicketType = 0; -- 0 corresponds to TicketType.Regular
             END
             ");
