@@ -20,7 +20,7 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         EventTicket? GetEventTicketById(int id);
 
         Task<List<GetEventsTicketsResult>> GetAllEventsTicketsForDashBoardAsync(GetEventsTicketsListRequest request);
-        List<EventTicket> GetEventTicketsByIds(List<int> eventTicketIds); // Synchronous
+        List<EventTicket> GetEventTicketsByIds(List<int> eventTicketIds); 
         List<Ticket> GetTicketsByEventId(int eventId);
         List<Ticket> GetTicketsByIds(List<int> ids);
         void UpdateRange(IEnumerable<Ticket> tickets);

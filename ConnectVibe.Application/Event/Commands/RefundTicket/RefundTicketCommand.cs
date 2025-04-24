@@ -1,12 +1,14 @@
 ﻿using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.Common.Interfaces.Services.PaymentServices;
 using Fliq.Application.DashBoard.Common;
 using Fliq.Application.Notifications.Common.EventCreatedEvents;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities;
 using Fliq.Domain.Entities.Event;
 using MediatR;
+using System.Transactions;
 
 namespace Fliq.Application.Event.Commands.RefundTicket
 {
@@ -17,151 +19,187 @@ namespace Fliq.Application.Event.Commands.RefundTicket
         private readonly IEventRepository _eventRepository;
         private readonly ILoggerManager _logger;
         private readonly ITicketRepository _ticketRepository;
-        private readonly RefundTicketValidator _validator;
+        private readonly IUserRepository _userRepository;
         private readonly IMediator _mediator;
+        private readonly IPaymentRepository _paymentRepository;
+        private readonly IRevenueCatServices _revenueCatServices;
 
         public RefundTicketCommandHandler(
             IEventRepository eventRepository,
             ILoggerManager logger,
             ITicketRepository ticketRepository,
             IUserRepository userRepository,
-            IMediator mediator)
+            IMediator mediator,
+            IPaymentRepository paymentRepository,
+            IRevenueCatServices revenueCatServices)
         {
             _eventRepository = eventRepository;
             _logger = logger;
             _ticketRepository = ticketRepository;
-            _validator = new RefundTicketValidator(eventRepository, logger, ticketRepository, userRepository);
+            _userRepository = userRepository;
             _mediator = mediator;
+            _paymentRepository = paymentRepository;
+            _revenueCatServices = revenueCatServices;
         }
 
         public async Task<ErrorOr<RefundTicketResult>> Handle(RefundTicketCommand command, CancellationToken cancellationToken)
         {
-            // Validate the request
-            var validationResult = await _validator.Validate(command);
+            var validationResult = await Validate(command);
             if (validationResult.IsError)
             {
                 return validationResult.Errors;
             }
+            var (validatedEventDetails, validatedUser, validatedTickets) = validationResult.Value;
 
-            var (eventDetails, user, ticketsToRefund) = validationResult.Value;
-
-            // Process refund
-            foreach (var eventTicket in ticketsToRefund)
+            var refundResult = await ProcessTicketRefund(validatedEventDetails, validatedTickets);
+            if (refundResult.IsError)
             {
-                eventTicket.IsRefunded = true;
-                eventDetails.OccupiedSeats.Remove(eventTicket.SeatNumber);
-                _ticketRepository.UpdateEventTicket(eventTicket);
+                return refundResult.Errors;
             }
 
-            eventDetails.Capacity += ticketsToRefund.Count;
-            _eventRepository.Update(eventDetails);
-            _logger.LogInfo($"Refunded {ticketsToRefund.Count} tickets for EventId {command.EventId}.");
-
-            // Generate and send notifications
-            var notifications = GenerateRefundNotifications(user, eventDetails, ticketsToRefund.Count);
+            var notifications = GenerateRefundNotifications(validatedUser, validatedEventDetails, validatedTickets.Count);
             await _mediator.Publish(notifications.BuyerNotification, cancellationToken);
             await _mediator.Publish(notifications.OrganizerNotification, cancellationToken);
 
-            return new RefundTicketResult(ticketsToRefund);
+            return new RefundTicketResult(validatedTickets);
+        }
+
+        private async Task<ErrorOr<(Events Event, User User, List<EventTicket> Tickets)>> Validate(RefundTicketCommand command)
+        {
+            var eventDetails =  _eventRepository.GetEventById(command.EventId);
+            if (eventDetails == null)
+            {
+                _logger.LogError($"Event with ID {command.EventId} not found.");
+                return Errors.Event.EventNotFound;
+            }
+
+            var user =  _userRepository.GetUserById(command.UserId);
+            if (user == null)
+            {
+                _logger.LogError($"User with ID {command.UserId} not found.");
+                return Errors.User.UserNotFound;
+            }
+
+            var eventTicketsToRefund = (_ticketRepository.GetEventTicketsByIds(command.EventTicketIds))
+                .Where(t => t.UserId == command.UserId && t.Ticket.EventId == command.EventId)
+                .ToList();
+            if (!eventTicketsToRefund.Any())
+            {
+                _logger.LogError($"No valid tickets found for refund for UserId {command.UserId} and EventId {command.EventId}.");
+                return Errors.Ticket.TicketNotFound;
+            }
+
+            if (eventTicketsToRefund.Any(t => t.IsRefunded))
+            {
+                _logger.LogError($"Some tickets for EventId {command.EventId} are already refunded.");
+                return Errors.Ticket.TicketAlreadyRefunded;
+            }
+
+            return (eventDetails, user, eventTicketsToRefund);
+        }
+
+        private async Task<ErrorOr<List<EventTicket>>> ProcessTicketRefund(Events eventDetails, List<EventTicket> eventTicketsToRefund)
+        {
+            var ticketIds = eventTicketsToRefund.Select(t => t.TicketId).ToList();
+            var tickets =  _ticketRepository.GetTicketsByIds(ticketIds);
+            if (tickets.Count != ticketIds.Count)
+            {
+                _logger.LogError($"Some tickets not found for IDs: {string.Join(", ", ticketIds.Except(tickets.Select(t => t.Id)))}.");
+                return Errors.Ticket.TicketNotFound;
+            }
+
+            using var transactionScope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+            try
+            {
+                var paymentIds = eventTicketsToRefund.Select(t => t.PaymentId).Distinct().ToList();
+                foreach (var paymentId in paymentIds)
+                {
+                    var payment =  _paymentRepository.GetPaymentById(paymentId);
+                    if (payment == null)
+                    {
+                        _logger.LogError($"Payment with ID {paymentId} not found.");
+                        return Errors.Payment.PaymentNotFound;
+                    }
+
+                    if (string.IsNullOrEmpty(payment.TransactionId))
+                    {
+                        _logger.LogError($"Payment ID {paymentId} has no associated transaction.");
+                        return Errors.Payment.InvalidPaymentTransaction;
+                    }
+
+                    var refundResult = await _revenueCatServices.RefundTransactionAsync(payment.TransactionId);
+                    if (refundResult.IsError)
+                    {
+                        _logger.LogError($"Failed to refund transaction {payment.TransactionId} for payment ID {paymentId}.");
+                        return refundResult.Errors;
+                    }
+                }
+
+                foreach (var eventTicket in eventTicketsToRefund)
+                {
+                    eventTicket.IsRefunded = true;
+                     _ticketRepository.UpdateEventTicket(eventTicket);
+                }
+
+                foreach (var ticket in tickets)
+                {
+                    ticket.SoldOut = false;
+                     _ticketRepository.Update(ticket);
+                }
+
+                eventDetails.Capacity += eventTicketsToRefund.Count;
+                eventDetails.OccupiedSeats.RemoveAll(seat => eventTicketsToRefund.Any(t => t.SeatNumber == seat));
+                _eventRepository.Update(eventDetails);
+
+                transactionScope.Complete();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to process refund: {ex.Message}");
+                return Error.Failure(description: $"Failed to process refund: {ex.Message}");
+            }
+
+            _logger.LogInfo($"Refunded {eventTicketsToRefund.Count} tickets for EventId {eventDetails.Id}.");
+            return eventTicketsToRefund;
         }
 
         private (TicketRefundedEvent BuyerNotification, TicketRefundedEvent OrganizerNotification) GenerateRefundNotifications(
             User user, Events eventDetails, int ticketCount)
         {
             var ticketWord = ticketCount == 1 ? "ticket" : "tickets";
+            var fullName = $"{user.FirstName} {user.LastName}".Trim();
 
-            // Buyer notification
             var buyerNotificationTitle = "Your Ticket Refund Confirmation";
-            var buyerNotificationMessage = $"Dear {user.DisplayName}, your {ticketCount} {ticketWord} for '{eventDetails.EventTitle}' on {eventDetails.StartDate:MMMM dd, yyyy} have been successfully refunded.";
+            var buyerNotificationMessage = $"Dear {fullName}, your {ticketCount} {ticketWord} for '{eventDetails.EventTitle}' on {eventDetails.StartDate:MMMM dd, yyyy} have been successfully refunded.";
 
             var buyerNotification = new TicketRefundedEvent(
-                user.Id, // BuyerId
-                eventDetails.UserId, // OrganizerId
+                user.Id,
+                eventDetails.UserId,
                 eventDetails.Id,
                 ticketCount,
                 eventDetails.EventTitle,
                 buyerNotificationTitle,
                 buyerNotificationMessage,
                 eventDetails.StartDate.ToString("MMMM dd, yyyy"),
-                user.DisplayName
+                fullName
             );
 
-            // Organizer notification
             var organizerNotificationTitle = "Ticket Refund Notification";
-            var organizerNotificationMessage = $"{user.DisplayName}'s {ticketCount} {ticketWord} for your event '{eventDetails.EventTitle}' on {eventDetails.StartDate:MMMM dd, yyyy} have been successfully refunded. The event capacity has been updated. Please check your event dashboard for details.";
+            var organizerNotificationMessage = $"{fullName}'s {ticketCount} {ticketWord} for your event '{eventDetails.EventTitle}' on {eventDetails.StartDate:MMMM dd, yyyy} have been successfully refunded. The event capacity has been updated. Please check your event dashboard for details.";
 
             var organizerNotification = new TicketRefundedEvent(
-                eventDetails.UserId, // OrganizerId (recipient)
-                eventDetails.UserId, // OrganizerId
+                eventDetails.UserId,
+                eventDetails.UserId,
                 eventDetails.Id,
                 ticketCount,
                 eventDetails.EventTitle,
                 organizerNotificationTitle,
                 organizerNotificationMessage,
                 eventDetails.StartDate.ToString("MMMM dd, yyyy"),
-                user.DisplayName
+                fullName
             );
 
             return (buyerNotification, organizerNotification);
-        }
-
-        public class RefundTicketValidator
-        {
-            public Events EventDetails { get; set; }
-            public User User { get; set; }
-            public List<EventTicket> TicketsToRefund { get; set; }
-
-            private readonly IEventRepository _eventRepository;
-            private readonly ILoggerManager _logger;
-            private readonly ITicketRepository _ticketRepository;
-            private readonly IUserRepository _userRepository;
-
-            public RefundTicketValidator(
-               user,
-                ILoggerManager logger,
-                ITicketRepository ticketRepository,
-                IUserRepository userRepository)
-            {
-                _eventRepository = eventRepository ?? throw new ArgumentNullException(nameof(eventRepository));
-                _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-                _ticketRepository = ticketRepository ?? throw new ArgumentNullException(nameof(ticketRepository));
-                _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
-            }
-
-            public async Task<ErrorOr<(Events Event, User User, List<EventTicket> Tickets)>> Validate(RefundTicketCommand command)
-            {
-                EventDetails = _eventRepository.GetEventById(command.EventId);
-                if (EventDetails == null)
-                {
-                    _logger.LogError($"Event with ID {command.EventId} not found.");
-                    return Errors.Event.EventNotFound;
-                }
-
-                User = _userRepository.GetUserById(command.UserId);
-                if (User == null)
-                {
-                    _logger.LogError($"User with ID {command.UserId} not found.");
-                    return Errors.User.UserNotFound;
-                }
-
-                TicketsToRefund = _ticketRepository.GetEventTicketsByIds(command.EventTicketIds)
-                    .Where(t => t.UserId == command.UserId && t.Ticket.EventId == command.EventId)
-                    .ToList();
-
-                if (!TicketsToRefund.Any())
-                {
-                    _logger.LogError($"No valid tickets found for refund for UserId {command.UserId} and EventId {command.EventId}.");
-                    return Errors.Ticket.TicketNotFound;
-                }
-
-                if (TicketsToRefund.Any(t => t.IsRefunded))
-                {
-                    _logger.LogInfo($"Some tickets for EventId {command.EventId} are already refunded.");
-                    return Errors.Ticket.TicketAlreadyRefunded;
-                }
-
-                return (EventDetails, User, TicketsToRefund);
-            }
         }
     }
 }
