@@ -8,7 +8,7 @@
     UpdateBusinessIdentificationDocumentDto? BusinessIdentificationDocument,
     string? ProfileDescription,
      UpdateGenderDto? Gender,
-     UpdateSexualOrientationDto? SexualOrientation,
+     UpdateSexualOrientationDto? SexualOrientation, 
      UpdateReligionDto? Religion,
      UpdateEthnicityDto? Ethnicity,
      UpdateOccupationDto? Occupation,

@@ -30,7 +30,7 @@ namespace Fliq.Api.Mapping
 
             config.NewConfig<CreateProfileCommand, UserProfile>()
                 .IgnoreNullValues(true)
-                .Ignore(dest => dest.Photos)
+                .Ignore(dest => dest.Photos).Ignore(dest => dest.PromptResponses)
                 .Map(dest => dest.ProfileTypes, src => src.ProfileTypes);
 
             config.NewConfig<CreatePromptResponseDto, PromptResponseDto>(); //Add prompt response mapping
@@ -74,7 +74,7 @@ namespace Fliq.Api.Mapping
                 .Map(dest => dest.ProfileTypes, src => src.ProfileTypes);
 
             config.NewConfig<UpdateEthnicityDto, Ethnicity>().IgnoreNullValues(true)
-                .Map(dest => dest.EthnicityType, src => (EthnicityType?)src.EthnicityType);
+                .Map(dest => dest.EthnicityType, src => src.EthnicityType);
           
             config.NewConfig<ProfilePhoto, ProfilePhotoResponse>();
             config.NewConfig<UpdateProfilePhotoDto, ProfilePhotoMapped>()
@@ -90,9 +90,39 @@ namespace Fliq.Api.Mapping
                 .Map(dest => dest.BusinessIdentificationDocumentFront, src => src.BusinessIdentificationDocumentFront)
                 .Map(dest => dest.BusinessIdentificationDocumentBack, src => src.BusinessIdentificationDocumentBack);
             //config.NewConfig<UserProfile, ProfileResponse>();
-            config.NewConfig<CreateProfileResult, UpdateProfileResponse>()
+            config.NewConfig<CreateProfileResult, ReadProfileResponse>()
                 .Map(dest => dest, src => src.Profile)
-                .Map(dest => dest.DOB, src => src.Profile.DOB);
+                .Map(dest => dest.DOB, src => src.Profile.DOB)
+                .Map(dest => dest.Gender, src => new ReadGenderDto(
+                     src.Profile.GenderId,
+                     src.Profile.Gender.GenderType, null))
+                .Map(dest => dest.SexualOrientation, src => new ReadSexualOrientationDto(
+                    src.Profile.SexualOrientationId ?? 0,
+                    src.Profile.SexualOrientation.SexualOrientationType,
+                    src.Profile.IsSexualOrientationVisible))
+               .Map(dest => dest.Ethnicity, src => new ReadEthnicityDto(
+                    src.Profile.EthnicityId ?? 0,
+                    src.Profile.Ethnicity.EthnicityType,
+                    src.Profile.IsEthnicityVisible))
+                .Map(dest => dest.EducationStatus, src => new ReadEducationStatusDto(
+                    src.Profile.EducationStatusId ?? 0,
+                    src.Profile.EducationStatus.EducationLevel,
+                    src.Profile.IsEducationStatusVisible))
+                .Map(dest => dest.Religion, src => new ReadReligionDto(
+                    src.Profile.ReligionId ?? 0,
+                    src.Profile.Religion.ReligionType,
+                    src.Profile.IsReligionVisible))
+            .Map(dest => dest.WantKids, src => new ReadWantKidsDto(
+                    src.Profile.WantKidsId,
+                    src.Profile.WantKids.WantKidsType,
+                    null))
+            .Map(dest => dest.HaveKids, src => new ReadHaveKidsDto(
+                    src.Profile.WantKidsId,
+                    src.Profile.HaveKids.HaveKidsType,
+                    null))
+            .Map(dest => dest.Photos, src => src.Profile.Photos)
+            .Map(dest => dest.Passions, src => src.Profile.Passions)
+            .Map(dest => dest.PromptResponses, src => src.Profile.PromptResponses);
 
             config.NewConfig<PaginationResponse<UserProfile>, PaginationResponse<ProfileResponse>>().IgnoreNullValues(true)
                  .Map(dest => dest.Data, src => src.Data.Select(userProfile => userProfile.Adapt<ProfileResponse>()).ToList());

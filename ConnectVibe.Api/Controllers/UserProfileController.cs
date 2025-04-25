@@ -31,14 +31,14 @@ namespace Fliq.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            _logger.LogInfo("Get Profile query recieved");
+            _logger.LogInfo("Get Profile query received");
             var userId = GetAuthUserId();
             var query = new GetProfileQuery(userId);
             var profileResult = await _mediator.Send(query);
 
             _logger.LogInfo($"Profile: {profileResult}");
             return profileResult.Match(
-                profileResult => Ok(_mapper.Map<UpdateProfileResponse>(profileResult)),
+                profileResult => Ok(_mapper.Map<ReadProfileResponse>(profileResult)),
                 errors => Problem(errors)
                 );
         }
@@ -126,7 +126,7 @@ namespace Fliq.Api.Controllers
             _logger.LogInfo($"Updated profile: {profileResult}");
 
             return profileResult.Match(
-                profileResult => Ok(_mapper.Map<UpdateProfileResponse>(profileResult)),
+                profileResult => Ok(_mapper.Map<ReadProfileResponse>(profileResult)),
                 errors => Problem(errors)
                 );
         }
