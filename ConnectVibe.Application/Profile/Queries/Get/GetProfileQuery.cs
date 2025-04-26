@@ -14,7 +14,6 @@ namespace Fliq.Application.Profile.Queries.Get
         private readonly IProfileRepository _profileRepository;
         private readonly IUserRepository _userRepository;
         private readonly ILoggerManager _logger;
-        private const int UnauthorizedUserId = -1;
 
         public GetProfileQueryHandler(IProfileRepository profileRepository, IUserRepository userRepository, ILoggerManager logger)
         {

@@ -1,4 +1,5 @@
-﻿using Fliq.Application.Authentication.Commands.ChangePassword;
+﻿using Fliq.Application.Authentication.Commands;
+using Fliq.Application.Authentication.Commands.ChangePassword;
 using Fliq.Application.Authentication.Commands.PasswordCreation;
 using Fliq.Application.Authentication.Commands.PasswordReset;
 using Fliq.Application.Authentication.Commands.Register;
@@ -58,6 +59,19 @@ namespace Fliq.Api.Controllers
             _logger.LogInfo($"Validate-otp Command Executed. Result: {authResult}");
             return authResult.Match(
                  authResult => Ok(_mapper.Map<AuthenticationResponse>(authResult)),
+                 errors => Problem(errors)
+            );
+        }
+
+        [HttpPost("resend-otp/{email}")]
+        public async Task<IActionResult> ResendOtp(string email)
+        {
+            _logger.LogInfo($"Resend-otp Request Received for: {email}");
+            var command = new ResendOtpCommand(email);
+            var otpResult = await _mediator.Send(command);
+            _logger.LogInfo($"Resend-otp Command Executed. Result: {otpResult}");
+            return otpResult.Match(
+                 otpResult => Ok(_mapper.Map<RegisterResponse>(otpResult)),
                  errors => Problem(errors)
             );
         }

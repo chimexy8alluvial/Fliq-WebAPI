@@ -88,7 +88,49 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             var profile = query.SingleOrDefault(p => p.UserId == id);
             return profile;
         }
+        //public UserProfile? GetProfileByUserId(int id)
+        //{
+        //    try
+        //    {
+        //        // First try without includes to isolate the issue
+        //        var simpleProfile = _dbContext.UserProfiles
+        //            .AsNoTracking()
+        //            .FirstOrDefault(p => p.UserId == id);
 
+        //        if (simpleProfile != null)
+        //        {
+        //            // If this works, the issue is in a navigation property
+        //            return LoadWithIncludes(id);
+        //        }
+        //        return null;
+        //    }
+        //    catch (InvalidCastException ex)
+        //    {
+        //        Console.WriteLine($"Type cast error getting profile: {ex.Message}");
+        //        throw;
+        //    }
+        //}
+
+        //private UserProfile? LoadWithIncludes(int id)
+        //{
+        //    var query = _dbContext.UserProfiles.AsQueryable();
+
+        //    // Add includes one by one to find the problematic one
+        //    query = query.Include(p => p.User);
+        //    // Test after each include
+        //    query = query.Include(p => p.Photos);
+        //    query = query.Include(p => p.Gender);
+        //    query = query.Include(p => p.SexualOrientation);
+        //    query = query.Include(p => p.EducationStatus);
+        //    query = query.Include(p => p.Ethnicity);
+        //    query = query.Include(p => p.Location);
+        //    query = query.Include(p => p.Occupation);
+        //    query = query.Include(p => p.Religion);
+        //    query = query.Include(p => p.PromptResponses);
+        //    // Continue with other navigation properties...
+
+        //    return query.FirstOrDefault(p => p.UserId == id);
+        //}
         private static DynamicParameters CreateDynamicParameters(int userId, List<ProfileType> userProfileTypes, bool? filterByDating, bool? filterByFriendship, PaginationRequest paginationRequest)
         {
             string serializedProfileTypes = JsonConvert.SerializeObject(userProfileTypes);

@@ -7,6 +7,7 @@ using ErrorOr;
 using MediatR;
 using StreamChat.Models;
 using StreamChat.Clients;
+using StreamChat.Exceptions;
 
 namespace Fliq.Application.Authentication.Commands.ValidateOTP
 {
@@ -21,13 +22,15 @@ namespace Fliq.Application.Authentication.Commands.ValidateOTP
         private readonly IUserRepository _userRepository;
         private readonly IOtpService _otpService;
         private readonly IStreamClientFactory _streamClientFactory;
+        private readonly ILoggerManager _logger;
 
-        public ValidateOTPCommandHandler(IJwtTokenGenerator jwtTokenGenerator, IUserRepository userRepository,  IOtpService otpService, IStreamClientFactory streamClientFactory)
+        public ValidateOTPCommandHandler(IJwtTokenGenerator jwtTokenGenerator, IUserRepository userRepository, IOtpService otpService, IStreamClientFactory streamClientFactory, ILoggerManager logger)
         {
             _jwtTokenGenerator = jwtTokenGenerator;
             _userRepository = userRepository;
             _otpService = otpService;
             _streamClientFactory = streamClientFactory;
+            _logger = logger;
         }
 
         public async Task<ErrorOr<AuthenticationResult>> Handle(ValidateOTPCommand command, CancellationToken cancellationToken)
@@ -51,13 +54,22 @@ namespace Fliq.Application.Authentication.Commands.ValidateOTP
             var streamUser = new UserRequest
             {
                 Id = user.Id.ToString(),
-                Role = user.Role.Name,
+                Role = user.Role?.Name.ToLower() == "user" ? "user" : "admin",
             };
 
-            streamUser.SetData("email", user.Email);
-            streamUser.SetData("name", user.DisplayName);
-            //please check
-            await userClient.UpsertManyAsync([streamUser]);
+            streamUser.SetData("Email", user.Email);
+            streamUser.SetData("Name", user.FirstName + user.LastName);
+
+            try
+            {
+                await userClient.UpsertManyAsync([streamUser]);
+            }
+            catch (StreamChatException ex)
+            {
+                // Log the error but don't fail authentication
+                _logger.LogWarn($"Failed to sync user with Stream Chat, ex: {ex}");
+                // Continue with authentication anyway
+            }
             #endregion
 
             return new AuthenticationResult(user, token, streamToken);
