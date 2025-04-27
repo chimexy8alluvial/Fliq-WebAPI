@@ -112,7 +112,6 @@ namespace Fliq.Application.Profile.Commands.Update
             {
                 var documentTypeId = command.BusinessIdentificationDocuments.BusinessIdentificationDocumentTypeId;
 
-                // Validate document type
                 var documentTypeExists = await _businessIdentificationDocumentTypeRepository.DocumentTypeExists(documentTypeId);
                 if (!documentTypeExists)
                 {
@@ -120,14 +119,12 @@ namespace Fliq.Application.Profile.Commands.Update
                     return Errors.Document.InvalidDocumentType;
                 }
 
-                // Validate front document
                 if (command.BusinessIdentificationDocuments.BusinessIdentificationDocumentFront == null)
                 {
                     _loggerManager.LogError("FrontPage is required.");
                     return Errors.Document.MissingFront;
                 }
 
-                // Upload documents
                 var uploadResult = await _documentUploadService.UploadDocumentsAsync(
                     documentTypeId,
                     command.BusinessIdentificationDocuments.BusinessIdentificationDocumentFront,
@@ -140,13 +137,11 @@ namespace Fliq.Application.Profile.Commands.Update
                     return Errors.Document.InvalidDocument;
                 }
 
-                // Replace existing BusinessIdentificationDocument
                 updatedProfile.BusinessIdentificationDocument = new BusinessIdentificationDocument
                 {
                     BusinessIdentificationDocumentTypeId = documentTypeId,
                     FrontDocumentUrl = uploadResult.FrontDocumentUrl,
                     BackDocumentUrl = uploadResult.BackDocumentUrl,
-                    //UserId = command.UserId,
                     UploadedDate = DateTime.UtcNow,
                     IsVerified = false,
                 };
