@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fliq.Infrastructure.Migrations
 {
     [DbContext(typeof(FliqDbContext))]
-    [Migration("20250419154438_UpdateUserProfileWithBusinessIdentificationDocument")]
-    partial class UpdateUserProfileWithBusinessIdentificationDocument
+    [Migration("20250427001130_AddUserProfileToBisunessIdentificationDocument")]
+    partial class AddUserProfileToBisunessIdentificationDocument
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1373,7 +1373,7 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<DateTime>("UploadedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
+                    b.Property<int>("UserProfileId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("VerifiedDate")
@@ -1383,7 +1383,8 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasIndex("BusinessIdentificationDocumentTypeId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserProfileId")
+                        .IsUnique();
 
                     b.ToTable("BusinessIdentificationDocuments");
                 });
@@ -1454,8 +1455,9 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<DateTime?>("DateModified")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("GenderType")
-                        .HasColumnType("int");
+                    b.Property<string>("GenderType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -1781,9 +1783,6 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<bool>("AllowNotifications")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("BusinessIdentificationDocumentId")
-                        .HasColumnType("int");
-
                     b.Property<string>("CompletedSections")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -1863,8 +1862,6 @@ namespace Fliq.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BusinessIdentificationDocumentId");
 
                     b.HasIndex("EducationStatusId");
 
@@ -2302,7 +2299,7 @@ namespace Fliq.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Address")
+                    b.Property<string>("BusinessAddress")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("BusinessName")
@@ -2753,15 +2750,15 @@ namespace Fliq.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Fliq.Domain.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
+                    b.HasOne("Fliq.Domain.Entities.Profile.UserProfile", "UserProfile")
+                        .WithOne("BusinessIdentificationDocument")
+                        .HasForeignKey("Fliq.Domain.Entities.Profile.BusinessIdentificationDocument", "UserProfileId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("BusinessIdentificationDocumentType");
 
-                    b.Navigation("User");
+                    b.Navigation("UserProfile");
                 });
 
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.Geometry", b =>
@@ -2810,10 +2807,6 @@ namespace Fliq.Infrastructure.Migrations
 
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.UserProfile", b =>
                 {
-                    b.HasOne("Fliq.Domain.Entities.Profile.BusinessIdentificationDocument", "BusinessIdentificationDocument")
-                        .WithMany()
-                        .HasForeignKey("BusinessIdentificationDocumentId");
-
                     b.HasOne("Fliq.Domain.Entities.Profile.EducationStatus", "EducationStatus")
                         .WithMany()
                         .HasForeignKey("EducationStatusId");
@@ -2861,8 +2854,6 @@ namespace Fliq.Infrastructure.Migrations
                         .HasForeignKey("WantKidsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("BusinessIdentificationDocument");
 
                     b.Navigation("EducationStatus");
 
@@ -3056,6 +3047,8 @@ namespace Fliq.Infrastructure.Migrations
 
             modelBuilder.Entity("Fliq.Domain.Entities.Profile.UserProfile", b =>
                 {
+                    b.Navigation("BusinessIdentificationDocument");
+
                     b.Navigation("Photos");
 
                     b.Navigation("PromptResponses");

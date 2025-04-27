@@ -20,7 +20,7 @@ namespace Fliq.Domain.Entities.Profile
         public bool IsOccupationVisible { get; set; }
         public int? ReligionId { get; set; }
         public bool IsReligionVisible { get; set; }
-        public int? BusinessIdentificationDocumentId { get; set; }
+        //public int? BusinessIdentificationDocumentId { get; set; }
 
         public DateTime DOB { get; set; }
         public Gender Gender { get; set; } = default!;

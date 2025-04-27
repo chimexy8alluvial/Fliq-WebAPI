@@ -129,18 +129,11 @@ namespace Fliq.Application.Profile.Commands.Create
                 var documentTypeId = command.BusinessIdentificationDocuments.BusinessIdentificationDocumentTypeId;
 
                 // Validate document type
-                var documentTypeExists = await _businessIdentificationDocumentTypeRepository.DocumentTypeExists(documentTypeId);
-                if (!documentTypeExists)
+                var documentType = await _businessIdentificationDocumentTypeRepository.GetByIdAsync(documentTypeId);
+                if (documentType == null || documentType.IsDeleted)
                 {
                     _loggerManager.LogWarn($"Invalid DocumentTypeId: {documentTypeId}");
                     return Errors.Document.InvalidDocumentType;
-                }
-
-                // Validate existing document
-                if (existingProfile.BusinessIdentificationDocument != null)
-                {
-                    _loggerManager.LogWarn($"BusinessIdentificationDocument already exists for UserId: {command.UserId}");
-                    return Errors.Document.AlreadyExists;
                 }
 
                 // Upload documents
@@ -162,7 +155,7 @@ namespace Fliq.Application.Profile.Commands.Create
                     FrontDocumentUrl = uploadResult.FrontDocumentUrl,
                     BackDocumentUrl = uploadResult.BackDocumentUrl,
                     UploadedDate = DateTime.UtcNow,
-                    IsVerified = false
+                    IsVerified = false,
                 };
 
                 // Link to UserProfile
@@ -170,7 +163,7 @@ namespace Fliq.Application.Profile.Commands.Create
                 _businessIdentificationDocumentRepository.Add(businessIdentificationDocument);
             }
 
-                if (command.Location != null)
+            if (command.Location != null)
             {
                 var locationResponse = await _locationService.GetAddressFromCoordinatesAsync(command.Location.Lat, command.Location.Lng);
                 if (locationResponse is not null)

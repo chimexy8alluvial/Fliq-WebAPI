@@ -47,12 +47,12 @@ namespace Fliq.Application.Profile.Commands.Update
         private readonly ILocationService _locationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILoggerManager _loggerManager;
-        private readonly IBusinessIdentificationDocumentRepository _bloginessIdentificationDocumentRepository;
+        private readonly IBusinessIdentificationDocumentRepository _businessIdentificationDocumentRepository;
         private readonly IDocumentUploadService _documentUploadService;
         private readonly IBusinessIdentificationDocumentTypeRepository _businessIdentificationDocumentTypeRepository;
         private const int UnauthorizedUserId = -1;
 
-        public UpdateProfileCommandHandler(IMapper mapper, IMediaServices mediaService, IProfileRepository profileRepository, IUserRepository userRepository, ILocationService locationService, IHttpContextAccessor httpContextAccessor, ILoggerManager loggerManager, IBusinessIdentificationDocumentRepository bloginessIdentificationDocumentRepository, IDocumentUploadService documentUploadService, IBusinessIdentificationDocumentTypeRepository businessIdentificationDocumentTypeRepository)
+        public UpdateProfileCommandHandler(IMapper mapper, IMediaServices mediaService, IProfileRepository profileRepository, IUserRepository userRepository, ILocationService locationService, IHttpContextAccessor httpContextAccessor, ILoggerManager loggerManager, IBusinessIdentificationDocumentRepository businessIdentificationDocumentRepository, IDocumentUploadService documentUploadService, IBusinessIdentificationDocumentTypeRepository businessIdentificationDocumentTypeRepository)
         {
             _mapper = mapper;
             _mediaService = mediaService;
@@ -61,7 +61,7 @@ namespace Fliq.Application.Profile.Commands.Update
             _locationService = locationService;
             _httpContextAccessor = httpContextAccessor;
             _loggerManager = loggerManager;
-            _bloginessIdentificationDocumentRepository = bloginessIdentificationDocumentRepository;
+            _businessIdentificationDocumentRepository = businessIdentificationDocumentRepository;
             _documentUploadService = documentUploadService;
             _businessIdentificationDocumentTypeRepository = businessIdentificationDocumentTypeRepository;
         }
@@ -146,6 +146,7 @@ namespace Fliq.Application.Profile.Commands.Update
                     BusinessIdentificationDocumentTypeId = documentTypeId,
                     FrontDocumentUrl = uploadResult.FrontDocumentUrl,
                     BackDocumentUrl = uploadResult.BackDocumentUrl,
+                    //UserId = command.UserId,
                     UploadedDate = DateTime.UtcNow,
                     IsVerified = false,
                 };

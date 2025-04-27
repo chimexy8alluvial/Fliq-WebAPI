@@ -1,9 +1,11 @@
-﻿namespace Fliq.Domain.Entities.Profile
+﻿
+namespace Fliq.Domain.Entities.Profile
 {
     public class BusinessIdentificationDocument : Record
     {
-        //    public int? UserProfileId { get; set; } 
-        //    public UserProfile? UserProfile { get; set; }
+        //public int UserId { get; set; }
+        public int UserProfileId { get; set; }
+        public UserProfile? UserProfile { get; set; }
         public int BusinessIdentificationDocumentTypeId { get; set; }
         public BusinessIdentificationDocumentType? BusinessIdentificationDocumentType { get; set; }
         public string FrontDocumentUrl { get; set; } = string.Empty;
