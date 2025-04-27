@@ -367,7 +367,6 @@ namespace Fliq.Test.Profile.Commands.Update
                 1,
                 mockFrontFile.Object,
                 mockBackFile.Object), Times.Once);
-            //_loggerManagerMock?.Verify(x => x.LogError(It.Equals("Failed to upload business documents")), Times.Once);
         }
 
         [TestMethod]

@@ -33,11 +33,11 @@ namespace Fliq.Application.BusinessDocumentType.Command
             }
 
             //Check if in use
-            //if (await _documentTypeRepository.IsInUseAsync(command.Id))
-            //{
-            //    _logger.LogWarn($"Document type in use: ID {command.Id}");
-            //    return Errors.BusinessDocumentType.InUse;
-            //}
+            if (await _documentTypeRepository.IsInUseAsync(command.Id))
+            {
+                _logger.LogWarn($"Document type in use: ID {command.Id}");
+                return Errors.BusinessDocumentType.InUse;
+            }
 
             await _documentTypeRepository.DeleteAsync(command.Id);
             _logger.LogInfo($"Deleted document type: {documentType.Name} (ID: {command.Id})");

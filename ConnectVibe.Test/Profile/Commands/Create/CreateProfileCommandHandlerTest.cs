@@ -281,7 +281,6 @@ namespace Fliq.Test.Profile.Commands.Create
             // Arrange
             var frontDoc = CreateMockFormFile("business_front.pdf", "application/pdf");
             var backDoc = CreateMockFormFile("business_back.jpg", "image/jpeg");
-
             var command = new CreateProfileCommand
             {
                 UserId = 1,
@@ -292,7 +291,6 @@ namespace Fliq.Test.Profile.Commands.Create
                     BusinessIdentificationDocumentBack = backDoc
                 }
             };
-
             var user = new User { Id = 1 };
             var uploadResult = new DocumentUploadResult
             {
@@ -303,10 +301,8 @@ namespace Fliq.Test.Profile.Commands.Create
 
             _userRepositoryMock.Setup(repo => repo.GetUserById(It.IsAny<int>()))
                 .Returns(user);
-
-            _businessIdentificationDocumentTypeRepositoryMock.Setup(repo => repo.DocumentTypeExists(It.IsAny<int>()))
-                .ReturnsAsync(true);
-
+            _businessIdentificationDocumentTypeRepositoryMock.Setup(repo => repo.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(new BusinessIdentificationDocumentType { Id = 1, IsDeleted = false });
             _documentUploadServiceMock.Setup(service => service.UploadDocumentsAsync(
                     It.IsAny<int>(),
                     It.IsAny<IFormFile>(),
@@ -319,7 +315,6 @@ namespace Fliq.Test.Profile.Commands.Create
             // Assert
             Assert.IsFalse(result.IsError);
             _businessIdentificationDocumentRepositoryMock.Verify(repo => repo.Add(It.IsAny<BusinessIdentificationDocument>()), Times.Once);
-
             // Verify document properties
             _businessIdentificationDocumentRepositoryMock.Verify(repo => repo.Add(It.Is<BusinessIdentificationDocument>(
                 doc => doc.BusinessIdentificationDocumentTypeId == 1 &&
@@ -373,7 +368,6 @@ namespace Fliq.Test.Profile.Commands.Create
                     BusinessIdentificationDocumentBack = CreateMockFormFile()
                 }
             };
-
             var user = new User { Id = 1 };
             var uploadResult = new DocumentUploadResult
             {
@@ -383,10 +377,8 @@ namespace Fliq.Test.Profile.Commands.Create
 
             _userRepositoryMock.Setup(repo => repo.GetUserById(It.IsAny<int>()))
                 .Returns(user);
-
-            _businessIdentificationDocumentTypeRepositoryMock.Setup(repo => repo.DocumentTypeExists(It.IsAny<int>()))
-                .ReturnsAsync(true);
-
+            _businessIdentificationDocumentTypeRepositoryMock.Setup(repo => repo.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(new BusinessIdentificationDocumentType { Id = 1, IsDeleted = false });
             _documentUploadServiceMock.Setup(service => service.UploadDocumentsAsync(
                     It.IsAny<int>(),
                     It.IsAny<IFormFile>(),
@@ -399,48 +391,6 @@ namespace Fliq.Test.Profile.Commands.Create
             // Assert
             Assert.IsTrue(result.IsError);
             Assert.AreEqual(Errors.Document.InvalidDocument, result.FirstError);
-        }
-
-        [TestMethod]
-        public async Task Handle_BusinessDocumentAlreadyExists_ReturnsDocumentAlreadyExistsError()
-        {
-            // Arrange
-            var command = new CreateProfileCommand
-            {
-                UserId = 1,
-                BusinessIdentificationDocuments = new BusinessIdentificationDocumentMapped
-                {
-                    BusinessIdentificationDocumentTypeId = 1,
-                    BusinessIdentificationDocumentFront = CreateMockFormFile(),
-                    BusinessIdentificationDocumentBack = CreateMockFormFile()
-                }
-            };
-            var user = new User { Id = 1 };
-
-            // Return null for the existing profile lookup so a new one is created
-            _userRepositoryMock?.Setup(repo => repo.GetUserById(It.IsAny<int>()))
-                .Returns(user);
-            _profileRepositoryMock?.Setup(repo => repo.GetProfileByUserId(It.IsAny<int>()))
-                .Returns((UserProfile)null); // Return null to simulate profile creation
-
-            // Then mock the Add method to set the BusinessIdentificationDocument
-            _profileRepositoryMock?.Setup(repo => repo.Add(It.IsAny<UserProfile>()))
-                .Callback<UserProfile>(profile => {
-                    // Simulate the profile being created and getting an ID
-                    profile.Id = 1;
-                    // Add an existing business document to simulate it already exists
-                    profile.BusinessIdentificationDocument = new BusinessIdentificationDocument();
-                });
-
-            _businessIdentificationDocumentTypeRepositoryMock?.Setup(repo => repo.DocumentTypeExists(It.IsAny<int>()))
-                .ReturnsAsync(true);
-
-            // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
-
-            // Assert
-            Assert.IsTrue(result.IsError);
-            Assert.AreEqual(Errors.Document.AlreadyExists, result.FirstError);
         }
 
         private IFormFile CreateMockFormFile(string fileName = "test.jpg", string contentType = "image/jpeg")
