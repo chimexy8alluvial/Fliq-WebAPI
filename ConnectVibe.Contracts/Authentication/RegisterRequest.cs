@@ -12,6 +12,6 @@ public record RegisterRequest(
     string Email,
     string Password,
     int Language,
-    int Theme,
+    string Theme,
     string? PhoneNumber
     );

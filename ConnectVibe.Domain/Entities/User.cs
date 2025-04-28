@@ -1,6 +1,7 @@
 ﻿using Fliq.Domain.Entities.MatchedProfile;
 using Fliq.Domain.Entities.Notifications;
 using Fliq.Domain.Entities.Profile;
+using Fliq.Domain.Entities.Settings;
 
 namespace Fliq.Domain.Entities
 {
@@ -20,6 +21,7 @@ namespace Fliq.Domain.Entities
         public string PhoneNumber { get; set; } = string.Empty;
         public string? ContactInformation { get; set; } = string.Empty;
         public UserProfile? UserProfile { get; set; }
+        public Setting? Settings { get; set; }
         public Role? Role { get; set; }
         public string? BusinessName { get; set; } = string.Empty;
         public string? BusinessType { get; set; } = string.Empty;

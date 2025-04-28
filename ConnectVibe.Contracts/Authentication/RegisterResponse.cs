@@ -11,6 +11,7 @@
     string BusinessAddress,
     string CompanyBio,
     string Otp,
-    string Language
+    int Language,
+    string Theme
     );
 }
