@@ -14,7 +14,7 @@ namespace Fliq.Application.Settings.Commands.Update
     public record UpdateSettingsCommand
         (
         int Id,
-        ScreenMode ScreenMode,
+        string ScreenMode,
          bool RelationAvailability,
         bool ShowMusicAndGameStatus,
         Language Language,

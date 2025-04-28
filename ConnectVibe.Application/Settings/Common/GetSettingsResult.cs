@@ -5,7 +5,7 @@ namespace Fliq.Application.Settings.Common
 {
     public record GetSettingsResult(
     int Id,
-    ScreenMode ScreenMode,
+    string ScreenMode,
     bool RelationAvailability,
     bool ShowMusicAndGameStatus,
     Language Language,
