@@ -21,42 +21,11 @@ namespace Fliq.Infrastructure.Migrations
                 nullable: false,
                 oldClrType: typeof(int),
                 oldType: "int");
-
-            migrationBuilder.AddColumn<int>(
-                name: "DisconnectionResolutionOption",
-                table: "GameSessions",
-                type: "int",
-                nullable: false,
-                defaultValue: 0);
-
-            migrationBuilder.AddColumn<int>(
-                name: "WinnerId",
-                table: "GameSessions",
-                type: "int",
-                nullable: true);
-
-            migrationBuilder.AddColumn<int>(
-                name: "GameDisconnectionResolutionOption",
-                table: "GameRequests",
-                type: "int",
-                nullable: false,
-                defaultValue: 0);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "DisconnectionResolutionOption",
-                table: "GameSessions");
-
-            migrationBuilder.DropColumn(
-                name: "WinnerId",
-                table: "GameSessions");
-
-            migrationBuilder.DropColumn(
-                name: "GameDisconnectionResolutionOption",
-                table: "GameRequests");
 
             migrationBuilder.AddColumn<int>(
                 name: "Language",

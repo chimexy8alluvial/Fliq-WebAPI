@@ -18,7 +18,6 @@ namespace Fliq.Test.Authentication.Commands.ValidateOTP
         private Mock<IOtpService>? _otpServiceMock;
         private Mock<IStreamClientFactory>? _streamClientFactoryMock;
         private Mock<ILoggerManager>? _loggerManagerMock;
-        private Mock<ILoggerManager>? _loggerManagerMock;
 
         [TestInitialize]
         public void Setup()
@@ -30,7 +29,6 @@ namespace Fliq.Test.Authentication.Commands.ValidateOTP
             _userRepositoryMock = new Mock<IUserRepository>();
             _otpServiceMock = new Mock<IOtpService>();
             _streamClientFactoryMock = new Mock<IStreamClientFactory>();
-            _loggerManagerMock = new Mock<ILoggerManager>();
             _loggerManagerMock = new Mock<ILoggerManager>();
 
             // Mock Stream API behavior
@@ -52,8 +50,6 @@ namespace Fliq.Test.Authentication.Commands.ValidateOTP
                 _userRepositoryMock.Object,
                 _otpServiceMock.Object,
                 _streamClientFactoryMock.Object,
-                _loggerManagerMock.Object
-                ,
                 _loggerManagerMock.Object);
         }
 
