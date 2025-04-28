@@ -1,13 +1,12 @@
-﻿
-namespace Fliq.Contracts.Settings
+﻿namespace Fliq.Contracts.Settings
 {
     public record GetSettingsResponse
         (
          int Id,
-    int ScreenMode,
+    string ScreenMode,
     bool RelationAvailability,
     bool ShowMusicAndGameStatus,
-    string Language,
+    int Language,
     List<NotificationPreferenceDto> NotificationPreferences,
     string Name,
     string Email,

@@ -7,6 +7,7 @@
     string DisplayName,
     string Email,
     string Otp,
-    string Language
+    int Language,
+    string Theme
     );
 }

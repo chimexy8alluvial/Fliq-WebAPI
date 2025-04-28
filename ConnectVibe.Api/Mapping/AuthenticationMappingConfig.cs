@@ -33,7 +33,9 @@ namespace Fliq.Api.Mapping
                 Map(dest => dest, src => src.user);
             config.NewConfig<RegistrationResult, RegisterResponse>().
                Map(dest => dest.Otp, src => src.otp).
-               Map(dest => dest, src => src.user);
+               Map(dest => dest, src => src.user).
+               Map(dest => dest.Theme, src => src.user.Settings.ScreenMode).
+               Map(dest => dest.Language, src => src.user.Settings.Language);
             config.NewConfig<ValidatePasswordOTPResult, ValidatePasswordOTPResponse>().
        Map(dest => dest.otp, src => src.otp).
        Map(dest => dest, src => src.user);
