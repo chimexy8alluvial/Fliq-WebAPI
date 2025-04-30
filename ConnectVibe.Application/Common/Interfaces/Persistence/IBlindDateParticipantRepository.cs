@@ -15,5 +15,6 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         Task UpdateAsync(BlindDateParticipant participant);
 
        Task<int> CountByBlindDateId(int blindDateId);
+        
     }
 }

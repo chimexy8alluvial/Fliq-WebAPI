@@ -1,6 +1,7 @@
 ﻿using Fliq.Application.DatingEnvironment.Commands.BlindDateCategory;
 using Fliq.Application.DatingEnvironment.Commands.BlindDates;
 using Fliq.Application.DatingEnvironment.Commands.SpeedDating;
+using Fliq.Application.DatingEnvironment.Common;
 using Fliq.Application.DatingEnvironment.Common.BlindDateCategory;
 using Fliq.Application.DatingEnvironment.Common.BlindDates;
 using Fliq.Application.DatingEnvironment.Common.SpeedDating;
@@ -40,6 +41,8 @@ namespace Fliq.Api.Mapping
 
             config.NewConfig<EndSpeedDatingEventRequest, EndSpeedDatingEventCommand>();
             config.NewConfig<EndSpeedDatingEventResult, EndSpeedDatingEventResponse>();
+
+            config.NewConfig<DeleteDatingEventsResult, DeleteDatingEventResponse>();
         }
     }
 }

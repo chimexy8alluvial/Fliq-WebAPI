@@ -106,15 +106,15 @@ namespace Fliq.Test.Event.Commands
 
             var locationResponse = new LocationQueryResponse
             {
-                PlusCode = new Fliq.Application.Common.Models.PlusCode { CompoundCode = "FakeCode", GlobalCode = "GlobalCode123" },
+                PlusCode = new Application.Common.Models.PlusCode { CompoundCode = "FakeCode", GlobalCode = "GlobalCode123" },
                 Results = new List<Result>
                 {
                     new Result
                     {
                         FormattedAddress = "123 Fake Street, Faketown, Fakestate",
-                        Geometry = new Fliq.Application.Common.Models.Geometry
+                        Geometry = new Application.Common.Models.Geometry
                         {
-                            Location = new Fliq.Application.Common.Models.Locationn
+                            Location = new Application.Common.Models.Locationn
                             {
                                 Lat = 40.7128,
                                 Lng = -74.0060

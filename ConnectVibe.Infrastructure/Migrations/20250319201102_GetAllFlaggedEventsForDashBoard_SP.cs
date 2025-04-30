@@ -25,17 +25,17 @@ namespace Fliq.Infrastructure.Migrations
 
                     DECLARE @CurrentDate DATETIME = GETDATE();
 
-                    SELECT 
+                    SELECT DISTINCT
                         e.EventTitle,
                         u.FirstName + ' ' + u.LastName AS CreatedBy,
                         CASE 
-                            WHEN e.Status = 4 THEN 4  -- Cancelled
-                            WHEN e.Status = 0 THEN 0  -- PendingApproval
-                            WHEN e.StartDate > @CurrentDate THEN 1  -- Upcoming
-                            WHEN e.StartDate <= @CurrentDate AND e.EndDate >= @CurrentDate THEN 2  -- Ongoing
-                            ELSE 3  -- Past
+                            WHEN e.Status = 4 THEN 'Cancelled'
+                            WHEN e.Status = 0 THEN 'PendingApproval'
+                            WHEN e.StartDate > @CurrentDate THEN 'Upcoming'
+                            WHEN e.StartDate <= @CurrentDate AND e.EndDate >= @CurrentDate THEN 'Ongoing'
+                            ELSE 'Past'
                         END AS Status,
-                        COUNT(t.Id) AS Attendees,
+                        COUNT(et.Id) AS Attendees, -- Changed to EventTickets
                         CASE 
                             WHEN e.SponsoredEvent = 1 THEN 'sponsored' 
                             ELSE 'free' 
@@ -44,7 +44,9 @@ namespace Fliq.Infrastructure.Migrations
                     FROM Events e
                     INNER JOIN Users u ON e.UserId = u.Id
                     LEFT JOIN Tickets t ON e.Id = t.EventId
-                    LEFT JOIN LocationDetails ld ON e.LocationId = ld.LocationId
+                    LEFT JOIN EventTickets et ON et.TicketId = t.Id -- Changed to EventTickets
+                    LEFT JOIN [dbo].[LocationDetails] ld ON e.LocationId = ld.LocationId
+                    LEFT JOIN [dbo].[LocationResult] lr ON ld.Id = lr.LocationDetailId -- Join to get FormattedAddress
                     WHERE 
                         e.IsDeleted = 0
                         AND e.IsFlagged = 1  -- Only flagged events
@@ -59,7 +61,7 @@ namespace Fliq.Infrastructure.Migrations
                             END = @Status)
                         AND (@startDate IS NULL OR e.StartDate >= @startDate)
                         AND (@endDate IS NULL OR e.EndDate <= @endDate)
-                        AND (@location IS NULL OR ld.Status LIKE '%' + @location + '%')
+                         AND (@location IS NULL OR lr.FormattedAddress LIKE '%' + @location + '%')
                     GROUP BY 
                         e.EventTitle,
                         u.FirstName,

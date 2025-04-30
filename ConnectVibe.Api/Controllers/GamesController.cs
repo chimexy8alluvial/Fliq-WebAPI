@@ -1,6 +1,5 @@
 ﻿using Fliq.Application.Common.Hubs;
 using Fliq.Application.Common.Interfaces.UserFeatureActivities;
-using Fliq.Application.DatingEnvironment.Commands.SpeedDating;
 using Fliq.Application.Games.Commands.AcceptGameRequest;
 using Fliq.Application.Games.Commands.AcceptStake;
 using Fliq.Application.Games.Commands.CreateGame;
@@ -23,7 +22,6 @@ using Fliq.Application.Games.Queries.GetTotalGamesPlayed;
 using Fliq.Application.Games.Queries.StakeCount;
 using Fliq.Contracts.DashBoard;
 using Fliq.Contracts.Games;
-using Fliq.Domain.Enums;
 using Mapster;
 using MapsterMapper;
 using MediatR;

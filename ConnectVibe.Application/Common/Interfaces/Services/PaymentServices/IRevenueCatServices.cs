@@ -1,4 +1,5 @@
-﻿using Fliq.Application.Payments.Common;
+﻿using ErrorOr;
+using Fliq.Application.Payments.Common;
 
 namespace Fliq.Application.Common.Interfaces.Services.PaymentServices
 {
@@ -7,5 +8,6 @@ namespace Fliq.Application.Common.Interfaces.Services.PaymentServices
         Task<bool> ProcessInitialPurchaseAsync(RevenueCatWebhookPayload payload);
 
         Task<bool> ProcessRenewalAsync(RevenueCatWebhookPayload payload);
+        Task<ErrorOr<bool>> RefundTransactionAsync(string transactionId);
     }
 }

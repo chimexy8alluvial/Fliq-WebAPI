@@ -56,7 +56,18 @@ namespace Fliq.Domain.Common.Errors
             public static Error BlindDateNotOngoing => Error.Failure(
          code: "BlindDate.BlindDateNotOngoing;",
          description: "This Session is not ongoing");
+            public static Error NoEventsToDelete => Error.NotFound(
+        code: "DatingEvent.NoEventsToDelete",
+        description: "No dating events were found to delete");
 
+            public static Error NoDatingListFound => Error.NotFound(
+        code: "DatingEvent.NoEventsFound",
+        description: "No dating events were found matching the provided filters");
+
+            // No events found
+            public static Error NoEventsFound => Error.NotFound(
+                "Dating.NoEventsFound",
+                "No dating events found matching the provided filters");
         }
     }
 }

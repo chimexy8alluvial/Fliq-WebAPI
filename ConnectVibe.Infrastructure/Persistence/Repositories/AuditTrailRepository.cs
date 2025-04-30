@@ -3,6 +3,7 @@ using Fliq.Application.AuditTrail.Common;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 using System.Data;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
@@ -22,8 +23,30 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
         public async Task AddAuditTrailAsync(AuditTrail auditTrail)
         {
-            _dbContext.Add(auditTrail);
-            await _dbContext.SaveChangesAsync();
+
+            if (auditTrail == null)
+            {
+                throw new ArgumentNullException(nameof(auditTrail));
+            }
+
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var parameters = new
+                {
+                    auditTrail.UserId,
+                    auditTrail.UserFirstName,
+                    auditTrail.UserLastName,
+                    auditTrail.UserEmail,
+                    auditTrail.AuditAction,
+                    auditTrail.UserRole,
+                    auditTrail.IPAddress,
+                    auditTrail.IsDeleted,
+                    auditTrail.DateCreated,
+                    auditTrail.DateModified,
+                };
+
+                await connection.ExecuteAsync("sp_AddAuditTrail", parameters, commandType: CommandType.StoredProcedure);
+            }
         }
 
         public async Task<(List<AuditTrailListItem> List, int TotalCount)> GetAllAuditTrailsAsync(int pageNumber, int pageSize, string? name)

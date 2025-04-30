@@ -253,6 +253,9 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<int>("Category")
                         .HasColumnType("int");
 
+                    b.Property<int>("CreatedByUserId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
 
@@ -297,6 +300,8 @@ namespace Fliq.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
 
                     b.HasIndex("LocationId");
 
@@ -563,6 +568,9 @@ namespace Fliq.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsRefunded")
                         .HasColumnType("bit");
 
                     b.Property<int>("PaymentId")
@@ -2523,11 +2531,19 @@ namespace Fliq.Infrastructure.Migrations
 
             modelBuilder.Entity("Fliq.Domain.Entities.DatingEnvironment.SpeedDates.SpeedDatingEvent", b =>
                 {
+                    b.HasOne("Fliq.Domain.Entities.User", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Fliq.Domain.Entities.Profile.Location", "Location")
                         .WithMany()
                         .HasForeignKey("LocationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("CreatedByUser");
 
                     b.Navigation("Location");
                 });
@@ -3056,7 +3072,7 @@ namespace Fliq.Infrastructure.Migrations
                 {
                     b.Navigation("PromptQuestions");
                 });
-
+           
             modelBuilder.Entity("Fliq.Domain.Entities.Role", b =>
                 {
                     b.Navigation("Users");
