@@ -39,7 +39,7 @@ namespace Fliq.Test.Games.Commands
         [TestMethod]
         public async Task Handle_ValidAnswer_UpdatesScoresAndAdvancesTurn()
         {
-            // Arrange
+            // Arrange Test
             var session = new GameSession
             {
                 Id = 1,

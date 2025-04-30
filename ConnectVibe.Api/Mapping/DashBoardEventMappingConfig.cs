@@ -1,4 +1,4 @@
-using Fliq.Application.DashBoard.Common;
+﻿using Fliq.Application.DashBoard.Common;
 using Fliq.Contracts.DashBoard;
 using Mapster;
 
@@ -8,6 +8,7 @@ namespace Fliq.Api.Mapping
     {
         public void Register(TypeAdapterConfig config)
         {
+            config.NewConfig<GetEventsTicketsResult, GetEventsTicketsResponse>();
             config.NewConfig<GetEventsResult, GetEventsResponse>().Map(dest => dest.EventTitle, src => src.EventTitle)
                                                                 .Map(dest => dest.CreatedBy, src => src.CreatedBy)
                                                                 .Map(dest => dest.Status, src => src.Status)

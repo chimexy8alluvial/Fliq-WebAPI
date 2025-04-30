@@ -19,7 +19,7 @@ namespace Fliq.Application.Authentication.Commands.Register
     string Email,
     string Password,
     Language Language,
-    ScreenMode Theme,
+    string Theme,
     string PhoneNumber
     ) : IRequest<ErrorOr<RegistrationResult>>;
 

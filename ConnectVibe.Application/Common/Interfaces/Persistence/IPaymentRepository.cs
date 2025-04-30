@@ -9,5 +9,6 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         void Update(Payment payment);
 
         Payment? GetPaymentById(int id);
+        Payment? GetPaymentByTransactionId(string id);
     }
 }

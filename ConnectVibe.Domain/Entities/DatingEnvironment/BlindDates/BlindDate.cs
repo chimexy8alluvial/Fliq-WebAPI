@@ -38,7 +38,7 @@ namespace Fliq.Domain.Entities.DatingEnvironment.BlindDates
 
         // Ensure proper validation when saving/updating
         public void Validate()
-        {
+        { 
             if (IsOneOnOne && NumberOfParticipants is not (null or 1))
             {
                 throw new ArgumentException("One-on-one blind dates must have exactly 1 participant.");

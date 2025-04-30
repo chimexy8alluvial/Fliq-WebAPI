@@ -13,6 +13,10 @@ namespace Fliq.Domain.Common.Errors
             public static Error FailedToProcess => Error.Unexpected(
             code: "Payment.FailedToProcess",
             description: "Failed to process payment.");
+            
+            public static Error InvalidPaymentTransaction => Error.Unexpected(
+            code: "Payment.InvalidPaymentTransaction",
+            description: "Invalid payment transaction.");
 
             public static Error PaymentNotFound => Error.NotFound(
             code: "Payment.PaymentFound",
