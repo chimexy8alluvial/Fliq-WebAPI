@@ -1,6 +1,7 @@
-﻿
+using ErrorOr;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.DashBoard.Common;
+using Fliq.Application.DashBoard.Queries;
 using Fliq.Application.DashBoard.Queries.ActiveUserCount;
 using Fliq.Application.DashBoard.Queries.EventsCount;
 using Fliq.Application.DashBoard.Queries.EventsWithPendingApproval;
@@ -10,14 +11,26 @@ using Fliq.Application.DashBoard.Queries.GetAllUser;
 using Fliq.Application.DashBoard.Queries.InActiveUserCount;
 using Fliq.Application.DashBoard.Queries.MaleUsersCount;
 using Fliq.Application.DashBoard.Queries.NewSignUpsCount;
+using Fliq.Application.DashBoard.Queries.OtherTicketCount;
+using Fliq.Application.DashBoard.Queries.RegularTicketCount;
+using Fliq.Application.DashBoard.Queries.TotalTicketCount;
 using Fliq.Application.DashBoard.Queries.OtherUsersCount;
 using Fliq.Application.DashBoard.Queries.SponsoredEventsCount;
 using Fliq.Application.DashBoard.Queries.UsersCount;
+using Fliq.Application.DashBoard.Queries.VipTicketCount;
+using Fliq.Application.DashBoard.Queries.VVipTicketCount;
+using Fliq.Application.Event.Commands.RefundTicket;
+using Fliq.Application.Event.Commands.StopTicketSales;
 using Fliq.Contracts.DashBoard;
+using Fliq.Domain.Entities.Event;
 using MapsterMapper;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Fliq.Application.DashBoard.Queries.DailyTicketCount;
+using Mapster;
+using Microsoft.AspNetCore.Authorization;
+using Fliq.Application.Tests.DashBoard.Queries.GetEventsTicket;
+using Fliq.Contracts.Common;
 
 namespace Fliq.Api.Controllers
 {
@@ -93,50 +106,6 @@ namespace Fliq.Api.Controllers
          );
         }
 
-        [HttpGet("event-count")]
-        public async Task<IActionResult> GetEventsCount()
-        {
-            _logger.LogInfo("Received request for events count.");
-
-            var query = new GetAllEventsCountQuery();
-            var result = await _mediator.Send(query);
-
-            return result.Match(
-              eventCountResult => Ok(_mapper.Map<CountResponse>(result.Value)),
-              errors => Problem(errors)
-            );
-        }
-        
-        
-        [HttpGet("events-with-pending-approval-count")]
-        public async Task<IActionResult> GetEventsWithPendingApprovalCount()
-        {
-            _logger.LogInfo("Received request for events with pending approval count.");
-
-            var query = new GetAllEventsWithPendingApprovalCountQuery();
-            var result = await _mediator.Send(query);
-
-            return result.Match(
-              eventCountResult => Ok(_mapper.Map<CountResponse>(result.Value)),
-              errors => Problem(errors)
-            );
-        }
-        
-        [HttpGet("sponsored-event-count")]
-        public async Task<IActionResult> GetSponsoredEventsCount()
-        {
-            _logger.LogInfo("Received request for Sponsored-events count.");
-
-            var query = new GetAllSponsoredEventsCountQuery();
-            var result = await _mediator.Send(query);
-
-            return result.Match(
-             sponsoredEventsCountResult => Ok(_mapper.Map<CountResponse>(result.Value)),
-              errors => Problem(errors)
-          );
-        }
-
-
         [HttpGet("male-users-count")]
         public async Task<IActionResult> GetMaleUsersCount()
         {
@@ -150,7 +119,7 @@ namespace Fliq.Api.Controllers
               errors => Problem(errors)
           );
         }
-        
+
         [HttpGet("female-users-count")]
         public async Task<IActionResult> GetFemaleUsersCount()
         {
@@ -164,7 +133,7 @@ namespace Fliq.Api.Controllers
               errors => Problem(errors)
           );
         }
-        
+
         [HttpGet("other-users-count")]
         public async Task<IActionResult> GetOtherUsersCount()
         {
@@ -195,38 +164,238 @@ namespace Fliq.Api.Controllers
           );
         }
 
-          [HttpGet("get-all-events")]
-         public async Task<IActionResult> GetAllEventsForDashBoard([FromQuery] GetEventsListRequest request)
-         {
-             _logger.LogInfo("Get all events request received");
+        [HttpGet("event-count")]
+        public async Task<IActionResult> GetEventsCount()
+        {
+            _logger.LogInfo("Received request for events count.");
 
-             var query = _mapper.Map<GetAllEventsQuery>(request);
-             var result = await _mediator.Send(query);
+            var query = new GetAllEventsCountQuery();
+            var result = await _mediator.Send(query);
 
-             _logger.LogInfo($"Get all events query executed. Result: {result} ");
+            return result.Match(
+              eventCountResult => Ok(_mapper.Map<CountResponse>(result.Value)),
+              errors => Problem(errors)
+            );
+        }
 
-             return result.Match(
-               getAllEventsResult => Ok(_mapper.Map<List<GetEventsResponse>>(result.Value)),
-               errors => Problem(errors)
-           );
-         }
 
- 
-         [HttpGet("get-all-flaggged-events")]
-         public async Task<IActionResult> GetAllFlaggedEventsForDashBoard([FromQuery] GetEventsListRequest request)
-         {
-             _logger.LogInfo("Get all events request received");
+        [HttpGet("events-with-pending-approval-count")]
+        public async Task<IActionResult> GetEventsWithPendingApprovalCount()
+        {
+            _logger.LogInfo("Received request for events with pending approval count.");
 
-             var query = _mapper.Map<GetAllFlaggedEventsQuery>(request);
-             var result = await _mediator.Send(query);
+            var query = new GetAllEventsWithPendingApprovalCountQuery();
+            var result = await _mediator.Send(query);
 
-             _logger.LogInfo($"Get all events query executed. Result: {result} ");
+            return result.Match(
+              eventCountResult => Ok(_mapper.Map<CountResponse>(result.Value)),
+              errors => Problem(errors)
+            );
+        }
 
-             return result.Match(
-               getAllFlaggedEventsResult => Ok(_mapper.Map<List<GetEventsResponse>>(result.Value)),
-               errors => Problem(errors)
-           );
-         }
+        [HttpGet("sponsored-event-count")]
+        public async Task<IActionResult> GetSponsoredEventsCount()
+        {
+            _logger.LogInfo("Received request for Sponsored-events count.");
 
+            var query = new GetAllSponsoredEventsCountQuery();
+            var result = await _mediator.Send(query);
+
+            return result.Match(
+             sponsoredEventsCountResult => Ok(_mapper.Map<CountResponse>(result.Value)),
+              errors => Problem(errors)
+          );
+        }
+
+
+        [HttpGet("get-all-events")]
+        public async Task<IActionResult> GetAllEventsForDashBoard([FromQuery] GetEventsListRequest request)
+        {
+            _logger.LogInfo("Get all events request received");
+
+            var query = _mapper.Map<GetAllEventsQuery>(request);
+            var result = await _mediator.Send(query);
+
+            _logger.LogInfo($"Get all events query executed. Result: {result} ");
+
+            return result.Match(
+              getAllEventsResult => Ok(_mapper.Map<List<GetEventsResponse>>(result.Value)),
+              errors => Problem(errors)
+          );
+        }
+
+
+        [HttpGet("get-all-flaggged-events")]
+        public async Task<IActionResult> GetAllFlaggedEventsForDashBoard([FromQuery] GetEventsListRequest request)
+        {
+            _logger.LogInfo("Get all events request received");
+
+            var query = _mapper.Map<GetAllFlaggedEventsQuery>(request);
+            var result = await _mediator.Send(query);
+
+            _logger.LogInfo($"Get all events query executed. Result: {result} ");
+
+            return result.Match(
+              getAllFlaggedEventsResult => Ok(_mapper.Map<List<GetEventsResponse>>(result.Value)),
+              errors => Problem(errors)
+          );
+        }
+
+        [HttpGet("dashboard-all-event-tickets")]
+        public async Task<IActionResult> GetEventsTicketsForDashboard([FromQuery] GetEventsTicketsListRequest request)
+        {
+            _logger.LogInfo($"Get Events Tickets Request Received: {request}");
+
+            var query = _mapper .Map<GetAllEventsTicketsQuery>(request);
+
+            var result = await _mediator.Send(query);
+            _logger.LogInfo($"Query Executed. Result: {result}");
+
+            return result.Match(
+                events => Ok(_mapper.Map<List<GetEventsTicketsResponse>>(events)),
+                errors => Problem(errors)
+            );
+        }
+
+        [HttpGet("regular-ticket-count")]
+        public async Task<IActionResult> GetEventRegularTicketCountById([FromQuery] int eventId)
+        {
+            _logger.LogInfo($"Received request for regular ticket count for EventId: {eventId}");
+
+            var query = new GetEventRegularTicketCountQuery(eventId);
+            var result = await _mediator.Send(query);
+
+            return result.Match(
+                matchedResult => Ok(_mapper.Map<CountResponse>(result.Value)),
+                errors => Problem(errors)
+            );
+        }
+
+        [HttpGet("vip-ticket-count")]
+        public async Task<IActionResult> GetVipTicketCountById([FromQuery] int eventId)
+        {
+            _logger.LogInfo($"Received request for VIP ticket count for EventId: {eventId}");
+
+            var query = new GetEventVipTicketCountQuery(eventId);
+            var result = await _mediator.Send(query);
+
+            return result.Match(
+                matchedResult => Ok(_mapper.Map<CountResponse>(result.Value)),
+                errors => Problem(errors)
+            );
+        }
+
+        [HttpGet("vvip-ticket-count")]
+        public async Task<IActionResult> GetVVipTicketCountById([FromQuery] int eventId)
+        {
+            _logger.LogInfo($"Received request for VVIP ticket count for EventId: {eventId}");
+
+            var query = new GetEventVVipTicketCountQuery(eventId);
+            var result = await _mediator.Send(query);
+
+            return result.Match(
+                matchedResult => Ok(_mapper.Map<CountResponse>(result.Value)),
+                errors => Problem(errors)
+            );
+        }
+
+        [HttpGet("other-ticket-count")]
+        public async Task<IActionResult> GetOtherTicketCountById([FromQuery] int eventId)
+        {
+            _logger.LogInfo($"Received request for Other ticket count for EventId: {eventId}");
+
+            var query = new GetEventOtherTicketCountQuery(eventId);
+            var result = await _mediator.Send(query);
+
+            return result.Match(
+                matchedResult => Ok(_mapper.Map<CountResponse>(result.Value)),
+                errors => Problem(errors)
+            );
+        }
+
+        [HttpGet("total-ticket-count")]
+        public async Task<IActionResult> GetTotalTicketCountById([FromQuery] int eventId)
+        {
+            _logger.LogInfo($"Received request for total ticket count for EventId: {eventId}");
+
+            var query = new GetEventTotalTicketCountQuery(eventId);
+            var result = await _mediator.Send(query);
+
+            return result.Match(
+                matchedResult => Ok(_mapper.Map<CountResponse>(result.Value)),
+                errors => Problem(errors)
+            );
+        }
+
+        [HttpGet("weekly-ticket-count")]
+        public async Task<IActionResult> GetWeeklyTicketCountById(
+             [FromQuery] int eventId,
+             [FromQuery] DateTime? startDate,
+             [FromQuery] DateTime? endDate,
+             [FromQuery] TicketType? ticketType = null)
+        {
+            _logger.LogInfo($"Received request for weekly ticket counts for EventId: {eventId}, " +
+                            $"Date Range: {startDate?.ToString("yyyy-MM-dd") ?? "Default Start"} to {endDate?.ToString("yyyy-MM-dd") ?? "Default End"}, " +
+                            $"TicketType: {ticketType?.ToString() ?? "All"}");
+
+            var query = new GetWeeklyEventTicketCountQuery(eventId, startDate, endDate, ticketType);
+            var result = await _mediator.Send(query, HttpContext.RequestAborted);
+
+            return result.Match(
+                matchedResult => Ok(matchedResult.Adapt<WeeklyCountResponse>()), // Map with Mapster
+                errors => Problem(errors)
+            );
+        }
+
+        [HttpGet("gross-revenue")]
+        public async Task<IActionResult> GetEventTicketGrossRevenueById([FromQuery] int eventId)
+        {
+            _logger.LogInfo($"Received request for gross revenue for EventId: {eventId}");
+            var query = new GetEventTicketGrossRevenueQuery(eventId);
+            var result = await _mediator.Send(query);
+            return result.Match(
+                revenue => Ok(new { Revenue = revenue }), // Simple JSON response
+                errors => Problem(errors)
+            );
+        }
+           
+
+        [HttpGet("net-revenue")]
+        public async Task<IActionResult> GetNetRevenueById([FromQuery] int eventId)
+        {
+            var query = new GetEventTicketNetRevenueQuery(eventId);
+            ErrorOr<decimal> result = await _mediator.Send(query);
+
+            return result.Match(
+                revenue => Ok(revenue),
+                errors => Problem( errors)
+            );
+        }
+
+       
+        [HttpPost("stop-sales")]
+        public async Task<IActionResult> StopTicketSales([FromBody] StopTicketSalesRequest request)
+        {
+            var command = new StopTicketSalesCommand ( request.EventId );
+            ErrorOr<StopTicketSalesResult> result = await _mediator.Send(command);
+
+            // Parenthesize the ternary operator to fix CS8361
+            _logger.LogInfo($"Stop ticket sales executed for EventId: {request.EventId}. Affected tickets: {(result.IsError ? 0 : result.Value.AffectedTicketCount)}.");
+
+            return result.Match<IActionResult>(
+                stopResult => Ok(new BasicActionResponse($"Stopped ticket sales for event with ID {request.EventId}. Affected {stopResult.AffectedTicketCount} unsold tickets.")),
+                errors => errors.First().Type switch
+                {
+                    ErrorType.NotFound => NotFound(new { detail = errors.First().Description }),
+                    ErrorType.Conflict => Conflict(new { detail = errors.First().Description }),
+                    _ => BadRequest(new { detail = errors.First().Description })
+                }
+            );
+        }
     }
 }
+
+
+
+
+

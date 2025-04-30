@@ -31,29 +31,22 @@ namespace Fliq.Application.Event.Commands.FlagEvent
             await Task.CompletedTask;
 
             _logger.LogInfo($"Flagging Event with ID: {command.EventId}");
-            var eventFromDb = _eventRepository.GetEventById(command.EventId);
-            if (eventFromDb == null)
+            var eventDetails = _eventRepository.GetEventById(command.EventId);
+            if (eventDetails == null)
             {
                 _logger.LogError($"Event with ID: {command.EventId} was not found.");
                 return Errors.Event.EventNotFound;
             }
 
-            if (eventFromDb.IsFlagged)
+            if (eventDetails.IsFlagged)
             {
-                _logger.LogError($"Event with ID: {command.EventId} has been flagged already.");
+                _logger.LogInfo($"Event with ID: {command.EventId} has been flagged already.");
                 return Errors.Event.EventFlaggedAlready;
             }
+         
+            eventDetails.IsFlagged = true;
 
-            var user = _userRepository.GetUserById(eventFromDb.UserId);
-            if (user == null)
-            {
-                _logger.LogError($"User with Id: {eventFromDb.UserId} was not found.");
-                return Errors.User.UserNotFound;
-            }
-
-            eventFromDb.IsFlagged = true;
-
-            _eventRepository.Update(eventFromDb);
+            _eventRepository.Update(eventDetails);
 
             _logger.LogInfo($"Event with ID: {command.EventId} was flagged");
 

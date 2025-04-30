@@ -105,6 +105,14 @@ namespace Fliq.Application.Payments.Commands.RevenueCat
                     }
                     break;
 
+                case "REFUNDED":
+                    var refundResult = await _revenueCatServices.RefundTransactionAsync(payload.Event.TransactionId);
+                    operationResult = refundResult.Match(
+                        success => true,
+                        error => false
+                    );
+                    break;
+
                 // Handle other events like CANCELLATION, EXPIRATION, etc.
                 default:
                     return Errors.Payment.InvalidPayload;
