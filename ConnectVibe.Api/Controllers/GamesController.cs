@@ -5,15 +5,20 @@ using Fliq.Application.Games.Commands.AcceptStake;
 using Fliq.Application.Games.Commands.CreateGame;
 using Fliq.Application.Games.Commands.CreateQuestion;
 using Fliq.Application.Games.Commands.CreateStake;
+using Fliq.Application.Games.Commands.GetAllGamesPaginatedListCommand;
 using Fliq.Application.Games.Commands.RejectStake;
 using Fliq.Application.Games.Commands.SendGameRequest;
 using Fliq.Application.Games.Commands.SubmitAnswer;
 using Fliq.Application.Games.Common;
+using Fliq.Application.Games.Queries.GetActiveGamesCountQuery;
 using Fliq.Application.Games.Queries.GetGame;
 using Fliq.Application.Games.Queries.GetGameHistory;
 using Fliq.Application.Games.Queries.GetGames;
+using Fliq.Application.Games.Queries.GetIssuesReportedCount;
+using Fliq.Application.Games.Queries.GetNumberOfGamersCountQuery;
 using Fliq.Application.Games.Queries.GetQuestions;
 using Fliq.Application.Games.Queries.GetSession;
+using Fliq.Application.Games.Queries.GetTotalGamesPlayed;
 using Fliq.Application.Games.Queries.StakeCount;
 using Fliq.Contracts.DashBoard;
 using Fliq.Contracts.Games;
@@ -272,6 +277,83 @@ namespace Fliq.Api.Controllers
               matchedProfileResult => Ok(_mapper.Map<CountResponse>(result.Value)),
               errors => Problem(errors)
           );
+        }
+
+        [HttpGet("active-games-count")]
+        [Authorize(Roles = "SuperAdmin,Admin")]
+        public async Task<IActionResult> GetActiveGamesCount()
+        {
+            _logger.LogInformation("Recieved request for active games count");
+
+            var query = new GetActiveGamesCountQuery();
+            var result = await _mediator.Send(query);
+
+            return result.Match(
+                matchedProfileResult => Ok(_mapper.Map<CountResponse>(result.Value)),
+                errors => Problem(errors)
+            );
+        }
+
+        [HttpGet("number-of-gamers-count")]
+        [Authorize(Roles = "SuperAdmin,Admin")]
+        public async Task<IActionResult> GetNumberOfGamersCount()
+        {
+            _logger.LogInformation("Recieved request for number of gamers count");
+
+            var query = new GetNumberOfGamersCountQuery();
+            var result = await _mediator.Send(query);
+
+            return result.Match(
+                matchedProfileResult => Ok(_mapper.Map<CountResponse>(result.Value)),
+                errors => Problem(errors)
+            );
+        }
+
+        [HttpGet("total-games-played-count")]
+        [Authorize(Roles = "SuperAdmin,Admin")]
+        public async Task<IActionResult> GetTotalGamesPlayedCount()
+        {
+            _logger.LogInformation("Recieved request for total games played count");
+
+            var query = new GetTotalGamesPlayedCountQuery();
+            var result = await _mediator.Send(query);
+
+            return result.Match(
+                matchedProfileResult => Ok(_mapper.Map<CountResponse>(result.Value)),
+                errors => Problem(errors)
+            );
+        }
+
+        [HttpGet("games-issues-reported-count")]
+        [Authorize(Roles = "SuperAdmin,Admin")]
+        public async Task<IActionResult> GetGamesIssuesReportedCount()
+        {
+            _logger.LogInformation("Recieved request for games issues reported count");
+
+            var query = new GetGamesIssuesReportedCountQuery();
+            var result = await _mediator.Send(query);
+
+            return result.Match(
+                matchedProfileResult => Ok(_mapper.Map<CountResponse>(result.Value)),
+                errors => Problem(errors)
+            );
+        }
+
+        [HttpGet("GetAllGamesList")]
+        [Authorize(Roles = "SuperAdmin,Admin")]
+        public async Task<IActionResult> GetAllGamesList([FromQuery] GetGamesListRequest request)
+        {
+            _logger.LogInformation($"Get all games list request received. Page: {request.Page}, PageSize: {request.PageSize}");
+
+            var command = _mapper.Map<GetGamesPaginatedListCommand>(request);
+
+            var gamesResult = await _mediator.Send(command);
+            _logger.LogInformation($"Get all games list command executed. Result: {gamesResult}");
+
+            return gamesResult.Match(
+                gamesResult => Ok(_mapper.Map<GetGamesListResponse>(gamesResult)),
+                errors => Problem(errors)
+            );
         }
 
     }

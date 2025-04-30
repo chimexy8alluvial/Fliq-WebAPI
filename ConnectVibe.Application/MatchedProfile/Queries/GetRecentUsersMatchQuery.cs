@@ -15,12 +15,14 @@ namespace Fliq.Application.MatchedProfile.Queries
         private readonly IMatchProfileRepository _matchRepository;
         private readonly ILoggerManager _logger;
         private readonly IUserRepository _userRepository;
+        private readonly IAuditTrailService _auditTrailService;
 
-        public GetRecentUsersMatchQueryHandler(IMatchProfileRepository matchRepository, ILoggerManager logger, IUserRepository userRepository)
+        public GetRecentUsersMatchQueryHandler(IMatchProfileRepository matchRepository, ILoggerManager logger, IUserRepository userRepository, IAuditTrailService auditTrailService)
         {
             _matchRepository = matchRepository;
             _logger = logger;
             _userRepository = userRepository;
+            _auditTrailService = auditTrailService;
         }
 
         public async Task<ErrorOr<List<GetRecentUserMatchResult>>> Handle(GetRecentUsersMatchQuery query, CancellationToken cancellationToken)
@@ -56,6 +58,9 @@ namespace Fliq.Application.MatchedProfile.Queries
             var recentMatchesList = recentMatches?.ToList() ?? [];
             var count = recentMatchesList.Count < limit ? recentMatchesList.Count : limit;
             _logger.LogInfo($"{count} Recent User Matches Fetched");
+
+            var Message = $"Getting recent user match result for user with id {user.Id} in";
+            await _auditTrailService.LogAuditTrail(Message, user);
 
             return recentMatchesList;
         }
