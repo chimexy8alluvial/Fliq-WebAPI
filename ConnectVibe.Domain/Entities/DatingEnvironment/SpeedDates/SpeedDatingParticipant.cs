@@ -1,4 +1,4 @@
-﻿namespace Fliq.Domain.Entities.DatingEnvironment.SpeedDates
+﻿ namespace Fliq.Domain.Entities.DatingEnvironment.SpeedDates
 {
     public class SpeedDatingParticipant : Record
     {

@@ -1,4 +1,5 @@
-﻿using Fliq.Application.Common.Interfaces.Services;
+﻿
+using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.DashBoard.Common;
 using Fliq.Application.DashBoard.Queries.ActiveUserCount;
 using Fliq.Application.DashBoard.Queries.EventsCount;
