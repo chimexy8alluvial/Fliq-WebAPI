@@ -15,18 +15,15 @@ namespace Fliq.Application.Event.Commands.StopTicketSales
         private readonly IEventRepository _eventRepository;
         private readonly ILoggerManager _logger;
         private readonly ITicketRepository _ticketRepository;
-        private readonly IMediator _mediator;
 
         public StopTicketSalesCommandHandler(
             IEventRepository eventRepository,
             ILoggerManager logger,
-            ITicketRepository ticketRepository,
-            IMediator mediator)
+            ITicketRepository ticketRepository)
         {
             _eventRepository = eventRepository;
             _logger = logger;
             _ticketRepository = ticketRepository;
-            _mediator = mediator;
         }
 
         public async Task<ErrorOr<StopTicketSalesResult>> Handle(StopTicketSalesCommand command, CancellationToken cancellationToken)
