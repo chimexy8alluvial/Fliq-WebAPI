@@ -12,4 +12,13 @@ namespace Fliq.Contracts.Prompts
           int CategoryId,
         bool IsCustomPrompt
         );
+
+    public record ReadPromptResponseDto(
+
+    int? PromptQuestionId,
+    string? CustomPromptQuestionText,
+    string? Response,
+    int? CategoryId,
+    bool? IsCustomPrompt
+    );
 }

@@ -11,9 +11,9 @@ namespace Fliq.Test.Dating.Commands.SpeedDating
     [TestClass]
     public class StartSpeedDatingEventCommandHandlerTests
     {
-        private Mock<ISpeedDatingEventRepository> _mockSpeedDateRepository;
-        private Mock<ISpeedDateParticipantRepository> _mockSpeedDateParticipantRepository;
-        private Mock<ILoggerManager> _mockLoggerManager;
+        private Mock<ISpeedDatingEventRepository>? _mockSpeedDateRepository;
+        private Mock<ISpeedDateParticipantRepository>? _mockSpeedDateParticipantRepository;
+        private Mock<ILoggerManager>? _mockLoggerManager;
         private StartSpeedDatingEventCommandHandler _handler;
 
         [TestInitialize]
@@ -37,8 +37,8 @@ namespace Fliq.Test.Dating.Commands.SpeedDating
             var speedDate = new SpeedDatingEvent { Id = 100, Status = DateStatus.Pending };
             var creator = new SpeedDatingParticipant { UserId = 1, SpeedDatingEventId = 100, IsCreator = true };
 
-            _mockSpeedDateRepository.Setup(repo => repo.GetByIdAsync(100)).ReturnsAsync(speedDate);
-            _mockSpeedDateParticipantRepository.Setup(repo => repo.GetCreatorByBlindDateId(100)).ReturnsAsync(creator);
+            _mockSpeedDateRepository?.Setup(repo => repo.GetByIdAsync(100)).ReturnsAsync(speedDate);
+            _mockSpeedDateParticipantRepository?.Setup(repo => repo.GetCreatorByBlindDateId(100)).ReturnsAsync(creator);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -46,7 +46,7 @@ namespace Fliq.Test.Dating.Commands.SpeedDating
             // Assert
             Assert.IsFalse(result.IsError);
             Assert.AreEqual(DateStatus.Ongoing, speedDate.Status);
-            _mockSpeedDateRepository.Verify(repo => repo.UpdateAsync(It.IsAny<SpeedDatingEvent>()), Times.Once);
+            _mockSpeedDateRepository?.Verify(repo => repo.UpdateAsync(It.IsAny<SpeedDatingEvent>()), Times.Once);
         }
 
         [TestMethod]
@@ -54,14 +54,14 @@ namespace Fliq.Test.Dating.Commands.SpeedDating
         {
             // Arrange
             var command = new StartSpeedDatingEventCommand(1, 200);
-            _mockSpeedDateRepository.Setup(repo => repo.GetByIdAsync(200)).ReturnsAsync((SpeedDatingEvent)null);
+            _mockSpeedDateRepository?.Setup(repo => repo.GetByIdAsync(200)).ReturnsAsync((SpeedDatingEvent?)null);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.IsTrue(result.IsError);
-            _mockLoggerManager.Verify(logger => logger.LogWarn(It.Is<string>(msg => msg.Contains("not found"))), Times.Once);
+            _mockLoggerManager?.Verify(logger => logger.LogWarn(It.Is<string>(msg => msg.Contains("not found"))), Times.Once);
         }
 
         [TestMethod]
@@ -72,15 +72,15 @@ namespace Fliq.Test.Dating.Commands.SpeedDating
             var speedDate = new SpeedDatingEvent { Id = 100, Status = DateStatus.Pending };
             var creator = new SpeedDatingParticipant { UserId = 1, SpeedDatingEventId = 100, IsCreator = true };
 
-            _mockSpeedDateRepository.Setup(repo => repo.GetByIdAsync(100)).ReturnsAsync(speedDate);
-            _mockSpeedDateParticipantRepository.Setup(repo => repo.GetCreatorByBlindDateId(100)).ReturnsAsync(creator);
+            _mockSpeedDateRepository?.Setup(repo => repo.GetByIdAsync(100)).ReturnsAsync(speedDate);
+            _mockSpeedDateParticipantRepository?.Setup(repo => repo.GetCreatorByBlindDateId(100)).ReturnsAsync(creator);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.IsTrue(result.IsError);
-            _mockLoggerManager.Verify(logger => logger.LogWarn(It.Is<string>(msg => msg.Contains("not the creator"))), Times.Once);
+            _mockLoggerManager?.Verify(logger => logger.LogWarn(It.Is<string>(msg => msg.Contains("not the creator"))), Times.Once);
         }
 
         [TestMethod]
@@ -91,15 +91,15 @@ namespace Fliq.Test.Dating.Commands.SpeedDating
             var speedDate = new SpeedDatingEvent { Id = 100, Status = DateStatus.Ongoing };
             var creator = new SpeedDatingParticipant { UserId = 1, SpeedDatingEventId = 100, IsCreator = true };
 
-            _mockSpeedDateRepository.Setup(repo => repo.GetByIdAsync(100)).ReturnsAsync(speedDate);
-            _mockSpeedDateParticipantRepository.Setup(repo => repo.GetCreatorByBlindDateId(100)).ReturnsAsync(creator);
+            _mockSpeedDateRepository?.Setup(repo => repo.GetByIdAsync(100)).ReturnsAsync(speedDate);
+            _mockSpeedDateParticipantRepository?.Setup(repo => repo.GetCreatorByBlindDateId(100)).ReturnsAsync(creator);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.IsTrue(result.IsError);
-            _mockLoggerManager.Verify(logger => logger.LogWarn(It.Is<string>(msg => msg.Contains("already started"))), Times.Once);
+            _mockLoggerManager?.Verify(logger => logger.LogWarn(It.Is<string>(msg => msg.Contains("already started"))), Times.Once);
         }
 
         [TestMethod]
@@ -110,15 +110,15 @@ namespace Fliq.Test.Dating.Commands.SpeedDating
             var speedDate = new SpeedDatingEvent { Id = 100, Status = DateStatus.Completed };
             var creator = new SpeedDatingParticipant { UserId = 1, SpeedDatingEventId = 100, IsCreator = true };
 
-            _mockSpeedDateRepository.Setup(repo => repo.GetByIdAsync(100)).ReturnsAsync(speedDate);
-            _mockSpeedDateParticipantRepository.Setup(repo => repo.GetCreatorByBlindDateId(100)).ReturnsAsync(creator);
+            _mockSpeedDateRepository?.Setup(repo => repo.GetByIdAsync(100)).ReturnsAsync(speedDate);
+            _mockSpeedDateParticipantRepository?.Setup(repo => repo.GetCreatorByBlindDateId(100)).ReturnsAsync(creator);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.IsTrue(result.IsError);
-            _mockLoggerManager.Verify(logger => logger.LogWarn(It.Is<string>(msg => msg.Contains("already ended"))), Times.Once);
+            _mockLoggerManager?.Verify(logger => logger.LogWarn(It.Is<string>(msg => msg.Contains("already ended"))), Times.Once);
         }
 
         [TestMethod]
@@ -129,15 +129,15 @@ namespace Fliq.Test.Dating.Commands.SpeedDating
             var speedDate = new SpeedDatingEvent { Id = 100, Status = DateStatus.Cancelled };
             var creator = new SpeedDatingParticipant { UserId = 1, SpeedDatingEventId = 100, IsCreator = true };
 
-            _mockSpeedDateRepository.Setup(repo => repo.GetByIdAsync(100)).ReturnsAsync(speedDate);
-            _mockSpeedDateParticipantRepository.Setup(repo => repo.GetCreatorByBlindDateId(100)).ReturnsAsync(creator);
+            _mockSpeedDateRepository?.Setup(repo => repo.GetByIdAsync(100)).ReturnsAsync(speedDate);
+            _mockSpeedDateParticipantRepository?.Setup(repo => repo.GetCreatorByBlindDateId(100)).ReturnsAsync(creator);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.IsTrue(result.IsError);
-            _mockLoggerManager.Verify(logger => logger.LogWarn(It.Is<string>(msg => msg.Contains($"Speed date session {command.SpeedDateId} has already ended."))), Times.Once);
+            _mockLoggerManager?.Verify(logger => logger.LogWarn(It.Is<string>(msg => msg.Contains($"Speed date session {command.SpeedDateId} has already ended."))), Times.Once);
         }
     }
 }

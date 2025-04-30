@@ -1,5 +1,4 @@
-﻿
-using Fliq.Application.Common.Hubs;
+﻿using Fliq.Application.Common.Hubs;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.DatingEnvironment.Commands.BlindDates;
@@ -9,7 +8,7 @@ using Fliq.Domain.Enums;
 using Microsoft.AspNetCore.SignalR;
 using Moq;
 
-namespace Fliq.Test.Dating.Commands
+namespace Fliq.Test.Dating.Commands.BlindDating
 {
     [TestClass]
     public class StartBlindDateCommandHandlerTest

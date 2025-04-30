@@ -1,6 +1,7 @@
 ﻿using Fliq.Domain.Entities.MatchedProfile;
 using Fliq.Domain.Entities.Notifications;
 using Fliq.Domain.Entities.Profile;
+using Fliq.Domain.Entities.Settings;
 
 namespace Fliq.Domain.Entities
 {
@@ -19,6 +20,7 @@ namespace Fliq.Domain.Entities
         public int RoleId { get; set; }
         public string PhoneNumber { get; set; } = string.Empty;
         public UserProfile? UserProfile { get; set; }
+        public Setting? Settings { get; set; }
         public Role? Role { get; set; }
         public List<Payment>? Payments { get; set; }
         public List<Subscription>? Subscriptions { get; set; }

@@ -41,7 +41,7 @@ namespace Fliq.Test.Settings.Commands.Update
             // Arrange
             var command = new UpdateSettingsCommand(
                 1,
-                ScreenMode.Dark,
+                "Dark",
                 true,
                 true,
                 Language.English,
@@ -70,7 +70,7 @@ namespace Fliq.Test.Settings.Commands.Update
 
             var command = new UpdateSettingsCommand(
                 1,
-                ScreenMode.Dark,
+                "Dark",
                 true,
                 true,
                 Language.English,
@@ -103,7 +103,7 @@ namespace Fliq.Test.Settings.Commands.Update
             var settings = new Setting
             {
                 Id = 1,
-                ScreenMode = ScreenMode.White,
+                ScreenMode = "Light",
                 RelationAvailability = false,
                 ShowMusicAndGameStatus = false,
                 Language = Language.English,
@@ -113,7 +113,7 @@ namespace Fliq.Test.Settings.Commands.Update
 
             var command = new UpdateSettingsCommand(
                 1,
-                ScreenMode.Dark,
+                "Dark",
                 true,
                 true,
                 Language.French,
@@ -138,7 +138,7 @@ namespace Fliq.Test.Settings.Commands.Update
             var updatedSettings = result.Value;
 
             Assert.AreEqual(settings.Id, updatedSettings.Id);
-            Assert.AreEqual(ScreenMode.Dark, updatedSettings.ScreenMode);
+            Assert.AreEqual("Dark", updatedSettings.ScreenMode);
             Assert.IsTrue(updatedSettings.RelationAvailability);
             Assert.IsTrue(updatedSettings.ShowMusicAndGameStatus);
             Assert.AreEqual(Language.French, updatedSettings.Language);
