@@ -83,7 +83,7 @@ namespace Fliq.Application.Profile.Commands.Create
             if (existingProfile == null)
             {
                 // Create a new profile if none exists
-                existingProfile = new UserProfile { UserId = command.UserId, User = user, GenderId=command.GenderId, WantKidsId=command.WantKidsId, HaveKidsId=command.HaveKidsId };
+                existingProfile = new UserProfile { UserId = command.UserId, User = user, GenderId = command.GenderId, WantKidsId = command.WantKidsId, HaveKidsId = command.HaveKidsId };
                 _profileRepository.Add(existingProfile);
             }
 
