@@ -13,7 +13,6 @@ public class StopTicketSalesCommandHandlerTests
     private Mock<IEventRepository>? _eventRepositoryMock;
     private Mock<ILoggerManager>? _loggerMock;
     private Mock<ITicketRepository>? _ticketRepositoryMock;
-    private Mock<IMediator>? _mediatorMock;
     private StopTicketSalesCommandHandler? _handler;
 
     [TestInitialize]
@@ -21,13 +20,11 @@ public class StopTicketSalesCommandHandlerTests
     {
         _eventRepositoryMock = new Mock<IEventRepository>();
         _loggerMock = new Mock<ILoggerManager>();
-        _ticketRepositoryMock = new Mock<ITicketRepository>();
-        _mediatorMock = new Mock<IMediator>();
+        _ticketRepositoryMock = new Mock<ITicketRepository>();   
         _handler = new StopTicketSalesCommandHandler(
             _eventRepositoryMock.Object,
             _loggerMock.Object,
-            _ticketRepositoryMock.Object,
-            _mediatorMock.Object);
+            _ticketRepositoryMock.Object);
     }
 
     [TestMethod]
