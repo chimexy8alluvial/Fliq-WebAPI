@@ -31,7 +31,7 @@ namespace Fliq.Api.Controllers
             _logger = logger;
         }
 
-        //[Authorize(Roles = "SuperAdmin")]
+        [Authorize(Roles = "SuperAdmin")]
         [HttpPost("create-admin")]
         public async Task<IActionResult> CreateAdmin([FromBody] RegisterRequest request)
         {
@@ -131,12 +131,15 @@ namespace Fliq.Api.Controllers
 
         [Authorize(Roles = "SuperAdmin,Admin")]
         [HttpPost("refund")]
-        public async Task<IActionResult> RefundTicket([FromBody] RefundTicketCommand command)
+        public async Task<IActionResult> RefundTicket([FromBody] RefundTicketRequest request)
         {
-            ErrorOr<RefundTicketResult> result = await _mediator.Send(command);
+            var command = new RefundTicketCommand(request.EventId, request.UserId, request.EventTicketIds);
+
+            var result = await _mediator.Send(command);
+            _logger.LogInfo($"Refund ticket executed for EventId: {request.EventId}, UserId: {request.UserId}, Tickets: {string.Join(",", request.EventTicketIds)}.");
 
             return result.Match(
-                refundResult => Ok(new { RefundedTickets = refundResult.RefundedTickets.Count }),
+                result => Ok(new BasicActionResponse($"Refunded {result.RefundedTickets.Count} ticket(s) for user with ID {request.UserId} successfully")),
                 errors => Problem(detail: errors.First().Description, statusCode: 400)
             );
         }

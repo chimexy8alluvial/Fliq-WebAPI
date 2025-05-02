@@ -3,7 +3,6 @@ using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Domain.Common.Errors;
 using MediatR;
-using Error = ErrorOr.Error;
 
 namespace Fliq.Application.DashBoard.Queries
 {
@@ -28,8 +27,8 @@ namespace Fliq.Application.DashBoard.Queries
             {
                 _logger.LogInfo($"Fetching gross revenue for EventId: {query.EventId}");
 
-                var eventFromDb = _eventRepository.GetEventById(query.EventId);
-                if (eventFromDb == null)
+                var eventDetail = _eventRepository.GetEventById(query.EventId);
+                if (eventDetail == null)
                 {
                     _logger.LogError($"Event with ID: {query.EventId} was not found.");
                     return Errors.Event.EventNotFound;

@@ -2,14 +2,13 @@
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Domain.Common.Errors;
+using Fliq.Domain.Entities.Event.Enums;
 using MediatR;
 
 namespace Fliq.Application.Event.Commands.StopTicketSales
 {
-    public class StopTicketSalesCommand : IRequest<ErrorOr<StopTicketSalesResult>>
-    {
-        public int EventId { get; set; }
-    }
+    public record StopTicketSalesCommand(int EventId) : IRequest<ErrorOr<StopTicketSalesResult>>;
+   
 
     public class StopTicketSalesCommandHandler : IRequestHandler<StopTicketSalesCommand, ErrorOr<StopTicketSalesResult>>
     {
@@ -48,29 +47,25 @@ namespace Fliq.Application.Event.Commands.StopTicketSales
                 return Errors.Ticket.TicketNotFound;
             }
 
-            // Check if all tickets are already sold out
-            if (tickets.All(t => t.SoldOut))
+            // Check if ticket sales are already stopped
+            if (eventDetails.TicketSales == TicketSales.Inactive)
             {
-                _logger.LogInfo($"All tickets for EventId {command.EventId} are already marked as sold out.");
-                return Errors.Ticket.TicketAlreadySoldOut;
+                _logger.LogInfo($"Ticket sales for EventId {command.EventId} are already stopped.");
+                return Errors.Ticket.TicketSalesAlreadyStopped;
             }
 
-            // Mark all tickets as SoldOut
-            foreach (var ticket in tickets)
-            {
-                if (!ticket.SoldOut)
-                {
-                    ticket.SoldOut = true;
-                    _ticketRepository.Update(ticket);
-                }
-            }
+            // Count tickets that are not sold out (affected by stopping sales)
+            int affectedTicketCount = tickets.Count(t => !t.SoldOut);
 
-            _logger.LogInfo($"Stopped ticket sales for EventId {command.EventId}. Updated {tickets.Count(t => t.SoldOut)} tickets.");
-           
+            // Stop ticket sales
+            eventDetails.TicketSales = TicketSales.Inactive;
+            _eventRepository.Update(eventDetails);
 
-            return new StopTicketSalesResult(tickets.Count);
+            _logger.LogInfo($"Stopped ticket sales for EventId {command.EventId}. Affected {affectedTicketCount} unsold tickets.");
+
+            return new StopTicketSalesResult(affectedTicketCount);
         }
     }
 
-    public record StopTicketSalesResult(int UpdatedTicketCount);
+    public record StopTicketSalesResult(int AffectedTicketCount);
 }

@@ -29,8 +29,8 @@ namespace Fliq.Application.DashBoard.Queries.VipTicketCount
             {
                  _logger.LogInfo($"Fetching VIP ticket count for EventId: {query.EventId}");
 
-                var eventFromDb = _eventRepository.GetEventById(query.EventId);
-                if (eventFromDb == null)
+                var eventDetails = _eventRepository.GetEventById(query.EventId);
+                if (eventDetails == null)
                 {
                     _logger.LogError($"Event with ID: {query.EventId} was not found.");
                     return Errors.Event.EventNotFound;

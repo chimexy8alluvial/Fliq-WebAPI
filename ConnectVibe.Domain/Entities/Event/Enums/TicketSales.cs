@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Fliq.Test.Event
+namespace Fliq.Domain.Entities.Event.Enums
 {
-    internal class StopTicketSalesCommandHandlerTests
+    public enum TicketSales
     {
+        Active = 0,
+        Inactive = 1,
     }
 }

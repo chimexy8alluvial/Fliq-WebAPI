@@ -4,7 +4,6 @@ using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.DashBoard.Common;
 using Fliq.Domain.Common.Errors;
 using MediatR;
-using Error = ErrorOr.Error;
 
 namespace Fliq.Application.DashBoard.Queries.OtherTicketCount
 {
@@ -29,8 +28,8 @@ namespace Fliq.Application.DashBoard.Queries.OtherTicketCount
             {
                 _logger.LogInfo($"Fetching Other ticket count for EventId: {query.EventId}");
 
-                var eventFromDb = _eventRepository.GetEventById(query.EventId);
-                if (eventFromDb == null)
+                var eventDetails = _eventRepository.GetEventById(query.EventId);
+                if (eventDetails == null)
                 {
                     _logger.LogError($"Event with ID: {query.EventId} was not found.");
                     return Errors.Event.EventNotFound;

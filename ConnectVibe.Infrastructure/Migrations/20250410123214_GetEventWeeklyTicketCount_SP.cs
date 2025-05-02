@@ -40,7 +40,9 @@ namespace Fliq.Infrastructure.Migrations
                     AND et.IsRefunded = 0
                 LEFT JOIN [dbo].[Tickets] t 
                     ON et.TicketId = t.Id 
+                 INNER JOIN [dbo].[Events] e ON e.Id = t.EventId
                     AND t.EventId = @EventId
+                     AND e.IsDeleted = 0
                     AND (t.TicketType = @TicketType OR @TicketType IS NULL)
                 GROUP BY d.DayOfWeek
                 ORDER BY d.DayOfWeek;
