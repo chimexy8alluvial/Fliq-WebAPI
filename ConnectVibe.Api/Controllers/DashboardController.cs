@@ -1,4 +1,4 @@
-﻿using ErrorOr;
+using ErrorOr;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.DashBoard.Common;
 using Fliq.Application.DashBoard.Queries;
