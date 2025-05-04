@@ -51,11 +51,14 @@ namespace Fliq.Api.Controllers
         public async Task<IActionResult> GetPaginatedSupportTickets(
             [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 10,
-            [FromQuery] string requestStatus = null)
+            [FromQuery] int? requestType = null,
+            [FromQuery] int? requestStatus = null)
         {
             var query = new GetPaginatedSupportTicketsQuery
             {
-                PaginationRequest = new PaginationRequest { PageNumber = pageNumber, PageSize = pageSize }
+                PaginationRequest = new PaginationRequest { PageNumber = pageNumber, PageSize = pageSize },
+                RequestType = requestType,
+                RequestStatus = requestStatus
             };
 
             var result = await _mediator.Send(query);
