@@ -3,6 +3,7 @@
     public enum ProfileSection
     {
         BasicInfo,
+        OtherInfo,
         Photos,
         BusinessIdentificationDocument,
         Location,

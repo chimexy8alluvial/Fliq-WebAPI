@@ -7,6 +7,7 @@ using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities;
 using Fliq.Application.Authentication.Common;
 using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Domain.Enums;
 
 namespace Fliq.Test.Authentication.Queries.FacebookLogin
 {
@@ -18,6 +19,7 @@ namespace Fliq.Test.Authentication.Queries.FacebookLogin
         private Mock<IUserRepository>? _userRepositoryMock;
         private Mock<ISocialAuthService>? _socialAuthServiceMock;
         private Mock<ILoggerManager>? _loggerManagerMock;
+        private Mock<ISettingsRepository>? _settingsRepositoryMock;
 
         [TestInitialize]
         public void Setup()
@@ -26,19 +28,21 @@ namespace Fliq.Test.Authentication.Queries.FacebookLogin
             _userRepositoryMock = new Mock<IUserRepository>();
             _socialAuthServiceMock = new Mock<ISocialAuthService>();
             _loggerManagerMock = new Mock<ILoggerManager>();
+            _settingsRepositoryMock = new Mock<ISettingsRepository>();
 
             _handler = new FacebookLoginQueryHandler(
                 _jwtTokenGeneratorMock.Object,
                 _userRepositoryMock.Object,
                 _socialAuthServiceMock.Object,
-                _loggerManagerMock.Object);
+                _loggerManagerMock.Object,
+                _settingsRepositoryMock.Object);
         }
 
         [TestMethod]
         public async Task Handle_InvalidFacebookToken_ReturnsInvalidTokenError()
         {
             // Arrange
-            var query = new FacebookLoginQuery("invalid-code");
+            var query = new FacebookLoginQuery("invalid-code", "Test User", Language.English, "Light");
 
             _socialAuthServiceMock?.Setup(service => service.GetFacebookUserInformation(query.Code))
                 .ReturnsAsync((FacebookUserInfoResponse?)null);
@@ -55,7 +59,7 @@ namespace Fliq.Test.Authentication.Queries.FacebookLogin
         public async Task Handle_ValidFacebookToken_UserExists_GeneratesToken()
         {
             // Arrange
-            var query = new FacebookLoginQuery("valid-code");
+            var query = new FacebookLoginQuery("valid-code", "Test User", Language.English, "Light");
             var facebookResponse = new FacebookUserInfoResponse
             {
                 Email = "johndoe@example.com",
@@ -89,7 +93,7 @@ namespace Fliq.Test.Authentication.Queries.FacebookLogin
         public async Task Handle_ValidFacebookToken_NewUser_CreatesUserAndGeneratesToken()
         {
             // Arrange
-            var query = new FacebookLoginQuery("valid-code");
+            var query = new FacebookLoginQuery("valid-code", "Test User", Language.English, "Light");
             var facebookResponse = new FacebookUserInfoResponse
             {
                 Email = "newuser@example.com",
