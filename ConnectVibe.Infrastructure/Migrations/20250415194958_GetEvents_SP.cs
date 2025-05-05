@@ -168,6 +168,7 @@ namespace Fliq.Infrastructure.Migrations
                     LEFT JOIN LocationResult lr ON ld.Id = lr.LocationDetailId
                     LEFT JOIN Users u ON e.UserId = u.Id
                     WHERE (@p_status IS NULL OR e.Status = @p_status)
+                        AND e.IsDeleted = 0 
                         AND (@p_max_distance_km IS NULL OR 
                              GEOGRAPHY::Point(l.Lat, l.Lng, 4326).STDistance(@point) / 1000 <= @p_max_distance_km)
                         AND (@p_gender IS NULL OR ec.Gender = @gender_int) -- Use integer gender
