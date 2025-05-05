@@ -21,7 +21,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                 throw new ArgumentNullException(nameof(businessDocument));
             }
 
-            //_logger.LogInfo($"Adding business identification document for user ID: {businessDocument.UserId}, document type ID: {businessDocument.BusinessIdentificationDocumentTypeId}");
+            _logger.LogInfo($"Adding business identification document for user Profile ID: {businessDocument.UserProfileId}, document type ID: {businessDocument.BusinessIdentificationDocumentTypeId}");
             _dbContext.BusinessIdentificationDocuments.Add(businessDocument);
         }
 
@@ -41,14 +41,6 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             return await _dbContext.BusinessIdentificationDocuments.Include(bd => bd.BusinessIdentificationDocumentType)
                 .FirstOrDefaultAsync(bd => bd.Id == id);
         }
-
-        //public async Task<IEnumerable<BusinessIdentificationDocument>> GetByUserIdAsync(int userId)
-        //{
-        //    return await _dbContext.BusinessIdentificationDocuments
-        //        .Include(bd => bd.BusinessIdentificationDocumentType)
-        //        .Where(bd => bd.UserId == userId)
-        //        .ToListAsync();
-        //}
 
         public void Update(BusinessIdentificationDocument businessDocument)
         {

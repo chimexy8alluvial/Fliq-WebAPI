@@ -137,14 +137,14 @@ namespace Fliq.Application.Profile.Commands.Create
                 }
 
                 // Upload documents
-                var uploadResult = await _documentUploadService.UploadDocumentsAsync(
+                var documentUploadResult = await _documentUploadService.UploadDocumentsAsync(
                     documentTypeId,
                     command.BusinessIdentificationDocuments.BusinessIdentificationDocumentFront,
                     command.BusinessIdentificationDocuments.BusinessIdentificationDocumentBack);
 
-                if (!uploadResult.Success)
+                if (!documentUploadResult.Success)
                 {
-                    _loggerManager.LogError($"Failed to upload business documents: {uploadResult.ErrorMessage}");
+                    _loggerManager.LogError($"Failed to upload business documents: {documentUploadResult.ErrorMessage}");
                     return Errors.Document.InvalidDocument;
                 }
 
@@ -152,8 +152,8 @@ namespace Fliq.Application.Profile.Commands.Create
                 var businessIdentificationDocument = new BusinessIdentificationDocument
                 {
                     BusinessIdentificationDocumentTypeId = documentTypeId,
-                    FrontDocumentUrl = uploadResult.FrontDocumentUrl,
-                    BackDocumentUrl = uploadResult.BackDocumentUrl,
+                    FrontDocumentUrl = documentUploadResult.FrontDocumentUrl,
+                    BackDocumentUrl = documentUploadResult.BackDocumentUrl,
                     UploadedDate = DateTime.UtcNow,
                     IsVerified = false,
                 };

@@ -10,9 +10,6 @@ namespace Fliq.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "Language",
-                table: "Users");
 
             migrationBuilder.AlterColumn<string>(
                 name: "ScreenMode",
@@ -26,13 +23,6 @@ namespace Fliq.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-
-            migrationBuilder.AddColumn<int>(
-                name: "Language",
-                table: "Users",
-                type: "int",
-                nullable: false,
-                defaultValue: 0);
 
             migrationBuilder.AlterColumn<int>(
                 name: "ScreenMode",

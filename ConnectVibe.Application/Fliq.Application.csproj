@@ -47,7 +47,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Common\Interfaces\Services\NewFolder\" />
     <Folder Include="HelpAndSupport\Queries\GetSupportTickets\" />
     <Folder Include="LiveComms\Queries\" />
     <Folder Include="Notifications\Queries\" />

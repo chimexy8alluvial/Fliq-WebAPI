@@ -3,7 +3,6 @@ namespace Fliq.Domain.Entities.Profile
 {
     public class BusinessIdentificationDocument : Record
     {
-        //public int UserId { get; set; }
         public int UserProfileId { get; set; }
         public UserProfile? UserProfile { get; set; }
         public int BusinessIdentificationDocumentTypeId { get; set; }

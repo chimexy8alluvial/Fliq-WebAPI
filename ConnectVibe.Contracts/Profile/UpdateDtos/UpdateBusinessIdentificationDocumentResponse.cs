@@ -11,12 +11,4 @@ namespace Fliq.Contracts.Profile.UpdateDtos
         string BusinessIdentificationDocumentBack
     );
 
-    //public record ReadBusinessIdentificationDocumentResponse
-    //(
-    //    int BusinessIdentificationDocumentTypeId,
-    //    BusinessIdentificationDocumentType? BusinessIdentificationDocumentType,
-    //    string BusinessIdentificationDocumentFront,
-    //    string BusinessIdentificationDocumentBack
-    //);
-
 }
