@@ -26,8 +26,7 @@ public class StopTicketSalesCommandHandlerTests
         _handler = new StopTicketSalesCommandHandler(
             _eventRepositoryMock.Object,
             _loggerMock.Object,
-            _ticketRepositoryMock.Object,
-            _mediatorMock.Object);
+            _ticketRepositoryMock.Object);
     }
 
     [TestMethod]
