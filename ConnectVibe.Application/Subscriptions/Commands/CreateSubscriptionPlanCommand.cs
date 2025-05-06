@@ -1,6 +1,4 @@
-﻿
-
-using ErrorOr;
+﻿using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence.Subscriptions;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Domain.Common.Errors;
