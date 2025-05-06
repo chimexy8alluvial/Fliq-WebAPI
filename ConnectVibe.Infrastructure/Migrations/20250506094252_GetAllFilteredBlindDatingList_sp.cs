@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -83,13 +82,14 @@ BEGIN
     SELECT @TotalCount AS TotalCount;
     
     DROP TABLE #FilteredBlindDates;
-END");
+END
+");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql("DROP TABLE IF EXISTS sp_GetAllFilteredBlindDatingList");
+            migrationBuilder.Sql("DROP PROCEDURE IF EXISTS sp_GetAllFilteredBlindDatingList");
         }
     }
 }

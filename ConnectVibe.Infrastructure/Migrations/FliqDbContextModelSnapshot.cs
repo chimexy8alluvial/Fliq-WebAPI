@@ -641,6 +641,9 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<int>("TicketSales")
+                        .HasColumnType("int");
+
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
@@ -2126,7 +2129,8 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Settings");
                 });
@@ -2829,8 +2833,8 @@ namespace Fliq.Infrastructure.Migrations
             modelBuilder.Entity("Fliq.Domain.Entities.Settings.Setting", b =>
                 {
                     b.HasOne("Fliq.Domain.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
+                        .WithOne("Settings")
+                        .HasForeignKey("Fliq.Domain.Entities.Settings.Setting", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -2986,6 +2990,8 @@ namespace Fliq.Infrastructure.Migrations
                     b.Navigation("MatchRequests");
 
                     b.Navigation("Payments");
+
+                    b.Navigation("Settings");
 
                     b.Navigation("Subscriptions");
 
