@@ -6,7 +6,7 @@ using Fliq.Domain.Entities.PlatformCompliance;
 using Fliq.Domain.Enums;
 using MediatR;
 
-namespace Fliq.Application.PlatformCompliance.Commands
+namespace Fliq.Application.PlatformCompliance.Commands.CreateCompliance
 {
     public record CreateComplianceCommand(
      int ComplianceTypeId,
@@ -46,7 +46,7 @@ namespace Fliq.Application.PlatformCompliance.Commands
                 EffectiveDate = request.EffectiveDate,
             };
 
-            await _complianceRepository.AddAsync(compliance); // Assuming you have an AddAsync method
+            await _complianceRepository.AddAsync(compliance);
             _logger.LogInfo($"Compliance policy created with ID: {compliance.Id}");
 
             return new CreateComplianceResult(compliance.Id);
