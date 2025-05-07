@@ -15,29 +15,17 @@ namespace Fliq.Application.Contents.Queries
     public class GetAllContentsCountQueryHandler : IRequestHandler<GetAllContentsCountQuery, ErrorOr<CountResult>>
     {
         private readonly IRepositoryFactory _repositoryFactory;
+        private readonly IContentRepository _contentRepository;
 
-        public GetAllContentsCountQueryHandler(IRepositoryFactory repositoryFactory)
+        public GetAllContentsCountQueryHandler(IRepositoryFactory repositoryFactory, IContentRepository contentRepository)
         {
             _repositoryFactory = repositoryFactory;
+            _contentRepository = contentRepository;
         }
 
         public async Task<ErrorOr<CountResult>> Handle(GetAllContentsCountQuery request, CancellationToken cancellationToken)
         {
-            var contentTypes = new Dictionary<Type, Func<Task<int>>>
-        {
-            { typeof(SpeedDatingEvent),  () => ( _repositoryFactory.GetRepository<SpeedDatingEvent>()).CountAsync() },
-            { typeof(BlindDate),  () => ( _repositoryFactory.GetRepository<BlindDate>()).CountAsync() },
-            { typeof(PromptQuestion),  () => ( _repositoryFactory.GetRepository<PromptQuestion>()).CountAsync() },
-            { typeof(Game), () => ( _repositoryFactory.GetRepository<Game>()).CountAsync() },
-            { typeof(Events), () => ( _repositoryFactory.GetRepository<Events>()).CountAsync() }
-        };
-
-            var totalCount = 0;
-            foreach (var countFunc in contentTypes.Values)
-            {
-                totalCount += await countFunc();
-            }
-
+            var totalCount = await _contentRepository.GetTotalContentCountAsync();
             return new CountResult(totalCount);
         }
     }

@@ -91,6 +91,7 @@ namespace Fliq.Infrastructure
             services.AddScoped<IComplianceTypeRepository, ComplianceTypeRepository>();
             services.AddScoped<IComplianceRepository, ComplianceRepository>();
             services.AddScoped<IUserConsentRepository, UserConsentRepository>();
+            services.AddScoped<IContentRepository, ContentRepository>();
             services.AddSingleton<ICustomProfileMapper, CustomProfileMapper>();
             services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
             services.AddDbContext<FliqDbContext>(options =>
