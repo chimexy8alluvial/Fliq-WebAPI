@@ -10,9 +10,9 @@ namespace Fliq.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            //migrationBuilder.DropColumn(
-            //    name: "Language",
-            //    table: "Users");
+            migrationBuilder.DropColumn(
+                name: "Language",
+                table: "Users");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
