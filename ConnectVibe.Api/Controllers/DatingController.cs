@@ -1,9 +1,13 @@
 ﻿using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.DatingEnvironment.Commands;
 using Fliq.Application.DatingEnvironment.Commands.BlindDateCategory;
 using Fliq.Application.DatingEnvironment.Commands.BlindDates;
 using Fliq.Application.DatingEnvironment.Commands.SpeedDating;
 using Fliq.Application.DatingEnvironment.Common;
 using Fliq.Application.DatingEnvironment.Queries.BlindDateCategory;
+using Fliq.Application.DatingEnvironment.Queries.DatingDashboard.BlindDte;
+using Fliq.Application.DatingEnvironment.Queries.DatingDashboard.SpeedDate;
+using Fliq.Contracts.DashBoard;
 using Fliq.Contracts.Dating;
 using MapsterMapper;
 using MediatR;
@@ -159,7 +163,22 @@ namespace Fliq.Api.Controllers
             );
         }
 
-        
+        [HttpGet("blind-date-count")]
+        [Authorize(Roles = "Admin, SuperAdmin")]
+        public async Task<IActionResult> GetBlindDateCount()
+        {
+            _logger.LogInfo("Recieved request for blind date count");
+
+            var query = new BlindDateCountQuery();
+            var result = await _mediator.Send(query);
+
+            return result.Match(
+                matchedProfileResult => Ok(_mapper.Map<CountResponse>(result.Value)),
+                errors => Problem(errors)
+            );
+        }
+
+
         //-------speed--dating------\\
 
         [HttpPost("SpeedDate")] 
@@ -173,7 +192,8 @@ namespace Fliq.Api.Controllers
             var command = _mapper.Map<CreateSpeedDatingEventCommand>(request) with
             {
                 SpeedDateImage = request.SpeedDatingImage is not null
-                ? new DatePhotoMapped(request.SpeedDatingImage.DateSessionImageFile) : null
+                ? new DatePhotoMapped(request.SpeedDatingImage.DateSessionImageFile) : null,
+                CreatedByUserId = userId,
             };
 
             var result = await _mediator.Send(command);
@@ -239,6 +259,66 @@ namespace Fliq.Api.Controllers
 
             return result.Match(
                 result => Ok(_mapper.Map<EndSpeedDatingEventResponse>(result)),
+                errors => Problem(string.Join("; ", errors.Select(e => e.Description)))
+            );
+        }
+
+        [HttpGet("speed-date-count")]
+        [Authorize(Roles = "SuperAdnmin, Admin")]
+        public async Task<IActionResult> GetSpeedDateCount()
+        {
+            _logger.LogInfo("Recieved request for speed date count");
+
+            var query = new SpeedDateCountQuery();
+            var result = await _mediator.Send(query);
+
+            return result.Match(
+                matchedProfileResult => Ok(_mapper.Map<CountResponse>(result.Value)),
+                errors => Problem(errors)
+            );
+        }
+
+        [HttpPut("DeleteMultipleDateOptions")]
+        [Produces(typeof(DeleteDatingEventResponse))]
+        [Authorize(Roles = "Admin, SuperAdmin")]
+
+        public async Task<IActionResult> DeleteMutipleDateOptions([FromBody] DeleteDatingEventRequest request)
+        {
+            _logger.LogInfo($"Delete Multiple Dating Options request received: {request}");
+
+            var command = new DeleteDatingEventsCommand(request.DatingOptions);
+
+            var result = await _mediator.Send(command);
+            _logger.LogInfo($"Delete Multiple Dating Options Command Executed. Result: {result}");
+
+            return result.Match(
+                result => Ok(_mapper.Map<DeleteDatingEventResponse>(result)),
+                errors => Problem(string.Join("; ", errors.Select(e => e.Description)))
+            );
+        }
+
+        [HttpGet("GetAllFilteredDatingList")]
+        [Authorize(Roles = "Admin, SuperAdmin")]
+        public async Task<IActionResult> GetAllFilteredDatingList([FromQuery] GetDatingListRequest request)
+        {
+            _logger.LogInfo($"Get All Filtered Dating List request received: {request}");
+            var query = new GetDatingListCommand(
+            request.Page,
+            request.PageSize,
+            request.Title,
+            request.DatingType,
+            request.CreatedBy,
+            request.SubscriptionType,
+            request.Duration,
+            request.DateCreatedFrom,
+            request.DateCreatedTo
+            );
+            var result = await _mediator.Send(query);
+
+            _logger.LogInfo($"Get All Filtered Dating List Command Executed. Result: {result}");
+
+            return result.Match(
+                result => Ok(result),
                 errors => Problem(string.Join("; ", errors.Select(e => e.Description)))
             );
         }

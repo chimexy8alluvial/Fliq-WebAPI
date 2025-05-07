@@ -21,11 +21,13 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, ErrorOr<Authenticat
     private readonly IJwtTokenGenerator _jwtTokenGenerator;
     private readonly IUserRepository _userRepository;
     private readonly ILoggerManager _logger;
-    public LoginQueryHandler(IJwtTokenGenerator jwtTokenGenerator, IUserRepository userRepository, ILoggerManager logger)
+    private readonly IAuditTrailService _auditTrailService;
+    public LoginQueryHandler(IJwtTokenGenerator jwtTokenGenerator, IUserRepository userRepository, ILoggerManager logger, IAuditTrailService auditTrailService)
     {
         _jwtTokenGenerator = jwtTokenGenerator;
         _userRepository = userRepository;
         _logger = logger;
+        _auditTrailService = auditTrailService;
     }
     public async Task<ErrorOr<AuthenticationResult>> Handle(LoginQuery query, CancellationToken cancellationToken)
     {
@@ -41,6 +43,9 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, ErrorOr<Authenticat
 
 
         var token = _jwtTokenGenerator.GenerateToken(user);
+
+        var Message = $"Logged in user with id: {user.Id}";
+        await _auditTrailService.LogAuditTrail(Message, user);
 
         return new AuthenticationResult(user, token, "");
     }

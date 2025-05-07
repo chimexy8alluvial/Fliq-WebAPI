@@ -3,7 +3,6 @@ using Fliq.Application.Common.Interfaces.Services.LocationServices;
 using Fliq.Application.Common.Interfaces.Services.MeidaServices;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.DatingEnvironment.Commands.SpeedDating;
-using Fliq.Contracts.Profile;
 using Fliq.Domain.Entities.DatingEnvironment.SpeedDates;
 using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Enums;
@@ -22,13 +21,13 @@ namespace Fliq.Test.Dating.Commands.SpeedDating
     [TestClass]
     public class CreateSpeedDatingEventCommandHandlerTests
     {
-        private Mock<ISpeedDatingEventRepository> _mockSpeedDateRepository;
-        private Mock<ILoggerManager> _mockLoggerManager;
-        private Mock<IMapper> _mockMapper;
-        private Mock<ILocationService> _mockLocationService;
-        private Mock<IMediaServices> _mockMediaServices;
-        private Mock<ISpeedDateParticipantRepository> _mockSpeedDateParticipantRepository;
-        private Mock<IUserRepository> _mockUserRepository;
+        private Mock<ISpeedDatingEventRepository>? _mockSpeedDateRepository;
+        private Mock<ILoggerManager>? _mockLoggerManager;
+        private Mock<IMapper>? _mockMapper;
+        private Mock<ILocationService>? _mockLocationService;
+        private Mock<IMediaServices>? _mockMediaServices;
+        private Mock<ISpeedDateParticipantRepository>? _mockSpeedDateParticipantRepository;
+        private Mock<IUserRepository>? _mockUserRepository;
         private CreateSpeedDatingEventCommandHandler _handler;
 
         [TestInitialize]
@@ -77,10 +76,10 @@ namespace Fliq.Test.Dating.Commands.SpeedDating
             var speedDateEntity = new SpeedDatingEvent { Id = 1, Title = "Valentine's Speed Dating" };
             var locationResponse = new LocationQueryResponse { Status = "OK" };
 
-            _mockUserRepository.Setup(repo => repo.GetUserById(command.CreatedByUserId)).Returns(user);
-            _mockMapper.Setup(m => m.Map<SpeedDatingEvent>(command)).Returns(speedDateEntity);
-            _mockLocationService.Setup(s => s.GetAddressFromCoordinatesAsync(command.Location.Lat, command.Location.Lng)).ReturnsAsync(locationResponse);
-            _mockMediaServices.Setup(m => m.UploadImageAsync(It.IsAny<IFormFile>())).ReturnsAsync("image.jpg");
+            _mockUserRepository?.Setup(repo => repo.GetUserById(command.CreatedByUserId)).Returns(user);
+            _mockMapper?.Setup(m => m.Map<SpeedDatingEvent>(command)).Returns(speedDateEntity);
+            _mockLocationService?.Setup(s => s.GetAddressFromCoordinatesAsync(command.Location.Lat, command.Location.Lng)).ReturnsAsync(locationResponse);
+            _mockMediaServices?.Setup(m => m.UploadImageAsync(It.IsAny<IFormFile>())).ReturnsAsync("image.jpg");
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -91,9 +90,9 @@ namespace Fliq.Test.Dating.Commands.SpeedDating
             Assert.AreEqual(1, result.Value.Id);
             Assert.AreEqual(command.Title, result.Value.Title);
 
-            _mockSpeedDateRepository.Verify(repo => repo.AddAsync(It.IsAny<SpeedDatingEvent>()), Times.Once);
-            _mockSpeedDateParticipantRepository.Verify(repo => repo.AddAsync(It.IsAny<SpeedDatingParticipant>()), Times.Once);
-            _mockLoggerManager.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains("Successfully created Speed Date Event"))), Times.Once);
+            _mockSpeedDateRepository?.Verify(repo => repo.AddAsync(It.IsAny<SpeedDatingEvent>()), Times.Once);
+            _mockSpeedDateParticipantRepository?.Verify(repo => repo.AddAsync(It.IsAny<SpeedDatingParticipant>()), Times.Once);
+            _mockLoggerManager?.Verify(logger => logger.LogInfo(It.Is<string>(msg => msg.Contains("Successfully created Speed Date Event"))), Times.Once);
         }
 
         [TestMethod]
@@ -114,7 +113,7 @@ namespace Fliq.Test.Dating.Commands.SpeedDating
                 LocationDetail: new LocationDetail()
             );
 
-            _mockUserRepository.Setup(repo => repo.GetUserById(command.CreatedByUserId)).Returns((User)null);
+            _mockUserRepository?.Setup(repo => repo.GetUserById(command.CreatedByUserId)).Returns((User)null);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -122,7 +121,7 @@ namespace Fliq.Test.Dating.Commands.SpeedDating
             // Assert
             Assert.IsTrue(result.IsError);
             Assert.AreEqual(Errors.User.UserNotFound, result.FirstError);
-            _mockLoggerManager.Verify(logger => logger.LogError(It.Is<string>(msg => msg.Contains("User with ID"))), Times.Once);
+            _mockLoggerManager?.Verify(logger => logger.LogError(It.Is<string>(msg => msg.Contains("User with ID"))), Times.Once);
         }
 
         [TestMethod]
@@ -146,9 +145,9 @@ namespace Fliq.Test.Dating.Commands.SpeedDating
 
             var speedDateEntity = new SpeedDatingEvent { Id = 1, Title = command.Title };
 
-            _mockUserRepository.Setup(repo => repo.GetUserById(command.CreatedByUserId)).Returns(user);
-            _mockMapper.Setup(m => m.Map<SpeedDatingEvent>(command)).Returns(speedDateEntity);
-            _mockLocationService.Setup(s => s.GetAddressFromCoordinatesAsync(command.Location.Lat, command.Location.Lng)).ReturnsAsync((LocationQueryResponse)null);
+            _mockUserRepository?.Setup(repo => repo.GetUserById(command.CreatedByUserId)).Returns(user);
+            _mockMapper?.Setup(m => m.Map<SpeedDatingEvent>(command)).Returns(speedDateEntity);
+            _mockLocationService?.Setup(s => s.GetAddressFromCoordinatesAsync(command.Location.Lat, command.Location.Lng)).ReturnsAsync((LocationQueryResponse)null);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -157,7 +156,7 @@ namespace Fliq.Test.Dating.Commands.SpeedDating
             Assert.IsFalse(result.IsError);
             Assert.IsNotNull(result.Value);
             Assert.AreEqual(1, result.Value.Id);
-            _mockLoggerManager.Verify(logger => logger.LogWarn(It.Is<string>(msg => msg.Contains("Failed to retrieve location details"))), Times.Once);
+            _mockLoggerManager?.Verify(logger => logger.LogWarn(It.Is<string>(msg => msg.Contains("Failed to retrieve location details"))), Times.Once);
         }
 
         [TestMethod]
@@ -181,8 +180,8 @@ namespace Fliq.Test.Dating.Commands.SpeedDating
 
             var speedDateEntity = new SpeedDatingEvent { Id = 1, Title = command.Title };
 
-            _mockUserRepository.Setup(repo => repo.GetUserById(command.CreatedByUserId)).Returns(user);
-            _mockMapper.Setup(m => m.Map<SpeedDatingEvent>(command)).Returns(speedDateEntity);
+            _mockUserRepository?.Setup(repo => repo.GetUserById(command.CreatedByUserId)).Returns(user);
+            _mockMapper?.Setup(m => m.Map<SpeedDatingEvent>(command)).Returns(speedDateEntity);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
@@ -191,7 +190,7 @@ namespace Fliq.Test.Dating.Commands.SpeedDating
             Assert.IsFalse(result.IsError);
             Assert.IsNotNull(result.Value);
             Assert.AreEqual(1, result.Value.Id);
-            _mockSpeedDateParticipantRepository.Verify(repo => repo.AddAsync(It.IsAny<SpeedDatingParticipant>()), Times.Never);
+            _mockSpeedDateParticipantRepository?.Verify(repo => repo.AddAsync(It.IsAny<SpeedDatingParticipant>()), Times.Never);
         }
 
 

@@ -1,2 +1,2 @@
 ﻿namespace Fliq.Contracts.Authentication;
-public record GoogleLoginRequest(string Code);
+public record GoogleLoginRequest(string Code, string? DisplayName, int Language, string Theme);

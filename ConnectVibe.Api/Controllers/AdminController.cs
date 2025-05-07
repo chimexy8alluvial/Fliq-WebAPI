@@ -1,7 +1,10 @@
-﻿using Fliq.Application.Authentication.Commands.CreateAdmin;
+using Fliq.Application.AuditTrailCommand;
+using ErrorOr;
+using Fliq.Application.Authentication.Commands.CreateAdmin;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.DashBoard.Command.DeleteUser;
 using Fliq.Application.DashBoard.Common;
+using Fliq.Application.Event.Commands.RefundTicket;
 using Fliq.Application.Users.Commands;
 using Fliq.Application.Users.Queries;
 using Fliq.Contracts.Authentication;
@@ -49,7 +52,10 @@ namespace Fliq.Api.Controllers
         {
             _logger.LogInfo($"Delete user with ID: {userId} received");
 
-            var command = new DeleteUserByIdCommand(userId);
+            var AdminUserId = GetAuthUserId();
+            _logger.LogInfo($"Authenticated user ID: {AdminUserId}");
+
+            var command = new DeleteUserByIdCommand(userId, AdminUserId);
             var result = await _mediator.Send(command);
 
             _logger.LogInfo($"Delete user with ID: {userId} executed. Result: {result} ");
@@ -67,7 +73,11 @@ namespace Fliq.Api.Controllers
         public async Task<IActionResult> DeactivateUser(int UserId)
         {
             _logger.LogInfo($"User Deactivation Request Received for User with Id: {UserId}");
-            var command = new DeactivateUserCommand(UserId);
+
+            var AdminUserId = GetAuthUserId();
+            _logger.LogInfo($"Authenticated user ID: {AdminUserId}");
+
+            var command = new DeactivateUserCommand(UserId, AdminUserId);
             var result = await _mediator.Send(command);
             _logger.LogInfo($"User Deactivation Command Executed. Result:  {result}");
 
@@ -125,6 +135,35 @@ namespace Fliq.Api.Controllers
 
                 return Ok(result.Value);
             }
+        }
+
+        [HttpGet("get-audit-trails")]
+        public async Task<IActionResult> GetPaginatedAuditTrails([FromQuery] string? name, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        {
+            _logger.LogInfo($"Received request for Get Paginated Audit Trails.");
+
+            var query = new GetPaginatedAuditTrailCommand(pageNumber, pageSize, name);
+            var result = await _mediator.Send(query);
+
+            if (result.IsError)
+                return BadRequest(result.FirstError.Description);
+
+            return Ok(result.Value);
+        }
+
+        [Authorize(Roles = "SuperAdmin,Admin")]
+        [HttpPost("refund")]
+        public async Task<IActionResult> RefundTicket([FromBody] RefundTicketRequest request)
+        {
+            var command = new RefundTicketCommand(request.EventId, request.UserId, request.EventTicketIds);
+
+            var result = await _mediator.Send(command);
+            _logger.LogInfo($"Refund ticket executed for EventId: {request.EventId}, UserId: {request.UserId}, Tickets: {string.Join(",", request.EventTicketIds)}.");
+
+            return result.Match(
+                result => Ok(new BasicActionResponse($"Refunded {result.RefundedTickets.Count} ticket(s) for user with ID {request.UserId} successfully")),
+                errors => Problem(detail: errors.First().Description, statusCode: 400)
+            );
         }
     }
 }

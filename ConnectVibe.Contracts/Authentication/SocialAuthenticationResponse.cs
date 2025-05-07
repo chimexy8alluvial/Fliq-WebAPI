@@ -8,6 +8,8 @@
     string DisplayName,
     string Email,
     string Token,
-    bool IsNewUser
+    bool IsNewUser,
+    int Language,
+    string Theme
     );
 }

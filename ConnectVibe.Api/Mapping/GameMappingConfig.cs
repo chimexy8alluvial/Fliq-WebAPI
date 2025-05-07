@@ -1,6 +1,7 @@
 ﻿using Fliq.Application.Games.Commands.AcceptGameRequest;
 using Fliq.Application.Games.Commands.CreateGame;
 using Fliq.Application.Games.Commands.CreateStake;
+using Fliq.Application.Games.Commands.GetAllGamesPaginatedListCommand;
 using Fliq.Application.Games.Commands.SendGameRequest;
 using Fliq.Application.Games.Commands.SubmitAnswer;
 using Fliq.Application.Games.Common;
@@ -30,6 +31,9 @@ namespace Fliq.Api.Mapping
                 .IgnoreNullValues(true);
 
             config.NewConfig<SubmitAnswerDto, SubmitAnswerCommand>()
+                .IgnoreNullValues(true);
+
+            config.NewConfig<GetGamesListRequest, GetGamesPaginatedListCommand>()
                 .IgnoreNullValues(true);
 
             // Queries to Responses
