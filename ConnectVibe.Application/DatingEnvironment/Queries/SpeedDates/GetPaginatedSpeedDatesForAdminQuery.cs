@@ -1,5 +1,4 @@
 ﻿using ErrorOr;
-using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Pagination;
 using Fliq.Domain.Entities.DatingEnvironment.SpeedDates;
