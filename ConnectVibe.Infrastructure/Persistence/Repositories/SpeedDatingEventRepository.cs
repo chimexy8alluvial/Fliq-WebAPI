@@ -1,13 +1,12 @@
 ﻿using Dapper;
 using Fliq.Application.Common.Interfaces.Persistence;
-using Fliq.Application.DatingEnvironment.Common;
-using Fliq.Contracts.Dating;
 using Fliq.Domain.Entities.DatingEnvironment;
 using Fliq.Domain.Entities.DatingEnvironment.SpeedDates;
 using Fliq.Domain.Entities.Event.Enums;
 using Fliq.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using System.Data.Common;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {

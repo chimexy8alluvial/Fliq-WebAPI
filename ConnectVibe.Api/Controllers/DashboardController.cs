@@ -32,6 +32,7 @@ using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Fliq.Application.Tests.DashBoard.Queries.GetEventsTicket;
 using Fliq.Contracts.Common;
+using Fliq.Application.DashBoard.Queries;
 
 namespace Fliq.Api.Controllers
 {

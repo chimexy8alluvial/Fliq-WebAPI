@@ -39,8 +39,6 @@ namespace Fliq.Domain.Entities.DatingEnvironment.SpeedDates
 
         public int LocationId { get; set; }
         public Location Location { get; set; } = default!;
-        public int CreatedByUserId { get; set; }
-        public User CreatedByUser { get; set; } = default!;
 
         public List<SpeedDatingParticipant> Participants { get; set; } = new();
     }

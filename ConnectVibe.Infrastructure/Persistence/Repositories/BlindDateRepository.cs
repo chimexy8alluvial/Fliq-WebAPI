@@ -7,6 +7,7 @@ using Fliq.Domain.Entities.DatingEnvironment.BlindDates;
 using Fliq.Domain.Entities.Event.Enums;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using System.Data.Common;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {

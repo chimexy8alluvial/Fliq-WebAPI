@@ -29,5 +29,21 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             var counts = await GetAllContentCountsAsync();
             return counts.Sum(c => c.Count);
         }
+
+        public async Task<IEnumerable<ContentTypeCount>> GetAllFlaggedContentCountsAsync()
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                return await connection.QueryAsync<ContentTypeCount>(
+                    "sp_GetAllFlaggedContentCount",
+                    commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task<int> GetTotalFlaggedContentCountAsync()
+        {
+            var counts = await GetAllFlaggedContentCountsAsync();
+            return counts.Sum(c => c.Count);
+        }
     }
 }

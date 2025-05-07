@@ -1,5 +1,4 @@
-﻿using Fliq.Application.Authentication.Queries.Login;
-using Fliq.Application.Common.Interfaces.Services;
+﻿using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.PlatformCompliance.Commands;
 using Fliq.Application.PlatformCompliance.Commands.CreateCompliance;
 using Fliq.Application.PlatformCompliance.Queries;

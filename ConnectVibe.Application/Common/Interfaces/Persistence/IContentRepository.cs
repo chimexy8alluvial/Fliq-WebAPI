@@ -6,5 +6,10 @@ namespace Fliq.Application.Common.Interfaces.Persistence
     {
         Task<IEnumerable<ContentTypeCount>> GetAllContentCountsAsync();
         Task<int> GetTotalContentCountAsync();
+      
+        // flagged content
+        Task<IEnumerable<ContentTypeCount>> GetAllFlaggedContentCountsAsync();
+        Task<int> GetTotalFlaggedContentCountAsync();
     }
 }
+

@@ -1,7 +1,6 @@
 ﻿
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Domain.Entities.PlatformCompliance;
-using Fliq.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace Fliq.Infrastructure.Persistence.Repositories

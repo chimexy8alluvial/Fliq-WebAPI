@@ -2,7 +2,6 @@
 using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Domain.Common.Errors;
-using Fliq.Domain.Enums;
 using MediatR;
 
 
