@@ -20,7 +20,7 @@ public class StopTicketSalesCommandHandlerTests
     {
         _eventRepositoryMock = new Mock<IEventRepository>();
         _loggerMock = new Mock<ILoggerManager>();
-        _ticketRepositoryMock = new Mock<ITicketRepository>();
+        _ticketRepositoryMock = new Mock<ITicketRepository>();   
         _handler = new StopTicketSalesCommandHandler(
             _eventRepositoryMock.Object,
             _loggerMock.Object,

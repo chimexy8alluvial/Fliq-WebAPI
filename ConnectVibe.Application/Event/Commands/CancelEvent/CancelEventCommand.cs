@@ -32,29 +32,29 @@ namespace Fliq.Application.Event.Commands.CancelEvent
             await Task.CompletedTask;
 
             _logger.LogInfo($"Cancelling Event with ID: {command.EventId}");
-            var eventFromDb = _eventRepository.GetEventById(command.EventId);
-            if (eventFromDb == null)
+            var eventDetails = _eventRepository.GetEventById(command.EventId);
+            if (eventDetails == null)
             {
                 _logger.LogError($"Event with ID: {command.EventId} was not found.");
                 return Errors.Event.EventNotFound;
             }
 
-            if (eventFromDb.Status == EventStatus.Cancelled)
+            if (eventDetails.Status == EventStatus.Cancelled)
             {
                 _logger.LogError($"Event with ID: {command.EventId} has been cancelled already.");
                 return Errors.Event.EventCancelledAlready;
             }
 
-            var user = _userRepository.GetUserById(eventFromDb.UserId);
+            var user = _userRepository.GetUserById(eventDetails.UserId);
             if (user == null)
             {
-                _logger.LogError($"User with Id: {eventFromDb.UserId} was not found.");
+                _logger.LogError($"User with Id: {eventDetails.UserId} was not found.");
                 return Errors.User.UserNotFound;
             }
 
-            eventFromDb.Status = EventStatus.Cancelled ;
+            eventDetails.Status = EventStatus.Cancelled ;
 
-            _eventRepository.Update(eventFromDb);
+            _eventRepository.Update(eventDetails);
 
             _logger.LogInfo($"Event with ID: {command.EventId} was cancelled");           
 
