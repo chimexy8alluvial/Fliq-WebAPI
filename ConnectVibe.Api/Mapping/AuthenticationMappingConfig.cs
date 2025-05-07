@@ -27,7 +27,9 @@ namespace Fliq.Api.Mapping
             config.NewConfig<SocialAuthenticationResult, SocialAuthenticationResponse>().
                Map(dest => dest.Token, src => src.Token).
                Map(dest => dest.IsNewUser, src => src.IsNewUser).
-               Map(dest => dest, src => src.user);
+            Map(dest => dest, src => src.user).
+            Map(dest => dest.Theme, src => src.user.Settings.ScreenMode).
+            Map(dest => dest.Language, src => src.user.Settings.Language);
             config.NewConfig<RegistrationResult, RegisterResponse>().
                 Map(dest => dest.Otp, src => src.otp).
                 Map(dest => dest, src => src.user);

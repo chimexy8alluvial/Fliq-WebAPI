@@ -81,6 +81,8 @@ namespace Fliq.Infrastructure.Persistence
         public DbSet<HaveKids> HaveKids { get; set; }
 
         public DbSet<AuditTrail> AuditTrails { get; set; }
+        public DbSet<BusinessIdentificationDocumentType> BusinessIdentificationDocumentTypes { get; set; }
+        public DbSet<BusinessIdentificationDocument> BusinessIdentificationDocuments { get; set; }
 
     }
 }

@@ -10,7 +10,6 @@ using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities;
 using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Entities.Prompts;
-using MapsterMapper;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using System.Security.Claims;
@@ -31,6 +30,9 @@ namespace Fliq.Test.Profile.Commands.Create
         private Mock<IPromptCategoryRepository>? _promptCategoryRepositoryMock;
         private Mock<ILoggerManager>? _loggerManagerMock;
         private Mock<IMediaServices>? _mediaServicesMock;
+        private Mock<IDocumentUploadService>? _documentUploadServiceMock;
+        private Mock<IBusinessIdentificationDocumentRepository>? _businessIdentificationDocumentRepositoryMock;
+        private Mock<IBusinessIdentificationDocumentTypeRepository>? _businessIdentificationDocumentTypeRepositoryMock;
 
         [TestInitialize]
         public void Setup()
@@ -44,6 +46,9 @@ namespace Fliq.Test.Profile.Commands.Create
             _promptCategoryRepositoryMock = new Mock<IPromptCategoryRepository>();
             _loggerManagerMock = new Mock<ILoggerManager>();
             _mediaServicesMock = new Mock<IMediaServices>();
+            _documentUploadServiceMock = new Mock<IDocumentUploadService>();
+            _businessIdentificationDocumentRepositoryMock = new Mock<IBusinessIdentificationDocumentRepository>();
+            _businessIdentificationDocumentTypeRepositoryMock = new Mock<IBusinessIdentificationDocumentTypeRepository>();
 
             _httpContextAccessorMock.Setup(x => x.HttpContext.User)
                 .Returns(_claimsPrincipalMock.Object);
@@ -55,7 +60,11 @@ namespace Fliq.Test.Profile.Commands.Create
                 _loggerManagerMock.Object,
                 _promptQuestionRepositoryMock.Object,
                 _promptCategoryRepositoryMock.Object,
-                _mediaServicesMock.Object);
+                _mediaServicesMock.Object,
+                _documentUploadServiceMock.Object,
+                _businessIdentificationDocumentRepositoryMock.Object,
+                _businessIdentificationDocumentTypeRepositoryMock.Object
+                );
         }
 
         [TestMethod]
@@ -241,7 +250,7 @@ namespace Fliq.Test.Profile.Commands.Create
         }
 
         [TestMethod]
-        public async Task Handle_ExistingProfile_UpdatesProfileSuccessfully()
+        public async Task Handle_ExistingProfile_ReturnsDuplicateProfileError()
         {
             // Arrange
             var command = new CreateProfileCommand
@@ -249,48 +258,151 @@ namespace Fliq.Test.Profile.Commands.Create
                 UserId = 1,
                 DOB = DateTime.Now.AddYears(-25),
                 GenderId = 1,
-                ProfileDescription = "Test Description",
-                Photos = [new ProfilePhotoMapped { ImageFile = CreateMockFormFile(), Caption = "Test Photo" }],
-                Location = new Location { Lat = 51.5074, Lng = -0.1278 }
+                // rest of your setup
             };
-
             var user = new User { Id = 1 };
             var existingProfile = new UserProfile { UserId = 1 };
-
             _userRepositoryMock.Setup(repo => repo.GetUserById(It.IsAny<int>()))
                 .Returns(user);
-
             _profileRepositoryMock.Setup(repo => repo.GetProfileByUserId(It.IsAny<int>()))
                 .Returns(existingProfile);
 
-            _locationServiceMock?.Setup(service => service.GetAddressFromCoordinatesAsync(It.IsAny<double>(), It.IsAny<double>()))
-                .ReturnsAsync(new LocationQueryResponse { Status = "OK" });
+            // Act
+            var result = await _handler.Handle(command, CancellationToken.None);
 
-            _mediaServicesMock?.Setup(service => service.UploadImageAsync(It.IsAny<IFormFile>()))
-              .ReturnsAsync("image.jpeg");
-            _mediaServicesMock.Setup(service => service.UploadImageAsync(It.IsAny<IFormFile>()))
-                .ReturnsAsync("image.jpeg");
+            // Assert
+            Assert.IsTrue(result.IsError);
+            Assert.AreEqual(Errors.Profile.DuplicateProfile, result.FirstError);
+        }
+
+        [TestMethod]
+        public async Task Handle_BusinessDocumentsUploadSuccessful_CreatesDocumentSuccessfully()
+        {
+            // Arrange
+            var frontDoc = CreateMockFormFile("business_front.pdf", "application/pdf");
+            var backDoc = CreateMockFormFile("business_back.jpg", "image/jpeg");
+            var command = new CreateProfileCommand
+            {
+                UserId = 1,
+                BusinessIdentificationDocuments = new BusinessIdentificationDocumentMapped
+                {
+                    BusinessIdentificationDocumentTypeId = 1,
+                    BusinessIdentificationDocumentFront = frontDoc,
+                    BusinessIdentificationDocumentBack = backDoc
+                }
+            };
+            var user = new User { Id = 1 };
+            var uploadResult = new DocumentUploadResult
+            {
+                Success = true,
+                FrontDocumentUrl = "front_document_url.pdf",
+                BackDocumentUrl = "back_document_url.jpg"
+            };
+
+            _userRepositoryMock.Setup(repo => repo.GetUserById(It.IsAny<int>()))
+                .Returns(user);
+            _businessIdentificationDocumentTypeRepositoryMock.Setup(repo => repo.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(new BusinessIdentificationDocumentType { Id = 1, IsDeleted = false });
+            _documentUploadServiceMock.Setup(service => service.UploadDocumentsAsync(
+                    It.IsAny<int>(),
+                    It.IsAny<IFormFile>(),
+                    It.IsAny<IFormFile>()))
+                .ReturnsAsync(uploadResult);
 
             // Act
             var result = await _handler.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.IsFalse(result.IsError);
-            Assert.IsNotNull(result.Value);
-            _profileRepositoryMock.Verify(repo => repo.Update(It.IsAny<UserProfile>()), Times.Once);
+            _businessIdentificationDocumentRepositoryMock.Verify(repo => repo.Add(It.IsAny<BusinessIdentificationDocument>()), Times.Once);
+            // Verify document properties
+            _businessIdentificationDocumentRepositoryMock.Verify(repo => repo.Add(It.Is<BusinessIdentificationDocument>(
+                doc => doc.BusinessIdentificationDocumentTypeId == 1 &&
+                       doc.FrontDocumentUrl == "front_document_url.pdf" &&
+                       doc.BackDocumentUrl == "back_document_url.jpg" &&
+                       doc.IsVerified == false)), Times.Once);
         }
 
-        private IFormFile CreateMockFormFile()
+        [TestMethod]
+        public async Task Handle_InvalidBusinessDocumentType_ReturnsInvalidDocumentTypeError()
+        {
+            // Arrange
+            var command = new CreateProfileCommand
+            {
+                UserId = 1,
+                BusinessIdentificationDocuments = new BusinessIdentificationDocumentMapped
+                {
+                    BusinessIdentificationDocumentTypeId = 999, // Invalid ID
+                    BusinessIdentificationDocumentFront = CreateMockFormFile(),
+                    BusinessIdentificationDocumentBack = CreateMockFormFile()
+                }
+            };
+
+            var user = new User { Id = 1 };
+
+            _userRepositoryMock.Setup(repo => repo.GetUserById(It.IsAny<int>()))
+                .Returns(user);
+
+            _businessIdentificationDocumentTypeRepositoryMock.Setup(repo => repo.DocumentTypeExists(It.IsAny<int>()))
+                .ReturnsAsync(false);
+
+            // Act
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            Assert.IsTrue(result.IsError);
+            Assert.AreEqual(Errors.Document.InvalidDocumentType, result.FirstError);
+        }
+
+        [TestMethod]
+        public async Task Handle_BusinessDocumentUploadFails_ReturnsInvalidDocumentError()
+        {
+            // Arrange
+            var command = new CreateProfileCommand
+            {
+                UserId = 1,
+                BusinessIdentificationDocuments = new BusinessIdentificationDocumentMapped
+                {
+                    BusinessIdentificationDocumentTypeId = 1,
+                    BusinessIdentificationDocumentFront = CreateMockFormFile(),
+                    BusinessIdentificationDocumentBack = CreateMockFormFile()
+                }
+            };
+            var user = new User { Id = 1 };
+            var uploadResult = new DocumentUploadResult
+            {
+                Success = false,
+                ErrorMessage = "Failed to upload documents"
+            };
+
+            _userRepositoryMock.Setup(repo => repo.GetUserById(It.IsAny<int>()))
+                .Returns(user);
+            _businessIdentificationDocumentTypeRepositoryMock.Setup(repo => repo.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync(new BusinessIdentificationDocumentType { Id = 1, IsDeleted = false });
+            _documentUploadServiceMock.Setup(service => service.UploadDocumentsAsync(
+                    It.IsAny<int>(),
+                    It.IsAny<IFormFile>(),
+                    It.IsAny<IFormFile>()))
+                .ReturnsAsync(uploadResult);
+
+            // Act
+            var result = await _handler.Handle(command, CancellationToken.None);
+
+            // Assert
+            Assert.IsTrue(result.IsError);
+            Assert.AreEqual(Errors.Document.InvalidDocument, result.FirstError);
+        }
+
+        private IFormFile CreateMockFormFile(string fileName = "test.jpg", string contentType = "image/jpeg")
         {
             var fileMock = new Mock<IFormFile>();
             var content = "Fake file content";
-            var fileName = "test.jpg";
             var ms = new MemoryStream(Encoding.UTF8.GetBytes(content));
 
             fileMock.Setup(_ => _.OpenReadStream()).Returns(ms);
             fileMock.Setup(_ => _.FileName).Returns(fileName);
             fileMock.Setup(_ => _.Length).Returns(ms.Length);
-            fileMock.Setup(_ => _.ContentType).Returns("image/jpeg");
+            fileMock.Setup(_ => _.ContentType).Returns(contentType);
             fileMock.Setup(_ => _.Name).Returns("file");
             fileMock.Setup(_ => _.Headers).Returns(new HeaderDictionary());
 
