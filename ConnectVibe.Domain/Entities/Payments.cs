@@ -8,7 +8,7 @@
 
         public string TransactionId { get; set; } = default!;
 
-        public string ProductId { get; set; } = default!;
+        public string? ProductId { get; set; }
 
         public decimal Amount { get; set; }
 
@@ -20,11 +20,9 @@
 
         public PaymentMethod Method { get; set; }
 
-        public DateTime? ExpirationDate { get; set; }
+        public int? SubscriptionPlanId { get; set; }
+        public int? UserSubscriptionId { get; set; }
 
-        public Environment Environment { get; set; }
-
-        public DateTime? DateCreated { get; set; }
     }
 
     public enum PaymentProvider
@@ -44,7 +42,7 @@
 
     public enum PaymentMethod
     {
-        Unkmown,
+        Unknown,
         CreditCard,
         PayPal,
         ApplePay,
