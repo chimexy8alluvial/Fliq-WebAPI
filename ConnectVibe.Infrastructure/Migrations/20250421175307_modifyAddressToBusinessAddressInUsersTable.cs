@@ -5,24 +5,23 @@
 namespace Fliq.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class DropDurationColumnInBlindDates : Migration
+    public partial class modifyAddressToBusinessAddressInUsersTable : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "Language",
-                table: "Users");
+            migrationBuilder.RenameColumn(
+                name: "Address",
+                table: "Users",
+                newName: "BusinessAddress");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
-                name: "Language",
+            migrationBuilder.RenameColumn(
+                name: "BusinessAddress",
                 table: "Users",
-                type: "int",
-                nullable: false,
-                defaultValue: 0);
+                newName: "Address");
         }
     }
 }

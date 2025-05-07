@@ -1,6 +1,7 @@
 ﻿using Azure;
 using Azure.AI.Vision.Face;
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Fliq.Application.Common.Helpers;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Interfaces.Services.MeidaServices;
@@ -42,24 +43,39 @@ namespace Fliq.Infrastructure.Services.MediaService
         {
             if (mediaToUpload == null || mediaToUpload.Length == 0)
             {
+                _logger.LogWarn("Document upload failed: File is null or empty.");
                 return null;
             }
+
+            // Check if the document is a PDF or other accepted document format
+            var validDocumentExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".mp4", ".mov", ".avi", ".mkv", ".mp3", ".wav", ".pdf", ".doc" };
+            var extension = Path.GetExtension(mediaToUpload.FileName).ToLowerInvariant();
+            _logger.LogInfo($"Uploading file: {mediaToUpload.FileName}, Size: {mediaToUpload.Length}");
+            _logger.LogInfo($"File extension: {extension}");
+
+            if (!validDocumentExtensions.Contains(extension))
+            {
+                _logger.LogWarn($"Document upload failed: Invalid file extension '{extension}'");
+                return null;
+            }
+
+            if (!validDocumentExtensions.Contains(extension))
+            {
+                _logger.LogWarn($"Document upload failed: Invalid file extension '{extension}'");
+                return null;
+            }
+
+            // Use same container name for all documents or use a specific one for documents
+            containerName = "documents";
+
             // Check if the app is in Debug Mode
             if (Debugger.IsAttached)
             {
-                // In Debug mode, save the file to a local directory instead of uploading to the server
-                return await UploadMediaToLocal(mediaToUpload);
+                // In Debug mode, save the file to a local directory
+                return await UploadDocToLocal(mediaToUpload);
             }
             else
             {
-                // Validate Media Extension
-                var validExtensions = new[] { ".jpg", ".jpeg", ".png", "gif", ".mp4", ".mov", ".avi", ".mkv", ".mp3", ".wav" };
-                var extension = Path.GetExtension(mediaToUpload.FileName).ToLowerInvariant();
-                if (!validExtensions.Contains(extension))
-                {
-                    return null;
-                }
-                // Attempt to create a CloudStorageAccount
                 try
                 {
                     // Create BlobServiceClient using the connection string
@@ -69,27 +85,57 @@ namespace Fliq.Infrastructure.Services.MediaService
                     BlobContainerClient blobContainerClient = blobServiceClient.GetBlobContainerClient(containerName);
                     await blobContainerClient.CreateIfNotExistsAsync();
 
-                    // Generate a unique media name
-                    string mediaName = Guid.NewGuid().ToString() + extension;
+                    // Generate a unique document name
+                    string documentName = Guid.NewGuid().ToString() + extension;
 
-                    // Get a BlobClient for the media
-                    BlobClient blobClient = blobContainerClient.GetBlobClient(mediaName);
+                    // Get a BlobClient for the document
+                    BlobClient blobClient = blobContainerClient.GetBlobClient(documentName);
 
-                    // Upload the media to Azure Blob Storage
-                    using (var mediaStream = mediaToUpload.OpenReadStream())
+                    // Set content type based on extension
+                    BlobUploadOptions options = new BlobUploadOptions
                     {
-                        await blobClient.UploadAsync(mediaStream, true);
+                        HttpHeaders = new BlobHttpHeaders
+                        {
+                            ContentType = GetContentType(extension)
+                        }
+                    };
+
+                    // Upload the document to Azure Blob Storage
+                    using (var documentStream = mediaToUpload.OpenReadStream())
+                    {
+                        await blobClient.UploadAsync(documentStream, options);
                     }
 
-                    // Return the full URL of the uploaded media
+                    _logger.LogInfo($"Document uploaded successfully: {documentName}");
+                    // Return the full URL of the uploaded document
                     return blobClient.Uri.ToString();
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError($"An error occurred: {ex.Message}");
+                    _logger.LogError($"Document upload failed: {ex.Message}, StackTrace: {ex.StackTrace}");
                     return null;
                 }
             }
+        }
+
+        private string GetContentType(string extension)
+        {
+            return extension.ToLowerInvariant() switch
+            {
+                ".jpg" => "image/jpeg",
+                ".jpeg" => "image/jpeg",
+                ".png" => "image/png",
+                ".gif" => "image/gif",
+                ".mp4" => "video/mp4",
+                ".mov" => "video/quicktime",
+                ".avi" => "video/x-msvideo",
+                ".mkv" => "video/x-matroska",
+                ".mp3" => "audio/mpeg",
+                ".wav" => "audio/wav",
+                ".pdf" => "application/pdf",
+                ".doc" => "application/msword",
+                _ => "application/octet-stream"
+            };
         }
 
         public async Task<string?> UploadDocumentAsync(byte[] fileBytes, string fileName, string containerName)
@@ -171,20 +217,36 @@ namespace Fliq.Infrastructure.Services.MediaService
         //Local storage methods
         private async Task<string?> UploadMediaToLocal(IFormFile mediaUpload)
         {
-            // Saving the Media to a Local Directory
+            /// Validate document
             if (mediaUpload == null || mediaUpload.Length == 0)
             {
+                _logger.LogWarn("Local document upload failed: File is null or empty.");
                 return null;
             }
 
-            var filePath = Path.Combine(_uploadPath, mediaUpload.FileName);
-            using (var stream = new FileStream(filePath, FileMode.Create))
+            try
             {
-                await mediaUpload.CopyToAsync(stream);
-            }
+                // Create a unique filename to prevent overwrites
+                string uniqueFileName = $"{Guid.NewGuid()}_{Path.GetFileName(mediaUpload.FileName)}";
+                var filePath = Path.Combine(_documentPath, uniqueFileName);
 
-            var fileUrl = filePath;
-            return fileUrl;
+                // Ensure directory exists
+                Directory.CreateDirectory(_documentPath);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await mediaUpload.CopyToAsync(stream);
+                }
+
+                _logger.LogInfo($"Document saved locally: {uniqueFileName}");
+                // For local storage, you might want to use a relative path or URL that your app can access
+                return filePath;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Local document upload failed: {ex.Message}");
+                return null;
+            }
         }
 
         private async Task<string?> UploadDocToLocal(IFormFile docUpload)
@@ -192,17 +254,29 @@ namespace Fliq.Infrastructure.Services.MediaService
             // Saving the Media to a Local Directory
             if (docUpload == null || docUpload.Length == 0)
             {
+                _logger.LogWarn("Local document upload failed: File is null or empty.");
                 return null;
             }
 
-            var filePath = Path.Combine(_documentPath, docUpload.FileName);
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await docUpload.CopyToAsync(stream);
-            }
+            // Ensure the directory exists
+            Directory.CreateDirectory(_documentPath);
 
-            var fileUrl = filePath;
-            return fileUrl;
+            var filePath = Path.Combine(_documentPath, docUpload.FileName);
+            try
+            {
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await docUpload.CopyToAsync(stream);
+                }
+
+                _logger.LogInfo($"Document saved locally: {filePath}");
+                return filePath;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Local document upload failed: {ex.Message}");
+                return null;
+            }
         }
     }
 }

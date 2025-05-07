@@ -128,8 +128,8 @@ namespace Fliq.Api.Controllers
             );
         }
 
-        [HttpPost("validateforgotpasswordotp")]
-        public async Task<IActionResult> ValidateForgotPasswordPasswordOtp([FromBody] SendPasswordOTPRequest request)
+        [HttpPost("validateforgot-password-otp")]
+        public async Task<IActionResult> ValidateForgotPasswordOtp([FromBody] SendPasswordOTPRequest request)
         {
             _logger.LogInfo($"Validate_Forgot_Password_otp Request Received: {request}");
             var command = _mapper.Map<ValidatePasswordOTPCommand>(request);

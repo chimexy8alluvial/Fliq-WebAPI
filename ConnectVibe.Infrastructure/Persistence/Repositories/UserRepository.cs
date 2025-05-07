@@ -202,6 +202,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                     Genders = (await multi.ReadAsync<Gender>()).ToList(),
                     HaveKids = (await multi.ReadAsync<HaveKids>()).ToList(),
                     WantKids = (await multi.ReadAsync<WantKids>()).ToList(),
+                    BusinessIdentificationDocuments = (await multi.ReadAsync<BusinessIdentificationDocument>()).ToList(),
                 };
 
                 if (!result.Occupations.Any() &&
@@ -210,7 +211,8 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                     !result.EducationStatuses.Any() &&
                     !result.Genders.Any() &&
                     !result.HaveKids.Any() &&
-                    !result.WantKids.Any()
+                    !result.WantKids.Any() &&
+                    !result.BusinessIdentificationDocuments.Any() 
 
                     )
                 {

@@ -16,6 +16,7 @@ namespace Fliq.Contracts.Profile.UpdateDtos
      bool AllowNotifications = false,
      List<string> Passions = default!,
     List<UpdateProfilePhotoResponse> Photos = default!,
+    UpdateBusinessIdentificationDocumentResponse BusinessIdentificationDocument = default!,
         List<PromptResponseDto> PromptResponses = default!);
 
     public record ReadProfileResponse
@@ -32,5 +33,6 @@ namespace Fliq.Contracts.Profile.UpdateDtos
     bool AllowNotifications = false,
     List<string> Passions = default!,
    List<ReadProfilePhotoResponse> Photos = default!,
+   ReadBusinessIdentificationDocumentDto BusinessIdentificationDocument = default!,
        List<ReadPromptResponseDto> PromptResponses = default!);
 }
