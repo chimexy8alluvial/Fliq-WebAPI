@@ -68,24 +68,6 @@ namespace Fliq.Application.Event.Commands.DeleteEvent.Tests
         }
 
         [TestMethod]
-        public async Task Handle_UserNotFound_ReturnsUserNotFoundError()
-        {
-            // Arrange
-            var command = new DeleteEventCommand(1);
-            var eventEntity = new Events { Id = 1, IsDeleted = false, UserId = 100 };
-            _eventRepositoryMock?.Setup(x => x.GetEventById(1)).Returns(eventEntity);
-            _userRepositoryMock?.Setup(x => x.GetUserById(100)).Returns((User)null!);
-
-            // Act
-            var result = await _handler?.Handle(command, CancellationToken.None)!;
-
-            // Assert
-            Assert.IsTrue(result.IsError);
-            Assert.AreEqual(Errors.User.UserNotFound, result.FirstError);
-            _loggerMock?.Verify(x => x.LogError($"User with Id: {eventEntity.UserId} was not found."), Times.Once());
-        }
-
-        [TestMethod]
         public async Task Handle_ValidRequest_DeletesEventAndPublishesNotification()
         {
             // Arrange

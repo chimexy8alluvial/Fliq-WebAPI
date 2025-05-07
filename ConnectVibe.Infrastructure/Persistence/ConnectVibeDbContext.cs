@@ -71,7 +71,7 @@ namespace Fliq.Infrastructure.Persistence
         public DbSet<UserFeatureActivity> UserFeatureActivities { get; set; } = null!;
         public DbSet<SupportTicket> SupportTickets { get; set; } = null!;
 
-        public DbSet<BlindDateCategory> BlindDateCategories { get; set;} = null!;
+        public DbSet<BlindDateCategory> BlindDateCategories { get; set; } = null!;
         public DbSet<BlindDate> BlindDates { get; set; } = null!;
         public DbSet<BlindDateParticipant> BlindDatesParticipants { get; set; } = null!;
 
@@ -84,6 +84,8 @@ namespace Fliq.Infrastructure.Persistence
         public DbSet<Compliance> Compliances { get; set; } = null!;
         public DbSet<ComplianceType> ComplianceTypes { get; set; } = null!;
         public DbSet<UserConsentAction> UserConsentActions { get; set; } = null!;
+
+        public DbSet<AuditTrail> AuditTrails { get; set; }
 
     }
 }

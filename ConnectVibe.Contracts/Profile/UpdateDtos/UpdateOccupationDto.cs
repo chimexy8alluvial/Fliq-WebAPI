@@ -1,5 +1,8 @@
 ﻿namespace Fliq.Contracts.Profile.UpdateDtos
 {
     public record UpdateOccupationDto
-        (int Id, string? OccupationName, bool? IsVisible);
+        (int Id, int? OccupationName, bool? IsVisible);
+
+    public record ReadOccupationDto
+       (int Id, string? OccupationName, bool? IsVisible);
 }

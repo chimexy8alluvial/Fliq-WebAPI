@@ -13,10 +13,11 @@ namespace Fliq.Test.Users.Queries
     [TestClass]
     public class GetRecentUserFeatureActivitiesQueryHandlerTest
     {
-        private Mock<IUserFeatureActivityRepository> _mockUserFeatureActivityRepository;
-        private Mock<IUserRepository> _mockUserRepository;
-        private Mock<ILoggerManager> _mockLoggerManager;
-        private Mock<IMapper> _mockMapper;
+        private Mock<IUserFeatureActivityRepository>? _mockUserFeatureActivityRepository;
+        private Mock<IUserRepository>? _mockUserRepository;
+        private Mock<ILoggerManager>? _mockLoggerManager;
+        private Mock<IMapper>? _mockMapper;
+        private Mock<IAuditTrailService>? _mockAuditTrailService;
         private GetRecentUserFeatureActivitiesQueryHandler _handler;
 
         [TestInitialize]
@@ -26,12 +27,14 @@ namespace Fliq.Test.Users.Queries
             _mockUserRepository = new Mock<IUserRepository>();
             _mockLoggerManager = new Mock<ILoggerManager>();
             _mockMapper = new Mock<IMapper>();
+            _mockAuditTrailService = new Mock<IAuditTrailService>();
 
             _handler = new GetRecentUserFeatureActivitiesQueryHandler(
                 _mockUserFeatureActivityRepository.Object,
                 _mockUserRepository.Object,
                 _mockLoggerManager.Object,
-                _mockMapper.Object
+                _mockMapper.Object,
+                _mockAuditTrailService.Object
             );
         }
 

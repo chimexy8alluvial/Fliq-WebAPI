@@ -62,6 +62,10 @@ namespace Fliq.Domain.Common.Errors
             public static Error InvalidGameConfiguration => Error.Validation(
                 code: "Games.Configuration.Invalid",
                 description: "The game configuration is invalid or incomplete.");
+
+            public static Error NoGamesFound => Error.NotFound(
+                code: "Games.Game.NotFound",
+                description: "No games found matching the provided filters.");
         }
     }
 }

@@ -5,7 +5,6 @@ using Fliq.Application.Authentication.Queries.FacebookLogin;
 using Fliq.Application.Authentication.Queries.GoogleLogin;
 using Fliq.Application.Authentication.Queries.Login;
 using Fliq.Contracts.Authentication;
-using Fliq.Domain.Entities.Settings;
 using Fliq.Domain.Enums;
 using Mapster;
 
@@ -16,8 +15,7 @@ namespace Fliq.Api.Mapping
         public void Register(TypeAdapterConfig config)
         {
             config.NewConfig<RegisterRequest, RegisterCommand>()
-                .Map(dest => dest.Language, src => (Language)src.Language).
-                 Map(dest => dest.Theme, src => (ScreenMode)src.Theme);
+                .Map(dest => dest.Language, src => (Language)src.Language);
             config.NewConfig<RegisterRequest, CreateAdminCommand>();
             config.NewConfig<LoginRequest, LoginQuery>();
             config.NewConfig<GoogleLoginRequest, GoogleLoginQuery>();
@@ -29,13 +27,17 @@ namespace Fliq.Api.Mapping
             config.NewConfig<SocialAuthenticationResult, SocialAuthenticationResponse>().
                Map(dest => dest.Token, src => src.Token).
                Map(dest => dest.IsNewUser, src => src.IsNewUser).
-               Map(dest => dest, src => src.user);
+            Map(dest => dest, src => src.user).
+            Map(dest => dest.Theme, src => src.user.Settings.ScreenMode).
+            Map(dest => dest.Language, src => src.user.Settings.Language);
             config.NewConfig<RegistrationResult, RegisterResponse>().
                 Map(dest => dest.Otp, src => src.otp).
                 Map(dest => dest, src => src.user);
             config.NewConfig<RegistrationResult, RegisterResponse>().
                Map(dest => dest.Otp, src => src.otp).
-               Map(dest => dest, src => src.user);
+               Map(dest => dest, src => src.user).
+               Map(dest => dest.Theme, src => src.user.Settings.ScreenMode).
+               Map(dest => dest.Language, src => src.user.Settings.Language);
             config.NewConfig<ValidatePasswordOTPResult, ValidatePasswordOTPResponse>().
        Map(dest => dest.otp, src => src.otp).
        Map(dest => dest, src => src.user);

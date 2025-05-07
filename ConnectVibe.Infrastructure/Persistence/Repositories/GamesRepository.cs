@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Games.Common;
+using Fliq.Contracts.Games;
 using Fliq.Domain.Entities.Games;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
@@ -166,6 +167,67 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                     "EXEC GetQuestionsByGameIdPaginated @GameId = {0}, @PageNumber = {1}, @PageSize = {2}",
                     gameId, pageNumber, pageSize)
                 .ToList();
+        }
+
+        public async Task<int> GetActiveGamesCountAsync()
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_GetActiveGamesCount", commandType: CommandType.StoredProcedure);
+                return count;
+            }
+        }
+
+        public async Task<int> GetGamersCountAsync()
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_GetTotalGamersCount", commandType: CommandType.StoredProcedure);
+                return count;
+            }
+        }
+
+        public async Task<int> GetTotalGamesPlayedCountAsync()
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_GetTotalGamesPlayedCounts", commandType: CommandType.StoredProcedure);
+                return count;
+            }
+        }
+
+        public async Task<(List<GamesListItem> List, int totalCount)> GetAllGamesListAsync(int page, int pageSize, DateTime? datePlayedFrom, DateTime? datePlayedTo, int? status)
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var parameters = new
+                {
+                    Page = page,
+                    PageSize = pageSize,
+                    Status = status,
+                    DatePlayedFrom = datePlayedFrom,
+                    DatePlayedTo = datePlayedTo
+                };
+
+                using (var multi = await connection.QueryMultipleAsync(
+                    "sp_GetPaginatedGamesList",
+                    parameters,
+                    commandType: CommandType.StoredProcedure))
+                {
+                    var list = (await multi.ReadAsync<GamesListItem>()).AsList();
+                    var totalCount = await multi.ReadSingleAsync<int>();
+                    return (list, totalCount);
+                }
+            }
+        }
+
+        public async Task<int> GetGamesIssuesReportedCountAsync()
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_GetGamesIssuesReportedCount", commandType: CommandType.StoredProcedure);
+                return count;
+            }
         }
     }
 }

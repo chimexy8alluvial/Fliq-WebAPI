@@ -5,6 +5,7 @@ using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Interfaces.Services.AuthServices;
 using Fliq.Domain.Entities;
+using Fliq.Domain.Enums;
 using Moq;
 
 namespace Fliq.Test.Authentication.Queries.GoogleLogin
@@ -17,6 +18,7 @@ namespace Fliq.Test.Authentication.Queries.GoogleLogin
         private Mock<IUserRepository>? _userRepositoryMock;
         private Mock<ISocialAuthService>? _socialAuthServiceMock;
         private Mock<ILoggerManager>? _loggerManagerMock;
+        private Mock<ISettingsRepository>? _settingsRepositoryMock;
 
         [TestInitialize]
         public void Setup()
@@ -25,19 +27,21 @@ namespace Fliq.Test.Authentication.Queries.GoogleLogin
             _userRepositoryMock = new Mock<IUserRepository>();
             _socialAuthServiceMock = new Mock<ISocialAuthService>();
             _loggerManagerMock = new Mock<ILoggerManager>();
+            _settingsRepositoryMock = new Mock<ISettingsRepository>();
 
             _handler = new GoogleLoginQueryHandler(
                 _jwtTokenGeneratorMock.Object,
                 _userRepositoryMock.Object,
                 _socialAuthServiceMock.Object,
-                _loggerManagerMock.Object);
+                _loggerManagerMock.Object,
+                _settingsRepositoryMock.Object);
         }
 
         [TestMethod]
         public async Task Handle_ValidGoogleCode_UserExists_GeneratesToken()
         {
             // Arrange
-            var query = new GoogleLoginQuery("valid-code");
+            var query = new GoogleLoginQuery("valid-code", "Test User", Language.English, "Light");
             var googleResponse = new GooglePayloadResponse
             {
                 Email = "johndoe@example.com",
@@ -72,7 +76,7 @@ namespace Fliq.Test.Authentication.Queries.GoogleLogin
         public async Task Handle_ValidGoogleCode_NewUser_CreatesUserAndGeneratesToken()
         {
             // Arrange
-            var query = new GoogleLoginQuery("valid-code");
+            var query = new GoogleLoginQuery("valid-code", "Test User", Language.English, "Light");
             var googleResponse = new GooglePayloadResponse
             {
                 Email = "newuser@example.com",

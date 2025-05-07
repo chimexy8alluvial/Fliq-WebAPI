@@ -84,7 +84,7 @@ namespace Fliq.Test.Settings.Queries.Get
             var settings = new Setting
             {
                 Id = 1,
-                ScreenMode = ScreenMode.Dark,
+                ScreenMode = "Dark",
                 RelationAvailability = true,
                 ShowMusicAndGameStatus = true,
                 Language = Language.English,
@@ -110,7 +110,7 @@ namespace Fliq.Test.Settings.Queries.Get
             var returnedSettings = result.Value;
 
             Assert.AreEqual(settings.Id, returnedSettings.Id);
-            Assert.AreEqual(ScreenMode.Dark, returnedSettings.ScreenMode);
+            Assert.AreEqual("Dark", returnedSettings.ScreenMode);
             Assert.AreEqual(user.FirstName + " " + user.LastName, returnedSettings.Name);
             Assert.AreEqual(user.Email, returnedSettings.Email);
             Assert.AreEqual(settings.Language, returnedSettings.Language);

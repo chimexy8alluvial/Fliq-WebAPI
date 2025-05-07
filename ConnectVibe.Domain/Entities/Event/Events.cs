@@ -12,6 +12,7 @@ namespace Fliq.Domain.Entities.Event
         public string EventDescription { get; set; } = default!;
         public EventCategory EventCategory { get; set; }
         public EventStatus Status { get; set; }
+        public TicketSales TicketSales { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public Location Location { get; set; } = default!;
