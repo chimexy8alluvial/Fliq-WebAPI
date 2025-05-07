@@ -112,7 +112,7 @@ namespace Fliq.Application.Tests.Explore.Queries
             var totalCount = 10;
 
             _userRepositoryMock.Setup(repo => repo.GetUserById(1)).Returns(user);
-            _eventRepositoryMock.Setup(repo => repo.GetEventsAsync(
+            _eventRepositoryMock.Setup(repo => repo.GetEventsAndCountAsync(
                 It.Is<LocationDetail>(ld => ld.Location.Lat == 40.7128 && ld.Location.Lng == -74.0060),
                 It.Is<double?>(d => d == 10.0),
                 It.Is<UserProfile>(up => up.Gender.GenderType == "Male" && up.Ethnicity!.EthnicityType == "Asian"),
@@ -222,7 +222,7 @@ namespace Fliq.Application.Tests.Explore.Queries
             var totalCount = 5;
 
             _userRepositoryMock.Setup(repo => repo.GetUserById(1)).Returns(user);
-            _eventRepositoryMock.Setup(repo => repo.GetEventsAsync(
+            _eventRepositoryMock.Setup(repo => repo.GetEventsAndCountAsync(
                 It.IsAny<LocationDetail>(),
                 It.IsAny<double?>(),
                 It.IsAny<UserProfile>(),
@@ -326,7 +326,7 @@ namespace Fliq.Application.Tests.Explore.Queries
             var totalCount = 5;
 
             _userRepositoryMock.Setup(repo => repo.GetUserById(1)).Returns(user);
-            _eventRepositoryMock.Setup(repo => repo.GetEventsAsync(
+            _eventRepositoryMock.Setup(repo => repo.GetEventsAndCountAsync(
                 It.IsAny<LocationDetail>(),
                 It.IsAny<double?>(),
                 It.IsAny<UserProfile>(),
@@ -430,7 +430,7 @@ namespace Fliq.Application.Tests.Explore.Queries
             var totalCount = 5;
 
             _userRepositoryMock.Setup(repo => repo.GetUserById(1)).Returns(user);
-            _eventRepositoryMock.Setup(repo => repo.GetEventsAsync(
+            _eventRepositoryMock.Setup(repo => repo.GetEventsAndCountAsync(
                 It.IsAny<LocationDetail>(),
                 It.IsAny<double?>(),
                 It.IsAny<UserProfile>(),
@@ -534,7 +534,7 @@ namespace Fliq.Application.Tests.Explore.Queries
             var totalCount = 5;
 
             _userRepositoryMock.Setup(repo => repo.GetUserById(1)).Returns(user);
-            _eventRepositoryMock.Setup(repo => repo.GetEventsAsync(
+            _eventRepositoryMock.Setup(repo => repo.GetEventsAndCountAsync(
                 It.IsAny<LocationDetail>(),
                 It.IsAny<double?>(),
                 It.IsAny<UserProfile>(),
@@ -638,7 +638,7 @@ namespace Fliq.Application.Tests.Explore.Queries
             var totalCount = 5;
 
             _userRepositoryMock.Setup(repo => repo.GetUserById(1)).Returns(user);
-            _eventRepositoryMock.Setup(repo => repo.GetEventsAsync(
+            _eventRepositoryMock.Setup(repo => repo.GetEventsAndCountAsync(
                 It.IsAny<LocationDetail>(),
                 It.IsAny<double?>(),
                 It.IsAny<UserProfile>(),

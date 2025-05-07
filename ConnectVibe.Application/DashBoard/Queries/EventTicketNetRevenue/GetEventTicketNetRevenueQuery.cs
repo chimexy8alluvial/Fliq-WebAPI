@@ -3,7 +3,6 @@ using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Domain.Common.Errors;
 using MediatR;
-using Error = ErrorOr.Error;
 
 namespace Fliq.Application.DashBoard.Queries
 {

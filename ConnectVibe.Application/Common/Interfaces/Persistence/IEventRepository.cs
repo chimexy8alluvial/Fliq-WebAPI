@@ -19,7 +19,7 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         Task<IEnumerable<GetEventsResult>> GetAllEventsForDashBoardAsync(GetEventsListRequest query);
         Task<IEnumerable<GetEventsResult>> GetAllFlaggedEventsForDashBoardAsync(GetEventsListRequest query);
 
-        Task<(List<EventWithDisplayName> events, int totalCount)> GetEventsAsync(
+        Task<(List<EventWithDisplayName> events, int totalCount)> GetEventsAndCountAsync(
          LocationDetail? userLocation,
          double? maxDistanceKm,
          UserProfile? userProfile,

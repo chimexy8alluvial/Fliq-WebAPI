@@ -7,7 +7,6 @@ using Fliq.Contracts.Explore;
 using Fliq.Domain.Entities.Event;
 using Fliq.Domain.Entities.Event.Enums;
 using Fliq.Domain.Entities.Profile;
-using Microsoft.Data.SqlClient;
 using Newtonsoft.Json;
 using System.Data;
 
@@ -106,7 +105,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             return parameters;
         }
 
-        public async Task<(List<EventWithDisplayName> events, int totalCount)> GetEventsAsync(
+        public async Task<(List<EventWithDisplayName> events, int totalCount)> GetEventsAndCountAsync(
              LocationDetail? userLocation,
              double? maxDistanceKm,
              UserProfile? userProfile,

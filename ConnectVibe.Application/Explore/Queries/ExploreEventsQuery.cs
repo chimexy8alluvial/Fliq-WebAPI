@@ -69,7 +69,7 @@ namespace Fliq.Application.Explore.Queries
 
             try
             {
-                var (events, totalCount) = await _eventRepository.GetEventsAsync(
+                var (events, totalCount) = await _eventRepository.GetEventsAndCountAsync(
                     userLocation: user.UserProfile.Location.LocationDetail,
                     maxDistanceKm: query.MaxDistanceKm,
                     userProfile: user.UserProfile,
