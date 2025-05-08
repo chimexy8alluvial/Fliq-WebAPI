@@ -45,7 +45,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         public async Task<IEnumerable<BlindDate>> GetByCategoryAsync(int categoryId)
         {
             return await _dbContext.BlindDates
-                .Where(b => b.CategoryId == categoryId && !b.IsDeleted )
+                .Where(b => !b.IsDeleted )
                 .Include(b => b.BlindDateCategory)
                 .Include(b => b.Location)
                 .Include(b => b.Participants)

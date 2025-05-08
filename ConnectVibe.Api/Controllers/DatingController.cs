@@ -84,14 +84,16 @@ namespace Fliq.Api.Controllers
 
         [HttpPost("BlindDate")]
         [Produces(typeof(CreateBlindDateResponse))]
-        public async Task<IActionResult> CreateBlindDate([FromBody] CreateBlindDateRequest request)
+        public async Task<IActionResult> CreateBlindDate([FromForm] CreateBlindDateRequest request)
         {
             _logger.LogInfo($"Create Blind Date request received: {request}");
             var userId = GetAuthUserId();
+            
             _logger.LogInfo($"Authenticated user ID: {userId}");
 
             var command = _mapper.Map<CreateBlindDateCommand>(request) with
             {
+                CreatedByUserId = userId,
                 BlindDateImage = request.BlindDateImage is not null
                 ? new DatePhotoMapped ( request.BlindDateImage.DateSessionImageFile): null
             };
@@ -264,7 +266,7 @@ namespace Fliq.Api.Controllers
         }
 
         [HttpGet("speed-date-count")]
-        [Authorize(Roles = "SuperAdnmin, Admin")]
+        [Authorize(Roles = "SuperAdmin, Admin")]
         public async Task<IActionResult> GetSpeedDateCount()
         {
             _logger.LogInfo("Recieved request for speed date count");

@@ -5,7 +5,7 @@ namespace Fliq.Domain.Entities.DatingEnvironment.BlindDates
 {
     public class BlindDate : Record
     {
-        public int CategoryId { get; set; }
+        public int BlindDateCategoryId { get; set; }
         public BlindDateCategory BlindDateCategory { get; set; } = default!;
 
         public string Title { get; set; } = default!;
