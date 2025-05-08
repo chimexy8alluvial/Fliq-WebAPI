@@ -11,11 +11,14 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         Task<BlindDate?> GetByIdAsync(int id);
         Task<IEnumerable<BlindDate>> GetAllAsync();
         Task<IEnumerable<BlindDate>> GetByCategoryAsync(int categoryId);
+        Task<IEnumerable<BlindDate>> GetBlindDatesForAdmin(int pageSize, int pageNumber, int? creationStatus);
         Task AddAsync(BlindDate blindDate);
         Task UpdateAsync(BlindDate blindDate);
         Task DeleteAsync(BlindDate blindDate);
         Task<int> GetBlindDateCountAsync();
         Task<int> DeleteMultipleAsync(List<int> blindDatingId);
         Task<(List<DatingListItems> List, int blindCount)> GetAllFilteredListAsync(string Title, DatingType? Type, TimeSpan? Duration, string SubscriptionType, DateTime? dateCreatedFrom, DateTime? dateCreatedTo, string CreatedBy, int Page, int PageSize);
+        Task<int> CountAsync();
+        Task<int> FlaggedCountAsync();
     }
 }
