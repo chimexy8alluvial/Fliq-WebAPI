@@ -33,7 +33,7 @@ namespace Fliq.Api.Controllers
 
         [HttpPost("BlindDateCategory")]
         [Produces(typeof(AddBlindDateCategoryResponse))]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> AddBlindDateCategory([FromBody] AddBlindDateCategoryRequest request)
         {
             _logger.LogInfo($"Add Blind Date Category request received: {request}");
@@ -50,7 +50,7 @@ namespace Fliq.Api.Controllers
 
         [HttpPut("UpdateBlindDateCategory")]
         [Produces(typeof(AddBlindDateCategoryResponse))]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> UpdateBlindDateCategory([FromBody] UpdateBlindDateCategoryRequest request)
         {
             _logger.LogInfo($"Update Blind Date Category request received: {request}");
