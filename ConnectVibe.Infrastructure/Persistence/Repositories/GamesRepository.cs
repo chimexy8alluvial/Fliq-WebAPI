@@ -66,7 +66,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
             using (var connection = _connectionFactory.CreateConnection())
             {
-                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_CountFlaggedEvents", commandType: CommandType.StoredProcedure);
+                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_FlaggedGamesCount", commandType: CommandType.StoredProcedure);
                 return count;
             }
         }
