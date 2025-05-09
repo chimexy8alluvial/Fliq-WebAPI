@@ -39,8 +39,8 @@ namespace Fliq.Api.Controllers
             // Track Feature Activity
             await _userFeatureActivityService.TrackUserFeatureActivity(matchInitiatorUserId, "Initiate-MatchRequest");
 
-            var modifiedRequest = request with { MatchInitiatorUserId = matchInitiatorUserId };
-            var command = _mapper.Map<InitiateMatchRequestCommand>(modifiedRequest);
+            var command = _mapper.Map<InitiateMatchRequestCommand>(request);
+            command.MatchInitiatorUserId= matchInitiatorUserId;
 
             var matchedProfileResult = await _mediator.Send(command);
             _logger.LogInfo($"Initiate Match Request Command Executed.  Result: {matchedProfileResult}");

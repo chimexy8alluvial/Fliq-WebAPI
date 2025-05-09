@@ -2,10 +2,7 @@
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.MatchedProfile.Common;
 using Fliq.Contracts.MatchedProfile;
-using Fliq.Domain.Entities.UserFeatureActivities;
-using System.Collections.Generic;
 using System.Data;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {

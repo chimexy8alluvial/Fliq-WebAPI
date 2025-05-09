@@ -577,8 +577,7 @@ namespace Fliq.Infrastructure.Migrations
                     InviteesException = table.Column<bool>(type: "bit", nullable: false),
                     DateCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DateModified = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
-                    IsCancelled = table.Column<bool>(type: "bit", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),                   
                     IsFlagged = table.Column<bool>(type: "bit", nullable: false)
                    
                 },

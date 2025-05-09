@@ -68,7 +68,7 @@ namespace Fliq.Application.Profile.Commands.Update
 
         public async Task<ErrorOr<CreateProfileResult>> Handle(UpdateProfileCommand command, CancellationToken cancellationToken)
         {
-            await Task.CompletedTask;
+            
 
             _loggerManager.LogInfo($"Updating profile for user with id: {command.UserId}");
 
@@ -141,8 +141,7 @@ namespace Fliq.Application.Profile.Commands.Update
                 {
                     BusinessIdentificationDocumentTypeId = documentTypeId,
                     FrontDocumentUrl = documentUploadResult.FrontDocumentUrl,
-                    BackDocumentUrl = documentUploadResult.BackDocumentUrl,
-                    UploadedDate = DateTime.UtcNow,
+                    BackDocumentUrl = documentUploadResult.BackDocumentUrl,              
                     IsVerified = false,
                 };
             }

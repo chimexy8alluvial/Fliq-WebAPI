@@ -6,7 +6,6 @@ using Fliq.Application.Common.Interfaces.Services.MeidaServices;
 using Fliq.Application.DatingEnvironment.Common;
 using Fliq.Application.DatingEnvironment.Common.BlindDates;
 using Fliq.Domain.Common.Errors;
-using Fliq.Domain.Entities.DatingEnvironment;
 using Fliq.Domain.Entities.DatingEnvironment.BlindDates;
 using Fliq.Domain.Entities.Profile;
 using MapsterMapper;
@@ -63,6 +62,7 @@ namespace Fliq.Application.DatingEnvironment.Commands.BlindDates
 
             // Map the BlindDate entity
             var blindDate = _mapper.Map<BlindDate>(command);
+            blindDate.BlindDateCategoryId= category.Id;
 
             // Get enriched location details
             var locationResponse = await _locationService.GetAddressFromCoordinatesAsync(command.Location.Lat, command.Location.Lng);

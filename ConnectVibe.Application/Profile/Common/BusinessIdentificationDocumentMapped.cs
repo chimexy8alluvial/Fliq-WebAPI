@@ -1,5 +1,4 @@
-﻿using Fliq.Domain.Entities;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 
 namespace Fliq.Application.Profile.Common
 {

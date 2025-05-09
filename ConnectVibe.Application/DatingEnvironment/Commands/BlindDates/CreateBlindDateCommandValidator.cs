@@ -1,7 +1,4 @@
-﻿
-
-using ErrorOr;
-using Fliq.Application.Profile.Commands.Create;
+﻿using Fliq.Application.Profile.Commands.Create;
 using FluentValidation;
 
 namespace Fliq.Application.DatingEnvironment.Commands.BlindDates
@@ -30,8 +27,7 @@ namespace Fliq.Application.DatingEnvironment.Commands.BlindDates
                 .NotNull().WithMessage("Location is required.")
                 .SetValidator(new LocationValidator());
 
-            //RuleFor(x => x.LocationDetail)
-            //    .NotNull().WithMessage("Location details are required.");
+           
         }
     }
 }

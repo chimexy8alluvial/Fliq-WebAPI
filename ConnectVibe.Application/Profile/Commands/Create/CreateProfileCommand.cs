@@ -153,8 +153,7 @@ namespace Fliq.Application.Profile.Commands.Create
                 {
                     BusinessIdentificationDocumentTypeId = documentTypeId,
                     FrontDocumentUrl = documentUploadResult.FrontDocumentUrl,
-                    BackDocumentUrl = documentUploadResult.BackDocumentUrl,
-                    UploadedDate = DateTime.UtcNow,
+                    BackDocumentUrl = documentUploadResult.BackDocumentUrl,                  
                     IsVerified = false,
                 };
 

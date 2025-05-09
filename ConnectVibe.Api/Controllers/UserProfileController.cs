@@ -63,7 +63,7 @@ namespace Fliq.Api.Controllers
                 }).ToList();
             }
 
-            if (request.BusinessIdentificationDocument != null)
+            if (request.BusinessIdentificationDocument != null )
             {
                 command.BusinessIdentificationDocuments = new BusinessIdentificationDocumentMapped
                 {
