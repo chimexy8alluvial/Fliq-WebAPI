@@ -8,7 +8,7 @@ using MediatR;
 
 namespace Fliq.Application.DashBoard.Queries.GetAllUser
 {
-    public record GetAllUsersQuery(PaginationRequest PaginationRequest = default!,
+    public record GetAllUsersQuery(PaginationRequest PaginationRequest,
                                         bool? HasSubscription=null ,
                                           DateTime? ActiveSince = null,
                                             string? RoleName = null)          : IRequest<ErrorOr<List<GetUsersResult>>>;
@@ -29,6 +29,12 @@ namespace Fliq.Application.DashBoard.Queries.GetAllUser
             try
             {
                 _logger.LogInfo($"Getting users for page {query.PaginationRequest.PageNumber} with page size {query.PaginationRequest.PageSize}");
+
+                if (query.PaginationRequest == null)
+                {
+                    _logger.LogWarn("PaginationRequest is null, using default values");
+                    query = query with { PaginationRequest = new PaginationRequest() };
+                }
 
                 // Validate pagination parameters
                 if (query.PaginationRequest.PageNumber < 1)
