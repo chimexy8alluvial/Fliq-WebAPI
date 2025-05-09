@@ -31,6 +31,7 @@ using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Fliq.Application.Tests.DashBoard.Queries.GetEventsTicket;
 using Fliq.Contracts.Common;
+using Fliq.Application.Common.Pagination;
 
 namespace Fliq.Api.Controllers
 {
@@ -152,7 +153,7 @@ namespace Fliq.Api.Controllers
         public async Task<IActionResult> GetAllUsersForDashBoard([FromQuery] GetUsersListRequest request)
         {
             _logger.LogInfo("Get All Users Request Received");
-
+            request.PaginationRequest ??= new PaginationRequest();
             var query = _mapper.Map<GetAllUsersQuery>(request);
             var result = await _mediator.Send(query);
 
@@ -168,7 +169,6 @@ namespace Fliq.Api.Controllers
         public async Task<IActionResult> GetEventsCount()
         {
             _logger.LogInfo("Received request for events count.");
-
             var query = new GetAllEventsCountQuery();
             var result = await _mediator.Send(query);
 
@@ -212,7 +212,7 @@ namespace Fliq.Api.Controllers
         public async Task<IActionResult> GetAllEventsForDashBoard([FromQuery] GetEventsListRequest request)
         {
             _logger.LogInfo("Get all events request received");
-
+            request.PaginationRequest ??= new PaginationRequest();
             var query = _mapper.Map<GetAllEventsQuery>(request);
             var result = await _mediator.Send(query);
 
@@ -229,7 +229,7 @@ namespace Fliq.Api.Controllers
         public async Task<IActionResult> GetAllFlaggedEventsForDashBoard([FromQuery] GetEventsListRequest request)
         {
             _logger.LogInfo("Get all events request received");
-
+            request.PaginationRequest ??= new PaginationRequest();
             var query = _mapper.Map<GetAllFlaggedEventsQuery>(request);
             var result = await _mediator.Send(query);
 
@@ -245,7 +245,7 @@ namespace Fliq.Api.Controllers
         public async Task<IActionResult> GetEventsTicketsForDashboard([FromQuery] GetEventsTicketsListRequest request)
         {
             _logger.LogInfo($"Get Events Tickets Request Received: {request}");
-
+            request.PaginationRequest ??= new PaginationRequest();
             var query = _mapper .Map<GetAllEventsTicketsQuery>(request);
 
             var result = await _mediator.Send(query);

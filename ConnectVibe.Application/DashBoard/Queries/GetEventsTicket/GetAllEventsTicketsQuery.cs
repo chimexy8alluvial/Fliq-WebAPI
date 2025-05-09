@@ -10,7 +10,7 @@ using MediatR;
 namespace Fliq.Application.Tests.DashBoard.Queries.GetEventsTicket
 {
     public record GetAllEventsTicketsQuery(
-                    PaginationRequest PaginationRequest = default!,
+                    PaginationRequest PaginationRequest,
                     EventCategory? Category = null, 
                     string? StatusFilter = null,
                     DateTime? StartDate = null,
@@ -32,6 +32,13 @@ namespace Fliq.Application.Tests.DashBoard.Queries.GetEventsTicket
             try
             {
                 _logger.LogInfo($"Getting events with tickets for page {query.PaginationRequest.PageNumber} with page size {query.PaginationRequest.PageSize}");
+
+
+                if (query.PaginationRequest == null)
+                {
+                    _logger.LogWarn("PaginationRequest is null, using default values");
+                    query = query with { PaginationRequest = new PaginationRequest() };
+                }
 
                 var request = new GetEventsTicketsListRequest
                 {
