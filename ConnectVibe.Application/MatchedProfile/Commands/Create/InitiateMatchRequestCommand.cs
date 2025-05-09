@@ -70,14 +70,25 @@ namespace Fliq.Application.MatchedProfile.Commands.Create
             var initiatorName = matchInitiator?.FirstName + " " + matchInitiator?.LastName;
             var receiverPictureUrl = requestedUser?.UserProfile?.Photos?.FirstOrDefault()?.PictureUrl;
 
-            // Trigger MatchRequestEvent notification
-            await _mediator.Publish(new MatchRequestEvent(
-                command.MatchInitiatorUserId,
-                command.MatchReceiverUserId,
-                accepterImageUrl: receiverPictureUrl,
-                initiatorImageUrl: initiatorPictureUrl,
-                initiatorName: initiatorName
-            ));
+            // Publish notification asynchronously
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await _mediator.Publish(new MatchRequestEvent(
+                        command.MatchInitiatorUserId,
+                        command.MatchReceiverUserId,
+                        accepterImageUrl: receiverPictureUrl,
+                        initiatorImageUrl: initiatorPictureUrl,
+                        initiatorName: initiatorName
+                    ), cancellationToken);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Failed to publish MatchRequestEvent: {ex.Message}");
+                }
+            }, cancellationToken);
+
 
             return new CreateMatchRequestResult(matchRequest.Id, matchRequest.MatchReceiverUserId, matchRequest.MatchInitiatorUserId,
                 initiatorName,

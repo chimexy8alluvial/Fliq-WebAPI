@@ -36,14 +36,23 @@ namespace Fliq.Api.Controllers
             _logger.LogInfo($"Initiate Match Request Received: {request}");
             var matchInitiatorUserId = GetAuthUserId();
 
-            // Track Feature Activity
             await _userFeatureActivityService.TrackUserFeatureActivity(matchInitiatorUserId, "Initiate-MatchRequest");
 
             var command = _mapper.Map<InitiateMatchRequestCommand>(request);
-            command.MatchInitiatorUserId= matchInitiatorUserId;
+            command.MatchInitiatorUserId = matchInitiatorUserId;
 
             var matchedProfileResult = await _mediator.Send(command);
-            _logger.LogInfo($"Initiate Match Request Command Executed.  Result: {matchedProfileResult}");
+            if (matchedProfileResult.IsError)
+            {
+                var errorMessages = string.Join("; ", matchedProfileResult.Errors.Select(e => e.Description));
+                _logger.LogError($"Match request failed: {errorMessages}");
+            }
+            else
+            {
+                var result = matchedProfileResult.Value;
+                var resultString = $"Id={result.Id}, ReceiverId={result.RequestedUserId}, InitiatorId={result.MatchInitiatorUserId}, Status={result.MatchRequestStatus}";
+                _logger.LogInfo($"Match request succeeded: {resultString}");
+            }
 
             return matchedProfileResult.Match(
                 matchedProfileResult => Ok(_mapper.Map<MatchRequestResponse>(matchedProfileResult)),
@@ -74,38 +83,49 @@ namespace Fliq.Api.Controllers
             _logger.LogInfo($"Accept Match Request Received: {request}");
             var userId = GetAuthUserId();
 
-            // Track Feature Activity
             await _userFeatureActivityService.TrackUserFeatureActivity(userId, "Accept-MatchRequest");
 
             var modifiedRequest = request with { UserId = userId };
             var command = _mapper.Map<AcceptMatchRequestCommand>(modifiedRequest);
 
             var acceptMatchResult = await _mediator.Send(command);
-            _logger.LogInfo($"Accept Match Request Command Executed.  Result: {acceptMatchResult}");
+            var resultString = acceptMatchResult.IsError
+                ? $"Errors: {string.Join("; ", acceptMatchResult.Errors.Select(e => e.Description))}"
+                : $" ReceiverId={userId}, InitiatorId={acceptMatchResult.Value.MatchInitiatorUserId}";
+            _logger.LogInfo($"Accept Match Request Command Executed. Result: {resultString}");
 
             return acceptMatchResult.Match(
-                acceptMatchResult => Ok(_mapper.Map<MatchRequestResponse>(acceptMatchResult)),
+                acceptMatchResult => Ok(new
+                {
+                    Message = "Match accepted successfully",
+                    Data = _mapper.Map<MatchRequestResponse>(acceptMatchResult)
+                }),
                 errors => Problem(errors)
             );
         }
-
         [HttpPost("reject")]
         public async Task<IActionResult> Reject([FromBody] RejectMatchRequest request)
         {
-            _logger.LogInfo($"Accept Match Request Received: {request}");
+            _logger.LogInfo($"Reject Match Request Received: {request}");
             var userId = GetAuthUserId();
 
-            // Track Feature Activity
             await _userFeatureActivityService.TrackUserFeatureActivity(userId, "Reject-MatchRequest");
 
             var modifiedRequest = request with { UserId = userId };
             var command = _mapper.Map<RejectMatchRequestCommand>(modifiedRequest);
 
             var rejectMatchResult = await _mediator.Send(command);
-            _logger.LogInfo($"Accept Match Request Command Executed.  Result: {rejectMatchResult}");
+            var resultString = rejectMatchResult.IsError
+                ? $"Errors: {string.Join("; ", rejectMatchResult.Errors.Select(e => e.Description))}"
+                : $" ReceiverId={userId}, InitiatorId={rejectMatchResult.Value.MatchInitiatorUserId}";
+            _logger.LogInfo($"Reject Match Request Command Executed. Result: {resultString}");
 
             return rejectMatchResult.Match(
-                rejectMatchResult => Ok(_mapper.Map<MatchRequestResponse>(rejectMatchResult)),
+                rejectMatchResult => Ok(new
+                {
+                    Message = "Match rejected successfully",
+                    Data = _mapper.Map<MatchRequestResponse>(rejectMatchResult)
+                }),
                 errors => Problem(errors)
             );
         }
@@ -116,11 +136,9 @@ namespace Fliq.Api.Controllers
         public async Task<IActionResult> GetRecentUserMatches([FromQuery] GetRecentUsersMatchRequest request)
         {
             _logger.LogInfo($"Get Recent Users Match Request Received: {request}");
-            var userId = GetAuthUserId();
+            var adminId = GetAuthUserId();
 
-            var modifiedRequest = request with { UserId = userId };
-            var query = _mapper.Map<GetRecentUsersMatchQuery>(modifiedRequest);
-
+            var query = _mapper.Map<GetRecentUsersMatchQuery>(request) with { AdminUserId = adminId };
             var result = await _mediator.Send(query);
             _logger.LogInfo($"Get Recent Users Match Request Query Executed.  Result: {result}");
 
