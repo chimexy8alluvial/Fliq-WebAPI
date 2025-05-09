@@ -1,68 +1,78 @@
-﻿
-using ErrorOr;
+﻿using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.MatchedProfile.Common;
 using Fliq.Domain.Common.Errors;
+using Fliq.Domain.Enums;
 using MediatR;
 
 namespace Fliq.Application.MatchedProfile.Queries
 {
-    public record GetRecentUsersMatchQuery(int AdminUserId, int UserId, int Limit) : IRequest<ErrorOr<List<GetRecentUserMatchResult>>>;
+    public record GetRecentUsersMatchQuery(
+        int AdminUserId,
+        int UserId,
+        int Limit,
+        MatchRequestStatus? Status = null
+    ) : IRequest<ErrorOr<List<GetRecentUserMatchResult>>>;
 
-    public class GetRecentUsersMatchQueryHandler : IRequestHandler<GetRecentUsersMatchQuery, ErrorOr<List<GetRecentUserMatchResult>>>
+    namespace Fliq.Application.MatchedProfile.Queries
     {
-        private readonly IMatchProfileRepository _matchRepository;
-        private readonly ILoggerManager _logger;
-        private readonly IUserRepository _userRepository;
-        private readonly IAuditTrailService _auditTrailService;
-
-        public GetRecentUsersMatchQueryHandler(IMatchProfileRepository matchRepository, ILoggerManager logger, IUserRepository userRepository, IAuditTrailService auditTrailService)
+        public class GetRecentUsersMatchQueryHandler : IRequestHandler<GetRecentUsersMatchQuery, ErrorOr<List<GetRecentUserMatchResult>>>
         {
-            _matchRepository = matchRepository;
-            _logger = logger;
-            _userRepository = userRepository;
-            _auditTrailService = auditTrailService;
-        }
+            private readonly IMatchProfileRepository _matchRepository;
+            private readonly ILoggerManager _logger;
+            private readonly IUserRepository _userRepository;
+            private readonly IAuditTrailService _auditTrailService;
 
-        public async Task<ErrorOr<List<GetRecentUserMatchResult>>> Handle(GetRecentUsersMatchQuery query, CancellationToken cancellationToken)
-        {
-            _logger.LogInfo($"Fetching {query.Limit} recent matches for User ID {query.UserId}");
-
-            var adminUser = _userRepository.GetUserById(query.AdminUserId);
-            if (adminUser == null)
+            public GetRecentUsersMatchQueryHandler(
+                IMatchProfileRepository matchRepository,
+                ILoggerManager logger,
+                IUserRepository userRepository,
+                IAuditTrailService auditTrailService)
             {
-                _logger.LogError($"Admin user with ID {query.AdminUserId} not found");
-                return Errors.User.UserNotFound;
-            }
-            if (adminUser.RoleId is not (1 or 2))
-            {
-                _logger.LogError($"User with ID {query.AdminUserId} is not an Admin");
-                return Errors.User.UnauthorizedUser;
+                _matchRepository = matchRepository;
+                _logger = logger;
+                _userRepository = userRepository;
+                _auditTrailService = auditTrailService;
             }
 
-            var user = _userRepository.GetUserById(query.UserId);
-            if (user == null)
+            public async Task<ErrorOr<List<GetRecentUserMatchResult>>> Handle(GetRecentUsersMatchQuery query, CancellationToken cancellationToken)
             {
-                _logger.LogError($"user with ID {query.UserId} not found");
-                return Errors.User.UserNotFound;
+                _logger.LogInfo($"Fetching {query.Limit} recent matches for UserId={query.UserId}, Status={(query.Status.HasValue ? query.Status.ToString() : "Any")}");
+
+                var adminUser = _userRepository.GetUserById(query.AdminUserId);
+                if (adminUser == null)
+                {
+                    _logger.LogError($"Admin user with ID {query.AdminUserId} not found");
+                    return Errors.User.UserNotFound;
+                }
+                if (adminUser.RoleId is not (1 or 2))
+                {
+                    _logger.LogError($"User with ID {query.AdminUserId} is not an Admin");
+                    return Errors.User.UnauthorizedUser;
+                }
+
+                var user = _userRepository.GetUserById(query.UserId);
+                if (user == null)
+                {
+                    _logger.LogError($"User with ID {query.UserId} not found");
+                    return Errors.User.UserNotFound;
+                }
+
+                var limit = Math.Min(query.Limit, 10);
+                if (limit < query.Limit) _logger.LogInfo($"Limit reduced from {query.Limit} to {limit}");
+
+                _logger.LogInfo($"Calling GetRecentMatchesAsync: UserId={query.UserId}, Limit={limit}, AcceptedStatus={(query.Status.HasValue ? ((int)query.Status.Value).ToString() : "null")}");
+                var recentMatches = await _matchRepository.GetRecentMatchesAsync(query.UserId, limit, query.Status.HasValue ? (int?)query.Status.Value : null);
+                var recentMatchesList = recentMatches?.ToList() ?? [];
+                var count = recentMatchesList.Count < limit ? recentMatchesList.Count : limit;
+                _logger.LogInfo($"{count} recent user matches fetched for UserId={query.UserId}");
+
+                var message = $"Getting recent user match result for user with ID {user.Id}";
+                await _auditTrailService.LogAuditTrail(message, user);
+
+                return recentMatchesList;
             }
-
-            // Validate and enforce max limit
-            var limit = Math.Min(query.Limit, 10);
-            if (limit < query.Limit) _logger.LogInfo($"Limit for query has been reduced from {query.Limit} to {limit}");
-
-            // Fetch recent matches using optimized query
-            _logger.LogInfo($"Fetching Recent Matches...");
-            var recentMatches = await _matchRepository.GetRecentMatchesAsync(query.UserId, limit);
-            var recentMatchesList = recentMatches?.ToList() ?? [];
-            var count = recentMatchesList.Count < limit ? recentMatchesList.Count : limit;
-            _logger.LogInfo($"{count} Recent User Matches Fetched");
-
-            var Message = $"Getting recent user match result for user with id {user.Id} in";
-            await _auditTrailService.LogAuditTrail(Message, user);
-
-            return recentMatchesList;
         }
     }
 }

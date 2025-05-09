@@ -1375,9 +1375,6 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<bool>("IsVerified")
                         .HasColumnType("bit");
 
-                    b.Property<DateTime>("UploadedDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("UserProfileId")
                         .HasColumnType("int");
 

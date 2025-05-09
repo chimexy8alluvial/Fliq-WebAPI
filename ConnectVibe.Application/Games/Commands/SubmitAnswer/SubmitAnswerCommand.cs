@@ -38,7 +38,7 @@ namespace Fliq.Application.Games.Commands.SubmitAnswer
             if (session == null || session.Status != GameStatus.InProgress)
             {
                 _loggerManager.LogError($"Session {request.SessionId} not found");
-                return Errors.Games.GameNotFound;
+                return Errors.Games.GameSessionNotFound;
             }
 
             int? winnerId = null;

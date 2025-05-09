@@ -135,12 +135,17 @@ namespace Fliq.Api.Controllers
         [HttpGet("recent-user-matches")]
         public async Task<IActionResult> GetRecentUserMatches([FromQuery] GetRecentUsersMatchRequest request)
         {
-            _logger.LogInfo($"Get Recent Users Match Request Received: {request}");
+            _logger.LogInfo($"Get Recent Users Match Request Received: UserId={request.UserId}, Limit={request.Limit}, Status={(request.Status.HasValue ? request.Status.ToString() : "Any")}");
             var adminId = GetAuthUserId();
 
             var query = _mapper.Map<GetRecentUsersMatchQuery>(request) with { AdminUserId = adminId };
+            _logger.LogInfo($"Mapped Query: AdminUserId={query.AdminUserId}, UserId={query.UserId}, Limit={query.Limit}, Status={(query.Status.HasValue ? query.Status.ToString() : "Any")}");
+
             var result = await _mediator.Send(query);
-            _logger.LogInfo($"Get Recent Users Match Request Query Executed.  Result: {result}");
+            var resultString = result.IsError
+                ? $"Errors: {string.Join("; ", result.Errors.Select(e => e.Description))}"
+                : $"Count={result.Value?.Count ?? 0}";
+            _logger.LogInfo($"Get Recent Users Match Query Executed. Result: {resultString}");
 
             return result.Match(
                 result => Ok(_mapper.Map<GetRecentUsersMatchResponse>(result)),

@@ -12,30 +12,31 @@ namespace Fliq.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
                     migrationBuilder.Sql(@"
-               CREATE PROCEDURE sPGetRecentUserMatches  
-            @UserId INT,  
-            @Limit INT,  
-            @AcceptedStatus INT  
-        AS  
-        BEGIN  
-            SET NOCOUNT ON;  
-        
-            SELECT TOP (@Limit)  
-                u.Id AS UserId,  
-                u.FirstName,  
-                u.LastName,  
-                PP.PictureUrl,   
-                m.DateModified  
-            FROM MatchRequests m  
-            JOIN Users u  
-                ON (m.MatchReceiverUserId = @UserId AND m.MatchInitiatorUserId = u.Id)  
-                OR (m.MatchInitiatorUserId = @UserId AND m.MatchReceiverUserId = u.Id)  
-            JOIN UserProfiles up  
-                ON u.Id = up.UserId  
-        	JOIN ProfilePhoto pp
-        		ON up.Id = PP.UserProfileId
-            WHERE m.MatchRequestStatus = @AcceptedStatus  
-            ORDER BY m.DateModified DESC;  
+        ALTER PROCEDURE sPGetRecentUserMatches
+            @UserId INT,
+            @Limit INT,
+            @Status INT = NULL
+        AS
+        BEGIN
+            SET NOCOUNT ON;
+
+            SELECT TOP (@Limit)
+                u.Id AS UserId,
+                u.FirstName,
+                u.LastName,
+                PP.PictureUrl,
+                m.DateModified
+            FROM MatchRequests m
+            JOIN Users u
+                ON (m.MatchReceiverUserId = @UserId AND m.MatchInitiatorUserId = u.Id)
+                OR (m.MatchInitiatorUserId = @UserId AND m.MatchReceiverUserId = u.Id)
+            JOIN UserProfiles up
+                ON u.Id = up.UserId
+            JOIN ProfilePhoto pp
+                ON up.Id = pp.UserProfileId
+            WHERE m.IsDeleted = 0
+                AND (@Status IS NULL OR m.MatchRequestStatus = @Status)
+            ORDER BY m.DateModified DESC;
         END;");
 
         }

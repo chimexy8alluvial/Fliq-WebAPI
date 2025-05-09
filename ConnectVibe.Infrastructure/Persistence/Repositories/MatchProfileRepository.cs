@@ -78,15 +78,23 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             return parameters;
         }
 
-        public async Task<IEnumerable<GetRecentUserMatchResult>> GetRecentMatchesAsync(int userId, int limit)
+        public async Task<IEnumerable<GetRecentUserMatchResult>> GetRecentMatchesAsync(int userId, int limit, int? status = null)
         {
             using (var connection = _connectionFactory.CreateConnection())
             {
-
                 var sql = "sPGetRecentUserMatches";
-                var parameters = new { UserId = userId, Limit = limit };
+                var parameters = new
+                {
+                    UserId = userId,
+                    Limit = limit,
+                    Status = status
+                };
 
-                var activities = await connection.QueryAsync<GetRecentUserMatchResult>(sql, parameters, commandType: CommandType.StoredProcedure);
+                var activities = await connection.QueryAsync<GetRecentUserMatchResult>(
+                    sql,
+                    parameters,
+                    commandType: CommandType.StoredProcedure
+                );
                 return activities;
             }
         }
