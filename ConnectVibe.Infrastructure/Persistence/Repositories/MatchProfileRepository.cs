@@ -82,7 +82,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         {
             using (var connection = _connectionFactory.CreateConnection())
             {
-                var sql = "sPGetRecentUserMatches";
+                var sql = "sp_GetRecentUserMatches";
                 var parameters = new
                 {
                     UserId = userId,

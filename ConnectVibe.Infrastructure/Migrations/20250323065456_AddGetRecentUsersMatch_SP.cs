@@ -12,7 +12,7 @@ namespace Fliq.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
                     migrationBuilder.Sql(@"
-        ALTER PROCEDURE sPGetRecentUserMatches
+        CREATE PROCEDURE sp_GetRecentUserMatches
             @UserId INT,
             @Limit INT,
             @Status INT = NULL
@@ -44,7 +44,7 @@ namespace Fliq.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql("DROP PROCEDURE IF EXISTS sPGetRecentUserMatches;");
+            migrationBuilder.Sql("DROP PROCEDURE IF EXISTS sp_GetRecentUserMatches;");
         }
     }
 }

@@ -153,7 +153,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                 
             };
             var results =  connection.Query<GameQuestion>(
-               "sp_GetQuestionsByGameId",
+               "GetQuestionsByGameIdPaginated",
                 parameters,
                 commandType: CommandType.StoredProcedure
             );
