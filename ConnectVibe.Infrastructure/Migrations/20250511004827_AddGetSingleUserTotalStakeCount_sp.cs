@@ -5,23 +5,23 @@
 namespace Fliq.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class AddGetSingleUserTotalStakeCount_SP : Migration
+    public partial class AddGetSingleUserTotalStakeCount_sp : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@"
-            CREATE PROCEDURE sp_GetSingleUserTotalStakeCount
-                @UserId INT
-            AS
-            BEGIN
-                SET NOCOUNT ON;
-                SELECT COUNT(*)
-                FROM Stake s
-                INNER JOIN GameSession gs ON s.GameSessionId = gs.Id
-                WHERE s.RequesterId = @UserId OR s.RecipientId = @UserId;
-            END
-                ");
+    CREATE PROCEDURE sp_GetSingleUserTotalStakeCount
+        @UserId INT
+    AS
+    BEGIN
+        SET NOCOUNT ON;
+        SELECT COUNT(*)
+        FROM Stakes
+        INNER JOIN GameSessions gs ON Stakes.GameSessionId = gs.Id
+        WHERE Stakes.RequesterId = @UserId OR Stakes.RecipientId = @UserId;
+    END
+        ");
         }
 
         /// <inheritdoc />

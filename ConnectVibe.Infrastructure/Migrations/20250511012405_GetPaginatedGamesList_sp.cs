@@ -13,23 +13,23 @@ namespace Fliq.Infrastructure.Migrations
             migrationBuilder.Sql(@"
 CREATE OR ALTER PROCEDURE sp_GetPaginatedGamesList
     @Status INT = NULL,
-    @DatePlayedFrom DATETIME = NULL,
-    @DatePlayedTo DATETIME = NULL,
+    @DatePlayedFrom DATETIME2 = NULL,
+    @DatePlayedTo DATETIME2 = NULL,
     @Page INT = 1,
     @PageSize INT = 10
 AS
 BEGIN
     SET NOCOUNT ON;
 
-    CREATE TABLE #FilteredGames
+   CREATE TABLE #FilteredGames
     (
         RowNum INT IDENTITY(1,1),
         GameTitle NVARCHAR(255),
         Players NVARCHAR(255),
         Status INT,
-        Stake NVARCHAR(50),
+        Stake DECIMAL(18,2) NULL,
         Winner NVARCHAR(255),
-        DatePlayed DATETIME
+        DatePlayed DATETIME2
     );
 
     INSERT INTO #FilteredGames
@@ -38,10 +38,7 @@ BEGIN
         g.Name AS GameTitle,
         p1.FirstName + ' ' + p1.LastName + ' Vs ' + p2.FirstName + ' ' + p2.LastName AS Players,
         gs.Status AS Status,
-        CASE 
-            WHEN s.Amount IS NOT NULL THEN '$' + CAST(s.Amount AS NVARCHAR(50)) 
-            ELSE NULL 
-        END AS Stake,
+        s.Amount AS Stake, -- This will be NULL if no stake exists
         CASE 
             WHEN gs.WinnerId IS NOT NULL THEN w.FirstName + ' ' + w.LastName 
             ELSE NULL 
@@ -51,7 +48,7 @@ BEGIN
     INNER JOIN GameSessions gs ON g.Id = gs.GameId
     INNER JOIN Users p1 ON gs.Player1Id = p1.Id
     INNER JOIN Users p2 ON gs.Player2Id = p2.Id
-    LEFT JOIN Stakes s ON gs.Id = s.GameSessionId -- Use existing Stakes table
+     LEFT JOIN Stakes s ON gs.Id = s.GameSessionId -- LEFT JOIN ensures all game sessions are included
     LEFT JOIN Users w ON gs.WinnerId = w.Id
     WHERE 
         (@Status IS NULL OR gs.Status = @Status)

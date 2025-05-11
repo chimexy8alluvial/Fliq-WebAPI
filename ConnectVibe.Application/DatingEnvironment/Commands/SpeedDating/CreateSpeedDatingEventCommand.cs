@@ -62,7 +62,7 @@ namespace Fliq.Application.DatingEnvironment.Commands.SpeedDating
                 return Errors.User.UserNotFound;
             }
 
-            // Map the BlindDate entity
+            // Map the SpeedDate entity
             var speedDate = _mapper.Map<SpeedDatingEvent>(command);
 
             // Get enriched location details
@@ -85,13 +85,13 @@ namespace Fliq.Application.DatingEnvironment.Commands.SpeedDating
                 _loggerManager.LogWarn("Failed to retrieve location details from coordinates.");
             }
 
-            // Upload blind date image
+            // Upload speed date image
             if (command.SpeedDateImage != null)
             {
                 speedDate.ImageUrl = await _mediaServices.UploadImageAsync(command.SpeedDateImage.BlindDateSessionImageFile);
             }
 
-            //save the blind date
+            //save the speed date
             await _speedDateRepository.AddAsync(speedDate);
 
             if (user.RoleId == 3)
