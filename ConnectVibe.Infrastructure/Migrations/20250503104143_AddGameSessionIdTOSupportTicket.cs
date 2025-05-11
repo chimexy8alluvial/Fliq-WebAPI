@@ -29,13 +29,6 @@ namespace Fliq.Infrastructure.Migrations
                 oldClrType: typeof(int),
                 oldType: "int");
 
-            migrationBuilder.AddColumn<int>(
-                name: "TicketSales",
-                table: "Events",
-                type: "int",
-                nullable: false,
-                defaultValue: 0);
-
             migrationBuilder.CreateIndex(
                 name: "IX_Settings_UserId",
                 table: "Settings",
@@ -53,10 +46,6 @@ namespace Fliq.Infrastructure.Migrations
             migrationBuilder.DropColumn(
                 name: "GameSessionId",
                 table: "SupportTickets");
-
-            migrationBuilder.DropColumn(
-                name: "TicketSales",
-                table: "Events");
 
             migrationBuilder.AlterColumn<int>(
                 name: "GenderType",

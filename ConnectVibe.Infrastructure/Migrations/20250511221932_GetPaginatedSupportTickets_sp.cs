@@ -1,12 +1,4 @@
-﻿using ErrorOr;
-using Fliq.Domain.Entities.Games;
-using Fliq.Domain.Entities.HelpAndSupport;
-using Microsoft.EntityFrameworkCore.Migrations;
-using Microsoft.Extensions.Options;
-using static Fliq.Domain.Common.Errors.Errors;
-using static System.Net.Mime.MediaTypeNames;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
