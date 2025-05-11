@@ -30,7 +30,7 @@ namespace Fliq.Application.Common.Interfaces.Persistence
 
         GameQuestion? GetQuestionById(int id);
 
-        List<GameQuestion> GetQuestionsByGameId(int gameId, int pageNumber, int pageSize);
+        List<GameQuestion> GetQuestionsByGameId(int gameId, int pageNumber = 1, int pageSize = 10);
 
         List<GetGameHistoryResult> GetGameHistoryByTwoPlayers(int player1Id, int player2Id);
         Task<int> GetActiveGamesCountAsync();

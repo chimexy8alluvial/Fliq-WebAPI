@@ -75,7 +75,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         public GameSession? GetGameSessionById(int id)
         {
             var session = _dbContext.GameSessions
-                .SingleOrDefault(p => p.Id == id);
+                .SingleOrDefault(p => p.Id == id && !p.IsDeleted);
             return session;
         }
 
@@ -86,7 +86,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                 var sql = "sp_GetSingleUserTotalStakeCount";
                 var parameter = new { UserId = userId };
                 
-                var count = await connection.QueryFirstOrDefaultAsync<int>(sql, commandType: CommandType.StoredProcedure); // Using IsActive flag
+                var count = await connection.QueryFirstOrDefaultAsync<int>(sql, parameter, commandType: CommandType.StoredProcedure); // Using IsActive flag
                 return count;
             }
         }
@@ -95,7 +95,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         {
             using (var connection = _connectionFactory.CreateConnection())
             {
-                const string storedProcedure = "GetGameHistoryByTwoPlayers";
+                const string storedProcedure = "sp_GetGameHistoryByTwoPlayers";
 
                 var result = connection.Query<GetGameHistoryResult>(
                     storedProcedure,
@@ -142,7 +142,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             return _dbContext.GameQuestions.SingleOrDefault(q => q.Id == id);
         }
 
-        public List<GameQuestion> GetQuestionsByGameId(int gameId, int pageNumber, int pageSize)
+        public List<GameQuestion> GetQuestionsByGameId(int gameId, int pageNumber = 1, int pageSize = 10)
         {
             using var connection = _connectionFactory.CreateConnection();
             var parameters = new

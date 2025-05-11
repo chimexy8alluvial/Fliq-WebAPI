@@ -19,7 +19,6 @@ using Fliq.Application.DashBoard.Queries.SponsoredEventsCount;
 using Fliq.Application.DashBoard.Queries.UsersCount;
 using Fliq.Application.DashBoard.Queries.VipTicketCount;
 using Fliq.Application.DashBoard.Queries.VVipTicketCount;
-using Fliq.Application.Event.Commands.RefundTicket;
 using Fliq.Application.Event.Commands.StopTicketSales;
 using Fliq.Contracts.DashBoard;
 using Fliq.Domain.Entities.Event;

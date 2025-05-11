@@ -1,4 +1,6 @@
-﻿namespace Fliq.Application.Games.Common
+﻿using Fliq.Domain.Enums;
+
+namespace Fliq.Application.Games.Common
 {
     public record GetGameHistoryResult(
      int HistoryId,
@@ -9,6 +11,7 @@
      int Player1Score,
      int Player2Score,
      int Player1Id,
-     int Player2Id
+     int Player2Id,
+     GameStatus Status
  );
 }
