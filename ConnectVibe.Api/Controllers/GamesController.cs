@@ -167,7 +167,7 @@ namespace Fliq.Api.Controllers
         [HttpPost("questions/create")]
         public async Task<IActionResult> CreateQuestion([FromForm] CreateQuestionDto request)
         {
-            _logger.LogInformation($"Create Question Request Received: {request}");
+            _logger.LogInformation($"Create Question Request Received: {request}");          
             var command = _mapper.Map<CreateQuestionCommand>(request);
             var result = await _mediator.Send(command);
             _logger.LogInformation($"Create Question Command Executed. Result: {result}");

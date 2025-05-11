@@ -33,7 +33,7 @@ namespace Fliq.Test.Games.Commands
                 GameId: 1,
                 Text: "What is the capital of France?",
                 Options: new List<string> { "Paris", "London", "Berlin", "Madrid" },
-                CorrectAnswer: "Paris"
+                CorrectOptionIndex: 0 // Changed from CorrectAnswer to CorrectOptionIndex
             );
 
             var game = new Game { Id = 1, Name = "Trivia Game" };
@@ -48,21 +48,23 @@ namespace Fliq.Test.Games.Commands
                 .Callback<GameQuestion>(q => capturedQuestion = q);
 
             // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+            var result = await _handler!.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.IsFalse(result.IsError);
             Assert.IsNotNull(result.Value);
             Assert.AreEqual(command.Text, result.Value.QuestionText);
             Assert.AreEqual(command.Options.Count, result.Value.Options.Count);
+            Assert.AreEqual(command.Options[command.CorrectOptionIndex], result.Value.CorrectAnswer);
 
             Assert.IsNotNull(capturedQuestion);
             Assert.AreEqual(command.GameId, capturedQuestion.GameId);
             Assert.AreEqual(command.Text, capturedQuestion.QuestionText);
-            Assert.AreEqual(command.CorrectAnswer, capturedQuestion.CorrectAnswer);
-            Assert.AreEqual(command.Options.Count, capturedQuestion?.Options?.Count);
+            Assert.AreEqual(command.Options[command.CorrectOptionIndex], capturedQuestion.CorrectAnswer);
+            Assert.AreEqual(command.Options.Count, capturedQuestion.Options.Count);
 
-            _mockGamesRepository?.Verify(repo => repo.AddQuestion(It.IsAny<GameQuestion>()), Times.Once);
+            _mockGamesRepository?.Verify(repo => repo.GetGameById(command.GameId), Times.Once());
+            _mockGamesRepository?.Verify(repo => repo.AddQuestion(It.IsAny<GameQuestion>()), Times.Once());
         }
 
         [TestMethod]
@@ -73,7 +75,7 @@ namespace Fliq.Test.Games.Commands
                 GameId: 99,
                 Text: "What is the capital of France?",
                 Options: new List<string> { "Paris", "London", "Berlin", "Madrid" },
-                CorrectAnswer: "Paris"
+                CorrectOptionIndex: 0 // Changed from CorrectAnswer to CorrectOptionIndex
             );
 
             _mockGamesRepository?
@@ -81,13 +83,44 @@ namespace Fliq.Test.Games.Commands
                 .Returns((Game?)null);
 
             // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+            var result = await _handler!.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.IsTrue(result.IsError);
             Assert.AreEqual("Game.NotFound", result.FirstError.Code);
+            Assert.AreEqual("The specified game does not exist.", result.FirstError.Description);
 
-            _mockGamesRepository?.Verify(repo => repo.AddQuestion(It.IsAny<GameQuestion>()), Times.Never);
+            _mockGamesRepository?.Verify(repo => repo.GetGameById(command.GameId), Times.Once());
+            _mockGamesRepository?.Verify(repo => repo.AddQuestion(It.IsAny<GameQuestion>()), Times.Never());
+        }
+
+        [TestMethod]
+        public async Task Handle_InvalidCorrectOptionIndex_ReturnsValidationError()
+        {
+            // Arrange
+            var command = new CreateQuestionCommand(
+                GameId: 1,
+                Text: "What is the capital of France?",
+                Options: new List<string> { "Paris", "London", "Berlin", "Madrid" },
+                CorrectOptionIndex: 4 // Invalid index
+            );
+
+            var game = new Game { Id = 1, Name = "Trivia Game" };
+
+            _mockGamesRepository?
+                .Setup(repo => repo.GetGameById(command.GameId))
+                .Returns(game);
+
+            // Act
+            var result = await _handler!.Handle(command, CancellationToken.None);
+
+            // Assert
+            Assert.IsTrue(result.IsError);
+            Assert.AreEqual("Question.InvalidCorrectOption", result.FirstError.Code);
+            Assert.AreEqual("The correct option index is out of range.", result.FirstError.Description);
+
+            _mockGamesRepository?.Verify(repo => repo.GetGameById(command.GameId), Times.Once());
+            _mockGamesRepository?.Verify(repo => repo.AddQuestion(It.IsAny<GameQuestion>()), Times.Never());
         }
     }
 }

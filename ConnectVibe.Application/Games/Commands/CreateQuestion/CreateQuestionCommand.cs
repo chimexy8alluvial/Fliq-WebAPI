@@ -11,7 +11,7 @@ namespace Fliq.Application.Games.Commands.CreateQuestion
         int GameId,
         string Text,
         List<string> Options,
-        string CorrectAnswer
+        int CorrectOptionIndex
     ) : IRequest<ErrorOr<GetQuestionResult>>;
 
     public class CreateQuestionCommandHandler : IRequestHandler<CreateQuestionCommand, ErrorOr<GetQuestionResult>>
@@ -39,13 +39,20 @@ namespace Fliq.Application.Games.Commands.CreateQuestion
                 return Error.NotFound("Game.NotFound", "The specified game does not exist.");
             }
 
+            // Validate CorrectOptionIndex
+            if (request.CorrectOptionIndex < 0 || request.CorrectOptionIndex >= request.Options.Count)
+            {
+                _logger.LogError($"Invalid correct option index {request.CorrectOptionIndex} for question.");
+                return Error.Validation("Question.InvalidCorrectOption", "The correct option index is out of range.");
+            }
+
             // Create the question
             var question = new GameQuestion
             {
                 GameId = request.GameId,
                 QuestionText = request.Text,
                 Options = request.Options,
-                CorrectAnswer = request.CorrectAnswer
+                CorrectAnswer = request.Options.ElementAt(request.CorrectOptionIndex)
             };
 
             _gamesRepository.AddQuestion(question);
