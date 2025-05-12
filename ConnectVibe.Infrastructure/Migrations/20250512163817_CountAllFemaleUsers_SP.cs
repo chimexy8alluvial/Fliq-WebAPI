@@ -11,19 +11,19 @@ namespace Fliq.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@"
-            CREATE PROCEDURE sp_CountAllFemaleUsers
-            AS
-            BEGIN
-                SET NOCOUNT ON;
-               SELECT COUNT(DISTINCT u.Id) AS FemaleUserCount
-                FROM Users u
-                LEFT JOIN UserProfiles up ON u.Id = up.UserId
-                LEFT JOIN Genders g ON up.GenderId = g.Id
-                WHERE 
-                    u.IsDeleted = 0
-             AND      g.GenderType = 2 ;
-            END;
-            ");
+    CREATE PROCEDURE sp_CountAllFemaleUsers
+    AS
+    BEGIN
+    SET NOCOUNT ON;
+    SELECT COUNT(DISTINCT u.Id) AS FemaleUserCount
+    FROM Users u
+    LEFT JOIN UserProfiles up ON u.Id = up.UserId
+    LEFT JOIN Genders g ON up.GenderId = g.Id
+    WHERE 
+        u.IsDeleted = 0
+    AND up.GenderId = 2;
+END;
+    ");
         }
 
         /// <inheritdoc />
