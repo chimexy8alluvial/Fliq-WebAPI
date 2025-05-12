@@ -44,8 +44,8 @@ namespace Fliq.Api.Mapping
             config.NewConfig<AddReviewResult, GetEventResponse>();
             config.NewConfig<EventInviteeDto, EventInvitee>();
             config.NewConfig<EventCriteriaDto, EventCriteria>()
-                .Map(dest => dest.Gender, src => (GenderType)src.Gender)
-                .Map(dest => dest.EventType, src => (Event_Type)src.EventType);
+                .Map(dest => dest.Gender, src => src.Gender)
+                .Map(dest => dest.EventType, src => src.EventType);
             config.NewConfig<TicketDto, Ticket>()
                 .Map(dest => dest.TicketType, src => (TicketType)src.TicketType);
             config.NewConfig<DiscountDto, Discount>()

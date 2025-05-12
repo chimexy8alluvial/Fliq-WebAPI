@@ -37,7 +37,7 @@ namespace Fliq.Application.Explore.Common.Services
             //);
 
             // Apply pagination
-            return profiles;
+            return await Task.FromResult(profiles);
         }
 
     }
