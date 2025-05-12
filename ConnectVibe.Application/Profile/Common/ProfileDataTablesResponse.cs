@@ -1,4 +1,5 @@
 ﻿using Fliq.Domain.Entities.Profile;
+using Fliq.Domain.Enums;
 
 namespace Fliq.Application.Profile.Common
 {
@@ -11,5 +12,7 @@ namespace Fliq.Application.Profile.Common
         public List<Gender> Genders { get; set; } = new List<Gender>();
         public List<HaveKids> HaveKids { get; set; } = new List<HaveKids>();
         public List<WantKids> WantKids { get; set; } = new List<WantKids>();
+        public List<string> Languages { get; set; } = Enum.GetNames(typeof(Language)).ToList();
+        public List<BusinessIdentificationDocument> BusinessIdentificationDocuments { get; set; } = new List<BusinessIdentificationDocument>();
     }
 }

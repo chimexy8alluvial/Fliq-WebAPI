@@ -62,6 +62,16 @@ namespace Fliq.Api.Controllers
                     ImageFile = photo.ImageFile
                 }).ToList();
             }
+
+            if (request.BusinessIdentificationDocument != null)
+            {
+                command.BusinessIdentificationDocuments = new BusinessIdentificationDocumentMapped
+                {
+                    BusinessIdentificationDocumentTypeId = request.BusinessIdentificationDocument.BusinessIdentificationDocumentTypeId,
+                    BusinessIdentificationDocumentFront = request.BusinessIdentificationDocument.BusinessIdentificationDocumentFront,
+                    BusinessIdentificationDocumentBack = request.BusinessIdentificationDocument.BusinessIdentificationDocumentBack
+                };
+            }
             // Explicitly map PromptResponses (IFormFile)
             if (request.PromptResponses != null)
             {
@@ -101,6 +111,16 @@ namespace Fliq.Api.Controllers
                     Caption = photo.Caption,
                     ImageFile = photo.ImageFile
                 }).ToList();
+            }
+
+            if (request.BusinessIdentificationDocument != null)
+            {
+                command.BusinessIdentificationDocuments = new BusinessIdentificationDocumentMapped
+                {
+                    BusinessIdentificationDocumentTypeId = request.BusinessIdentificationDocument.BusinessIdentificationDocumentTypeId,
+                    BusinessIdentificationDocumentFront = request.BusinessIdentificationDocument.BusinessIdentificationDocumentFront,
+                    BusinessIdentificationDocumentBack = request.BusinessIdentificationDocument.BusinessIdentificationDocumentBack
+                };
             }
             var profileResult = await _mediator.Send(command);
             _logger.LogInfo($"Updated profile: {profileResult}");

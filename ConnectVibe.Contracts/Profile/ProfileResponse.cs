@@ -11,6 +11,7 @@ namespace Fliq.Contracts.Profile
      int OccupationId,
      int EducationStatusId,
      List<ProfileTypeDto> ProfileTypes,
+     BusinessIdentificationDocumentResponse BusinessIdentificationDocument,
      int EthnicityId,
      HaveKidsDto HaveKids,
      WantKidsDto WantKids,
@@ -19,5 +20,6 @@ namespace Fliq.Contracts.Profile
      List<string> Passions = default!,
     List<ProfilePhotoResponse> Photos = default!,
     List<PromptResponseDto> PromptResponses = default!,
-    List<string> CompletedSections = default!);
+    List<string> CompletedSections = default!
+    );
 }

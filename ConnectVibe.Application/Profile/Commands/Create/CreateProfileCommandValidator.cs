@@ -25,15 +25,15 @@ namespace Fliq.Application.Profile.Commands.Create
                 RuleFor(x => x.SexualOrientationId)
                     .GreaterThan(0).When(x => x.ProfileTypes.Any(pt => pt == ProfileType.Dating || pt == ProfileType.Friendship))
                     .WithMessage("Sexual Orientation is required for Dating or Friendship profile types.");
-
-
+            });
+            When(x => x.CurrentSection == ProfileSection.OtherInfo, () =>
+            {
                 RuleFor(x => x.ReligionId)
                     .GreaterThan(0)
                     .WithMessage("Religion is required.");
 
                 RuleFor(x => x.EthnicityId)
                      .GreaterThan(0).WithMessage("Ethnicity is required.");
-                    
 
                 RuleFor(x => x.OccupationId)
                     .GreaterThan(0).WithMessage("Occupation is required.");
@@ -95,9 +95,6 @@ namespace Fliq.Application.Profile.Commands.Create
         }
     }
 
-   
-  
-   
     public class ProfilePhotoDtoValidator : AbstractValidator<ProfilePhotoMapped>
     {
         public ProfilePhotoDtoValidator()
@@ -130,7 +127,6 @@ namespace Fliq.Application.Profile.Commands.Create
                 .WithMessage("IsVisible must be specified.");
         }
     }
-
 
     public class PromptResponseValidator : AbstractValidator<PromptResponseDto>
     {

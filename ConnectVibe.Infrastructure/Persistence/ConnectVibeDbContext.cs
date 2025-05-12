@@ -9,6 +9,7 @@ using Fliq.Domain.Entities.Notifications;
 using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Entities.Prompts;
 using Fliq.Domain.Entities.Settings;
+using Fliq.Domain.Entities.Subscriptions;
 using Fliq.Domain.Entities.UserFeatureActivities;
 using Microsoft.EntityFrameworkCore;
 
@@ -81,6 +82,12 @@ namespace Fliq.Infrastructure.Persistence
         public DbSet<HaveKids> HaveKids { get; set; }
 
         public DbSet<AuditTrail> AuditTrails { get; set; }
+        public DbSet<BusinessIdentificationDocumentType> BusinessIdentificationDocumentTypes { get; set; }
+        public DbSet<BusinessIdentificationDocument> BusinessIdentificationDocuments { get; set; }
+
+        public DbSet<UserSubscription> UserSubscriptions { get; set; }
+        public DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }
+        public DbSet<SubscriptionPlanPrice> SubscriptionPlanPrices { get; set; }
 
     }
 }
