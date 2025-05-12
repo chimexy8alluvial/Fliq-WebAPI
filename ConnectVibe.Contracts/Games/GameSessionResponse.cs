@@ -5,7 +5,6 @@ namespace Fliq.Contracts.Games
     public class GameSessionResponse
     {
         public int GameId { get; set; }
-        public string GameName { get; set; }
         public int Player1Id { get; set; }
         public int Player2Id { get; set; }
         public int Player1Score { get; set; }
