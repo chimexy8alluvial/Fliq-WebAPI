@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fliq.Infrastructure.Migrations
 {
     [DbContext(typeof(FliqDbContext))]
-    [Migration("20250511004827_AddGetSingleUserTotalStakeCount_sp")]
+    [Migration("20250512141955_AddGetSingleUserTotalStakeCount_sp")]
     partial class AddGetSingleUserTotalStakeCount_sp
     {
         /// <inheritdoc />

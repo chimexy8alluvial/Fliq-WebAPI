@@ -11,23 +11,23 @@ namespace Fliq.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@"
-    CREATE PROCEDURE sp_GetSingleUserTotalStakeCount
-        @UserId INT
-    AS
-    BEGIN
-        SET NOCOUNT ON;
-        SELECT COUNT(*)
-        FROM Stakes
-        INNER JOIN GameSessions gs ON Stakes.GameSessionId = gs.Id
-        WHERE Stakes.RequesterId = @UserId OR Stakes.RecipientId = @UserId;
-    END
-        ");
+CREATE PROCEDURE sp_GetSingleUserTotalStakeCount
+    @UserId INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT COUNT(*)
+    FROM Stakes
+    INNER JOIN GameSessions gs ON Stakes.GameSessionId = gs.Id
+    WHERE Stakes.RequesterId = @UserId OR Stakes.RecipientId = @UserId;
+END
+    ");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql("DROP PROCEDURE IF EXISTS sp_GetSingleUserTotalStakeCount;");
+            migrationBuilder.Sql("DROP PROCEDURE IF EXISTS sp_GetSingleUserTotalStakeCount");
         }
     }
 }
