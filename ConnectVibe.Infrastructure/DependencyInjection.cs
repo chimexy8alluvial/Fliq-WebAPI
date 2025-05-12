@@ -1,6 +1,7 @@
 ﻿using Fliq.Application.Common.Interfaces.Authentication;
 using Fliq.Application.Common.Interfaces.Helper;
 using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Interfaces.Persistence.Subscriptions;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Interfaces.Services.AuthServices;
 using Fliq.Application.Common.Interfaces.Services.EventServices;
@@ -16,6 +17,7 @@ using Fliq.Infrastructure.Event;
 using Fliq.Infrastructure.Persistence;
 using Fliq.Infrastructure.Persistence.Helper;
 using Fliq.Infrastructure.Persistence.Repositories;
+using Fliq.Infrastructure.Persistence.Repositories.Subscriptions;
 using Fliq.Infrastructure.Services;
 using Fliq.Infrastructure.Services.AuthServices;
 using Fliq.Infrastructure.Services.EventServices;
@@ -81,6 +83,9 @@ namespace Fliq.Infrastructure
             services.AddScoped<IBlindDateRepository, BlindDateRepository>();
             services.AddScoped<ISpeedDateParticipantRepository, SpeedDateParticipantRepository>();
             services.AddScoped<ISpeedDatingEventRepository, SpeedDatingEventRepository>();
+            services.AddScoped<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
+            services.AddScoped<ISubscriptionPlanPriceRepository, SubscriptionPlanPriceRepository>();
+            services.AddScoped<IUserSubscriptionRepository, UserSubscriptionRepository>();
             services.AddSingleton<ICustomProfileMapper, CustomProfileMapper>();
             services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();
             services.AddScoped<IAuditTrailRepository, AuditTrailRepository>();
