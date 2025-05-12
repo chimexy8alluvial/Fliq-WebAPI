@@ -3,6 +3,7 @@ using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.DashBoard.Common;
 using Fliq.Application.DashBoard.Queries;
 using Fliq.Application.DashBoard.Queries.ActiveUserCount;
+using Fliq.Application.DashBoard.Queries.DailyTicketCount;
 using Fliq.Application.DashBoard.Queries.EventsCount;
 using Fliq.Application.DashBoard.Queries.EventsWithPendingApproval;
 using Fliq.Application.DashBoard.Queries.FemaleUsersCount;
@@ -12,24 +13,24 @@ using Fliq.Application.DashBoard.Queries.InActiveUserCount;
 using Fliq.Application.DashBoard.Queries.MaleUsersCount;
 using Fliq.Application.DashBoard.Queries.NewSignUpsCount;
 using Fliq.Application.DashBoard.Queries.OtherTicketCount;
-using Fliq.Application.DashBoard.Queries.RegularTicketCount;
-using Fliq.Application.DashBoard.Queries.TotalTicketCount;
 using Fliq.Application.DashBoard.Queries.OtherUsersCount;
+using Fliq.Application.DashBoard.Queries.RegularTicketCount;
 using Fliq.Application.DashBoard.Queries.SponsoredEventsCount;
+using Fliq.Application.DashBoard.Queries.TotalTicketCount;
 using Fliq.Application.DashBoard.Queries.UsersCount;
 using Fliq.Application.DashBoard.Queries.VipTicketCount;
 using Fliq.Application.DashBoard.Queries.VVipTicketCount;
 using Fliq.Application.Event.Commands.StopTicketSales;
-using Fliq.Contracts.DashBoard;
-using Fliq.Domain.Entities.Event;
-using MapsterMapper;
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using Fliq.Application.DashBoard.Queries.DailyTicketCount;
-using Mapster;
-using Microsoft.AspNetCore.Authorization;
 using Fliq.Application.Tests.DashBoard.Queries.GetEventsTicket;
 using Fliq.Contracts.Common;
+using Fliq.Contracts.DashBoard;
+using Fliq.Domain.Entities.Event;
+using Mapster;
+using MapsterMapper;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 using Fliq.Application.Common.Pagination;
 
 namespace Fliq.Api.Controllers
@@ -271,7 +272,7 @@ namespace Fliq.Api.Controllers
         }
 
         [HttpGet("vip-ticket-count")]
-        public async Task<IActionResult> GetVipTicketCountById([FromQuery] int eventId)
+        public async Task<IActionResult> GetVipTicketCountById([FromQuery][Required] int eventId)
         {
             _logger.LogInfo($"Received request for VIP ticket count for EventId: {eventId}");
 
@@ -285,7 +286,7 @@ namespace Fliq.Api.Controllers
         }
 
         [HttpGet("vvip-ticket-count")]
-        public async Task<IActionResult> GetVVipTicketCountById([FromQuery] int eventId)
+        public async Task<IActionResult> GetVVipTicketCountById([FromQuery][Required] int eventId)
         {
             _logger.LogInfo($"Received request for VVIP ticket count for EventId: {eventId}");
 
@@ -299,7 +300,7 @@ namespace Fliq.Api.Controllers
         }
 
         [HttpGet("other-ticket-count")]
-        public async Task<IActionResult> GetOtherTicketCountById([FromQuery] int eventId)
+        public async Task<IActionResult> GetOtherTicketCountById([FromQuery][Required] int eventId)
         {
             _logger.LogInfo($"Received request for Other ticket count for EventId: {eventId}");
 
@@ -328,7 +329,7 @@ namespace Fliq.Api.Controllers
 
         [HttpGet("weekly-ticket-count")]
         public async Task<IActionResult> GetWeeklyTicketCountById(
-             [FromQuery] int eventId,
+             [FromQuery][Required] int eventId,
              [FromQuery] DateTime? startDate,
              [FromQuery] DateTime? endDate,
              [FromQuery] TicketType? ticketType = null)
@@ -347,7 +348,7 @@ namespace Fliq.Api.Controllers
         }
 
         [HttpGet("gross-revenue")]
-        public async Task<IActionResult> GetEventTicketGrossRevenueById([FromQuery] int eventId)
+        public async Task<IActionResult> GetEventTicketGrossRevenueById([FromQuery][Required] int eventId)
         {
             _logger.LogInfo($"Received request for gross revenue for EventId: {eventId}");
             var query = new GetEventTicketGrossRevenueQuery(eventId);
@@ -360,7 +361,7 @@ namespace Fliq.Api.Controllers
            
 
         [HttpGet("net-revenue")]
-        public async Task<IActionResult> GetNetRevenueById([FromQuery] int eventId)
+        public async Task<IActionResult> GetNetRevenueById([FromQuery][Required] int eventId)
         {
             var query = new GetEventTicketNetRevenueQuery(eventId);
             ErrorOr<decimal> result = await _mediator.Send(query);
