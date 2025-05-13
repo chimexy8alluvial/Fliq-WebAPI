@@ -13,9 +13,9 @@ namespace Fliq.Test.HelpAndSupport.Queries
     public class GetPaginatedSupportTicketsQueryHandlerTests
     {
         // Mocks for dependencies
-        private Mock<ISupportTicketRepository> _mockRepository;
+        private Mock<ISupportTicketRepository>? _mockRepository;
 
-        private Mock<ILoggerManager> _mockLogger;
+        private Mock<ILoggerManager>? _mockLogger;
 
         // Query handler to test
         private GetPaginatedSupportTicketsQueryHandler _handler;
@@ -48,7 +48,8 @@ namespace Fliq.Test.HelpAndSupport.Queries
                 RequesterId = 1,
                 RequesterName = "John Doe",
                 RequestType = HelpRequestType.Billing,
-                RequestStatus = HelpRequestStatus.Pending
+                RequestStatus = HelpRequestStatus.Pending,
+                GameSessionId = 1,
             },
             new SupportTicket
             {
@@ -58,20 +59,21 @@ namespace Fliq.Test.HelpAndSupport.Queries
                 RequesterId = 2,
                 RequesterName = "Jane Smith",
                 RequestType = HelpRequestType.Billing,
-                RequestStatus = HelpRequestStatus.Pending
+                RequestStatus = HelpRequestStatus.Pending,
+                GameSessionId = 2,
             }
         };
 
             var totalTickets = 20;
 
             // Simulate fetching paginated tickets from the repository
-            _mockRepository
-                .Setup(r => r.GetPaginatedSupportTicketsAsync(query.PaginationRequest))
+            _mockRepository?
+                .Setup(r => r.GetPaginatedSupportTicketsAsync(query.PaginationRequest, query.RequestType, query.RequestStatus))
                 .ReturnsAsync(tickets);
 
             // Simulate getting the total count of tickets
-            _mockRepository
-                .Setup(r => r.GetTotalSupportTicketsCountAsync(null))
+            _mockRepository?
+                .Setup(r => r.GetTotalSupportTicketsCountAsync(query.RequestType, query.RequestStatus))
                 .ReturnsAsync(totalTickets);
 
             // Act
@@ -82,7 +84,7 @@ namespace Fliq.Test.HelpAndSupport.Queries
             Assert.AreEqual(totalTickets, result.Value.TotalCount); // Ensure the correct total count is returned
             Assert.AreEqual(query.PaginationRequest.PageNumber, result.Value.PageNumber); // Ensure the correct page number is returned
             Assert.AreEqual(query.PaginationRequest.PageSize, result.Value.PageSize); // Ensure the correct page size is returned
-            _mockLogger.Verify(l => l.LogError(It.IsAny<string>()), Times.Never); // Verify no error logging
+            _mockLogger?.Verify(l => l.LogError(It.IsAny<string>()), Times.Never); // Verify no error logging
         }
 
         [TestMethod]
@@ -95,8 +97,8 @@ namespace Fliq.Test.HelpAndSupport.Queries
             };
 
             // Simulate repository throwing an exception
-            _mockRepository
-                .Setup(r => r.GetPaginatedSupportTicketsAsync(query.PaginationRequest))
+            _mockRepository?
+                .Setup(r => r.GetPaginatedSupportTicketsAsync(query.PaginationRequest, query.RequestType, query.RequestStatus))
                 .ThrowsAsync(new Exception("Database error"));
 
             // Act
@@ -105,7 +107,7 @@ namespace Fliq.Test.HelpAndSupport.Queries
             // Assert
             Assert.IsTrue(result.IsError); // Ensure an error is returned
             Assert.AreEqual(ErrorType.Failure, result.FirstError.Type); // Ensure it's a "Failure" error
-            _mockLogger.Verify(l => l.LogError("Error fetching paginated support tickets: Database error"), Times.Once); // Verify error logging
+            _mockLogger?.Verify(l => l.LogError("Error fetching paginated support tickets: Database error"), Times.Once); // Verify error logging
         }
     }
 }

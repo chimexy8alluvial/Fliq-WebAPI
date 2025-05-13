@@ -81,18 +81,24 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             }
         }
 
-        public async Task<List<SupportTicket>> GetPaginatedSupportTicketsAsync(PaginationRequest paginationRequest)
+        public async Task<List<SupportTicket>> GetPaginatedSupportTicketsAsync(PaginationRequest paginationRequest, int? requestType = null, int? requestStatus = null)
         {
             try
             {
                 using (var connection = _connectionFactory.CreateConnection())
                 {
-                    _loggerManager.LogInfo($"Fetching paginated support tickets. Page: {paginationRequest.PageNumber}, PageSize: {paginationRequest.PageNumber}");
+                    _loggerManager.LogInfo($"Fetching paginated support tickets. Page: {paginationRequest.PageNumber}, PageSize: {paginationRequest.PageNumber}, RequestType: {requestType}, RequestStatus: {requestStatus}");
 
-                    var parameters = CreateDynamicParameters(paginationRequest); ;
-                    var sql = "GetPaginatedSupportTickets";
+                    var parameters = new DynamicParameters();
+                    parameters.Add("@PageNumber", paginationRequest.PageNumber);
+                    parameters.Add("@PageSize", paginationRequest.PageSize);
+                    parameters.Add("@RequestType", requestType);
+                    parameters.Add("@RequestStatus", requestStatus);
 
-                    var tickets = await connection.QueryAsync<SupportTicket>(sql, parameters, commandType: CommandType.StoredProcedure);
+                    var tickets = await connection.QueryAsync<SupportTicket>(
+                        "GetPaginatedSupportTickets",
+                        parameters,
+                        commandType: CommandType.StoredProcedure);
 
                     return tickets.ToList();
                 }
@@ -104,14 +110,24 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             }
         }
 
-        public async Task<int> GetTotalSupportTicketsCountAsync(string requestStatus = null)
+        public async Task<int> GetTotalSupportTicketsCountAsync(int? requestType = null, int? requestStatus = null)
         {
             try
             {
                 using (var connection = _connectionFactory.CreateConnection())
                 {
-                    var sql = "SELECT COUNT(*) FROM SupportTickets WHERE (@RequestStatus IS NULL OR RequestStatus = @RequestStatus)";
-                    var parameters = new { RequestStatus = requestStatus };
+                    _loggerManager.LogInfo(
+                    $"Fetching total support tickets count. RequestType: {requestType}, RequestStatus: {requestStatus}");
+
+                    var parameters = new DynamicParameters();
+                    parameters.Add("@RequestType", requestType);
+                    parameters.Add("@RequestStatus", requestStatus);
+
+                    var sql = @"SELECT COUNT(*) FROM SupportTickets 
+                    WHERE 
+                        IsDeleted = 0
+                        AND (@RequestType IS NULL OR RequestType = @RequestType)
+                        AND (@RequestStatus IS NULL OR RequestStatus = @RequestStatus)";
 
                     var totalCount = await connection.ExecuteScalarAsync<int>(sql, parameters);
                     return totalCount;
