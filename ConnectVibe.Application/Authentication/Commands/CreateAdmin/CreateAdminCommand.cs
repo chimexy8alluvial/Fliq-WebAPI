@@ -4,6 +4,7 @@ using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Security;
 using Fliq.Domain.Common.Errors;
+using Fliq.Domain.Enums;
 using Fliq.Domain.Entities;
 using MapsterMapper;
 using MediatR;
@@ -13,8 +14,16 @@ namespace Fliq.Application.Authentication.Commands.CreateAdmin
     public record CreateAdminCommand (string FirstName,
     string LastName,
     string DisplayName,
+    string BusinessName,
+    string BusinessType,
+    string BusinessAddress,
+    string ContactInformation,
+    string CompanyBio,
     string Email,
-    string Password
+    string Password,
+    Language Language,
+    string Theme,
+    string PhoneNumber
     ) : IRequest<ErrorOr<RegistrationResult>>;
 
     public class CreateAdminCommandHandler : IRequestHandler<CreateAdminCommand, ErrorOr<RegistrationResult>>

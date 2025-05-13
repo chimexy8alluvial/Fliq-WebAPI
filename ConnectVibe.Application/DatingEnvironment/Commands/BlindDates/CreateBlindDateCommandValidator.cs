@@ -1,7 +1,4 @@
-﻿
-
-using ErrorOr;
-using Fliq.Application.Profile.Commands.Create;
+﻿using Fliq.Application.Profile.Commands.Create;
 using FluentValidation;
 
 namespace Fliq.Application.DatingEnvironment.Commands.BlindDates
@@ -16,7 +13,7 @@ namespace Fliq.Application.DatingEnvironment.Commands.BlindDates
 
             RuleFor(x => x.CreatedByUserId)
              .GreaterThan(0)
-             .WithMessage("CategoryId must be a valid ID.");
+             .WithMessage("CreatedByUserId must be a valid ID.");
 
             RuleFor(x => x.CategoryId)
                 .GreaterThan(0)
@@ -30,8 +27,7 @@ namespace Fliq.Application.DatingEnvironment.Commands.BlindDates
                 .NotNull().WithMessage("Location is required.")
                 .SetValidator(new LocationValidator());
 
-            RuleFor(x => x.LocationDetail)
-                .NotNull().WithMessage("Location details are required.");
+           
         }
     }
 }

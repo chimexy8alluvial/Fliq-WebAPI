@@ -49,10 +49,12 @@ namespace Fliq.Api.Mapping
                 .IgnoreNullValues(true); // Mapping from Game entity to GetGameResponse
             config.NewConfig<GetGameHistoryResult, GameSessionResponse>()
                .Map(dest => dest.GameId, src => src.GameId)
+               .Map(dest => dest.GameName , src => src.GameName)
                .Map(dest => dest.Player1Id, src => src.Player1Id)
                .Map(dest => dest.Player2Id, src => src.Player2Id)
                .Map(dest => dest.Player1Score, src => src.Player1Score)
                .Map(dest => dest.Player2Score, src => src.Player2Score)
+               .Map(dest => dest.Status, src => src.Status)
                .Map(dest => dest.StartTime, src => src.StartTime)
                .Map(dest => dest.EndTime, src => src.EndTime);
             config.NewConfig<GetGameSessionResult, GameSessionResponse>()

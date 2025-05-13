@@ -2,10 +2,7 @@
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.MatchedProfile.Common;
 using Fliq.Contracts.MatchedProfile;
-using Fliq.Domain.Entities.UserFeatureActivities;
-using System.Collections.Generic;
 using System.Data;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {
@@ -81,15 +78,23 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             return parameters;
         }
 
-        public async Task<IEnumerable<GetRecentUserMatchResult>> GetRecentMatchesAsync(int userId, int limit)
+        public async Task<IEnumerable<GetRecentUserMatchResult>> GetRecentMatchesAsync(int userId, int limit, int? status = null)
         {
             using (var connection = _connectionFactory.CreateConnection())
             {
+                var sql = "sp_GetRecentUserMatches";
+                var parameters = new
+                {
+                    UserId = userId,
+                    Limit = limit,
+                    Status = status
+                };
 
-                var sql = "sPGetRecentUserMatches";
-                var parameters = new { UserId = userId, Limit = limit };
-
-                var activities = await connection.QueryAsync<GetRecentUserMatchResult>(sql, parameters, commandType: CommandType.StoredProcedure);
+                var activities = await connection.QueryAsync<GetRecentUserMatchResult>(
+                    sql,
+                    parameters,
+                    commandType: CommandType.StoredProcedure
+                );
                 return activities;
             }
         }

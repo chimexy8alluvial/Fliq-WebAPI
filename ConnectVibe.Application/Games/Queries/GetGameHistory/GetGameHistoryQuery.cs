@@ -49,7 +49,8 @@ namespace Fliq.Application.Games.Queries.GetGameHistory
                 history.Player1Score,
                 history.Player2Score,
                 history.Player1Id,
-                history.Player2Id
+                history.Player2Id,
+                history.Status
 
             )).ToList();
         }

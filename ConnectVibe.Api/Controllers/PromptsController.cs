@@ -93,7 +93,7 @@ namespace Fliq.Api.Controllers
         }
 
 
-        [HttpPost("GetCategories")]
+        [HttpGet("GetCategories")]
         [Produces(typeof(AddPromptCategoryResponse))]
         [AllowAnonymous]
         //[Authorize(Roles = "Admin")]

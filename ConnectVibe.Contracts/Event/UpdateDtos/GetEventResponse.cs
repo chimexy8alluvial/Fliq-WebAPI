@@ -15,7 +15,7 @@ namespace Fliq.Contracts.Event.UpdateDtos
         public int? Capacity { get; set; }
         public List<UpdateEventMediaDto> Media { get; set; } = default!;
         public int MinAge { get; set; }
-        public int Maxge { get; set; }
+        public int MaxAge { get; set; }
         public bool SponsoredEvent { get; set; } = default!;
         public UpdateSponsoredEventDetailDto? SponsoredEventDetail { get; set; } = default!;
         public UpdateEventCriteriaDto EventCriteria { get; set; } = default!;

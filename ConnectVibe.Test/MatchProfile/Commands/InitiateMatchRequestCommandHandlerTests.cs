@@ -56,7 +56,7 @@ namespace Fliq.Test.MatchProfile.Commands
                 .Returns((Domain.Entities.User?)null);
 
             // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+            var result = await _handler!.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.IsTrue(result.IsError);
@@ -113,7 +113,7 @@ namespace Fliq.Test.MatchProfile.Commands
                 .Returns(matchRequest);
 
             // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+            var result = await _handler!.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.IsFalse(result.IsError);
@@ -171,17 +171,28 @@ namespace Fliq.Test.MatchProfile.Commands
                 .Setup(mapper => mapper.Map<MatchRequest>(command))
                 .Returns(matchRequest);
 
+            // Setup to capture the published event
+            MatchRequestEvent capturedEvent = null!;
+            _mockMediator?
+                .Setup(m => m.Publish(It.IsAny<MatchRequestEvent>(), It.IsAny<CancellationToken>()))
+                .Callback<object, CancellationToken>((notification, ct) =>
+                {
+                    capturedEvent = notification as MatchRequestEvent;
+                })
+                .Returns(Task.CompletedTask);
+
             // Act
-            await _handler.Handle(command, CancellationToken.None);
+            await _handler!.Handle(command, CancellationToken.None);
 
             // Assert
-            _mockMediator?.Verify(mediator => mediator.Publish(
-      It.Is<MatchRequestEvent>(e =>
-         e.UserId == command.MatchInitiatorUserId &&
-          e.AccepterUserId == command.MatchReceiverUserId &&
-           e.InitiatorUserId == command.MatchInitiatorUserId
-          ),  // Same for ButtonText
-      It.IsAny<CancellationToken>()), Times.Once);
+            await Task.Delay(100); // Small delay to ensure async publication completes
+            Assert.IsNotNull(capturedEvent, "MatchRequestEvent was not published.");
+            Assert.AreEqual(command.MatchInitiatorUserId, capturedEvent.UserId);
+            Assert.AreEqual(command.MatchReceiverUserId, capturedEvent.AccepterUserId);
+            Assert.AreEqual(command.MatchInitiatorUserId, capturedEvent.InitiatorUserId);
+            Assert.AreEqual("http://image.com/jane.jpg", capturedEvent.AccepterImageUrl);
+            Assert.AreEqual("http://image.com/john.jpg", capturedEvent.InitiatorImageUrl);
+            Assert.AreEqual("John ", capturedEvent.InitiatorName); // Note: Space due to FirstName + " " + LastName (LastName is null)
         }
     }
 }

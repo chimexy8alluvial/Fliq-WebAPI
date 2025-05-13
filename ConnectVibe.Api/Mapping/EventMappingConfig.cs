@@ -25,7 +25,26 @@ namespace Fliq.Api.Mapping
             config.NewConfig<CreateEventCommand, Events>();
             config.NewConfig<CreateEventResult, CreateEventResponse>()
                 .Map(dest => dest, src => src.Events);
-            config.NewConfig<CreateEventResult, GetEventResponse>();
+            config.NewConfig<CreateEventResult, GetEventResponse>()
+     .Map(dest => dest.Id, src => src.Events.Id) // Assuming Id exists in Events
+     .Map(dest => dest.EventType, src => (int?)src.Events.EventType)
+     .Map(dest => dest.EventCategory, src => (int?)src.Events.EventCategory)
+     .Map(dest => dest.EventTitle, src => src.Events.EventTitle ?? string.Empty)
+     .Map(dest => dest.EventDescription, src => src.Events.EventDescription)
+     .Map(dest => dest.Location, src => src.Events.Location)
+     .Map(dest => dest.Media, src => src.Events.Media)
+     .Map(dest => dest.SponsoredEventDetail, src => src.Events.SponsoredEventDetail)
+     .Map(dest => dest.EventCriteria, src => src.Events.EventCriteria)
+     .Map(dest => dest.Tickets, src => src.Events.Tickets)
+     .Map(dest => dest.EventPaymentDetail, src => src.Events.EventPaymentDetail)
+     .Map(dest => dest.Capacity, src => src.Events.Capacity)
+     .Map(dest => dest.StartDate, src => src.Events.StartDate)
+     .Map(dest => dest.EndDate, src => src.Events.EndDate)
+     .Map(dest => dest.MinAge, src => src.Events.MinAge)
+     .Map(dest => dest.MaxAge, src => src.Events.MaxAge)
+     .Map(dest => dest.SponsoredEvent, src => src.Events.SponsoredEvent)
+     .Map(dest => dest.UserId, src => src.Events.UserId)
+     .Map(dest => dest.InviteesException, src => src.Events.InviteesException);
             config.NewConfig<UpdateDiscountDto, DiscountDto>();
             config.NewConfig<UpdateEventDto, UpdateEventCommand>()
                  .Map(dest => dest.EventId, src => src.Id)

@@ -1,10 +1,12 @@
 ﻿using Dapper;
 using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.DashBoard.Common;
 using Fliq.Application.Games.Common;
 using Fliq.Contracts.Games;
 using Fliq.Domain.Entities.Games;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {
@@ -73,7 +75,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         public GameSession? GetGameSessionById(int id)
         {
             var session = _dbContext.GameSessions
-                .SingleOrDefault(p => p.Id == id);
+                .SingleOrDefault(p => p.Id == id && !p.IsDeleted);
             return session;
         }
 
@@ -84,7 +86,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                 var sql = "sp_GetSingleUserTotalStakeCount";
                 var parameter = new { UserId = userId };
                 
-                var count = await connection.QueryFirstOrDefaultAsync<int>(sql,parameter, commandType: CommandType.StoredProcedure); // Using IsActive flag
+                var count = await connection.QueryFirstOrDefaultAsync<int>(sql, parameter, commandType: CommandType.StoredProcedure); // Using IsActive flag
                 return count;
             }
         }
@@ -93,7 +95,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         {
             using (var connection = _connectionFactory.CreateConnection())
             {
-                const string storedProcedure = "GetGameHistoryByTwoPlayers";
+                const string storedProcedure = "sp_GetGameHistoryByTwoPlayers";
 
                 var result = connection.Query<GetGameHistoryResult>(
                     storedProcedure,
@@ -140,14 +142,23 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             return _dbContext.GameQuestions.SingleOrDefault(q => q.Id == id);
         }
 
-        public List<GameQuestion> GetQuestionsByGameId(int gameId, int pageNumber, int pageSize)
+        public List<GameQuestion> GetQuestionsByGameId(int gameId, int pageNumber = 1, int pageSize = 10)
         {
-            // Call stored procedure with pagination parameters
-            return _dbContext.GameQuestions
-                .FromSqlRaw(
-                    "EXEC GetQuestionsByGameIdPaginated @GameId = {0}, @PageNumber = {1}, @PageSize = {2}",
-                    gameId, pageNumber, pageSize)
-                .ToList();
+            using var connection = _connectionFactory.CreateConnection();
+            var parameters = new
+            {
+                GameId = gameId,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                
+            };
+            var results =  connection.Query<GameQuestion>(
+               "GetQuestionsByGameIdPaginated",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
+
+            return results.AsList();
         }
 
         public async Task<int> GetActiveGamesCountAsync()

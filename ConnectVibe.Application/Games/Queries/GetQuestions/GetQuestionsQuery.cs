@@ -7,7 +7,7 @@ using MediatR;
 
 namespace Fliq.Application.Games.Queries.GetQuestions
 {
-    public record GetQuestionsQuery(int GameId, int pageSize, int pageNumber) : IRequest<ErrorOr<List<GameQuestion>>>;
+    public record GetQuestionsQuery(int GameId, int pageSize = 10, int pageNumber = 1) : IRequest<ErrorOr<List<GameQuestion>>>;
 
     public class GetQuestionsQueryHandler : IRequestHandler<GetQuestionsQuery, ErrorOr<List<GameQuestion>>>
     {
@@ -27,11 +27,12 @@ namespace Fliq.Application.Games.Queries.GetQuestions
 
             var questions = _sessionsRepository.GetQuestionsByGameId(request.GameId, request.pageNumber, request.pageSize);
 
-            if (questions is null)
+            if (!questions.Any())
             {
-                _logger.LogError($"Questions for game with id: {request.GameId} not found");
+                _logger.LogWarn($"No questions found for GameId: {request.GameId}");
                 return Errors.Games.QuestionNotFound;
             }
+
             _logger.LogInfo($" Questions for Game with id: {request.GameId} found");
             return questions;
         }

@@ -12,23 +12,46 @@ namespace Fliq.Infrastructure.Services.NotificationServices.Firebase
         private readonly ILoggerManager _logger;
         private readonly INotificationRepository _notificationRepository;
         private readonly IFirebaseMessagingWrapper _firebaseWrapper;
-        public FireBaseNotificationService(ILoggerManager logger, INotificationRepository notificationRepository, IFirebaseMessagingWrapper firebaseWrapper)
+        private readonly bool _isInitialized;
+
+        public FireBaseNotificationService(
+            ILoggerManager logger,
+            INotificationRepository notificationRepository,
+            IFirebaseMessagingWrapper firebaseWrapper)
         {
             _logger = logger;
             _notificationRepository = notificationRepository;
             _firebaseWrapper = firebaseWrapper;
 
-            // Initialize Firebase if not already initialized
-            if (FirebaseApp.DefaultInstance == null)
+            try
             {
-                FirebaseApp.Create(new AppOptions
-                {                                                                 // update this path to correct directory where the private keys file will be stored
-                    Credential = Google.Apis.Auth.OAuth2.GoogleCredential.FromFile("path/to/your/firebase/credentials.json")
-                });
+                if (FirebaseApp.DefaultInstance == null)
+                {
+                    var credentialsJson = Environment.GetEnvironmentVariable("FIREBASE_CREDENTIALS");
+                    if (string.IsNullOrEmpty(credentialsJson))
+                    {
+                        _logger.LogWarn("FIREBASE_CREDENTIALS environment variable not set. Notifications disabled.");
+                    }
+                    else
+                    {
+                        _logger.LogInfo("Initializing Firebase with credentials from environment variable");
+                        FirebaseApp.Create(new AppOptions
+                        {
+                            Credential = Google.Apis.Auth.OAuth2.GoogleCredential.FromJson(credentialsJson)
+                        });
+                        _isInitialized = true;
+                    }
+                }
+                else
+                {
+                    _isInitialized = true;
+                }
             }
-
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to initialize Firebase: {ex.Message}");
+            }
         }
-
 
         public async Task SendNotificationAsync(
             string title,
@@ -39,7 +62,12 @@ namespace Fliq.Infrastructure.Services.NotificationServices.Firebase
             string? actionUrl = null,
             string? buttonText = null)
         {
-            // Create a new notification record
+            if (!_isInitialized)
+            {
+                _logger.LogWarn($"Firebase not initialized. Skipping notification for UserId {userId}");
+                return;
+            }
+
             var notificationRecord = new Domain.Entities.Notifications.Notification
             {
                 UserId = userId,
@@ -51,10 +79,8 @@ namespace Fliq.Infrastructure.Services.NotificationServices.Firebase
                 DateCreated = DateTime.Now
             };
 
-            // Save the notification record
             _notificationRepository.Add(notificationRecord);
 
-            // Build the Firebase notification payload
             var notification = new Notification
             {
                 Title = title,
@@ -66,27 +92,26 @@ namespace Fliq.Infrastructure.Services.NotificationServices.Firebase
             {
                 Tokens = deviceTokens,
                 Notification = notification,
-                Data = new Dictionary<string, string>  // Additional data for action URL and button text
+                Data = new Dictionary<string, string>
                 {
                     { "actionUrl", actionUrl ?? "" },
                     { "buttonText", buttonText ?? "" }
                 }
             };
 
-            // Send notification via Firebase
-
             try
             {
-                // should test what happens when it fails
                 var response = await _firebaseWrapper.SendEachForMulticastAsync(messagePayload);
-                _logger.LogInfo($"Sent {response.SuccessCount} notifications; {response.FailureCount} failed.");
+                _logger.LogInfo($"Sent {response.SuccessCount} notifications; {response.FailureCount} failed for UserId {userId}");
+            }
+            catch (FirebaseMessagingException fex)
+            {
+                _logger.LogError($"Firebase messaging error for UserId {userId}: {fex.ErrorCode}");
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Error sending notification to UserId {userId}: {ex.Message}");
             }
-
         }
-
     }
 }

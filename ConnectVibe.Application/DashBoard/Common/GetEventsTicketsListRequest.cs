@@ -5,7 +5,7 @@ namespace Fliq.Application.DashBoard.Common
 {
     public class GetEventsTicketsListRequest
     {
-        public PaginationRequest PaginationRequest { get; set; } = default!;
+        public PaginationRequest? PaginationRequest { get; set; }
         public EventCategory? Category { get; set; } 
         public string? StatusFilter { get; set; } // New nullable string filter for "SoldOut" or "Cancelled"
         public DateTime? StartDate { get; set; }
