@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fliq.Infrastructure.Migrations
 {
     [DbContext(typeof(FliqDbContext))]
-    [Migration("20250510071208_GetQuestionsByGameIdPaginated_sp")]
+    [Migration("20250513050451_GetQuestionsByGameIdPaginated_sp")]
     partial class GetQuestionsByGameIdPaginated_sp
     {
         /// <inheritdoc />

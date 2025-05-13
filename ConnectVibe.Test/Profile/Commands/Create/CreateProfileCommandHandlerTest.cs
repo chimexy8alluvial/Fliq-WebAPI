@@ -10,6 +10,7 @@ using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities;
 using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Entities.Prompts;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using System.Security.Claims;
@@ -33,6 +34,7 @@ namespace Fliq.Test.Profile.Commands.Create
         private Mock<IDocumentUploadService>? _documentUploadServiceMock;
         private Mock<IBusinessIdentificationDocumentRepository>? _businessIdentificationDocumentRepositoryMock;
         private Mock<IBusinessIdentificationDocumentTypeRepository>? _businessIdentificationDocumentTypeRepositoryMock;
+        private Mock<IMediator>? _mediatorMock;
 
         [TestInitialize]
         public void Setup()
@@ -49,6 +51,8 @@ namespace Fliq.Test.Profile.Commands.Create
             _documentUploadServiceMock = new Mock<IDocumentUploadService>();
             _businessIdentificationDocumentRepositoryMock = new Mock<IBusinessIdentificationDocumentRepository>();
             _businessIdentificationDocumentTypeRepositoryMock = new Mock<IBusinessIdentificationDocumentTypeRepository>();
+            _mediatorMock = new Mock<IMediator>();
+
 
             _httpContextAccessorMock.Setup(x => x.HttpContext.User)
                 .Returns(_claimsPrincipalMock.Object);
@@ -63,7 +67,8 @@ namespace Fliq.Test.Profile.Commands.Create
                 _mediaServicesMock.Object,
                 _documentUploadServiceMock.Object,
                 _businessIdentificationDocumentRepositoryMock.Object,
-                _businessIdentificationDocumentTypeRepositoryMock.Object
+                _businessIdentificationDocumentTypeRepositoryMock.Object,
+                _mediatorMock.Object
                 );
         }
 

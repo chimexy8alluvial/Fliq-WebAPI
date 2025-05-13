@@ -4,6 +4,7 @@ using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Interfaces.Services.LocationServices;
 using Fliq.Application.Common.Interfaces.Services.MeidaServices;
+using Fliq.Application.Payments.Commands.CreateWallet;
 using Fliq.Application.Profile.Common;
 using Fliq.Application.Prompts.Common.Helpers;
 using Fliq.Contracts.Prompts;
@@ -58,8 +59,9 @@ namespace Fliq.Application.Profile.Commands.Create
         private readonly IDocumentUploadService _documentUploadService;
         private readonly IBusinessIdentificationDocumentRepository _businessIdentificationDocumentRepository;
         private readonly IBusinessIdentificationDocumentTypeRepository _businessIdentificationDocumentTypeRepository;
+        private readonly IMediator _mediator;
 
-        public CreateProfileCommandHandler(IProfileRepository profileRepository, IUserRepository userRepository, ILocationService locationService, ILoggerManager loggerManager, IPromptQuestionRepository promptQuestionRepository, IPromptCategoryRepository promptCategoryRepository, IMediaServices mediaServices, IDocumentUploadService documentUploadService, IBusinessIdentificationDocumentRepository businessIdentificationDocumentRepository, IBusinessIdentificationDocumentTypeRepository businessIdentificationDocumentTypeRepository)
+        public CreateProfileCommandHandler(IProfileRepository profileRepository, IUserRepository userRepository, ILocationService locationService, ILoggerManager loggerManager, IPromptQuestionRepository promptQuestionRepository, IPromptCategoryRepository promptCategoryRepository, IMediaServices mediaServices, IDocumentUploadService documentUploadService, IBusinessIdentificationDocumentRepository businessIdentificationDocumentRepository, IBusinessIdentificationDocumentTypeRepository businessIdentificationDocumentTypeRepository, IMediator mediator)
         {
             _profileRepository = profileRepository;
             _userRepository = userRepository;
@@ -72,6 +74,7 @@ namespace Fliq.Application.Profile.Commands.Create
             _documentUploadService = documentUploadService;
             _businessIdentificationDocumentRepository = businessIdentificationDocumentRepository;
             _businessIdentificationDocumentTypeRepository = businessIdentificationDocumentTypeRepository;
+            _mediator = mediator;
         }
 
         public async Task<ErrorOr<CreateProfileResult>> Handle(CreateProfileCommand command, CancellationToken cancellationToken)
@@ -190,6 +193,30 @@ namespace Fliq.Application.Profile.Commands.Create
 
             existingProfile.CompletedSections = existingProfile.CompletedSections.Distinct().ToList();
             _profileRepository.Update(existingProfile);
+
+            // Create wallet for the user after profile is created
+            _loggerManager.LogInfo($"Creating wallet for user {command.UserId} after profile creation");
+            var createWalletCommand = new CreateWalletCommand(command.UserId);
+            var walletResult = await _mediator.Send(createWalletCommand, cancellationToken);
+
+            if (walletResult.IsError)
+            {
+                // If the error is just that the wallet already exists, we can continue
+                if (walletResult.FirstError == Errors.Wallet.AlreadyExists)
+                {
+                    _loggerManager.LogInfo($"Wallet already exists for user {command.UserId}, continuing with profile creation");
+                }
+                else
+                {
+                    _loggerManager.LogError($"Failed to create wallet for user {command.UserId}: {walletResult.FirstError}");
+                    // You may choose to just log the error and continue with profile creation,
+                    // rather than failing the entire operation
+                }
+            }
+            else
+            {
+                _loggerManager.LogInfo($"Successfully created wallet for user {command.UserId}");
+            }
 
             return new CreateProfileResult(existingProfile);
         }

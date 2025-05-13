@@ -6,6 +6,7 @@ using Fliq.Contracts.Games;
 using Fliq.Domain.Entities.Games;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using System.Text.Json;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
@@ -220,6 +221,27 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                 var count = await connection.QueryFirstOrDefaultAsync<int>("sp_GetGamesIssuesReportedCount", commandType: CommandType.StoredProcedure);
                 return count;
             }
+        }
+    }
+
+    public class JsonListTypeHandler : SqlMapper.TypeHandler<List<string>>
+    {
+        public override List<string> Parse(object value)
+        {
+            if (value == null || value is DBNull)
+                return null;
+
+            var json = value.ToString();
+            return string.IsNullOrEmpty(json)
+                ? new List<string>()
+                : JsonSerializer.Deserialize<List<string>>(json);
+        }
+
+        public override void SetValue(IDbDataParameter parameter, List<string> value)
+        {
+            parameter.Value = value == null
+                ? DBNull.Value
+                : JsonSerializer.Serialize(value);
         }
     }
 }

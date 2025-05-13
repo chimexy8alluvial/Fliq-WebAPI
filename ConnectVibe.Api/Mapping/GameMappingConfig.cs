@@ -1,4 +1,5 @@
-﻿using Fliq.Application.Games.Commands.AcceptGameRequest;
+﻿using Dapper;
+using Fliq.Application.Games.Commands.AcceptGameRequest;
 using Fliq.Application.Games.Commands.CreateGame;
 using Fliq.Application.Games.Commands.CreateStake;
 using Fliq.Application.Games.Commands.GetAllGamesPaginatedListCommand;
@@ -7,6 +8,7 @@ using Fliq.Application.Games.Commands.SubmitAnswer;
 using Fliq.Application.Games.Common;
 using Fliq.Contracts.Games;
 using Fliq.Domain.Entities.Games;
+using Fliq.Infrastructure.Persistence.Repositories;
 using Mapster;
 
 namespace Fliq.Api.Mapping
@@ -64,6 +66,8 @@ namespace Fliq.Api.Mapping
                 .IgnoreNullValues(true);
             config.NewConfig<Stake, StakeResponseDto>()
                 .IgnoreNullValues(true);
+
+            SqlMapper.AddTypeHandler(typeof(List<string>), new JsonListTypeHandler());
         }
     }
 }

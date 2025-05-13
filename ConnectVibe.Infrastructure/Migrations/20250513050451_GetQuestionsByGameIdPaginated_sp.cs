@@ -35,7 +35,7 @@ BEGIN
     FROM GameQuestions
     WHERE GameId = @GameId
         AND IsDeleted = 0
-    ORDER BY Id -- Adjust ordering as needed (e.g., QuestionText)
+    ORDER BY Id 
     OFFSET (@PageNumber - 1) * @PageSize ROWS
     FETCH NEXT @PageSize ROWS ONLY;
 END
