@@ -16,16 +16,14 @@ namespace Fliq.Infrastructure.Persistence.Repositories
     {
         private readonly FliqDbContext _dbContext;
         private readonly IDbConnectionFactory _connectionFactory;
-        private readonly IUserRepository _userRepository;
-        private readonly ILoggerManager _logger;
+       
 
 
-        public EventRepository(FliqDbContext dbContext, IDbConnectionFactory connectionFactory, IUserRepository userRepository, ILoggerManager logger)
+        public EventRepository(FliqDbContext dbContext, IDbConnectionFactory connectionFactory)
         {
             _dbContext = dbContext;
             _connectionFactory = connectionFactory;
-            _userRepository = userRepository;
-            _logger = logger;
+           
         }
 
         public void Add(Events createEvent)
