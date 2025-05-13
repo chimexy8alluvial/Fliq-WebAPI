@@ -188,8 +188,7 @@ namespace Fliq.Infrastructure.Migrations
                     OFFSET @offset ROWS FETCH NEXT @p_page_size ROWS ONLY
                     FOR JSON PATH
                 );
-            END;
-            GO
+            END;      
             ");
         }
 

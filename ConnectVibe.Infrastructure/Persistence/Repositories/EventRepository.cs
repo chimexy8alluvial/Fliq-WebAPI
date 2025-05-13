@@ -144,36 +144,38 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         }
 
         private static DynamicParameters FilterDynamicParams(
-                LocationDetail? userLocation,
-                double? maxDistanceKm,
-                UserProfile? userProfile,
-                EventCategory? category,
-                EventType? eventType,
-                string? createdBy,
-                string? eventTitle,
-                EventStatus? status,
-                bool? includeReviews,
-                int? minRating,
-                PaginationRequest pagination)
+                 LocationDetail? userLocation,
+                 double? maxDistanceKm,
+                 UserProfile? userProfile,
+                 EventCategory? category,
+                 EventType? eventType,
+                 string? createdBy,
+                 string? eventTitle,
+                 EventStatus? status,
+                 bool? includeReviews,
+                 int? minRating,
+                 PaginationRequest pagination)
         {
             var parameters = new DynamicParameters();
-            parameters.Add("@p_user_lat", userLocation?.Location?.Lat ?? userLocation?.Results.FirstOrDefault()?.Geometry.Location.Lat ?? (object)DBNull.Value);
-            parameters.Add("@p_user_lng", userLocation?.Location?.Lng ?? userLocation?.Results.FirstOrDefault()?.Geometry.Location.Lng ?? (object)DBNull.Value);
-            parameters.Add("@p_max_distance_km", maxDistanceKm ?? (object)DBNull.Value);
-            parameters.Add("@p_gender", userProfile?.Gender?.GenderType.ToString() ?? (object)DBNull.Value); // Explicitly convert enum to string
-            parameters.Add("@p_race", userProfile?.Ethnicity?.EthnicityType ?? (object)DBNull.Value);
-            parameters.Add("@p_passions", userProfile?.Passions.Any() == true ? string.Join(",", userProfile.Passions) : (object)DBNull.Value);
-            parameters.Add("@p_category", category.HasValue ? (int)category.Value : (object)DBNull.Value);
-            parameters.Add("@p_event_type", eventType.HasValue ? (int)eventType.Value : (object)DBNull.Value);
-            parameters.Add("@p_created_by", createdBy ?? (object)DBNull.Value);
-            parameters.Add("@p_event_title", eventTitle ?? (object)DBNull.Value);
-            parameters.Add("@p_status", status.HasValue ? (int)status.Value : (object)DBNull.Value);
-            parameters.Add("@p_include_reviews", includeReviews.HasValue ? includeReviews.Value : (object)DBNull.Value);
-            parameters.Add("@p_min_rating", minRating ?? (object)DBNull.Value);
+            var lat = userLocation?.Location?.Lat ?? (userLocation?.Results?.FirstOrDefault()?.Geometry.Location.Lat);
+            var lng = userLocation?.Location?.Lng ?? (userLocation?.Results?.FirstOrDefault()?.Geometry.Location.Lng);
+            parameters.Add("@p_user_lat", lat);
+            parameters.Add("@p_user_lng", lng);
+            parameters.Add("@p_max_distance_km", maxDistanceKm);
+            parameters.Add("@p_gender", userProfile?.Gender?.GenderType.ToString());
+            parameters.Add("@p_race", userProfile?.Ethnicity?.EthnicityType);
+            parameters.Add("@p_passions", userProfile?.Passions?.Any() == true ? string.Join(",", userProfile.Passions) : null);
+            parameters.Add("@p_category", category.HasValue ? (int)category.Value : null);
+            parameters.Add("@p_event_type", eventType.HasValue ? (int)eventType.Value : null);
+            parameters.Add("@p_created_by", string.IsNullOrEmpty(createdBy) ? null : createdBy);
+            parameters.Add("@p_event_title", string.IsNullOrEmpty(eventTitle) ? null : eventTitle);
+            parameters.Add("@p_status", status.HasValue ? (int)status.Value : null);
+            parameters.Add("@p_include_reviews", includeReviews);
+            parameters.Add("@p_min_rating", minRating);
             parameters.Add("@p_page_number", pagination.PageNumber);
             parameters.Add("@p_page_size", Math.Min(pagination.PageSize, 5)); // Cap at 5
             parameters.Add("@p_total_count", dbType: DbType.Int32, direction: ParameterDirection.Output);
-            parameters.Add("@p_events", dbType: DbType.String, direction: ParameterDirection.Output);
+            parameters.Add("@p_events", dbType: DbType.String, direction: ParameterDirection.Output, size: -1); 
             return parameters;
         }
 

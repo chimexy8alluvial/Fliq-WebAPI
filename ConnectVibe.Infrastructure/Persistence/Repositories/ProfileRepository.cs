@@ -79,13 +79,17 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         {
             var query = _dbContext.UserProfiles.AsQueryable();
 
-            // Use reflection to include all navigation properties
+            // Include all top-level navigation properties via reflection
             foreach (var property in _dbContext.Model.FindEntityType(typeof(UserProfile)).GetNavigations())
             {
                 query = query.Include(property.Name);
             }
 
+            // Explicitly include Location.LocationDetail
+            query = query.Include(p => p.Location).ThenInclude(l => l.LocationDetail);
+
             var profile = query.SingleOrDefault(p => p.UserId == id);
+
             return profile;
         }
         //public UserProfile? GetProfileByUserId(int id)

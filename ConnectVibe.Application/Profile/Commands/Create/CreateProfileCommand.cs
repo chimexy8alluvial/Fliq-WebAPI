@@ -12,6 +12,7 @@ using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Entities.Prompts;
 using Fliq.Domain.Enums;
 using Mapster;
+using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 
@@ -48,6 +49,7 @@ namespace Fliq.Application.Profile.Commands.Create
 
     public class CreateProfileCommandHandler : IRequestHandler<CreateProfileCommand, ErrorOr<CreateProfileResult>>
     {
+        private readonly IMapper _mapper;
         private readonly IProfileRepository _profileRepository;
         private readonly IUserRepository _userRepository;
         private readonly ILocationService _locationService;
@@ -59,12 +61,12 @@ namespace Fliq.Application.Profile.Commands.Create
         private readonly IBusinessIdentificationDocumentRepository _businessIdentificationDocumentRepository;
         private readonly IBusinessIdentificationDocumentTypeRepository _businessIdentificationDocumentTypeRepository;
 
-        public CreateProfileCommandHandler(IProfileRepository profileRepository, IUserRepository userRepository, ILocationService locationService, ILoggerManager loggerManager, IPromptQuestionRepository promptQuestionRepository, IPromptCategoryRepository promptCategoryRepository, IMediaServices mediaServices, IDocumentUploadService documentUploadService, IBusinessIdentificationDocumentRepository businessIdentificationDocumentRepository, IBusinessIdentificationDocumentTypeRepository businessIdentificationDocumentTypeRepository)
+        public CreateProfileCommandHandler(IMapper mapper, IProfileRepository profileRepository, IUserRepository userRepository, ILocationService locationService, ILoggerManager loggerManager, IPromptQuestionRepository promptQuestionRepository, IPromptCategoryRepository promptCategoryRepository, IMediaServices mediaServices, IDocumentUploadService documentUploadService, IBusinessIdentificationDocumentRepository businessIdentificationDocumentRepository, IBusinessIdentificationDocumentTypeRepository businessIdentificationDocumentTypeRepository)
         {
+            _mapper = mapper;
             _profileRepository = profileRepository;
             _userRepository = userRepository;
             _locationService = locationService;
-
             _loggerManager = loggerManager;
             _promptQuestionRepository = promptQuestionRepository;
             _promptCategoryRepository = promptCategoryRepository;
@@ -162,18 +164,19 @@ namespace Fliq.Application.Profile.Commands.Create
                 _businessIdentificationDocumentRepository.Add(businessIdentificationDocument);
             }
 
-            if (command.Location != null)
+            var locationResponse = await _locationService.GetAddressFromCoordinatesAsync(command.Location.Lat, command.Location.Lng);
+            if (locationResponse is not null)
             {
-                var locationResponse = await _locationService.GetAddressFromCoordinatesAsync(command.Location.Lat, command.Location.Lng);
-                if (locationResponse is not null)
+                LocationDetail locationDetail = _mapper.Map<LocationDetail>(locationResponse);
+                Location location = new Location()
                 {
-                    existingProfile.Location = locationResponse.Adapt<Location>();
-                }
-                else
-                {
-                    _loggerManager.LogError("Failed to get location details. Aborting profile creation.");
-                    return Errors.Profile.InvalidPayload;
-                }
+                    LocationDetail = locationDetail,
+                    IsVisible = command.Location.IsVisible,
+                    Lat = command.Location.Lat,
+                    Lng = command.Location.Lng
+                };
+
+                existingProfile.Location = location;
             }
 
             if (command.PromptResponses.Any())

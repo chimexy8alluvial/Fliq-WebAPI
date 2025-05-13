@@ -5,10 +5,9 @@
 namespace Fliq.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Update_5_SpGetMatchedUserProfilesWithPrompt : Migration
+    public partial class UpdateGetMatchedProfile : Migration
     {
         /// <inheritdoc />
-      
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@"
