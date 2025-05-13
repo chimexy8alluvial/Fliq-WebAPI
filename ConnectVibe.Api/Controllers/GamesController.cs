@@ -135,20 +135,6 @@ namespace Fliq.Api.Controllers
             );
         }
 
-        [HttpGet("questions/paginated")]
-        public async Task<IActionResult> GetGameQuestions([FromQuery] GetQuestionsRequest request)
-        {
-            _logger.LogInformation($"Get Game Questions Request Received for Game with ID: {request.GameId}");
-            var query = _mapper.Map<GetQuestionsQuery>(request);
-            var result = await _mediator.Send(query);
-            _logger.LogInformation($"Get Game Questions Query Executed. Result: {result}");
-
-            return result.Match(
-                session => Ok(_mapper.Map<List<GetQuestionResult>>(session)),
-                errors => Problem(errors)
-            );
-        }
-
         [HttpPost("submit-scores")]
         [AllowAnonymous]
         public async Task<IActionResult> SubmitAnswer([FromForm] SubmitAnswerDto request)
@@ -175,6 +161,20 @@ namespace Fliq.Api.Controllers
             return result.Match(
                 questionResult => Ok(_mapper.Map<GetQuestionResponse>(questionResult)),
                 errors => Problem(detail: string.Join(", ", errors.Select(e => e.Description)), statusCode: 400)
+            );
+        }
+
+        [HttpGet("questions/paginated")]
+        public async Task<IActionResult> GetGameQuestions([FromQuery] GetQuestionsRequest request)
+        {
+            _logger.LogInformation($"Get Game Questions Request Received for Game with ID: {request.GameId}");
+            var query = _mapper.Map<GetQuestionsQuery>(request);
+            var result = await _mediator.Send(query);
+            _logger.LogInformation($"Get Game Questions Query Executed. Result: {result}");
+
+            return result.Match(
+                session => Ok(_mapper.Map<List<GetQuestionResult>>(session)),
+                errors => Problem(errors)
             );
         }
 
