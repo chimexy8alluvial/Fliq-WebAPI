@@ -20,6 +20,7 @@ using Fliq.Infrastructure.Event;
 using Fliq.Infrastructure.Persistence;
 using Fliq.Infrastructure.Persistence.Helper;
 using Fliq.Infrastructure.Persistence.Repositories;
+using Fliq.Infrastructure.Persistence.Repositories.Adapters;
 using Fliq.Infrastructure.Persistence.Repositories.Subscriptions;
 using Fliq.Infrastructure.Services;
 using Fliq.Infrastructure.Services.AuthServices;
