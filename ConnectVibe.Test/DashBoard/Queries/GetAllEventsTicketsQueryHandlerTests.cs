@@ -2,7 +2,7 @@
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Pagination;
 using Fliq.Application.DashBoard.Common;
-using Fliq.Application.Tests.DashBoard.Queries.GetEventsTicket;
+using Fliq.Application.DashBoard.Queries.GetEventsTicket;
 using Fliq.Domain.Entities.Event.Enums;
 using Moq;
 

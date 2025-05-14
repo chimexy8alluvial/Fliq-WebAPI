@@ -10,6 +10,15 @@ namespace Fliq.Domain.Common.Errors
                 code: "Games.Game.NotFound",
                 description: "Game with the given ID was not found.");
 
+            public static Error GameApproved => Error.Conflict(
+                code: "Games.Approved",
+                description: "This game has already been approved.");
+
+            public static Error GameRejected => Error.Conflict(
+              code: "Games.Rejected",
+              description: "This game has already been rejected.");
+
+
             public static Error InvalidGameState => Error.Conflict(
                 code: "Games.Game.InvalidState",
                 description: "The game is in an invalid state for the requested action.");

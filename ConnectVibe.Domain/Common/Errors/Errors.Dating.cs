@@ -60,6 +60,14 @@ namespace Fliq.Domain.Common.Errors
         code: "DatingEvent.NoEventsToDelete",
         description: "No dating events were found to delete");
 
+            public static Error DateAlreadyApproved => Error.Conflict(
+      code: "Date.DateAlreadyApproved;",
+      description: "This Date Request is already Approved");
+
+            public static Error DateAlreadyRejected => Error.Conflict(
+     code: "Date.DateAlreadyApproved;",
+     description: "This Date Request is already Rejected");
+
             public static Error NoDatingListFound => Error.NotFound(
         code: "DatingEvent.NoEventsFound",
         description: "No dating events were found matching the provided filters");

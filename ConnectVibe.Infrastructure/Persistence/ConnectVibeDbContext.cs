@@ -6,6 +6,7 @@ using Fliq.Domain.Entities.Games;
 using Fliq.Domain.Entities.HelpAndSupport;
 using Fliq.Domain.Entities.MatchedProfile;
 using Fliq.Domain.Entities.Notifications;
+using Fliq.Domain.Entities.PlatformCompliance;
 using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Entities.Prompts;
 using Fliq.Domain.Entities.Settings;
@@ -80,6 +81,10 @@ namespace Fliq.Infrastructure.Persistence
         public DbSet<Gender> Genders { get; set; }
         public DbSet<WantKids> WantKids { get; set; }
         public DbSet<HaveKids> HaveKids { get; set; }
+        
+        public DbSet<Compliance> Compliances { get; set; } = null!;
+        public DbSet<ComplianceType> ComplianceTypes { get; set; } = null!;
+        public DbSet<UserConsentAction> UserConsentActions { get; set; } = null!;
 
         public DbSet<AuditTrail> AuditTrails { get; set; }
         public DbSet<BusinessIdentificationDocumentType> BusinessIdentificationDocumentTypes { get; set; }
