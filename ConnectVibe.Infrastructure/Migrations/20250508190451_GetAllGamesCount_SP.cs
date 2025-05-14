@@ -18,7 +18,7 @@ namespace Fliq.Infrastructure.Migrations
                 SELECT COUNT(*) 
                 FROM Games
                 WHERE IsDeleted = 0;
-            END;
+            END
             ");
         }
 

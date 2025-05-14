@@ -18,7 +18,7 @@ namespace Fliq.Infrastructure.Migrations
                 SELECT COUNT(*) 
                 FROM Events
                 WHERE IsDeleted = 0;
-            END;
+            END
             ");
         }
 

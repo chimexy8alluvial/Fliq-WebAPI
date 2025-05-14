@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -11,10 +10,6 @@ namespace Fliq.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "Language",
-                table: "Users");
-
             migrationBuilder.AddColumn<DateTime>(
                 name: "ApprovedAt",
                 table: "SpeedDatingEvents",
@@ -29,13 +24,6 @@ namespace Fliq.Infrastructure.Migrations
 
             migrationBuilder.AddColumn<int>(
                 name: "ContentCreationStatus",
-                table: "SpeedDatingEvents",
-                type: "int",
-                nullable: false,
-                defaultValue: 0);
-
-            migrationBuilder.AddColumn<int>(
-                name: "CreatedByUserId",
                 table: "SpeedDatingEvents",
                 type: "int",
                 nullable: false,
@@ -107,19 +95,6 @@ namespace Fliq.Infrastructure.Migrations
                 type: "nvarchar(max)",
                 nullable: true);
 
-            migrationBuilder.AddColumn<int>(
-                name: "DisconnectionResolutionOption",
-                table: "GameSessions",
-                type: "int",
-                nullable: false,
-                defaultValue: 0);
-
-            migrationBuilder.AddColumn<int>(
-                name: "WinnerId",
-                table: "GameSessions",
-                type: "int",
-                nullable: true);
-
             migrationBuilder.AddColumn<DateTime>(
                 name: "ApprovedAt",
                 table: "Games",
@@ -151,13 +126,6 @@ namespace Fliq.Infrastructure.Migrations
                 table: "Games",
                 type: "nvarchar(max)",
                 nullable: true);
-
-            migrationBuilder.AddColumn<int>(
-                name: "GameDisconnectionResolutionOption",
-                table: "GameRequests",
-                type: "int",
-                nullable: false,
-                defaultValue: 0);
 
             migrationBuilder.AddColumn<DateTime>(
                 name: "ApprovedAt",
@@ -408,10 +376,6 @@ namespace Fliq.Infrastructure.Migrations
                 table: "SpeedDatingEvents");
 
             migrationBuilder.DropColumn(
-                name: "CreatedByUserId",
-                table: "SpeedDatingEvents");
-
-            migrationBuilder.DropColumn(
                 name: "CreatorIsAdmin",
                 table: "SpeedDatingEvents");
 
@@ -452,14 +416,6 @@ namespace Fliq.Infrastructure.Migrations
                 table: "PromptQuestions");
 
             migrationBuilder.DropColumn(
-                name: "DisconnectionResolutionOption",
-                table: "GameSessions");
-
-            migrationBuilder.DropColumn(
-                name: "WinnerId",
-                table: "GameSessions");
-
-            migrationBuilder.DropColumn(
                 name: "ApprovedAt",
                 table: "Games");
 
@@ -478,10 +434,6 @@ namespace Fliq.Infrastructure.Migrations
             migrationBuilder.DropColumn(
                 name: "RejectionReason",
                 table: "Games");
-
-            migrationBuilder.DropColumn(
-                name: "GameDisconnectionResolutionOption",
-                table: "GameRequests");
 
             migrationBuilder.DropColumn(
                 name: "ApprovedAt",

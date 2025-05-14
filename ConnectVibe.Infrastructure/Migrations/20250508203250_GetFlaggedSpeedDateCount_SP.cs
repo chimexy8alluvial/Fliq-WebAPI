@@ -18,6 +18,7 @@ namespace Fliq.Infrastructure.Migrations
                 SELECT COUNT(*)
                 FROM SpeedDatingEvents
                 WHERE IsDeleted = 0 AND IsFlagged = 1;
+            END
             ");
         }
 
