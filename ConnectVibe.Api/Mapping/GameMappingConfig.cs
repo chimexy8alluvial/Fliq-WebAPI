@@ -37,7 +37,6 @@ namespace Fliq.Api.Mapping
                 .Map(dest => dest.Player1Score, src => src.Player1Score)
                 .Map(dest => dest.Player2Score, src => src.Player2Score)
                 .Map(dest => dest.Completed, src => src.Completed)
-                //.Map(dest => dest.LastManId, opt => opt.Ignore()) // LastManId not in DTO
                 .IgnoreNullValues(true);
 
             config.NewConfig<GetGamesListRequest, GetGamesPaginatedListCommand>()
