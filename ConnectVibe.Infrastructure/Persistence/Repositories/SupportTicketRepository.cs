@@ -65,6 +65,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                 message.SupportTicketId = ticketId;
                 ticket.Messages.Add(message);
                 _dbContext.SupportTickets.Update(ticket);
+                await _dbContext.SaveChangesAsync();
                 _loggerManager.LogInfo($"Message added to ticket {ticketId}.");
             }
         }
