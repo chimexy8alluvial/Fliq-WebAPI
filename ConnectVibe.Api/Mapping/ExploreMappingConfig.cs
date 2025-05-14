@@ -1,6 +1,5 @@
 ﻿using Fliq.Application.Common.Pagination;
 using Fliq.Application.Explore.Common;
-using Fliq.Application.Explore.Common.Services;
 using Fliq.Application.Explore.Queries;
 using Fliq.Contracts.Explore;
 using Fliq.Contracts.Profile;

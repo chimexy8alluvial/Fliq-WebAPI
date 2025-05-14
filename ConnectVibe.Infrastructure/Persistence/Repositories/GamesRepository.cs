@@ -103,7 +103,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                 var sql = "sp_GetSingleUserTotalStakeCount";
                 var parameter = new { UserId = userId };
                 
-                var count = await connection.QueryFirstOrDefaultAsync<int>(sql, commandType: CommandType.StoredProcedure); // Using IsActive flag
+                var count = await connection.QueryFirstOrDefaultAsync<int>(sql,parameter, commandType: CommandType.StoredProcedure); // Using IsActive flag
                 return count;
             }
         }

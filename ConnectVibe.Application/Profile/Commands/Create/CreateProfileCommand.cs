@@ -30,7 +30,6 @@ namespace Fliq.Application.Profile.Commands.Create
         public bool IsOccupationVisible { get; set; }
         public int? ReligionId { get; set; }
         public bool IsReligionVisible { get; set; }
-
         public bool AllowNotifications { get; set; }
         public DateTime? DOB { get; set; }
         public string? ProfileDescription { get; set; }
@@ -42,6 +41,7 @@ namespace Fliq.Application.Profile.Commands.Create
         public LocationDetail? LocationDetail { get; set; }
         public List<PromptResponseDto>? PromptResponses { get; set; } = new(); // for default prompt responses
         public List<string>? Passions { get; set; }
+        public BusinessIdentificationDocumentMapped? BusinessIdentificationDocuments {  get; set; } 
         public List<ProfilePhotoMapped>? Photos { get; set; }
         public List<ProfileType>? ProfileTypes { get; set; }
     }
@@ -55,8 +55,11 @@ namespace Fliq.Application.Profile.Commands.Create
         private readonly IPromptCategoryRepository _promptCategoryRepository;
         private readonly ILoggerManager _loggerManager;
         private readonly IMediaServices _mediaServices;
+        private readonly IDocumentUploadService _documentUploadService;
+        private readonly IBusinessIdentificationDocumentRepository _businessIdentificationDocumentRepository;
+        private readonly IBusinessIdentificationDocumentTypeRepository _businessIdentificationDocumentTypeRepository;
 
-        public CreateProfileCommandHandler(IProfileRepository profileRepository, IUserRepository userRepository, ILocationService locationService, ILoggerManager loggerManager, IPromptQuestionRepository promptQuestionRepository, IPromptCategoryRepository promptCategoryRepository, IMediaServices mediaServices)
+        public CreateProfileCommandHandler(IProfileRepository profileRepository, IUserRepository userRepository, ILocationService locationService, ILoggerManager loggerManager, IPromptQuestionRepository promptQuestionRepository, IPromptCategoryRepository promptCategoryRepository, IMediaServices mediaServices, IDocumentUploadService documentUploadService, IBusinessIdentificationDocumentRepository businessIdentificationDocumentRepository, IBusinessIdentificationDocumentTypeRepository businessIdentificationDocumentTypeRepository)
         {
             _profileRepository = profileRepository;
             _userRepository = userRepository;
@@ -66,6 +69,9 @@ namespace Fliq.Application.Profile.Commands.Create
             _promptQuestionRepository = promptQuestionRepository;
             _promptCategoryRepository = promptCategoryRepository;
             _mediaServices = mediaServices;
+            _documentUploadService = documentUploadService;
+            _businessIdentificationDocumentRepository = businessIdentificationDocumentRepository;
+            _businessIdentificationDocumentTypeRepository = businessIdentificationDocumentTypeRepository;
         }
 
         public async Task<ErrorOr<CreateProfileResult>> Handle(CreateProfileCommand command, CancellationToken cancellationToken)
@@ -85,6 +91,11 @@ namespace Fliq.Application.Profile.Commands.Create
                 // Create a new profile if none exists
                 existingProfile = new UserProfile { UserId = command.UserId, User = user, GenderId = command.GenderId, WantKidsId = command.WantKidsId, HaveKidsId = command.HaveKidsId };
                 _profileRepository.Add(existingProfile);
+            }
+            else
+            {
+                _loggerManager.LogWarn($"Profile already exists for UserId: {command.UserId}");
+                return Errors.Profile.DuplicateProfile;
             }
 
             // Track session completeness using an enum
@@ -111,6 +122,45 @@ namespace Fliq.Application.Profile.Commands.Create
                         return Errors.Image.InvalidImage;
                     }
                 }
+            }
+
+            if (command.BusinessIdentificationDocuments != null)
+            {
+                var documentTypeId = command.BusinessIdentificationDocuments.BusinessIdentificationDocumentTypeId;
+
+                // Validate document type
+                var documentType = await _businessIdentificationDocumentTypeRepository.GetByIdAsync(documentTypeId);
+                if (documentType == null || documentType.IsDeleted)
+                {
+                    _loggerManager.LogWarn($"Invalid DocumentTypeId: {documentTypeId}");
+                    return Errors.Document.InvalidDocumentType;
+                }
+
+                // Upload documents
+                var documentUploadResult = await _documentUploadService.UploadDocumentsAsync(
+                    documentTypeId,
+                    command.BusinessIdentificationDocuments.BusinessIdentificationDocumentFront,
+                    command.BusinessIdentificationDocuments.BusinessIdentificationDocumentBack);
+
+                if (!documentUploadResult.Success)
+                {
+                    _loggerManager.LogError($"Failed to upload business documents: {documentUploadResult.ErrorMessage}");
+                    return Errors.Document.InvalidDocument;
+                }
+
+                // Create BusinessIdentificationDocument
+                var businessIdentificationDocument = new BusinessIdentificationDocument
+                {
+                    BusinessIdentificationDocumentTypeId = documentTypeId,
+                    FrontDocumentUrl = documentUploadResult.FrontDocumentUrl,
+                    BackDocumentUrl = documentUploadResult.BackDocumentUrl,
+                    UploadedDate = DateTime.UtcNow,
+                    IsVerified = false,
+                };
+
+                // Link to UserProfile
+                existingProfile.BusinessIdentificationDocument = businessIdentificationDocument;
+                _businessIdentificationDocumentRepository.Add(businessIdentificationDocument);
             }
 
             if (command.Location != null)

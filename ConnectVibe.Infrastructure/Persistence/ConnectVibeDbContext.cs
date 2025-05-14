@@ -10,6 +10,7 @@ using Fliq.Domain.Entities.PlatformCompliance;
 using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Entities.Prompts;
 using Fliq.Domain.Entities.Settings;
+using Fliq.Domain.Entities.Subscriptions;
 using Fliq.Domain.Entities.UserFeatureActivities;
 using Microsoft.EntityFrameworkCore;
 
@@ -86,6 +87,12 @@ namespace Fliq.Infrastructure.Persistence
         public DbSet<UserConsentAction> UserConsentActions { get; set; } = null!;
 
         public DbSet<AuditTrail> AuditTrails { get; set; }
+        public DbSet<BusinessIdentificationDocumentType> BusinessIdentificationDocumentTypes { get; set; }
+        public DbSet<BusinessIdentificationDocument> BusinessIdentificationDocuments { get; set; }
+
+        public DbSet<UserSubscription> UserSubscriptions { get; set; }
+        public DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }
+        public DbSet<SubscriptionPlanPrice> SubscriptionPlanPrices { get; set; }
 
     }
 }

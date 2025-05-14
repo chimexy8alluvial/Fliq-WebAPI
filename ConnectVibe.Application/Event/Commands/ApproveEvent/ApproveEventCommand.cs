@@ -32,29 +32,29 @@ namespace Fliq.Application.Event.Commands.ApproveEvent
             await Task.CompletedTask;
 
             _logger.LogInfo($"Approving event with ID: {command.EventId}");
-            var eventFromDb = _eventRepository.GetEventById(command.EventId);
-            if (eventFromDb == null)
+            var eventDetails = _eventRepository.GetEventById(command.EventId);
+            if (eventDetails == null)
             {
                 _logger.LogError($"Event with ID: {command.EventId} was not found.");
                 return Errors.Event.EventNotFound;
             }
 
-            if (eventFromDb.Status != EventStatus.PendingApproval)
+            if (eventDetails.Status != EventStatus.PendingApproval)
             {
                 _logger.LogError($"Event with ID: {command.EventId} has been approved already.");
                 return Errors.Event.EventApprovedAlready;
             }
 
-            var user = _userRepository.GetUserById(eventFromDb.UserId);
+            var user = _userRepository.GetUserById(eventDetails.UserId);
             if (user == null)
             {
-                _logger.LogError($"User with Id: {eventFromDb.UserId} was not found.");
+                _logger.LogError($"User with Id: {eventDetails.UserId} was not found.");
                 return Errors.User.UserNotFound;
             }
 
-            eventFromDb.Status = EventStatus.Upcoming;
+            eventDetails.Status = EventStatus.Upcoming;
 
-            _eventRepository.Update(eventFromDb);
+            _eventRepository.Update(eventDetails);
 
             _logger.LogInfo($"Event with ID: {command.EventId} was approved");
 

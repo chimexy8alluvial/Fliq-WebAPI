@@ -1,8 +1,6 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
-
 namespace Fliq.Infrastructure.Migrations
 {
     /// <inheritdoc />
@@ -89,7 +87,7 @@ END");
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql("DROP TABLE IF EXISTS sp_GetAllFilteredBlindDatingList");
+            migrationBuilder.Sql("DROP PROCEDURE IF EXISTS sp_GetAllFilteredBlindDatingList");
         }
     }
 }
