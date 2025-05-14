@@ -11,6 +11,7 @@ using MediatR;
 namespace Fliq.Application.Explore.Queries
 {
     public record ExploreEventsQuery(
+  PaginationRequest PaginationRequest,
     int UserId,
     double? MaxDistanceKm = null,
     EventCategory? Category = null,
@@ -19,23 +20,27 @@ namespace Fliq.Application.Explore.Queries
     string? EventTitle = null,
     EventStatus? Status = null,
     bool? IncludeReviews = null,
-    int? MinRating = null,
-    PaginationRequest PaginationRequest = default!
+    int? MinRating = null
+   
+
 ) : IRequest<ErrorOr<ExploreEventsResult>>;
 
     public class ExploreEventsQueryHandler : IRequestHandler<ExploreEventsQuery, ErrorOr<ExploreEventsResult>>
     {
         private readonly IUserRepository _userRepository;
         private readonly IEventRepository _eventRepository;
+        private readonly IProfileRepository _profileRepository;
         private readonly ILoggerManager _logger;
 
         public ExploreEventsQueryHandler(
             IUserRepository userRepository,
             IEventRepository eventRepository,
+            IProfileRepository profileRepository,
             ILoggerManager logger)
         {
             _userRepository = userRepository;
             _eventRepository = eventRepository;
+            _profileRepository = profileRepository;
             _logger = logger;
         }
 
@@ -50,15 +55,16 @@ namespace Fliq.Application.Explore.Queries
                 _logger.LogWarn("User not found");
                 return Errors.User.UserNotFound;
             }
+            var userProfile = _profileRepository.GetProfileByUserId(query.UserId);
 
-            if (user.UserProfile == null)
+            if (userProfile == null)
             {
                 _logger.LogWarn($"UserProfile not found for user {user.Id}");
                 return Errors.Profile.ProfileNotFound;
             }
 
             // Validate location
-            if (user.UserProfile.Location?.LocationDetail == null)
+            if (userProfile.Location?.LocationDetail == null)
             {
                 _logger.LogWarn($"User location not found for user {user.Id}");
                 return Error.Failure(code: "Profile.LocationNotFound", description: "User location is not configured.");
@@ -70,9 +76,9 @@ namespace Fliq.Application.Explore.Queries
             try
             {
                 var (events, totalCount) = await _eventRepository.GetEventsAndCountAsync(
-                    userLocation: user.UserProfile.Location.LocationDetail,
+                    userLocation: userProfile.Location.LocationDetail,
                     maxDistanceKm: query.MaxDistanceKm,
-                    userProfile: user.UserProfile,
+                    userProfile: userProfile,
                     category: query.Category,
                     eventType: query.EventType,
                     createdBy: query.CreatedBy,

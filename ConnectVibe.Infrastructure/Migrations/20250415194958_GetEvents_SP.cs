@@ -11,7 +11,7 @@ namespace Fliq.Infrastructure.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.Sql(@"
-               CREATE OR ALTER PROCEDURE sp_GetEvents
+               CREATE PROCEDURE [dbo].[sp_GetEvents]
                 @p_user_lat FLOAT,
                 @p_user_lng FLOAT,
                 @p_max_distance_km FLOAT,
@@ -188,8 +188,7 @@ namespace Fliq.Infrastructure.Migrations
                     OFFSET @offset ROWS FETCH NEXT @p_page_size ROWS ONLY
                     FOR JSON PATH
                 );
-            END;
-            GO
+            END;      
             ");
         }
 

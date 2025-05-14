@@ -89,7 +89,7 @@ namespace Fliq.Test.Games.Commands
 
             // Assert
             Assert.IsTrue(result.IsError);
-            Assert.AreEqual(Errors.Games.GameNotFound.Code, result.FirstError.Code);
+            Assert.AreEqual(Errors.Games.GameSessionNotFound.Code, result.FirstError.Code);
 
             _mockLogger?.Verify(logger => logger.LogError(It.Is<string>(msg => msg.Contains("Session 999 not found"))), Times.Once);
             _mockGamesRepository?.Verify(repo => repo.UpdateGameSession(It.IsAny<GameSession>()), Times.Never);

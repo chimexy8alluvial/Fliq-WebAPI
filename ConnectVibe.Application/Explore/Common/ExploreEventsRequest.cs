@@ -13,7 +13,7 @@ namespace Fliq.Application.Explore.Common
         public EventStatus? EventStatus { get; init; }
         public bool? IncludeReviews { get; init; }
         public int? MinRating { get; init; }
-        public PaginationRequest PaginationRequest { get; init; } = default!;
+        public PaginationRequest? PaginationRequest { get; init; } 
     }
 
 }
