@@ -17,7 +17,7 @@ namespace Fliq.Infrastructure.Migrations
             BEGIN
                
                 SELECT COUNT(*) 
-                FROM PromptQuestions
+                FROM Events
                 WHERE IsDeleted = 0 AND IsFlagged = 1;
             END
             ");
