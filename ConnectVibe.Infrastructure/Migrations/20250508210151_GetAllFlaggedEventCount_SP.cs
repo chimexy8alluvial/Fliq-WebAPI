@@ -12,7 +12,7 @@ namespace Fliq.Infrastructure.Migrations
         {
 
             migrationBuilder.Sql(@"
-            CREATE PROCEDURE sp_CountFlaggedPrompts
+            CREATE PROCEDURE sp_CountFlaggedEvents
             AS
             BEGIN
                
@@ -26,7 +26,7 @@ namespace Fliq.Infrastructure.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql("DROP PROCEDURE IF EXISTS sp_CountFlaggedPrompts;");
+            migrationBuilder.Sql("DROP PROCEDURE IF EXISTS sp_CountFlaggedEvents;");
         }
     }
 }
