@@ -78,8 +78,6 @@ namespace Fliq.Application.Profile.Commands.Create
 
         public async Task<ErrorOr<CreateProfileResult>> Handle(CreateProfileCommand command, CancellationToken cancellationToken)
         {
-            await Task.CompletedTask;
-
             var user = _userRepository.GetUserById(command.UserId);
             if (user == null)
             {
@@ -88,28 +86,33 @@ namespace Fliq.Application.Profile.Commands.Create
             }
 
             var existingProfile = _profileRepository.GetProfileByUserId(command.UserId);
-            if (existingProfile == null)
-            {
-                // Create a new profile if none exists
-                existingProfile = new UserProfile { UserId = command.UserId, User = user, GenderId = command.GenderId, WantKidsId = command.WantKidsId, HaveKidsId = command.HaveKidsId };
-                _profileRepository.Add(existingProfile);
-            }
-            else
+            if (existingProfile != null)
             {
                 _loggerManager.LogWarn($"Profile already exists for UserId: {command.UserId}");
                 return Errors.Profile.DuplicateProfile;
             }
 
-            // Track session completeness using an enum
+            existingProfile = new UserProfile
+            {
+                UserId = command.UserId,
+                User = user,
+                GenderId = command.GenderId,
+                WantKidsId = command.WantKidsId,
+                HaveKidsId = command.HaveKidsId,
+                Photos = new List<ProfilePhoto>(), // Initialize Photos
+                PromptResponses = new List<PromptResponse>(), // Initialize PromptResponses
+                CompletedSections = new List<string>() // Initialize CompletedSections
+            };
+            _profileRepository.Add(existingProfile);
+
             if (!existingProfile.CompletedSections.Contains(command.CurrentSection.ToString()))
             {
                 existingProfile.CompletedSections.Add(command.CurrentSection.ToString());
             }
 
-            // Map non-null properties using Mapster Adapt
-            existingProfile = command.Adapt(existingProfile);
+            existingProfile = _mapper.Map(command, existingProfile); // Use Mapster's Map instead of Adapt for clarity
 
-            if (command.Photos is not null)
+            if (command.Photos?.Any() == true)
             {
                 foreach (var photo in command.Photos)
                 {
@@ -129,8 +132,6 @@ namespace Fliq.Application.Profile.Commands.Create
             if (command.BusinessIdentificationDocuments != null)
             {
                 var documentTypeId = command.BusinessIdentificationDocuments.BusinessIdentificationDocumentTypeId;
-
-                // Validate document type
                 var documentType = await _businessIdentificationDocumentTypeRepository.GetByIdAsync(documentTypeId);
                 if (documentType == null || documentType.IsDeleted)
                 {
@@ -138,7 +139,6 @@ namespace Fliq.Application.Profile.Commands.Create
                     return Errors.Document.InvalidDocumentType;
                 }
 
-                // Upload documents
                 var documentUploadResult = await _documentUploadService.UploadDocumentsAsync(
                     documentTypeId,
                     command.BusinessIdentificationDocuments.BusinessIdentificationDocumentFront,
@@ -150,25 +150,29 @@ namespace Fliq.Application.Profile.Commands.Create
                     return Errors.Document.InvalidDocument;
                 }
 
-                // Create BusinessIdentificationDocument
                 var businessIdentificationDocument = new BusinessIdentificationDocument
                 {
                     BusinessIdentificationDocumentTypeId = documentTypeId,
                     FrontDocumentUrl = documentUploadResult.FrontDocumentUrl,
-                    BackDocumentUrl = documentUploadResult.BackDocumentUrl,                  
+                    BackDocumentUrl = documentUploadResult.BackDocumentUrl,
                     IsVerified = false,
                 };
 
-                // Link to UserProfile
                 existingProfile.BusinessIdentificationDocument = businessIdentificationDocument;
                 _businessIdentificationDocumentRepository.Add(businessIdentificationDocument);
             }
 
-            var locationResponse = await _locationService.GetAddressFromCoordinatesAsync(command.Location.Lat, command.Location.Lng);
-            if (locationResponse is not null)
+            if (command.Location != null)
             {
+                var locationResponse = await _locationService.GetAddressFromCoordinatesAsync(command.Location.Lat, command.Location.Lng);
+                if (locationResponse == null)
+                {
+                    _loggerManager.LogError("Location service failed to return a valid response.");
+                    return Errors.Profile.InvalidPayload; // More specific error
+                }
+
                 LocationDetail locationDetail = _mapper.Map<LocationDetail>(locationResponse);
-                Location location = new Location()
+                Location location = new Location
                 {
                     LocationDetail = locationDetail,
                     IsVisible = command.Location.IsVisible,
@@ -179,7 +183,7 @@ namespace Fliq.Application.Profile.Commands.Create
                 existingProfile.Location = location;
             }
 
-            if (command.PromptResponses.Any())
+            if (command.PromptResponses?.Any() == true)
             {
                 foreach (var promptDto in command.PromptResponses)
                 {
@@ -199,25 +203,28 @@ namespace Fliq.Application.Profile.Commands.Create
 
         private async Task<ErrorOr<PromptResponse>> ProcessPromptResponseAsync(PromptResponseDto promptDto, UserProfile userProfile)
         {
-            //Validate answer was provided
             if (string.IsNullOrWhiteSpace(promptDto.TextResponse) && promptDto.VoiceNote == null && promptDto.VideoClip == null)
             {
                 _loggerManager.LogWarn("No answer format provided. At least one format (Text, Voice, or Video) must be supplied. Aborting answer creation.");
                 return Errors.Prompts.AnswerNotProvided;
             }
-            // Validate the CategoryId
+
             var category = _promptCategoryRepository.GetCategoryById(promptDto.CategoryId);
             if (category == null)
             {
-                return Errors.Prompts.CategoryNotFound; // Return null or handle as appropriate if the category is invalid
+                _loggerManager.LogWarn($"Invalid CategoryId: {promptDto.CategoryId}");
+                return Errors.Prompts.CategoryNotFound;
             }
 
             PromptQuestion? promptQuestion;
-
             if (promptDto.IsCustomPrompt)
             {
-                if (string.IsNullOrWhiteSpace(promptDto.CustomPromptQuestionText)) return Errors.Prompts.QuestionNotFound;
-                // Create a new custom prompt question if it doesn't exist
+                if (string.IsNullOrWhiteSpace(promptDto.CustomPromptQuestionText))
+                {
+                    _loggerManager.LogWarn("Custom prompt question text is missing.");
+                    return Errors.Prompts.QuestionNotFound;
+                }
+
                 promptQuestion = new PromptQuestion
                 {
                     QuestionText = promptDto.CustomPromptQuestionText,
@@ -229,15 +236,14 @@ namespace Fliq.Application.Profile.Commands.Create
             }
             else
             {
-                // Retrieve an existing system prompt question
-                promptQuestion = _promptQuestionRepository.GetQuestionByIdAsync(promptDto.PromptQuestionId);
+                promptQuestion =  _promptQuestionRepository.GetQuestionByIdAsync(promptDto.PromptQuestionId);
                 if (promptQuestion == null)
                 {
+                    _loggerManager.LogWarn($"Invalid PromptQuestionId: {promptDto.PromptQuestionId}");
                     return Errors.Prompts.QuestionNotFound;
                 }
             }
 
-            // Set up the prompt response entity
             var promptResponse = new PromptResponse
             {
                 PromptQuestionId = promptQuestion.Id,
@@ -247,14 +253,13 @@ namespace Fliq.Application.Profile.Commands.Create
                                nameof(PromptAnswerMediaType.VoiceNote)
             };
 
-            // Process responses and set the appropriate URLs
-            if (promptDto.TextResponse is not null)
+            if (promptDto.TextResponse != null)
                 promptResponse.Response = promptDto.TextResponse;
 
-            if (promptDto.VoiceNote is not null)
+            if (promptDto.VoiceNote != null)
                 promptResponse.Response = await UploadPromptAnswerAsync(promptDto.VoiceNote, PromptAnswerMediaType.VoiceNote);
 
-            if (promptDto.VideoClip is not null)
+            if (promptDto.VideoClip != null)
                 promptResponse.Response = await UploadPromptAnswerAsync(promptDto.VideoClip, PromptAnswerMediaType.VideoClip);
 
             return promptResponse;
@@ -262,18 +267,18 @@ namespace Fliq.Application.Profile.Commands.Create
 
         private async Task<string> UploadPromptAnswerAsync(IFormFile file, PromptAnswerMediaType type)
         {
-            // Determine the container name or local folder path based on media type
-            string? containerName = type switch
+            string containerName = type switch
             {
                 PromptAnswerMediaType.VoiceNote => "audio-prompts",
                 PromptAnswerMediaType.VideoClip => "video-prompts",
-                _ => null
-            } ?? throw new ArgumentException("Invalid prompt answer type provided.");
+                _ => throw new ArgumentException("Invalid prompt answer type provided.")
+            };
 
-            //upload the file to the server
             _loggerManager.LogDebug($"Uploading file to container: {containerName}");
-            var uploadResult = await _mediaServices.UploadMediaAsync(file, containerName) ?? throw new ArgumentException("Failed to get response url.");
-            return uploadResult; // Return the URL or path from server upload
+            var uploadResult = await _mediaServices.UploadMediaAsync(file, containerName);
+            if (uploadResult == null)
+                throw new ArgumentException("Failed to get response url.");
+            return uploadResult;
         }
     }
 }

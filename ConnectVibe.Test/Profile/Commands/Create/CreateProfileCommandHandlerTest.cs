@@ -1,4 +1,5 @@
-﻿using Fliq.Application.Common.Interfaces.Persistence;
+﻿using ErrorOr;
+using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Interfaces.Services.LocationServices;
 using Fliq.Application.Common.Interfaces.Services.MeidaServices;
@@ -10,6 +11,7 @@ using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities;
 using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Entities.Prompts;
+using MapsterMapper;
 using Microsoft.AspNetCore.Http;
 using Moq;
 using System.Security.Claims;
@@ -33,6 +35,7 @@ namespace Fliq.Test.Profile.Commands.Create
         private Mock<IDocumentUploadService>? _documentUploadServiceMock;
         private Mock<IBusinessIdentificationDocumentRepository>? _businessIdentificationDocumentRepositoryMock;
         private Mock<IBusinessIdentificationDocumentTypeRepository>? _businessIdentificationDocumentTypeRepositoryMock;
+        private Mock<IMapper>? _mapperMock; 
 
         [TestInitialize]
         public void Setup()
@@ -49,11 +52,29 @@ namespace Fliq.Test.Profile.Commands.Create
             _documentUploadServiceMock = new Mock<IDocumentUploadService>();
             _businessIdentificationDocumentRepositoryMock = new Mock<IBusinessIdentificationDocumentRepository>();
             _businessIdentificationDocumentTypeRepositoryMock = new Mock<IBusinessIdentificationDocumentTypeRepository>();
+            _mapperMock = new Mock<IMapper>(); // Initialize IMapper mock
 
             _httpContextAccessorMock.Setup(x => x.HttpContext.User)
                 .Returns(_claimsPrincipalMock.Object);
 
+            // Setup mapper to handle mapping from CreateProfileCommand to UserProfile
+            _mapperMock.Setup(m => m.Map(It.IsAny<CreateProfileCommand>(), It.IsAny<UserProfile>()))
+                .Returns<CreateProfileCommand, UserProfile>((cmd, profile) =>
+                {
+                    profile.GenderId = cmd.GenderId;
+                    profile.WantKidsId = cmd.WantKidsId;
+                    profile.HaveKidsId = cmd.HaveKidsId;
+                    profile.DOB = cmd.DOB ?? DateTime.MinValue;
+                    profile.ProfileDescription = cmd.ProfileDescription;
+                    return profile;
+                });
+
+            // Setup mapper for LocationQueryResponse to LocationDetail
+            _mapperMock.Setup(m => m.Map<LocationDetail>(It.IsAny<LocationQueryResponse>()))
+                .Returns<LocationQueryResponse>(resp => new LocationDetail());
+
             _handler = new CreateProfileCommandHandler(
+                _mapperMock.Object, // Pass IMapper mock
                 _profileRepositoryMock.Object,
                 _userRepositoryMock.Object,
                 _locationServiceMock.Object,
@@ -64,7 +85,7 @@ namespace Fliq.Test.Profile.Commands.Create
                 _documentUploadServiceMock.Object,
                 _businessIdentificationDocumentRepositoryMock.Object,
                 _businessIdentificationDocumentTypeRepositoryMock.Object
-                );
+            );
         }
 
         [TestMethod]
@@ -77,7 +98,7 @@ namespace Fliq.Test.Profile.Commands.Create
                 .Returns((User?)null);
 
             // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+            var result = await _handler!.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.IsTrue(result.IsError);
@@ -111,7 +132,7 @@ namespace Fliq.Test.Profile.Commands.Create
                 .ReturnsAsync("image.jpeg");
 
             // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+            var result = await _handler!.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.IsFalse(result.IsError);
@@ -138,7 +159,7 @@ namespace Fliq.Test.Profile.Commands.Create
                 .ReturnsAsync((string?)null);
 
             // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+            var result = await _handler!.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.IsTrue(result.IsError);
@@ -164,7 +185,7 @@ namespace Fliq.Test.Profile.Commands.Create
                 .ReturnsAsync((LocationQueryResponse?)null);
 
             // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+            var result = await _handler!.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.IsTrue(result.IsError);
@@ -190,7 +211,7 @@ namespace Fliq.Test.Profile.Commands.Create
                 .Returns((PromptCategory?)null);
 
             // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+            var result = await _handler!.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.IsTrue(result.IsError);
@@ -213,13 +234,13 @@ namespace Fliq.Test.Profile.Commands.Create
                 .Returns(user);
 
             _promptCategoryRepositoryMock.Setup(repo => repo.GetCategoryById(It.IsAny<int>()))
-               .Returns(new PromptCategory() { CategoryName = "Category Name", Id = 1 });
+                .Returns(new PromptCategory { CategoryName = "Category Name", Id = 1 });
 
             _promptQuestionRepositoryMock.Setup(repo => repo.GetQuestionByIdAsync(It.IsAny<int>()))
                 .Returns((PromptQuestion?)null);
 
             // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+            var result = await _handler!.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.IsTrue(result.IsError);
@@ -242,7 +263,7 @@ namespace Fliq.Test.Profile.Commands.Create
                 .Returns(user);
 
             // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+            var result = await _handler!.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.IsTrue(result.IsError);
@@ -257,18 +278,18 @@ namespace Fliq.Test.Profile.Commands.Create
             {
                 UserId = 1,
                 DOB = DateTime.Now.AddYears(-25),
-                GenderId = 1,
-                // rest of your setup
+                GenderId = 1
             };
             var user = new User { Id = 1 };
             var existingProfile = new UserProfile { UserId = 1 };
+
             _userRepositoryMock.Setup(repo => repo.GetUserById(It.IsAny<int>()))
                 .Returns(user);
             _profileRepositoryMock.Setup(repo => repo.GetProfileByUserId(It.IsAny<int>()))
                 .Returns(existingProfile);
 
             // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+            var result = await _handler!.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.IsTrue(result.IsError);
@@ -310,12 +331,11 @@ namespace Fliq.Test.Profile.Commands.Create
                 .ReturnsAsync(uploadResult);
 
             // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+            var result = await _handler!.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.IsFalse(result.IsError);
             _businessIdentificationDocumentRepositoryMock.Verify(repo => repo.Add(It.IsAny<BusinessIdentificationDocument>()), Times.Once);
-            // Verify document properties
             _businessIdentificationDocumentRepositoryMock.Verify(repo => repo.Add(It.Is<BusinessIdentificationDocument>(
                 doc => doc.BusinessIdentificationDocumentTypeId == 1 &&
                        doc.FrontDocumentUrl == "front_document_url.pdf" &&
@@ -332,7 +352,7 @@ namespace Fliq.Test.Profile.Commands.Create
                 UserId = 1,
                 BusinessIdentificationDocuments = new BusinessIdentificationDocumentMapped
                 {
-                    BusinessIdentificationDocumentTypeId = 999, // Invalid ID
+                    BusinessIdentificationDocumentTypeId = 999,
                     BusinessIdentificationDocumentFront = CreateMockFormFile(),
                     BusinessIdentificationDocumentBack = CreateMockFormFile()
                 }
@@ -343,11 +363,11 @@ namespace Fliq.Test.Profile.Commands.Create
             _userRepositoryMock.Setup(repo => repo.GetUserById(It.IsAny<int>()))
                 .Returns(user);
 
-            _businessIdentificationDocumentTypeRepositoryMock.Setup(repo => repo.DocumentTypeExists(It.IsAny<int>()))
-                .ReturnsAsync(false);
+            _businessIdentificationDocumentTypeRepositoryMock.Setup(repo => repo.GetByIdAsync(It.IsAny<int>()))
+                .ReturnsAsync((BusinessIdentificationDocumentType?)null);
 
             // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+            var result = await _handler!.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.IsTrue(result.IsError);
@@ -386,7 +406,7 @@ namespace Fliq.Test.Profile.Commands.Create
                 .ReturnsAsync(uploadResult);
 
             // Act
-            var result = await _handler.Handle(command, CancellationToken.None);
+            var result = await _handler!.Handle(command, CancellationToken.None);
 
             // Assert
             Assert.IsTrue(result.IsError);

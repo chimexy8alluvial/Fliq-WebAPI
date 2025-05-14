@@ -60,6 +60,7 @@ namespace Fliq.Api.Controllers
         public async Task<IActionResult> Explore([FromQuery] ExploreEventsRequest  request)
         {
             _logger.LogInfo($"Exploring Events request received: {request}");
+            
 
             var userId = GetAuthUserId();
             _logger.LogInfo($"Authenticated user ID: {userId}");
@@ -69,7 +70,7 @@ namespace Fliq.Api.Controllers
 
             // Map request to ExploreQuery and add UserId
             var query = _mapper.Map<ExploreEventsQuery>(request);
-            query = query with { UserId = userId };
+            query = query with { UserId = userId , PaginationRequest = new PaginationRequest() };
 
             var result = await _mediator.Send(query);
             _logger.LogInfo($"Explore Events Query Executed. Result: {result}");

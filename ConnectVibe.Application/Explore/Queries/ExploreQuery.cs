@@ -13,11 +13,12 @@ using MediatR;
 namespace Fliq.Application.Explore.Queries
 {
     public record ExploreQuery(
+        PaginationRequest PaginationRequest,
         int UserId,
         bool? FilterByEvent = null,
         bool? FilterByDating = null,
-        bool? FilterByFriendship = null,
-        PaginationRequest PaginationRequest = default!
+        bool? FilterByFriendship = null
+        
         ) : IRequest<ErrorOr<ExploreResult>>;
 
     public class ExploreQueryHandler : IRequestHandler<ExploreQuery, ErrorOr<ExploreResult>>

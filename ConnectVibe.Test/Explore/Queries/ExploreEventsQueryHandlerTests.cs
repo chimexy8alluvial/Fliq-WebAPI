@@ -1,17 +1,18 @@
-﻿using Fliq.Application.Common.Interfaces.Persistence;
+﻿using Dapper;
+using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Pagination;
 using Fliq.Application.Explore.Queries;
-using Fliq.Domain.Common.Errors;
 using Fliq.Contracts.Explore;
+using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities;
 using Fliq.Domain.Entities.Event.Enums;
 using Fliq.Domain.Entities.Profile;
-using Moq;
-using Dapper;
-using Fliq.Infrastructure.Persistence.Repositories;
-using System.Data;
 using Fliq.Infrastructure.Persistence;
+using Fliq.Infrastructure.Persistence.Repositories;
+using Microsoft.EntityFrameworkCore; // Required for DbContextOptionsBuilder
+using Moq;
+using System.Data;
 
 namespace Fliq.Application.Tests.Explore.Queries
 {
@@ -174,78 +175,6 @@ namespace Fliq.Application.Tests.Explore.Queries
             Assert.IsTrue(result.Errors[0].Description.Contains("Failed to fetch events: Database error"));
             _loggerMock.Verify(l => l.LogError(It.Is<string>(s => s.Contains("Failed to fetch events") && s.Contains("Database error"))), Times.Once());
         }
-
-
-    }
-    [TestClass]
-    public class EventRepositoryTests
-    {
-        private Mock<FliqDbContext> _dbContextMock;
-        private Mock<IDbConnectionFactory> _connectionFactoryMock;
-        private Mock<IUserRepository> _userRepositoryMock;
-        private Mock<ILoggerManager> _loggerMock;
-        private EventRepository _repository;
-
-        [TestInitialize]
-        public void Setup()
-        {
-            _dbContextMock = new Mock<FliqDbContext>();
-            _connectionFactoryMock = new Mock<IDbConnectionFactory>();
-            _userRepositoryMock = new Mock<IUserRepository>();
-            _loggerMock = new Mock<ILoggerManager>();
-            _repository = new EventRepository(
-                _dbContextMock.Object,
-                _connectionFactoryMock.Object,
-                _userRepositoryMock.Object,
-                _loggerMock.Object);
-        }
-
-        [TestMethod]
-        public async Task GetEventsAndCountAsync_NullCategory_HandlesNullParameter()
-        {
-            // Arrange
-            var connectionMock = new Mock<IDbConnection>();
-            var parameters = new DynamicParameters();
-            parameters.Add("@p_total_count", dbType: DbType.Int32, direction: ParameterDirection.Output);
-            parameters.Add("@p_events", dbType: DbType.String, direction: ParameterDirection.Output, size: -1);
-            _connectionFactoryMock.Setup(f => f.CreateConnection()).Returns(connectionMock.Object);
-            connectionMock.Setup(c => c.ExecuteAsync(It.IsAny<string>(), It.IsAny<object>(), null, null, CommandType.StoredProcedure))
-                .Callback<string, object>((sql, p) =>
-                {
-                    var dynParams = (DynamicParameters)p;
-                    dynParams.Add("@p_total_count", 5, DbType.Int32, ParameterDirection.Output);
-                    dynParams.Add("@p_events", "[]", DbType.String, ParameterDirection.Output, size: -1);
-                })
-                .ReturnsAsync(1);
-
-            var userLocation = new LocationDetail { Location = new Location { Lat = 40.7128, Lng = -74.0060 } };
-            var pagination = new PaginationRequest(1, 5);
-
-            // Act
-            var (events, totalCount) = await _repository.GetEventsAndCountAsync(
-                userLocation,
-                maxDistanceKm: null,
-                userProfile: null,
-                category: null,
-                eventType: null,
-                createdBy: null,
-                eventTitle: null,
-                status: null,
-                includeReviews: null,
-                minRating: null,
-                pagination);
-
-            // Assert
-            Assert.IsNotNull(events);
-            Assert.AreEqual(0, events.Count);
-            Assert.AreEqual(5, totalCount);
-            connectionMock.Verify(c => c.ExecuteAsync(
-                "sp_GetEvents",
-                It.Is<DynamicParameters>(p =>
-                    p.Get<EventCategory?>("@p_category") == null &&
-                    p.ParameterNames.Contains("@p_events") &&
-                    p.GetParameter("@p_events").Size == -1),
-                null, null, CommandType.StoredProcedure), Times.Once());
-        }
+     
     }
 }

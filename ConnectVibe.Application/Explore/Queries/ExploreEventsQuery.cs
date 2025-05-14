@@ -11,6 +11,7 @@ using MediatR;
 namespace Fliq.Application.Explore.Queries
 {
     public record ExploreEventsQuery(
+  PaginationRequest PaginationRequest,
     int UserId,
     double? MaxDistanceKm = null,
     EventCategory? Category = null,
@@ -19,8 +20,8 @@ namespace Fliq.Application.Explore.Queries
     string? EventTitle = null,
     EventStatus? Status = null,
     bool? IncludeReviews = null,
-    int? MinRating = null,
-    PaginationRequest PaginationRequest = default!
+    int? MinRating = null
+   
 
 ) : IRequest<ErrorOr<ExploreEventsResult>>;
 
