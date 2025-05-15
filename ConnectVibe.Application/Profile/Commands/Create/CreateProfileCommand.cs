@@ -95,6 +95,14 @@ namespace Fliq.Application.Profile.Commands.Create
                 return Errors.Profile.DuplicateProfile;
             }
 
+            if(user.Wallet == null)
+            {
+                // Create wallet for the user 
+                _loggerManager.LogInfo($"Creating wallet for user {command.UserId} after profile creation");
+                var createWalletCommand = new CreateWalletCommand(command.UserId);
+                var walletResult = await _mediator.Send(createWalletCommand, cancellationToken);
+            }
+
             existingProfile = new UserProfile
             {
                 UserId = command.UserId,
@@ -200,30 +208,6 @@ namespace Fliq.Application.Profile.Commands.Create
 
             existingProfile.CompletedSections = existingProfile.CompletedSections.Distinct().ToList();
             _profileRepository.Update(existingProfile);
-
-            // Create wallet for the user after profile is created
-            _loggerManager.LogInfo($"Creating wallet for user {command.UserId} after profile creation");
-            var createWalletCommand = new CreateWalletCommand(command.UserId);
-            var walletResult = await _mediator.Send(createWalletCommand, cancellationToken);
-
-            if (walletResult.IsError)
-            {
-                // If the error is just that the wallet already exists, we can continue
-                if (walletResult.FirstError == Errors.Wallet.AlreadyExists)
-                {
-                    _loggerManager.LogInfo($"Wallet already exists for user {command.UserId}, continuing with profile creation");
-                }
-                else
-                {
-                    _loggerManager.LogError($"Failed to create wallet for user {command.UserId}: {walletResult.FirstError}");
-                    // You may choose to just log the error and continue with profile creation,
-                    // rather than failing the entire operation
-                }
-            }
-            else
-            {
-                _loggerManager.LogInfo($"Successfully created wallet for user {command.UserId}");
-            }
 
             return new CreateProfileResult(existingProfile);
         }
