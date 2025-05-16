@@ -123,13 +123,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                     parameters.Add("@RequestType", requestType);
                     parameters.Add("@RequestStatus", requestStatus);
 
-                    var sql = @"SELECT COUNT(*) FROM SupportTickets 
-                    WHERE 
-                        IsDeleted = 0
-                        AND (@RequestType IS NULL OR RequestType = @RequestType)
-                        AND (@RequestStatus IS NULL OR RequestStatus = @RequestStatus)";
-
-                    var totalCount = await connection.ExecuteScalarAsync<int>(sql, parameters);
+                    var totalCount = await connection.ExecuteScalarAsync<int>("sp_GetTotalSupportTicketsCount", parameters, commandType: CommandType.StoredProcedure);
                     return totalCount;
                 }
             }
