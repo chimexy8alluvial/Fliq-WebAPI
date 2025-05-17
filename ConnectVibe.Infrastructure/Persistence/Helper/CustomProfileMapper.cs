@@ -8,77 +8,71 @@ namespace Fliq.Infrastructure.Persistence.Helper
 {
     public class CustomProfileMapper : ICustomProfileMapper
     {
-        public UserProfile MapToUserProfile(IGrouping<int, dynamic> groupedRows)
+        public UserProfile MapToUserProfile(dynamic row)
         {
-            var firstRow = groupedRows.FirstOrDefault();
-            if (firstRow == null) return null;
+            if (row == null) return null;
 
             return new UserProfile
             {
-                Id = firstRow.Id,
-                UserId = firstRow.UserId,
-                DOB = firstRow.DOB,
-                AllowNotifications = firstRow.AllowNotifications,
-                PassionsJson = firstRow.Passions,
-                ProfileTypeJson = firstRow.ProfileTypes,
-                DateCreated = firstRow.DateCreated,
-                DateModified = firstRow.DateModified,
-                IsDeleted = firstRow.IsDeleted,
-
+                Id = row.Id,
+                UserId = row.UserId,
+                DOB = row.DOB,
+                AllowNotifications = row.AllowNotifications,
+                PassionsJson = row.Passions,
+                ProfileTypeJson = row.ProfileTypes,
+                DateCreated = row.DateCreated,
+                DateModified = row.DateModified,
+                IsDeleted = row.IsDeleted,
                 Gender = new Gender
                 {
-                    Id = firstRow.GenderId,
-                    GenderType = firstRow.GenderType,
+                    Id = row.GenderId,
+                    GenderType = row.GenderType
                 },
                 Occupation = new Occupation
                 {
-                    Id = firstRow.OccupationId,
-                    OccupationName = firstRow.OccupationName,
+                    Id = row.OccupationId,
+                    OccupationName = row.OccupationName
                 },
                 EducationStatus = new EducationStatus
                 {
-                    Id = firstRow.EducationStatusId,
-                    EducationLevel = firstRow.EducationLevel,
+                    Id = row.EducationStatusId,
+                    EducationLevel = row.EducationLevel
                 },
                 SexualOrientation = new SexualOrientation
                 {
-                    Id = firstRow.SexualOrientationId,
-                    SexualOrientationType = firstRow.SexualOrientationType,
+                    Id = row.SexualOrientationId,
+                    SexualOrientationType = row.SexualOrientationType
                 },
                 Religion = new Religion
                 {
-                    Id = firstRow.ReligionId,
-                    ReligionType = firstRow.ReligionType,
+                    Id = row.ReligionId,
+                    ReligionType = row.ReligionType
                 },
                 Ethnicity = new Ethnicity
                 {
-                    Id = firstRow.EthnicityId,
-                    EthnicityType = firstRow.EthnicityType,
+                    Id = row.EthnicityId,
+                    EthnicityType = row.EthnicityType
                 },
                 WantKids = new WantKids
                 {
-                    Id = firstRow.WantKidsId,
-                    WantKidsType = firstRow.WantKidsType,
-                    
+                    Id = row.WantKidsId,
+                    WantKidsType = row.WantKidsType
                 },
                 HaveKids = new HaveKids
                 {
-                    Id = firstRow.HaveKidsId,
-                    HaveKidsType = firstRow.HaveKidsType,
-                   
+                    Id = row.HaveKidsId,
+                    HaveKidsType = row.HaveKidsType
                 },
                 Location = new Location
                 {
-                    Id = firstRow.LocationId,
-                    Lat = firstRow.Lat,
-                    Lng = firstRow.Lng,
-                    IsVisible = firstRow.LocationVisible
+                    Id = row.LocationId,
+                    Lat = row.Lat,
+                    Lng = row.Lng,
+                    IsVisible = row.LocationVisible // Ensure this column exists or remove
                 },
-
-                // Deserialize PromptResponses from JSON
-                PromptResponses = !string.IsNullOrEmpty(firstRow.PromptResponses)
-                ? JsonConvert.DeserializeObject<List<PromptResponse>>(firstRow.PromptResponses)
-                : new List<PromptResponse>()
+                PromptResponses = !string.IsNullOrEmpty(row.PromptResponses)
+                    ? JsonConvert.DeserializeObject<List<PromptResponse>>(row.PromptResponses)
+                    : new List<PromptResponse>()
             };
         }
     }

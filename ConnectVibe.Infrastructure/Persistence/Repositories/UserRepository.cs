@@ -112,7 +112,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
         public User? GetUserById(int id)
         {
-            var user = _dbContext.Users.SingleOrDefault(p => p.Id == id);
+            var user = _dbContext.Users.Include(p => p.UserProfile).SingleOrDefault(p => p.Id == id);
             return user;
         }
 
