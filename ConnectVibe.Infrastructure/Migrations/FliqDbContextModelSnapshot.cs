@@ -2436,6 +2436,9 @@ namespace Fliq.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
                     b.ToTable("Wallets");
                 });
 
@@ -2989,6 +2992,17 @@ namespace Fliq.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Fliq.Domain.Entities.Wallet", b =>
+                {
+                    b.HasOne("Fliq.Domain.Entities.User", "User")
+                        .WithOne("Wallet")
+                        .HasForeignKey("Fliq.Domain.Entities.Wallet", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Fliq.Domain.Entities.WalletHistory", b =>
                 {
                     b.HasOne("Fliq.Domain.Entities.Wallet", "Wallet")
@@ -3104,6 +3118,8 @@ namespace Fliq.Infrastructure.Migrations
                     b.Navigation("Subscriptions");
 
                     b.Navigation("UserProfile");
+
+                    b.Navigation("Wallet");
                 });
 #pragma warning restore 612, 618
         }

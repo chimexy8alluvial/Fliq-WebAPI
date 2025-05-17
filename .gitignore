@@ -364,3 +364,4 @@ FodyWeavers.xsd
 
 appsettings.json
 /ConnectVibe.Api/appsettings.Development.json
+/ConnectVibe.Infrastructure/Migrations/20250515112615_AddWalletToUser.Designer.cs
