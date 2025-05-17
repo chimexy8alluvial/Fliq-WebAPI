@@ -17,7 +17,7 @@ BEGIN
     SET NOCOUNT ON;
     
     SELECT COUNT(*) AS ActiveGamesCount
-    FROM GameRequests
+    FROM GameSessions
     WHERE Status = 3 -- InProgress
     AND IsDeleted = 0;
 END

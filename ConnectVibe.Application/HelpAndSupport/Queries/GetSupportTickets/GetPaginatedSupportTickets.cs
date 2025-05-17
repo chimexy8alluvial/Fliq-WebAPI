@@ -10,6 +10,8 @@ namespace Fliq.Application.HelpAndSupport.Queries.GetSupportTickets
     public class GetPaginatedSupportTicketsQuery : IRequest<ErrorOr<PaginationResponse<SupportTicket>>>
     {
         public PaginationRequest PaginationRequest { get; set; }
+        public int? RequestType { get; set; }
+        public int? RequestStatus { get; set; }
     }
 
     public class GetPaginatedSupportTicketsQueryHandler : IRequestHandler<GetPaginatedSupportTicketsQuery, ErrorOr<PaginationResponse<SupportTicket>>>
@@ -31,11 +33,13 @@ namespace Fliq.Application.HelpAndSupport.Queries.GetSupportTickets
             {
                 // Fetch paginated support tickets
                 var tickets = await _repository.GetPaginatedSupportTicketsAsync(
-                    query.PaginationRequest
+                    query.PaginationRequest,
+                    query.RequestType,
+                    query.RequestStatus
                 );
 
                 // Calculate total pages (assuming you have a method to get the total count of tickets)
-                var totalTickets = await _repository.GetTotalSupportTicketsCountAsync();
+                var totalTickets = await _repository.GetTotalSupportTicketsCountAsync(query.RequestType, query.RequestStatus);
                 var totalPages = (int)Math.Ceiling((double)totalTickets / query.PaginationRequest.PageSize);
 
                 return new PaginationResponse<SupportTicket>(tickets, totalTickets, query.PaginationRequest.PageNumber, query.PaginationRequest.PageSize);
