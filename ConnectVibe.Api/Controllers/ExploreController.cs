@@ -56,8 +56,8 @@ namespace Fliq.Api.Controllers
         }
 
         [HttpGet("Explore-Events")]
-        [Produces(typeof(ExploreResponse))]
-        public async Task<IActionResult> Explore([FromQuery] ExploreEventsRequest request)
+        [Produces(typeof(ExploreEventsResponse))]
+        public async Task<IActionResult> Explore([FromQuery] ExploreEventsRequest  request)
         {
             _logger.LogInfo($"Exploring Events request received: {request}");
 

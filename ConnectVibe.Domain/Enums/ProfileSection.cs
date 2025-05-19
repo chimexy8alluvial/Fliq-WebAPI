@@ -5,6 +5,7 @@
         BasicInfo,
         OtherInfo,
         Photos,
+        BusinessIdentificationDocument,
         Location,
         Interests,
         Preferences,

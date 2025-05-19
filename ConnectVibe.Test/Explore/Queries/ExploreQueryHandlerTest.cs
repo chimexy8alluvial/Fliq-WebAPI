@@ -80,7 +80,7 @@ namespace Fliq.Test.Explore.Queries
             _profileMatchingServiceMock?.Setup(x => x.GetMatchedProfilesAsync(user, It.IsAny<ExploreQuery>()))
                                        .ReturnsAsync(profiles); // Call the profile matching service
             _profileRepositoryMock?.Setup(x => x.GetProfileByUserId(user.Id)).Returns(profiles.First());
-            var query = new ExploreQuery(UserId: 1,PaginationRequest: new PaginationRequest()); // Provide a UserId
+            var query = new ExploreQuery(UserId: 1, PaginationRequest: new PaginationRequest()); // Provide a UserId
 
             // Act
             var result = await _handler.Handle(query, CancellationToken.None);

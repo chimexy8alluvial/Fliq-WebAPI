@@ -1,8 +1,8 @@
-﻿using Fliq.Application.Common.Interfaces.Persistence;
+﻿using ErrorOr;
+using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Security;
 using Fliq.Domain.Common.Errors;
-using ErrorOr;
 using MediatR;
 
 namespace Fliq.Application.Authentication.Commands.ChangePassword
