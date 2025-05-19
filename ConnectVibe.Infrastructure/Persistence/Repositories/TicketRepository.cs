@@ -2,6 +2,7 @@
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.DashBoard.Common;
 using Fliq.Domain.Entities.Event;
+using Microsoft.EntityFrameworkCore;
 using System.Data;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
@@ -35,7 +36,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
         public Ticket? GetTicketById(int id)
         {
-            var result = _dbContext.Tickets.SingleOrDefault(p => p.Id == id);
+            var result = _dbContext.Tickets.Include(t => t.Currency).SingleOrDefault(p => p.Id == id && !p.IsDeleted );
             return result;
         }
 

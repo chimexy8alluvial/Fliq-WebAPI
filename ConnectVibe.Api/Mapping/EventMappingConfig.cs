@@ -57,6 +57,59 @@ namespace Fliq.Api.Mapping
             config.NewConfig<UpdateDiscountDto, Discount>().IgnoreNullValues(true)
                 .Map(dest => dest.Type, src => (DiscountType?)src.Type);
 
+            config.NewConfig<AddTicketDto, AddTicketCommand>()
+                .Map(dest => dest.TicketName, src => src.TicketName)
+                .Map(dest => dest.TicketType, src => (TicketType)src.TicketType)
+                .Map(dest => dest.TicketDescription, src => src.TicketDescription)
+                .Map(dest => dest.EventDate, src => src.EventDate)
+                .Map(dest => dest.Amount, src => src.Amount)
+                .Map(dest => dest.MaximumLimit, src => src.MaximumLimit)
+                .Map(dest => dest.SoldOut, src => src.SoldOut)
+                .Map(dest => dest.Discounts, src => src.Discounts)
+                .Map(dest => dest.EventId, src => src.EventId);
+
+            // AddTicketCommand to Ticket
+            config.NewConfig<AddTicketCommand, Ticket>()
+                .Map(dest => dest.TicketName, src => src.TicketName)
+                .Map(dest => dest.TicketType, src => src.TicketType)
+                .Map(dest => dest.TicketDescription, src => src.TicketDescription)
+                .Map(dest => dest.EventDate, src => src.EventDate)
+                .Map(dest => dest.Amount, src => src.Amount)
+                .Map(dest => dest.MaximumLimit, src => int.Parse(src.MaximumLimit))
+                .Map(dest => dest.SoldOut, src => src.SoldOut)
+                .Map(dest => dest.Discounts, src => src.Discounts)
+                .Map(dest => dest.EventId, src => src.EventId)
+                .Ignore(dest => dest.CurrencyId)
+                .Ignore(dest => dest.Currency)
+                .Ignore(dest => dest.Event)
+                .Ignore(dest => dest.EventTickets);
+
+            // CreateTicketResult to UpdateTicketResponse
+            config.NewConfig<CreateTicketResult, UpdateTicketResponse>()
+                .Map(dest => dest.Id, src => src.Id)
+                .Map(dest => dest.TicketName, src => src.TicketName)
+                .Map(dest => dest.TicketType, src => (int)src.TicketType)
+                .Map(dest => dest.TicketDescription, src => src.TicketDescription)
+                .Map(dest => dest.EventDate, src => src.EventDate)
+                .Map(dest => dest.Currency, src => src.Currency.CurrencyCode)
+                .Map(dest => dest.Amount, src => src.Amount)
+                .Map(dest => dest.MaximumLimit, src => src.MaximumLimit)
+                .Map(dest => dest.SoldOut, src => src.SoldOut)
+                .Map(dest => dest.Discounts, src => src.Discounts)
+                .Map(dest => dest.EventId, src => src.EventId);
+
+            config.NewConfig<UpdateTicketDto, UpdateTicketCommand>()
+                .Map(dest => dest.EventId, src => src.EventId)
+                .Map(dest => dest.Id, src => src.Id)
+                .Map(dest => dest.TicketName, src => src.TicketName)
+                .Map(dest => dest.TicketType, src => (int)src.TicketType)
+                .Map(dest => dest.TicketDescription, src => src.TicketDescription)
+                .Map(dest => dest.EventDate, src => src.EventDate)
+                .Map(dest => dest.Amount, src => src.Amount)
+                .Map(dest => dest.MaximumLimit, src => src.MaximumLimit)
+                .Map(dest => dest.SoldOut, src => src.SoldOut)
+                .Map(dest => dest.Discounts, src => src.Discounts);
+
             config.NewConfig<AddTicketDto, AddTicketCommand>();
             config.NewConfig<PurchaseTicketDto, AddEventTicketCommand>();
             config.NewConfig<AddEventReviewDto, AddEventReviewCommand>();

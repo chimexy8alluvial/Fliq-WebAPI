@@ -57,6 +57,12 @@ var app = builder.Build();
         await superAdminSeeder.SeedSuperAdmin(); //Seed super Admin
     }
 
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<FliqDbContext>();
+        CurrencySeeder.Seed(dbContext);
+    }
+
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {

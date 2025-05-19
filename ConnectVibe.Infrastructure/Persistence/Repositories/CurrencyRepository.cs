@@ -14,7 +14,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             _connectionFactory = connectionFactory;
         }
 
-        public void Add(Currency currency)
+        public void Add(Fliq.Domain.Entities.Event.Currency currency)
         {
             if (currency.Id > 0)
             {
@@ -27,25 +27,25 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             _dbContext.SaveChanges();
         }
 
-        public void Update(Currency currency)
+        public void Update(Fliq.Domain.Entities.Event.Currency currency)
         {
             _dbContext.Update(currency);
             _dbContext.SaveChanges();
         }
 
-        public List<Currency> GetCurrencies()
+        public List<Fliq.Domain.Entities.Event.Currency> GetCurrencies()
         {
             var result = _dbContext.Currencies.ToList();
             return result;
         }
 
-        public Currency? GetCurrencyById(int id)
+        public Fliq.Domain.Entities.Event.Currency? GetCurrencyById(int id)
         {
             var result = _dbContext.Currencies.SingleOrDefault(p => p.Id == id);
             return result;
         }
 
-        public Currency GetCurrencyByCode(string code)
+        public Fliq.Domain.Entities.Event.Currency GetCurrencyByCode(string code)
         {
             var result = _dbContext.Currencies.SingleOrDefault(p => p.CurrencyCode == code);
             return result;

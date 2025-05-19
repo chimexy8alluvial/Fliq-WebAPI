@@ -11,7 +11,7 @@ namespace Fliq.Application.Common.Interfaces.Persistence
 
         Ticket? GetTicketById(int id);
 
-        List<Currency> GetCurrenciees();
+        List<Fliq.Domain.Entities.Event.Currency> GetCurrenciees();
 
         void AddEventTicket(EventTicket eventTicket);
 

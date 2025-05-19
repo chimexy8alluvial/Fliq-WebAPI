@@ -4,14 +4,14 @@ namespace Fliq.Application.Common.Interfaces.Persistence
 {
     public interface ICurrencyRepository
     {
-        void Add(Currency currency);
+        void Add(Fliq.Domain.Entities.Event.Currency currency);
 
-        void Update(Currency currency);
+        void Update(Fliq.Domain.Entities.Event.Currency currency);
 
-        List<Currency> GetCurrencies();
+        List<Fliq.Domain.Entities.Event.Currency> GetCurrencies();
 
-        Currency? GetCurrencyById(int id);
+        Fliq.Domain.Entities.Event.Currency? GetCurrencyById(int id);
 
-        Currency GetCurrencyByCode(string code);
+        Fliq.Domain.Entities.Event.Currency GetCurrencyByCode(string code);
     }
 }

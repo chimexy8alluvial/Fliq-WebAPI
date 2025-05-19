@@ -1,7 +1,9 @@
 ﻿using Dapper;
 using Fliq.Application.Common.Interfaces.Helper;
 using Fliq.Application.Common.Interfaces.Persistence;
+using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Pagination;
+using Fliq.Domain.Entities.Event;
 using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -15,12 +17,14 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         private readonly FliqDbContext _dbContext;
         private readonly IDbConnectionFactory _connectionFactory;
         private readonly ICustomProfileMapper _customProfileMapper;
+        private readonly ILoggerManager _logger;
 
-        public ProfileRepository(FliqDbContext dbContext, IDbConnectionFactory connectionFactory, ICustomProfileMapper customProfileMapper)
+        public ProfileRepository(FliqDbContext dbContext, IDbConnectionFactory connectionFactory, ICustomProfileMapper customProfileMapper, ILoggerManager logger)
         {
             _dbContext = dbContext;
             _connectionFactory = connectionFactory;
             _customProfileMapper = customProfileMapper;
+            _logger = logger;
         }
 
         public void Add(UserProfile userProfile)
@@ -152,6 +156,84 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             parameters.Add("@pageSize", paginationRequest.PageSize);
 
             return parameters;
+        }
+
+        public async Task<string?> GetUserCountryAsync(int userId, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var userProfile = await _dbContext.UserProfiles
+                    .Include(p => p.Location)
+                    .ThenInclude(l => l.LocationDetail)
+                    .ThenInclude(ld => ld.Results)
+                    .ThenInclude(r => r.AddressComponents)
+                    .FirstOrDefaultAsync(p => p.UserId == userId, cancellationToken);
+
+                if (userProfile?.Location?.LocationDetail?.Results?.Any() != true)
+                {
+                    _logger.LogWarn($"No profile or location found for user ID {userId}.");
+                    return null;
+                }
+
+                var addressComponent = userProfile.Location.LocationDetail.Results
+                    .SelectMany(r => r.AddressComponents)
+                    .FirstOrDefault(ac => ac.Types.Contains("country"));
+
+                var country = addressComponent?.ShortName; // e.g., "US", "NG"
+                if (string.IsNullOrEmpty(country))
+                {
+                    _logger.LogWarn($"No country found in address components for user ID {userId}.");
+                }
+                else
+                {
+                    _logger.LogInfo($"Retrieved country {country} for user ID {userId}.");
+                }
+
+                return country;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error retrieving country for user ID {userId}: {ex.Message}");
+                throw;
+            }
+        }
+
+        public async Task<Currency> GetUserCurrencyAsync(int userId, CancellationToken cancellationToken)
+        {
+            try
+            {
+                // Get user's country
+                var userCountry = await GetUserCountryAsync(userId, cancellationToken);
+
+                // Find currency for user's country
+                Currency? currency = null;
+                if (!string.IsNullOrEmpty(userCountry))
+                {
+                    currency = await _dbContext.Currencies
+                        .FirstOrDefaultAsync(c => c.CountryCode == userCountry && !c.IsDeleted, cancellationToken);
+                }
+
+                // Fallback to default currency (USD) if no match
+                if (currency == null)
+                {
+                    _logger.LogWarn($"No currency found for country {userCountry ?? "unknown"} for user ID {userId}. Using default (USD).");
+                    currency = await _dbContext.Currencies
+                        .FirstOrDefaultAsync(c => c.CurrencyCode == "USD" && !c.IsDeleted, cancellationToken);
+                    if (currency == null)
+                    {
+                        _logger.LogError("Default currency (USD) not found.");
+                        throw new InvalidOperationException("No currency available for ticket creation.");
+                    }
+                }
+
+                _logger.LogInfo($"Selected currency {currency.CurrencyCode} (ID: {currency.Id}) for user ID {userId}.");
+                return currency;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error retrieving currency for user ID {userId}: {ex.Message}");
+                throw;
+            }
         }
     }
 }

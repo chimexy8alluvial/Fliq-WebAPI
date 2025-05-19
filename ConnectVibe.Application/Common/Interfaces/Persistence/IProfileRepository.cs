@@ -15,5 +15,8 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         IEnumerable<UserProfile> GetMatchedUserProfiles(int userId, List<ProfileType> userProfileTypes, bool? filterByDating, bool? filterByFriendship, PaginationRequest paginationRequest);
 
         UserProfile? GetProfileByUserId(int id);
+
+        Task<string?> GetUserCountryAsync(int userId, CancellationToken cancellationToken);
+        Task<Fliq.Domain.Entities.Event.Currency> GetUserCurrencyAsync(int userId, CancellationToken cancellationToken);
     }
 }
