@@ -8,8 +8,8 @@ namespace Fliq.Domain.Entities.Profile
     public class UserProfile : Record
     {
         public int GenderId { get; set; }
-        public int HaveKidsId { get; set; }
-        public int WantKidsId { get; set; }
+        public int? HaveKidsId { get; set; }
+        public int? WantKidsId { get; set; }
         public int? SexualOrientationId { get; set; }
         public bool IsSexualOrientationVisible { get; set; }
         public int? EducationStatusId { get; set; }
@@ -25,12 +25,12 @@ namespace Fliq.Domain.Entities.Profile
         public Gender Gender { get; set; } = default!;
         public string? ProfileDescription { get; set; }  //Nullable
         public SexualOrientation? SexualOrientation { get; set; }  //Nullable
-        public Religion? Religion { get; set; } 
-        public Ethnicity? Ethnicity { get; set; } 
-        public Occupation? Occupation { get; set; } 
-        public EducationStatus? EducationStatus { get; set; } 
-        public HaveKids HaveKids { get; set; }  =default!;
-        public WantKids WantKids { get; set; } =default!;
+        public Religion? Religion { get; set; }
+        public Ethnicity? Ethnicity { get; set; }
+        public Occupation? Occupation { get; set; }
+        public EducationStatus? EducationStatus { get; set; }
+        public HaveKids HaveKids { get; set; } = default!;
+        public WantKids WantKids { get; set; } = default!;
         public Location? Location { get; set; } = default!;
         public bool AllowNotifications { get; set; }
         public List<ProfilePhoto>? Photos { get; set; } = new();
@@ -58,6 +58,6 @@ namespace Fliq.Domain.Entities.Profile
 
         public int UserId { get; set; }
         public User User { get; set; } = default!;
-        public List<PromptResponse>? PromptResponses { get; set; } = new();    
+        public List<PromptResponse>? PromptResponses { get; set; } = new();
     }
 }

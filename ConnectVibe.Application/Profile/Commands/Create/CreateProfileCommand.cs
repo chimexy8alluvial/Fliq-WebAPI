@@ -35,7 +35,7 @@ namespace Fliq.Application.Profile.Commands.Create
         public DateTime? DOB { get; set; }
         public string? ProfileDescription { get; set; }
         public ProfileSection CurrentSection { get; set; }
-        public int? GenderId { get; set; }
+        public int GenderId { get; set; }
         public int? HaveKidsId { get; set; }
         public int? WantKidsId { get; set; }
         public Location? Location { get; set; }
