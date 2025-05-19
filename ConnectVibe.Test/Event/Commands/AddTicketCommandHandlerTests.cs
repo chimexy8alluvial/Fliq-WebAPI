@@ -4,6 +4,7 @@ using Fliq.Application.Event.Commands.Tickets;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Event;
 using MapsterMapper;
+using Microsoft.AspNetCore.Http;
 using Moq;
 
 namespace Fliq.Test.Event.Commands
@@ -15,6 +16,8 @@ namespace Fliq.Test.Event.Commands
         private Mock<ITicketRepository>? _ticketRepositoryMock;
         private Mock<ILoggerManager>? _loggerMock;
         private Mock<IMapper>? _mapperMock;
+        private Mock<IProfileRepository>? _profileRepositoryMock;
+        private Mock<IHttpContextAccessor>? _contextAccessorMock;
 
         private AddTicketCommandHandler? _handler;
 
@@ -25,12 +28,16 @@ namespace Fliq.Test.Event.Commands
             _ticketRepositoryMock = new Mock<ITicketRepository>();
             _loggerMock = new Mock<ILoggerManager>();
             _mapperMock = new Mock<IMapper>();
+            _profileRepositoryMock = new Mock<IProfileRepository>();
+            _contextAccessorMock = new Mock<IHttpContextAccessor>();
 
             _handler = new AddTicketCommandHandler(
                 _eventRepositoryMock.Object,
                 _loggerMock.Object,
                 _mapperMock.Object,
-                _ticketRepositoryMock.Object
+                _ticketRepositoryMock.Object,
+                _profileRepositoryMock.Object,
+                _contextAccessorMock.Object
             );
         }
 
@@ -67,7 +74,6 @@ namespace Fliq.Test.Event.Commands
                 TicketType = TicketType.Regular,
                 TicketDescription = "Standard entry ticket",
                 EventDate = DateTime.UtcNow,
-                CurrencyId = 1,
                 Amount = 50.0m,
                 MaximumLimit = "100",
                 SoldOut = false
@@ -109,7 +115,6 @@ namespace Fliq.Test.Event.Commands
                 TicketType = TicketType.Regular,
                 TicketDescription = "Discounted ticket for early buyers",
                 EventDate = DateTime.UtcNow,
-                CurrencyId = 1,
                 Amount = 30.0m,
                 Discounts = new List<Discount>
                 {

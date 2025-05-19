@@ -39,29 +39,6 @@ namespace Fliq.Application.Event.Commands.UpdateTicket
 
         public async Task<ErrorOr<CreateTicketResult>> Handle(UpdateTicketCommand command, CancellationToken cancellationToken)
         {
-            //var eventEntity = _eventRepository.GetEventById(command.EventId);
-            //if (eventEntity == null)
-            //{
-            //    _logger.LogError($"Event with ID {command.EventId} not found.");
-            //    return Errors.Event.EventNotFound;
-            //}
-
-            //var ticket = _ticketRepository.GetTicketById(command.Id);
-            //if (ticket == null || ticket.EventId != command.EventId)
-            //{
-            //    _logger.LogError($"Ticket with ID {command.Id} for event ID {command.EventId} not found.");
-            //    return Errors.Ticket.TicketNotFound;
-            //}
-
-            //// Update properties if provided
-            //var ticketToUpdtate = command.Adapt(ticket);
-
-            //// Update ticket in repository
-            //_ticketRepository.Update(ticketToUpdtate);
-
-            //_logger.LogInfo($"Ticket '{command.TicketName ?? ticket.TicketName}' (ID {command.Id}) updated for event ID {command.EventId}.");
-            //return new CreateTicketResult(ticketToUpdtate);
-
             // Validate event
             var eventEntity = _eventRepository.GetEventById(command.EventId);
             if (eventEntity == null)
@@ -80,18 +57,6 @@ namespace Fliq.Application.Event.Commands.UpdateTicket
 
             // Update properties if provided
             var ticketToUpdtate = command.Adapt(ticket);
-
-            // Ensure Currency navigation property is loaded (if not already)
-            //if (ticket.Currency == null)
-            //{
-            //    ticket.Currency = await _dbContext.Currencies
-            //        .FirstOrDefaultAsync(c => c.Id == ticket.CurrencyId && !c.IsDeleted, cancellationToken);
-            //    if (ticket.Currency == null)
-            //    {
-            //        _logger.LogError($"Currency with ID {ticket.CurrencyId} not found for ticket ID {ticket.Id}.");
-            //        return Error.Failure("Currency not found.");
-            //    }
-            //}
 
             // Update ticket and save changes
             _ticketRepository.Update(ticketToUpdtate);

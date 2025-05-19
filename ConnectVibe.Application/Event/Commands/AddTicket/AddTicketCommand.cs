@@ -45,22 +45,6 @@ namespace Fliq.Application.Event.Commands.Tickets
 
         public async Task<ErrorOr<CreateTicketResult>> Handle(AddTicketCommand command, CancellationToken cancellationToken)
         {
-            //var eventEntity = _eventRepository.GetEventById(command.EventId);
-            //if (eventEntity == null)
-            //{
-            //    _logger.LogError($"Event with ID {command.EventId} not found.");
-            //    return Errors.Event.EventNotFound;
-            //}
-
-            //var newTicket = _mapper.Map<Ticket>(command);
-
-            //// Add the ticket to the event's Tickets list and update
-
-            //_ticketRepository.Add(newTicket);
-
-            //_logger.LogInfo($"Ticket '{command.TicketName}' added to event ID {command.EventId}.");
-            //return new CreateTicketResult(newTicket);
-
             // Validate event
             var eventEntity = _eventRepository.GetEventById(command.EventId);
             if (eventEntity == null)
