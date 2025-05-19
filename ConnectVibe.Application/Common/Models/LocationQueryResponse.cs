@@ -47,5 +47,6 @@
         public PlusCode PlusCode { get; set; } = default!;
         public List<Result> Results { get; set; } = default!;
         public string Status { get; set; } = default!;
+        public string? CurrencyCode { get; set; }
     }
 }

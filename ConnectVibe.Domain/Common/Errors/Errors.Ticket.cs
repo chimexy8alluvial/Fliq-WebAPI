@@ -9,7 +9,11 @@ namespace Fliq.Domain.Common.Errors
             public static Error TicketNotFound => Error.Failure(
              code: "Ticket.TicketNotFound",
              description: "Ticket not found.");
-            public static Error NoTicketsAvailable => Error.Failure(
+            public static Error DuplicateTicketType => Error.Failure(
+             code: "Ticket.DuplicateTicketType",
+             description: "A ticket with this type already exists for the specified event.");
+        
+        public static Error NoTicketsAvailable => Error.Failure(
              code: "Ticket.NoTicketsAvailable",
              description: "No Tickets Available."); 
             public static Error NoTicketsSpecified => Error.Failure(

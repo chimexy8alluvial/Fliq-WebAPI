@@ -119,15 +119,25 @@ namespace Fliq.Application.Event.Commands.EventCreation
 
             if (command.Tickets is not null)
             {
+                var expectedCurrencyCode = locationResponse.CurrencyCode;
+                if (string.IsNullOrEmpty(expectedCurrencyCode))
+                {
+                    return Errors.Payment.CurrencyNotFound;
+                }
+
+                var currency = _currencyRepository.GetCurrencyByCode(expectedCurrencyCode);
+
+                if (currency is null)
+                {
+                    return Errors.Payment.InvalidPayload; //Currentcy does not exist
+                }
+
                 foreach (var ticket in command.Tickets)
                 {
-                    var newTicket = _mapper.Map<Ticket>(ticket);
-                    var currency = _currencyRepository.GetCurrencyById(ticket.CurrencyId);
-
-                    if (currency is null)
-                    {
-                        return Errors.Payment.InvalidPayload; //Currentcy does not exist
-                    }
+                                      
+                       
+                    var newTicket = _mapper.Map<Domain.Entities.Event.Ticket>(ticket);
+                    
 
                     newTicket.Currency = currency;
                     newTicket.EventId = newEvent.Id;

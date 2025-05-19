@@ -1,17 +1,17 @@
-﻿namespace Fliq.Contracts.Event.UpdateDtos
+﻿using Fliq.Contracts.Event.UpdateDtos;
+
+namespace Fliq.Contracts.Event
 {
-    public record UpdateTicketResponse
-    (
-        int Id,
+   public record AddTicketResponse
+    (int Id,
        string TicketName,
        int TicketType,
        string TicketDescription,
        DateTime EventDate,
-       string Currency,
+       int CurrencyId,
        decimal Amount,
        int MaximumLimit,
        bool SoldOut,
        List<UpdateDiscountDto>? Discounts,
-       int EventId
-       );
+       int EventId);
 }

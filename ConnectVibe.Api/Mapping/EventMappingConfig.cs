@@ -58,6 +58,20 @@ namespace Fliq.Api.Mapping
                 .Map(dest => dest.Type, src => (DiscountType?)src.Type);
 
             config.NewConfig<AddTicketDto, AddTicketCommand>();
+
+            config.NewConfig<CreateTicketResult, AddTicketResponse>()
+                  .Map(dest => dest.Id, src => src.Ticket.Id)
+                  .Map(dest => dest.TicketName, src => src.Ticket.TicketName) 
+                  .Map(dest => dest.TicketType, src => src.Ticket.TicketType) 
+                  .Map(dest => dest.TicketDescription, src => src.Ticket.TicketDescription)
+                  .Map(dest => dest.EventDate, src => src.Ticket.EventDate)
+                  .Map(dest => dest.CurrencyId, src => src.Ticket.CurrencyId)
+                  .Map(dest => dest.Amount, src => src.Ticket.Amount)
+                  .Map(dest => dest.MaximumLimit, src => src.Ticket.MaximumLimit)
+                  .Map(dest => dest.SoldOut, src => src.Ticket.SoldOut)
+                  .Map(dest => dest.Discounts, src => src.Ticket.Discounts) 
+                  .Map(dest => dest.EventId, src => src.Ticket.EventId);
+            
             config.NewConfig<PurchaseTicketDto, AddEventTicketCommand>();
             config.NewConfig<AddEventReviewDto, AddEventReviewCommand>();
             config.NewConfig<AddReviewResult, GetEventResponse>();

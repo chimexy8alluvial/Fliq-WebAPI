@@ -5,7 +5,6 @@ using Fliq.Application.Common.Pagination;
 using Fliq.Application.Explore.Common;
 using Fliq.Application.Explore.Common.Services;
 using Fliq.Domain.Common.Errors;
-using Fliq.Domain.Entities.Profile;
 using MediatR;
 
 

@@ -21,6 +21,9 @@ namespace Fliq.Domain.Common.Errors
             public static Error PaymentNotFound => Error.NotFound(
             code: "Payment.PaymentFound",
             description: "Payment not found.");
+            public static Error CurrencyNotFound => Error.NotFound(
+            code: "Payment.CurrencyNotFound",
+            description: "Currency not found.");
         }
     }
 }

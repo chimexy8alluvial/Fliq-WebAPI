@@ -2,6 +2,7 @@
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.DashBoard.Common;
 using Fliq.Domain.Entities.Event;
+using Microsoft.EntityFrameworkCore;
 using System.Data;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
@@ -84,6 +85,11 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             return _dbContext.Tickets.Where(t => ids.Contains(t.Id)).ToList();
         }
 
+        public async Task<Ticket> GetTicketByEventIdAndTypeAsync(int eventId, TicketType ticketType)
+        {
+            return await _dbContext.Tickets
+                .FirstOrDefaultAsync(t => t.EventId == eventId && t.TicketType == ticketType);
+        }
         public async Task<List<GetEventsTicketsResult>> GetAllEventsTicketsForDashBoardAsync(GetEventsTicketsListRequest request)
         {
             using (var connection = _connectionFactory.CreateConnection())

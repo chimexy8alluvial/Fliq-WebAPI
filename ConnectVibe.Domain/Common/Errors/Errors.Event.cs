@@ -36,7 +36,10 @@ namespace Fliq.Domain.Common.Errors
             
             public static Error EventDeletedAlready => Error.Failure(
                 code: "Event.EventDeletedAlready",
-                description: "Event with given id has been deleted already.");
+                description: "Event with given id has been deleted already."); 
+            public static Error LocationNotFound => Error.Failure(
+                code: "Event.LocationNotFound",
+                description: "Event Location not found.");
         }
     }
 }

@@ -84,7 +84,7 @@ namespace Fliq.Api.Controllers
             _logger.LogInfo($" command Executed. Result: {ticketResult}");
 
             return ticketResult.Match(
-                ticketResult => Ok(_mapper.Map<UpdateTicketResponse>(ticketResult)),
+                ticketResult => Ok(_mapper.Map<AddTicketResponse>(ticketResult)),
                 errors => Problem(errors)
             );
         }

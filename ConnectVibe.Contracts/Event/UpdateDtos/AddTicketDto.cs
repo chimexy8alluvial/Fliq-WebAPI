@@ -6,9 +6,8 @@
        int TicketType,
        string TicketDescription,
        DateTime EventDate,
-       int CurrencyId,
        decimal Amount,
-       string MaximumLimit,
+       int MaximumLimit,
        bool SoldOut,
        List<UpdateDiscountDto>? Discounts,
        int EventId);

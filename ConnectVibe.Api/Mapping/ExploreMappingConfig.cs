@@ -59,6 +59,7 @@ namespace Fliq.Api.Mapping
             config.NewConfig<Ethnicity, EthnicityDto>()
                 .Map(dest => dest.Id, src => src.Id)
                 .Map(dest => dest.IsVisible, src => true);
+
             TypeAdapterConfig<UserProfile, ExploreProfileResponse>.NewConfig()
                 .Map(dest => dest.UserId, src => src.UserId)
                 .Map(dest => dest.DOB, src => src.DOB)

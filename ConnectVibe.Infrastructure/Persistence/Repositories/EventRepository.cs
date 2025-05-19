@@ -6,6 +6,7 @@ using Fliq.Contracts.Explore;
 using Fliq.Domain.Entities.Event;
 using Fliq.Domain.Entities.Event.Enums;
 using Fliq.Domain.Entities.Profile;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Data;
 
@@ -44,7 +45,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
         public Events? GetEventById(int id)
         {
-            var result = _dbContext.Events.SingleOrDefault(p => p.Id == id);
+            var result = _dbContext.Events.Include(e => e.Location).SingleOrDefault(p => p.Id == id);
             return result;
         }
 
