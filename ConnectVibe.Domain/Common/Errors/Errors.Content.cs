@@ -12,12 +12,12 @@ namespace Fliq.Domain.Common.Errors
             description: "Content not found");
 
             public static Error ContentAlreadyRejected => Error.Conflict(
-            code: "Date.DateAlreadyRejected;",
-            description: "This Date Request is already Rejected");
+            code: "Content.ContentAlreadyRejected;",
+            description: "This Content Request is already Rejected");
 
             public static Error ContentAlreadyApproved => Error.Conflict(
-            code: "Date.DateAlreadyApproved;",
-            description: "This Date Request is already Approved");
+            code: "Content.ContentAlreadyApproved;",
+            description: "This Content Request is already Approved");
 
             public static Error RepositoryNotFound => Error.NotFound(
            code: "Repository.NotFound",

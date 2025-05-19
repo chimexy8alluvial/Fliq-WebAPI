@@ -13,7 +13,7 @@ namespace Fliq.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class PromptsController : ApiBaseController
     {
         private readonly ISender _mediator;
@@ -77,7 +77,7 @@ namespace Fliq.Api.Controllers
 
         [HttpPost("AddCategory")]
         [Produces(typeof(AddPromptCategoryResponse))]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "SuperAdmin, Admin")]
         public async Task<IActionResult> AddCategory([FromBody] AddPromptCategoryRequest request)
         {
             _logger.LogInfo($"Add Prompt Category  request received: {request}");
@@ -113,7 +113,7 @@ namespace Fliq.Api.Controllers
 
         [HttpPost("AddSystemPrompt")]
         [Produces(typeof(AddSystemPromptResponse))]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "SuperAdmin, Admin")]
         public async Task<IActionResult> AddSystemPrompt([FromBody] AddSystemPromptRequest request)
         {
             _logger.LogInfo($"Add System Prompt request received: {request}");
@@ -129,41 +129,41 @@ namespace Fliq.Api.Controllers
             );
         }
 
-        [Authorize(Roles = "SuperAdmin")]
-        [HttpPut("approve-prompt/{promptId}")]
-        public async Task<IActionResult> ApproveSpeedDateById(int promptId)
-        {
-            _logger.LogInfo($"Approve prompt with ID: {promptId} received");
-            var userId = GetAuthUserId();
+       //// [Authorize(Roles = "SuperAdmin")]
+       // [HttpPut("approve-prompt/{promptId}")]
+       // public async Task<IActionResult> ApprovePromptById(int promptId)
+       // {
+       //     _logger.LogInfo($"Approve prompt with ID: {promptId} received");
+       //     var userId = GetAuthUserId();
 
-            var command = new ApprovePromptCommand(promptId, userId);
-            var result = await _mediator.Send(command);
+       //     var command = new ApprovePromptCommand(promptId, userId);
+       //     var result = await _mediator.Send(command);
 
-            _logger.LogInfo($"Approve prompt with ID: {promptId} executed. Result: {result} ");
+       //     _logger.LogInfo($"Approve prompt with ID: {promptId} executed. Result: {result} ");
 
-            return result.Match(
-              approvePromptResult => Ok($"Prompt request with ID: {promptId} was successfully approved"),
-              errors => Problem(errors)
-          );
-        }
+       //     return result.Match(
+       //       approvePromptResult => Ok($"Prompt request with ID: {promptId} was successfully approved"),
+       //       errors => Problem(errors)
+       //   );
+       // }
 
-        [Authorize(Roles = "SuperAdmin")]
-        [HttpPut("reject-Prompt/{promptId}")]
-        public async Task<IActionResult> RejectSpeedDateById(int promptId)
-        {
-            _logger.LogInfo($"Reject prompt with ID: {promptId} received");
-            var userId = GetAuthUserId();
+       //// [Authorize(Roles = "SuperAdmin")]
+       // [HttpPut("reject-Prompt/{promptId}")]
+       // public async Task<IActionResult> RejectSPromptById(int promptId)
+       // {
+       //     _logger.LogInfo($"Reject prompt with ID: {promptId} received");
+       //     var userId = GetAuthUserId();
 
-            var command = new RejectPromptCommand(promptId, userId);
-            var result = await _mediator.Send(command);
+       //     var command = new RejectPromptCommand(promptId, userId);
+       //     var result = await _mediator.Send(command);
 
-            _logger.LogInfo($"Reject prompt with ID: {promptId} executed. Result: {result} ");
+       //     _logger.LogInfo($"Reject prompt with ID: {promptId} executed. Result: {result} ");
 
-            return result.Match(
-              rejectPromptResult => Ok($"Prompt with ID: {promptId} was successfully rejected"),
-              errors => Problem(errors)
-          );
-        }
+       //     return result.Match(
+       //       rejectPromptResult => Ok($"Prompt with ID: {promptId} was successfully rejected"),
+       //       errors => Problem(errors)
+       //   );
+       // }
 
 
     }

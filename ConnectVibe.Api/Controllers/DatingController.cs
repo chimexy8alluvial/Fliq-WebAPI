@@ -89,7 +89,7 @@ namespace Fliq.Api.Controllers
 
         [HttpPost("BlindDate")]
         [Produces(typeof(CreateBlindDateResponse))]
-        public async Task<IActionResult> CreateBlindDate([FromBody] CreateBlindDateRequest request)
+        public async Task<IActionResult> CreateBlindDate([FromForm] CreateBlindDateRequest request)
         {
             _logger.LogInfo($"Create Blind Date request received: {request}");
             var userId = GetAuthUserId();
@@ -98,7 +98,8 @@ namespace Fliq.Api.Controllers
             var command = _mapper.Map<CreateBlindDateCommand>(request) with
             {
                 BlindDateImage = request.BlindDateImage is not null
-                ? new DatePhotoMapped ( request.BlindDateImage.DateSessionImageFile): null
+                ? new DatePhotoMapped ( request.BlindDateImage.DateSessionImageFile): null,
+                CreatedByUserId = userId,
             };
 
             var result = await _mediator.Send(command);

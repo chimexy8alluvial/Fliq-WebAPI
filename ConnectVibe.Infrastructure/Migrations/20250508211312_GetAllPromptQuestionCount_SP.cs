@@ -16,7 +16,7 @@ namespace Fliq.Infrastructure.Migrations
             BEGIN
                
                 SELECT COUNT(*) 
-                FROM PromptQuestion
+                FROM PromptQuestions
                 WHERE IsDeleted = 0;
             END
             ");

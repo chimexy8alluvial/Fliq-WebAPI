@@ -39,10 +39,10 @@ namespace Fliq.Application.Contents.Commands
                 return Errors.Content.ContentNotFound;
             }
 
-            if (content.ContentCreationStatus == ContentCreationStatus.Approved)
+            if (content.ContentCreationStatus != ContentCreationStatus.Pending)
             {
-                _logger.LogError($" {typeof(T).Name} content with ID: {command.ContentId} has been approved already.");
-                return Errors.Content.ContentAlreadyApproved;
+                _logger.LogError($" {typeof(T).Name} content with ID: {command.ContentId} has already been processed as ({content.ContentCreationStatus.ToString()}).");
+                return content.ContentCreationStatus == ContentCreationStatus.Approved ? Errors.Content.ContentAlreadyApproved : Errors.Content.ContentAlreadyRejected;
             }
 
             var adminUser = _userRepository.GetUserById(command.AdminUserId); //update this to get user by id and role for faster fetch

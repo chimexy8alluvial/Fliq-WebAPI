@@ -33,7 +33,7 @@ namespace Fliq.Api.Controllers
             _logger = logger;
         }
 
-        [Authorize(Roles = "Admin,SuperAdmin")]
+        [Authorize(Roles = "SuperAdmin")]
         [HttpPut("approve-content")]
         public async Task<IActionResult> ApproveContent(ApproveContentRequest request)
         {
@@ -74,7 +74,7 @@ namespace Fliq.Api.Controllers
          );
         }
 
-        [Authorize(Roles = "Admin,SuperAdmin")]
+        [Authorize(Roles = "SuperAdmin")]
         [HttpPut("reject-content")]
         public async Task<IActionResult> RejectContent(RejectContentRequest request)
         {
@@ -116,6 +116,7 @@ namespace Fliq.Api.Controllers
         }
 
         [HttpGet("all-content-count")]
+        [Authorize(Roles = "SuperAdmin, Admin")]
         public async Task<IActionResult> GetContentCount()
         {
             var query = new GetAllContentsCountQuery();
@@ -128,6 +129,7 @@ namespace Fliq.Api.Controllers
         }
 
         [HttpGet("flagged-content-count")]
+        [Authorize(Roles = "SuperAdmin, Admin")]
         public async Task<IActionResult> GetFlaggedContentCount()
         {
             var query = new GetAllFlaggedContentsCountQuery();
