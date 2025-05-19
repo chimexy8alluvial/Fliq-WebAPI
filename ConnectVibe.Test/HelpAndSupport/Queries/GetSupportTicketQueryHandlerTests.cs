@@ -46,7 +46,7 @@ namespace Fliq.Test.HelpAndSupport.Queries
                 RequesterName = "John Doe",
                 RequestType = HelpRequestType.Billing,
                 RequestStatus = HelpRequestStatus.Pending,
-                GameSessionId = 1,
+                IssueId = 1,
             };
 
             // Simulate ticket found in the repository

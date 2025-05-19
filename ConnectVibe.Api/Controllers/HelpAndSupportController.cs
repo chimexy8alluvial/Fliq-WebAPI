@@ -3,6 +3,7 @@ using Fliq.Application.HelpAndSupport.Commands.AddMessage;
 using Fliq.Application.HelpAndSupport.Commands.Create;
 using Fliq.Application.HelpAndSupport.Queries.GetSupportTicket;
 using Fliq.Application.HelpAndSupport.Queries.GetSupportTickets;
+using Fliq.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -51,8 +52,8 @@ namespace Fliq.Api.Controllers
         public async Task<IActionResult> GetPaginatedSupportTickets(
             [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 10,
-            [FromQuery] int? requestType = null,
-            [FromQuery] int? requestStatus = null)
+            [FromQuery] HelpRequestType? requestType = null,
+            [FromQuery] HelpRequestStatus? requestStatus = null)
         {
             var query = new GetPaginatedSupportTicketsQuery
             {

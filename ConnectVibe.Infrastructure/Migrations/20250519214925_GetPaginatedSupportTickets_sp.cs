@@ -30,7 +30,7 @@ BEGIN
         RequesterName,
         RequestType,
         RequestStatus,
-        GameSessionId,
+        IssueId,
         DateCreated,
         DateModified,
         IsDeleted

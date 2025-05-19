@@ -3,6 +3,7 @@ using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Application.Common.Pagination;
 using Fliq.Domain.Entities.HelpAndSupport;
+using Fliq.Domain.Enums;
 using MediatR;
 
 namespace Fliq.Application.HelpAndSupport.Queries.GetSupportTickets
@@ -10,8 +11,8 @@ namespace Fliq.Application.HelpAndSupport.Queries.GetSupportTickets
     public class GetPaginatedSupportTicketsQuery : IRequest<ErrorOr<PaginationResponse<SupportTicket>>>
     {
         public PaginationRequest PaginationRequest { get; set; }
-        public int? RequestType { get; set; }
-        public int? RequestStatus { get; set; }
+        public HelpRequestType? RequestType { get; set; }
+        public HelpRequestStatus? RequestStatus { get; set; }
     }
 
     public class GetPaginatedSupportTicketsQueryHandler : IRequestHandler<GetPaginatedSupportTicketsQuery, ErrorOr<PaginationResponse<SupportTicket>>>

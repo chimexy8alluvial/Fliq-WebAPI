@@ -81,7 +81,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             }
         }
 
-        public async Task<List<SupportTicket>> GetPaginatedSupportTicketsAsync(PaginationRequest paginationRequest, int? requestType = null, int? requestStatus = null)
+        public async Task<List<SupportTicket>> GetPaginatedSupportTicketsAsync(PaginationRequest paginationRequest, HelpRequestType? requestType = null, HelpRequestStatus? requestStatus = null)
         {
             try
             {
@@ -110,7 +110,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             }
         }
 
-        public async Task<int> GetTotalSupportTicketsCountAsync(int? requestType = null, int? requestStatus = null)
+        public async Task<int> GetTotalSupportTicketsCountAsync(HelpRequestType? requestType = null, HelpRequestStatus? requestStatus = null)
         {
             try
             {

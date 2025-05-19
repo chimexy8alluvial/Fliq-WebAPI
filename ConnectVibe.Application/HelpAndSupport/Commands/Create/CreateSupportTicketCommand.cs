@@ -14,7 +14,7 @@ namespace Fliq.Application.HelpAndSupport.Commands.Create
         public int RequesterId { get; set; }
         public string RequesterName { get; set; } = default!;
         public HelpRequestType RequestType { get; set; }
-        public int GameSessionId { get; set; }
+        public int IssueId { get; set; }
     }
 
     public class CreateSupportTicketCommandHandler : IRequestHandler<CreateSupportTicketCommand, ErrorOr<CreateSupportTicketResponse>>
@@ -39,7 +39,7 @@ namespace Fliq.Application.HelpAndSupport.Commands.Create
                 RequesterName = command.RequesterName,
                 RequestType = command.RequestType,
                 RequestStatus = HelpRequestStatus.Pending,
-                GameSessionId = command.GameSessionId,
+               IssueId = command.IssueId,
             };
             try
             {

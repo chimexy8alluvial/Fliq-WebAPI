@@ -18,8 +18,8 @@ namespace Fliq.Application.Common.Interfaces.Persistence
 
         Task UpdateTicketStatusAsync(int ticketId, HelpRequestStatus status);
 
-        Task<List<SupportTicket>> GetPaginatedSupportTicketsAsync(PaginationRequest paginationRequest, int? requestType = null, int? requestStatus = null);
+        Task<List<SupportTicket>> GetPaginatedSupportTicketsAsync(PaginationRequest paginationRequest, HelpRequestType? requestType = null, HelpRequestStatus? requestStatus = null);
 
-        Task<int> GetTotalSupportTicketsCountAsync(int? requestType = null, int? requestStatus = null);
+        Task<int> GetTotalSupportTicketsCountAsync(HelpRequestType? requestType = null, HelpRequestStatus? requestStatus = null);
     }
 }

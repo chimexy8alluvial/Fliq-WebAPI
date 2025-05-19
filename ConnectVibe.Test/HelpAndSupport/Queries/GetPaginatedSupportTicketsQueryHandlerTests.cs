@@ -49,7 +49,7 @@ namespace Fliq.Test.HelpAndSupport.Queries
                 RequesterName = "John Doe",
                 RequestType = HelpRequestType.Billing,
                 RequestStatus = HelpRequestStatus.Pending,
-                GameSessionId = 1,
+                IssueId = 1,
             },
             new SupportTicket
             {
@@ -60,7 +60,7 @@ namespace Fliq.Test.HelpAndSupport.Queries
                 RequesterName = "Jane Smith",
                 RequestType = HelpRequestType.Billing,
                 RequestStatus = HelpRequestStatus.Pending,
-                GameSessionId = 2,
+                IssueId = 2,
             }
         };
 
