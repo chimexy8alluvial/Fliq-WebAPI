@@ -40,7 +40,6 @@ namespace Fliq.Application.Explore.Queries
         {
             _logger.LogInfo("Starting ExploreQuery handling for user.");
 
-            // Get logged-in user
             var user = _userRepository.GetUserById(query.UserId);
             if (user == null)
             {
@@ -48,23 +47,17 @@ namespace Fliq.Application.Explore.Queries
                 return Errors.User.UserNotFound;
             }
 
-            var userProfile = _profileRepository.GetProfileByUserId(query.UserId);
-
-            if (userProfile == null)
+            if (user.UserProfile == null)
             {
                 _logger.LogWarn($"UserProfile not found for user {user.Id}");
                 return Errors.Profile.ProfileNotFound;
             }
 
-            // Fetch user profiles based on filters
             _logger.LogInfo($"Fetching profiles for user --> {user.Id}");
             var profiles = await _profileMatchingService.GetMatchedProfilesAsync(user, query);
-            _logger.LogInfo($"Successfully fetched {profiles.Count()} profiles for user.");
-            var totalCount = profiles.Count();
+            _logger.LogInfo($"Successfully fetched {profiles.Data.Count()} profiles for user.");
 
-            var paginatedProfiles = new PaginationResponse<UserProfile>(profiles, totalCount, query.PaginationRequest.PageNumber, query.PaginationRequest.PageSize);
-
-            return new ExploreResult(paginatedProfiles);
+            return new ExploreResult(profiles);
         }
     }
 

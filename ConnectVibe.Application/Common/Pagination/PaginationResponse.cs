@@ -1,8 +1,4 @@
-﻿
-
-using Fliq.Application.Authentication.Common;
-
-namespace Fliq.Application.Common.Pagination
+﻿namespace Fliq.Application.Common.Pagination
 {
     public class PaginationResponse<T>
     {

@@ -53,29 +53,37 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             return profile;
         }
 
-        public IEnumerable<UserProfile> GetMatchedUserProfiles(
-        int userId,
-        List<ProfileType> userProfileTypes,
-        bool? filterByDating,
-        bool? filterByFriendship,
-
-        PaginationRequest paginationRequest)
-        {
+        public PaginationResponse<UserProfile> GetMatchedUserProfiles(
+             int userId,
+             List<ProfileType> userProfileTypes,
+             bool? filterByDating,
+             bool? filterByFriendship,
+             bool? filterByEvent,
+             PaginationRequest paginationRequest)
+                {
             using (var connection = _connectionFactory.CreateConnection())
             {
-                var parameters = CreateDynamicParameters(userId, userProfileTypes, filterByDating, filterByFriendship, paginationRequest);
+                var parameters = CreateDynamicParameters(userId, userProfileTypes, filterByDating, filterByFriendship,filterByEvent, paginationRequest);
 
                 var sql = "sPGetMatchedUserProfiles";
 
-                // Execute the query using Dapper, returning a flat result.
-                var result = connection.Query<dynamic>(sql, param: parameters, commandType: CommandType.StoredProcedure);
+                // Execute the query using Dapper
+                var result = connection.Query<dynamic>(sql, param: parameters, commandType: CommandType.StoredProcedure).ToList();
 
-                // Group the result by UserProfileId to ensure that all rows belonging to the same UserProfile are processed together.
-                var profiles = result.GroupBy(row => (int)row.Id)
-                                     .Select(group => _customProfileMapper.MapToUserProfile(group)) // Pass each group to the mapper
-                                     .ToList();
+                // Extract TotalCount (assume it's the same for all rows)
+                int totalCount = result.Any() ? result.First().TotalCount : 0;
 
-                return profiles;
+                // Map profiles (no grouping needed)
+                var profiles = result.Select(row => _customProfileMapper.MapToUserProfile(new[] { row }.GroupBy(r => (int)r.Id).First()))
+                                    .Where(profile => profile != null)
+                                    .ToList();
+
+                return new PaginationResponse<UserProfile>(
+                    data: profiles,
+                    totalCount: totalCount,
+                    pageNumber: paginationRequest.PageNumber,
+                    pageSize: paginationRequest.PageSize
+                );
             }
         }
 
@@ -139,7 +147,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
         //    return query.FirstOrDefault(p => p.UserId == id);
         //}
-        private static DynamicParameters CreateDynamicParameters(int userId, List<ProfileType> userProfileTypes, bool? filterByDating, bool? filterByFriendship, PaginationRequest paginationRequest)
+        private static DynamicParameters CreateDynamicParameters(int userId, List<ProfileType> userProfileTypes, bool? filterByDating, bool? filterByFriendship,bool? filterByEvent, PaginationRequest paginationRequest)
         {
             string serializedProfileTypes = JsonConvert.SerializeObject(userProfileTypes);
 
@@ -152,6 +160,7 @@ namespace Fliq.Infrastructure.Persistence.Repositories
 
             parameters.Add("@filterByDating", filterByDating, DbType.Boolean);
             parameters.Add("@filterByFriendship", filterByFriendship, DbType.Boolean);
+            parameters.Add("@filterByEvent", filterByEvent, DbType.Boolean);
             parameters.Add("@pageNumber", paginationRequest.PageNumber);
             parameters.Add("@pageSize", paginationRequest.PageSize);
 
