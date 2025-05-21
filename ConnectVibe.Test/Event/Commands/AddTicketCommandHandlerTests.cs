@@ -56,7 +56,7 @@ namespace Fliq.Test.Event.Commands
                 TicketDescription = "VIP access",
                 EventDate = DateTime.UtcNow,
                 Amount = 100.0m,
-                MaximumLimit = "50",
+                MaximumLimit = 50,
                 SoldOut = false
             };
 
@@ -83,7 +83,7 @@ namespace Fliq.Test.Event.Commands
                 TicketDescription = "VIP access",
                 EventDate = DateTime.UtcNow,
                 Amount = 100.0m,
-                MaximumLimit = "50",
+                MaximumLimit = 50,
                 SoldOut = false
             };
 
@@ -117,7 +117,7 @@ namespace Fliq.Test.Event.Commands
                 TicketDescription = "VIP access",
                 EventDate = DateTime.UtcNow,
                 Amount = 100.0m,
-                MaximumLimit = "50",
+                MaximumLimit = 50,
                 SoldOut = false
             };
 
@@ -153,7 +153,7 @@ namespace Fliq.Test.Event.Commands
                 TicketDescription = "VIP access",
                 EventDate = DateTime.UtcNow,
                 Amount = 100.0m,
-                MaximumLimit = "50",
+                MaximumLimit = 50,
                 SoldOut = false
             };
 
@@ -192,7 +192,7 @@ namespace Fliq.Test.Event.Commands
                 TicketDescription = "Standard entry ticket",
                 EventDate = DateTime.UtcNow,
                 Amount = 50.0m,
-                MaximumLimit = "100",
+                MaximumLimit = 100,
                 SoldOut = false
             };
 
@@ -245,7 +245,7 @@ namespace Fliq.Test.Event.Commands
                 TicketDescription = "Discounted ticket for early buyers",
                 EventDate = DateTime.UtcNow,
                 Amount = 30.0m,
-                MaximumLimit = "100",
+                MaximumLimit = 100,
                 SoldOut = false,
                 Discounts = new List<Discount>
                 {
