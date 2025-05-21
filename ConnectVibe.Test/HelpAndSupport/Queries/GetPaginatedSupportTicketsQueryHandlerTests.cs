@@ -48,7 +48,8 @@ namespace Fliq.Test.HelpAndSupport.Queries
                 RequesterId = 1,
                 RequesterName = "John Doe",
                 RequestType = HelpRequestType.Billing,
-                RequestStatus = HelpRequestStatus.Pending
+                RequestStatus = HelpRequestStatus.Pending,
+                IssueId = 1,
             },
             new SupportTicket
             {
@@ -58,7 +59,8 @@ namespace Fliq.Test.HelpAndSupport.Queries
                 RequesterId = 2,
                 RequesterName = "Jane Smith",
                 RequestType = HelpRequestType.Billing,
-                RequestStatus = HelpRequestStatus.Pending
+                RequestStatus = HelpRequestStatus.Pending,
+                IssueId = 2,
             }
         };
 
@@ -66,12 +68,12 @@ namespace Fliq.Test.HelpAndSupport.Queries
 
             // Simulate fetching paginated tickets from the repository
             _mockRepository
-                .Setup(r => r.GetPaginatedSupportTicketsAsync(query.PaginationRequest))
+                .Setup(r => r.GetPaginatedSupportTicketsAsync(query.PaginationRequest, query.RequestType, query.RequestStatus))
                 .ReturnsAsync(tickets);
 
             // Simulate getting the total count of tickets
             _mockRepository
-                .Setup(r => r.GetTotalSupportTicketsCountAsync(null))
+                .Setup(r => r.GetTotalSupportTicketsCountAsync(query.RequestType, query.RequestStatus))
                 .ReturnsAsync(totalTickets);
 
             // Act
@@ -96,7 +98,7 @@ namespace Fliq.Test.HelpAndSupport.Queries
 
             // Simulate repository throwing an exception
             _mockRepository
-                .Setup(r => r.GetPaginatedSupportTicketsAsync(query.PaginationRequest))
+                .Setup(r => r.GetPaginatedSupportTicketsAsync(query.PaginationRequest, query.RequestType, query.RequestStatus))
                 .ThrowsAsync(new Exception("Database error"));
 
             // Act
