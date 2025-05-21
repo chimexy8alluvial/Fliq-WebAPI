@@ -53,10 +53,11 @@ namespace Fliq.Application.Event.Commands.EventCreation
         private readonly IEmailService _emailService;
         private readonly IMediator _mediator;
         private readonly ICurrencyRepository _currencyRepository;
+        private readonly IProfileRepository _profileRepository;
         private const string _eventDocument = "Event Documents";
 
         public CreateEventCommandHandler(IMapper mapper, ILoggerManager logger, IUserRepository userRepository,
-            IMediaServices mediaServices, IEventRepository eventRepository, ILocationService locationService, IEventService eventService, IEmailService emailService, IMediator mediator, ICurrencyRepository currencyRepository)
+            IMediaServices mediaServices, IEventRepository eventRepository, ILocationService locationService, IEventService eventService, IEmailService emailService, IMediator mediator, ICurrencyRepository currencyRepository, IProfileRepository profileRepository)
         {
             _mapper = mapper;
             _logger = logger;
@@ -68,6 +69,7 @@ namespace Fliq.Application.Event.Commands.EventCreation
             _emailService = emailService;
             _mediator = mediator;
             _currencyRepository = currencyRepository;
+            _profileRepository = profileRepository;
         }
 
         public async Task<ErrorOr<CreateEventResult>> Handle(CreateEventCommand command, CancellationToken cancellationToken)
@@ -115,26 +117,39 @@ namespace Fliq.Application.Event.Commands.EventCreation
                 newEvent.Location = location;
             }
 
-            _eventRepository.Add(newEvent);            
+            _eventRepository.Add(newEvent);
+
+            //if (command.Tickets == null || !command.Tickets.Any())
+            //{
+            //    _logger.LogError("No tickets provided in the request.");
+            //    return Errors.Ticket.NoTicketsSpecified;
+            //}
 
             if (command.Tickets is not null)
             {
+                // Get user's currency
+                Currency currency;
+                try
+                {
+                    currency = await _profileRepository.GetUserCurrencyAsync(command.UserId, cancellationToken);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    _logger.LogError($"Failed to retrieve currency for user ID {command.UserId}: {ex.Message}");
+                    return Error.Failure("No currency available for ticket creation.");
+                }
+
                 foreach (var ticket in command.Tickets)
                 {
                     var newTicket = _mapper.Map<Ticket>(ticket);
-                    var currency = _currencyRepository.GetCurrencyById(ticket.CurrencyId);
-
-                    if (currency is null)
-                    {
-                        return Errors.Payment.InvalidPayload; //Currentcy does not exist
-                    }
-
+                    newTicket.CurrencyId = currency.Id;
                     newTicket.Currency = currency;
                     newTicket.EventId = newEvent.Id;
                     newTicket.EventDate = newEvent.StartDate;
                     newEvent.Tickets?.Add(newTicket);
                 }
             }
+
             _eventRepository.Update(newEvent);
 
             // Trigger Organizer Notification

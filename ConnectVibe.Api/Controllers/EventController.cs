@@ -52,6 +52,8 @@ namespace Fliq.Api.Controllers
             }).ToList();
 
             command.UserId = GetAuthUserId();
+            command.Tickets = request.Tickets?.Select(ticket => _mapper.Map<TicketDto>(ticket)).ToList();
+
             var EventCreatedResult = await _mediator.Send(command);
             _logger.LogInfo($"EventCreatedResult command Executed. Result: {EventCreatedResult}");
 

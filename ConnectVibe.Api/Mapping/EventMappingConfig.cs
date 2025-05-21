@@ -20,6 +20,7 @@ namespace Fliq.Api.Mapping
             config.NewConfig<CreateEventRequest, CreateEventCommand>()
                    .Map(dest => dest.EventType, src => (EventType)src.EventType)
                    .Map(dest => dest.EventCategory, src => (EventCategory)src.EventCategory)
+                   .Map(dest => dest.Tickets, src => src.Tickets)
                    .Ignore(dest => dest.MediaDocuments)
                 .IgnoreNullValues(true);
             config.NewConfig<CreateEventCommand, Events>();
