@@ -17,16 +17,14 @@ namespace Fliq.Api.Mapping
     {
         public void Register(TypeAdapterConfig config)
         {
-            
-        config.NewConfig<CreateProfileRequest, CreateProfileCommand>()
-            .IgnoreNullValues(true)
-            .Ignore(dest => dest.Photos).Ignore(dest => dest.PromptResponses)
-            .Map(dest => dest.ProfileTypes,
-                src => src.ProfileTypes != null
-                    ? src.ProfileTypes.Select(dto => (ProfileType)dto.ProfileType).ToList()
-                    : new List<ProfileType>())
-            .Map(dest => dest.CurrentSection, src => (ProfileSection)src.CurrentSection);
-      
+            config.NewConfig<CreateProfileRequest, CreateProfileCommand>()
+                .IgnoreNullValues(true)
+                .Ignore(dest => dest.Photos).Ignore(dest => dest.PromptResponses)
+                .Map(dest => dest.ProfileTypes,
+                    src => src.ProfileTypes != null
+                        ? src.ProfileTypes.Select(dto => (ProfileType)dto.ProfileType).ToList()
+                        : new List<ProfileType>())
+                .Map(dest => dest.CurrentSection, src => (ProfileSection)src.CurrentSection);
 
             config.NewConfig<CreateProfileCommand, UserProfile>()
                 .IgnoreNullValues(true)
@@ -75,7 +73,7 @@ namespace Fliq.Api.Mapping
 
             config.NewConfig<UpdateEthnicityDto, Ethnicity>().IgnoreNullValues(true)
                 .Map(dest => dest.EthnicityType, src => src.EthnicityType);
-          
+
             config.NewConfig<ProfilePhoto, ProfilePhotoResponse>();
             config.NewConfig<UpdateProfilePhotoDto, ProfilePhotoMapped>()
                 .IgnoreNullValues(true)
@@ -113,11 +111,11 @@ namespace Fliq.Api.Mapping
                     src.Profile.Religion.ReligionType,
                     src.Profile.IsReligionVisible))
             .Map(dest => dest.WantKids, src => new ReadWantKidsDto(
-                    src.Profile.WantKidsId,
+                    src.Profile.WantKidsId ?? 0,
                     src.Profile.WantKids.WantKidsType,
                     null))
             .Map(dest => dest.HaveKids, src => new ReadHaveKidsDto(
-                    src.Profile.WantKidsId,
+                    src.Profile.WantKidsId ?? 0,
                     src.Profile.HaveKids.HaveKidsType,
                     null))
             .Map(dest => dest.Photos, src => src.Profile.Photos)
@@ -133,7 +131,6 @@ namespace Fliq.Api.Mapping
              pr.PromptQuestionId,
              pr.Response
          )).ToList());
-
         }
 
         public static async Task<IFormFile> CloneFile(IFormFile file)

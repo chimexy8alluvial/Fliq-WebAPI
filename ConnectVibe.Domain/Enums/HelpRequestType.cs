@@ -3,5 +3,6 @@
     public enum HelpRequestType
     {
         Billing,
+        Game,
     }
 }

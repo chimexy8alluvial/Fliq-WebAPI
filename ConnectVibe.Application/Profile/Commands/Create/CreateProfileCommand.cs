@@ -37,8 +37,8 @@ namespace Fliq.Application.Profile.Commands.Create
         public string? ProfileDescription { get; set; }
         public ProfileSection CurrentSection { get; set; }
         public int GenderId { get; set; }
-        public int HaveKidsId { get; set; }
-        public int WantKidsId { get; set; }
+        public int? HaveKidsId { get; set; }
+        public int? WantKidsId { get; set; }
         public Location? Location { get; set; }
         public LocationDetail? LocationDetail { get; set; }
         public List<PromptResponseDto>? PromptResponses { get; set; } = new(); // for default prompt responses

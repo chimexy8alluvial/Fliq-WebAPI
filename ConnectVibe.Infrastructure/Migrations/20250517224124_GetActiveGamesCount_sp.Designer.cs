@@ -12,13 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fliq.Infrastructure.Migrations
 {
     [DbContext(typeof(FliqDbContext))]
-<<<<<<<< HEAD:ConnectVibe.Infrastructure/Migrations/20250511003904_GetActiveGamesCount_sp.Designer.cs
-    [Migration("20250511003904_GetActiveGamesCount_sp")]
+    [Migration("20250517224124_GetActiveGamesCount_sp")]
     partial class GetActiveGamesCount_sp
-========
-    [Migration("20250421164231_AddUserSubscriptionPlanSchemas")]
-    partial class AddUserSubscriptionPlanSchemas
->>>>>>>> development:ConnectVibe.Infrastructure/Migrations/20250421164231_AddUserSubscriptionPlanSchemas.Designer.cs
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -117,6 +112,9 @@ namespace Fliq.Infrastructure.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("BlindDateCategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
                     b.Property<int>("CreatedByUserId")
@@ -675,12 +673,9 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-<<<<<<<< HEAD:ConnectVibe.Infrastructure/Migrations/20250511003904_GetActiveGamesCount_sp.Designer.cs
                     b.Property<int>("TicketSales")
                         .HasColumnType("int");
 
-========
->>>>>>>> development:ConnectVibe.Infrastructure/Migrations/20250421164231_AddUserSubscriptionPlanSchemas.Designer.cs
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
@@ -1078,6 +1073,9 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<DateTime?>("DateModified")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("GameSessionId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -1385,6 +1383,9 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<bool>("IsVerified")
                         .HasColumnType("bit");
 
+                    b.Property<DateTime>("UploadedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("UserProfileId")
                         .HasColumnType("int");
 
@@ -1467,8 +1468,9 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<DateTime?>("DateModified")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("GenderType")
-                        .HasColumnType("int");
+                    b.Property<string>("GenderType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");

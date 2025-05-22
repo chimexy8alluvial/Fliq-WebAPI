@@ -52,6 +52,7 @@
     <Folder Include="Notifications\Queries\" />
     <Folder Include="Prompts\Queries\" />
     <Folder Include="Payments\Queries\" />
+    <Folder Include="Subscriptions\Common\" />
   </ItemGroup>
 
 </Project>
