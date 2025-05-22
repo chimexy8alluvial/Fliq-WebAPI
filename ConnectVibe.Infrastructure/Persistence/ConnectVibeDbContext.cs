@@ -8,6 +8,7 @@ using Fliq.Domain.Entities.MatchedProfile;
 using Fliq.Domain.Entities.Notifications;
 using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Entities.Prompts;
+using Fliq.Domain.Entities.Recommendations;
 using Fliq.Domain.Entities.Settings;
 using Fliq.Domain.Entities.Subscriptions;
 using Fliq.Domain.Entities.UserFeatureActivities;
@@ -88,6 +89,9 @@ namespace Fliq.Infrastructure.Persistence
         public DbSet<UserSubscription> UserSubscriptions { get; set; }
         public DbSet<SubscriptionPlan> SubscriptionPlans { get; set; }
         public DbSet<SubscriptionPlanPrice> SubscriptionPlanPrices { get; set; }
+
+        //Recommendations
+        public DbSet<UserInteraction> UserInteractions { get; set; }
 
     }
 }
