@@ -1,8 +1,10 @@
-﻿namespace Fliq.Contracts.Recommendations
+﻿using Fliq.Domain.Enums;
+
+namespace Fliq.Contracts.Recommendations
 {
-    public record UserInteractionDto(
+    public record TrackUserInteractionRequest(
     int UserId,
-    string InteractionType,
+    InteractionType InteractionType,
     int? EventId,
     int? BlindDateId,
     int? SpeedDatingEventId,

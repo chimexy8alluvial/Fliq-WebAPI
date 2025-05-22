@@ -1,4 +1,5 @@
-﻿using Fliq.Application.Common.Interfaces.Recommendations;
+﻿using Fliq.Application.Common.Helpers;
+using Fliq.Application.Common.Interfaces.Recommendations;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Domain.Entities;
 using Fliq.Domain.Entities.DatingEnvironment.BlindDates;
@@ -28,7 +29,7 @@ namespace Fliq.Application.Common.Recommendations
             // Location proximity
             if (userProfile?.Location != null && @event.Location != null)
             {
-                double distance = CalculateDistance(
+                double distance = Extensions.CalculateDistance(
                     userProfile.Location.Lat, userProfile.Location.Lng,
                     @event.Location.Lat, @event.Location.Lng);
 
@@ -38,7 +39,7 @@ namespace Fliq.Application.Common.Recommendations
             }
 
             // Age match
-            int userAge = CalculateAge(userProfile.DOB);
+            int userAge = Extensions.CalculateAge(userProfile.DOB);
             if (userAge >= @event.MinAge && userAge <= @event.MaxAge)
             {
                 score += 0.5;
@@ -54,7 +55,7 @@ namespace Fliq.Application.Common.Recommendations
                 double interactionWeight = interaction.InteractionStrength;
 
                 // Similarity between current event and past interacted event
-                double similarity = CalculateEventSimilarity(@event, interaction.Event);
+                double similarity = Extensions.CalculateEventSimilarity(@event, interaction.Event);
 
                 var collaborativeScore = similarity * interactionWeight;
                 score += collaborativeScore;
@@ -101,7 +102,7 @@ namespace Fliq.Application.Common.Recommendations
             // 1. Location proximity
             if (userProfile?.Location != null && blindDate.Location != null)
             {
-                double distance = CalculateDistance(
+                double distance = Extensions.CalculateDistance(
                     userProfile.Location.Lat, userProfile.Location.Lng,
                     blindDate.Location.Lat, blindDate.Location.Lng);
 
@@ -159,7 +160,7 @@ namespace Fliq.Application.Common.Recommendations
             var userProfile = user.UserProfile;
 
             // 1. Age match
-            int userAge = CalculateAge(userProfile.DOB);
+            int userAge = Extensions.CalculateAge(userProfile.DOB);
             if (userAge >= speedDate.MinAge && userAge <= speedDate.MaxAge)
             {
                 score += 0.5;
@@ -168,7 +169,7 @@ namespace Fliq.Application.Common.Recommendations
             // 2. Location proximity
             if (userProfile?.Location != null && speedDate.Location != null)
             {
-                double distance = CalculateDistance(
+                double distance = Extensions.CalculateDistance(
                     userProfile.Location.Lat, userProfile.Location.Lng,
                     speedDate.Location.Lat, speedDate.Location.Lng);
 
@@ -217,8 +218,8 @@ namespace Fliq.Application.Common.Recommendations
             double score = 0;
 
             // 1. Age compatibility
-            int currentUserAge = CalculateAge(currentUser.UserProfile.DOB);
-            int targetUserAge = CalculateAge(targetUser.UserProfile.DOB);
+            int currentUserAge = Extensions.CalculateAge(currentUser.UserProfile.DOB);
+            int targetUserAge = Extensions.CalculateAge(targetUser.UserProfile.DOB);
 
             // Higher score for closer age
             double ageDifference = Math.Abs(currentUserAge - targetUserAge);
@@ -227,7 +228,7 @@ namespace Fliq.Application.Common.Recommendations
             // 2. Location proximity
             if (currentUser.UserProfile?.Location != null && targetUser.UserProfile?.Location != null)
             {
-                double distance = CalculateDistance(
+                double distance = Extensions.CalculateDistance(
                     currentUser.UserProfile.Location.Lat, currentUser.UserProfile.Location.Lng,
                     targetUser.UserProfile.Location.Lat, targetUser.UserProfile.Location.Lng);
 
@@ -289,55 +290,5 @@ namespace Fliq.Application.Common.Recommendations
             return score;
         }
 
-        private int CalculateAge(DateTime dob)
-        {
-            var today = DateTime.Today;
-            var age = today.Year - dob.Year;
-            if (dob.Date > today.AddYears(-age)) age--;
-            return age;
-        }
-
-        private double CalculateDistance(double lat1, double lon1, double lat2, double lon2)
-        {
-            // Haversine formula implementation
-            double R = 6371; // Earth radius in km
-
-            double dLat = ToRadians(lat2 - lat1);
-            double dLon = ToRadians(lon2 - lon1);
-
-            double a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
-                       Math.Cos(ToRadians(lat1)) * Math.Cos(ToRadians(lat2)) *
-                       Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
-
-            double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
-
-            return R * c; // Distance in km
-        }
-
-        private double ToRadians(double degrees)
-        {
-            return degrees * Math.PI / 180;
-        }
-
-        private double CalculateEventSimilarity(Events event1, Events event2)
-        {
-            double similarity = 0;
-
-            // Basic property comparison
-            if (event1.EventType == event2.EventType) similarity += 0.3;
-            if (event1.EventCategory == event2.EventCategory) similarity += 0.2;
-
-            // Location similarity
-            if (event1.Location != null && event2.Location != null)
-            {
-                double distance = CalculateDistance(
-                    event1.Location.Lat, event1.Location.Lng,
-                    event2.Location.Lat, event2.Location.Lng);
-
-                similarity += Math.Max(0, 5 - distance) / 10;
-            }
-
-            return similarity;
-        }
     }
 }

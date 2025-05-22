@@ -1,10 +1,10 @@
 ﻿using ErrorOr;
+using Fliq.Application.Common.Helpers;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Recommendations;
+using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Domain.Entities.Event;
-using Fliq.Domain.Entities.Event.Enums;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Fliq.Application.Recommendations.Queries
 {
@@ -16,33 +16,47 @@ namespace Fliq.Application.Recommendations.Queries
         private readonly IRecommendationCalculator _recommendationCalculator;
         private readonly IRecommendationRepository _recommendationRepository;
         private readonly IEventRepository _eventRepository;
-        public GetRecommendedEventsQueryHandler(IUserRepository userRepository, IRecommendationCalculator recommendationCalculator, IRecommendationRepository recommendationRepository, IEventRepository eventRepository)
+        private readonly ILoggerManager _logger;
+
+        public GetRecommendedEventsQueryHandler(IUserRepository userRepository, IRecommendationCalculator recommendationCalculator, IRecommendationRepository recommendationRepository, IEventRepository eventRepository, ILoggerManager logger)
         {
             _userRepository = userRepository;
             _recommendationCalculator = recommendationCalculator;
             _recommendationRepository = recommendationRepository;
             _eventRepository = eventRepository;
+            _logger = logger;
         }
 
         public async Task<ErrorOr<List<Events>>> Handle(GetRecommendedEventsQuery request, CancellationToken cancellationToken)
         {
-            var user =  _userRepository.GetUserByIdIncludingProfile(request.UserId);
+            _logger.LogInfo($"Handling GetRecommendedEventsQuery for UserId: {request.UserId}");
+
+            var user = _userRepository.GetUserByIdIncludingProfile(request.UserId);
             if (user == null)
             {
+                _logger.LogError($"User with UserId: {request.UserId} not found.");
                 return new List<Events>();
             }
-            // Get user's past event interactions
-            var userEventInteractions =  await _recommendationRepository.GetPastUserInteractionsAsync(request.UserId, "event");
 
-            // Get events matching basic criteria (not past, appropriate age range, etc.)
+            _logger.LogInfo($"Fetching past event interactions for UserId: {request.UserId}");
+            var userEventInteractions = await _recommendationRepository.GetPastUserInteractionsAsync(request.UserId, "event");
 
-            var userAge = CalculateAge(user.UserProfile.DOB);
+            _logger.LogInfo($"Calculating age for UserId: {request.UserId}");
+            var userAge = Extensions.CalculateAge(user.UserProfile.DOB);
 
+            _logger.LogInfo($"Fetching upcoming events for UserId: {request.UserId} with age: {userAge}");
             var candidateEvents = await _eventRepository.GetUpcomingByAgeRange(userAge);
 
-            // Calculate scores and rank
+            if (!candidateEvents.Any())
+            {
+                _logger.LogWarn($"No upcoming events found for UserId: {request.UserId} with age: {userAge}");
+                return new List<Events>();
+            }
+
+            _logger.LogInfo($"Calculating scores for events for UserId: {request.UserId}");
             var scoredEvents = candidateEvents
-                .Select(e => new {
+                .Select(e => new
+                {
                     Event = e,
                     Score = _recommendationCalculator.CalculateEventScore(e, user, userEventInteractions.ToList())
                 })
@@ -51,15 +65,8 @@ namespace Fliq.Application.Recommendations.Queries
                 .Select(item => item.Event)
                 .ToList();
 
+            _logger.LogInfo($"Returning {scoredEvents.Count} recommended events for UserId: {request.UserId}");
             return scoredEvents;
-        }
-
-        private int CalculateAge(DateTime dob)
-        {
-            var today = DateTime.Today;
-            var age = today.Year - dob.Year;
-            if (dob.Date > today.AddYears(-age)) age--;
-            return age;
         }
     }
 }

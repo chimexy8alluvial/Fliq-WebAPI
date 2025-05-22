@@ -17,5 +17,8 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         Task<int> GetBlindDateCountAsync();
         Task<int> DeleteMultipleAsync(List<int> blindDatingId);
         Task<(List<DatingListItems> List, int blindCount)> GetAllFilteredListAsync(string Title, DatingType? Type, TimeSpan? Duration, string SubscriptionType, DateTime? dateCreatedFrom, DateTime? dateCreatedTo, string CreatedBy, int Page, int PageSize);
+
+        // Add the missing method definition to fix the error  
+        Task<IEnumerable<BlindDate>> GetUpcomingBlindDates();
     }
 }
