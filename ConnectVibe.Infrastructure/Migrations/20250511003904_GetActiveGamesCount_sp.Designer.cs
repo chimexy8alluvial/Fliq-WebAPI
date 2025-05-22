@@ -12,13 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Fliq.Infrastructure.Migrations
 {
     [DbContext(typeof(FliqDbContext))]
-<<<<<<<< HEAD:ConnectVibe.Infrastructure/Migrations/20250511003904_GetActiveGamesCount_sp.Designer.cs
-    [Migration("20250511003904_GetActiveGamesCount_sp")]
-    partial class GetActiveGamesCount_sp
-========
     [Migration("20250421164231_AddUserSubscriptionPlanSchemas")]
     partial class AddUserSubscriptionPlanSchemas
->>>>>>>> development:ConnectVibe.Infrastructure/Migrations/20250421164231_AddUserSubscriptionPlanSchemas.Designer.cs
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -675,12 +670,6 @@ namespace Fliq.Infrastructure.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-<<<<<<<< HEAD:ConnectVibe.Infrastructure/Migrations/20250511003904_GetActiveGamesCount_sp.Designer.cs
-                    b.Property<int>("TicketSales")
-                        .HasColumnType("int");
-
-========
->>>>>>>> development:ConnectVibe.Infrastructure/Migrations/20250421164231_AddUserSubscriptionPlanSchemas.Designer.cs
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
