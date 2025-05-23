@@ -8,12 +8,6 @@ namespace Fliq.Application.Common.Interfaces.Persistence
 {
     public interface IRecommendationRepository
     {
-        //Task<IEnumerable<GetUserRecommendationsResult>> GetRecommendedEventsAsync(int userId, int limit);
-        //Task<IEnumerable<GetUserRecommendationsResult>> GetRecommendedBlindDatesAsync(int userId, int limit);
-        //Task<IEnumerable<GetUserRecommendationsResult>> GetRecommendedSpeedDatesAsync(int userId, int limit);
-        //Task<IEnumerable<GetUserRecommendationsResult>> GetRecommendedUsersAsync(int userId, int limit);
-        //Task CacheBatchRecommendationsAsync(int userId, IEnumerable<GetUserRecommendationsResult> recommendations);
-        //Task<bool> HasCachedRecommendationsAsync(int userId);
         Task<IEnumerable<UserInteraction>> GetPastUserInteractionsAsync(int userId, string eventType);
         Task SaveUserInteractionAsync(UserInteraction interaction);
 
