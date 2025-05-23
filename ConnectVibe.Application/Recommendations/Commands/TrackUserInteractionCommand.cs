@@ -3,7 +3,7 @@ using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Services;
 using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Recommendations;
-using Fliq.Domain.Enums;
+using Fliq.Domain.Enums.Recommendations;
 using MediatR;
 
 namespace Fliq.Application.Recommendations.Commands

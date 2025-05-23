@@ -159,6 +159,27 @@ namespace Fliq.Infrastructure
                // Register ExportUsersJob (no trigger)
                var exportJobKey = new JobKey("ExportUsersJob");
                q.AddJob<ExportUsersJob>(opts => opts.WithIdentity(exportJobKey));
+
+               // NEW: Add recommendation precomputation job
+               var precomputeJobKey = new JobKey("PrecomputeRecommendationsJob");
+               q.AddJob<PrecomputeRecommendationsJob>(opts => opts.WithIdentity(precomputeJobKey));
+               q.AddTrigger(opts => opts
+                   .ForJob(precomputeJobKey)
+                   .WithIdentity("PrecomputeRecommendationsTrigger")
+                   .WithSimpleSchedule(x => x
+                       .WithIntervalInHours(6)  // Run every 6 hours
+                       .RepeatForever())
+                   .StartNow()
+               );
+
+               // NEW: Add cleanup job
+               var cleanupJobKey = new JobKey("CleanupOldRecommendationsJob");
+               q.AddJob<CleanupOldRecommendationsJob>(opts => opts.WithIdentity(cleanupJobKey));
+               q.AddTrigger(opts => opts
+                   .ForJob(cleanupJobKey)
+                   .WithIdentity("CleanupOldRecommendationsTrigger")
+                   .WithCronSchedule("0 0 2 * * ?") // Run daily at 2 AM UTC
+               );
            });
             return services;
         }

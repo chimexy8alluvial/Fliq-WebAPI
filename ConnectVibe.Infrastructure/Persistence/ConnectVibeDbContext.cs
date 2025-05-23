@@ -92,6 +92,6 @@ namespace Fliq.Infrastructure.Persistence
 
         //Recommendations
         public DbSet<UserInteraction> UserInteractions { get; set; }
-
+        public DbSet<CachedRecommendation> CachedRecommendations { get; set; }
     }
 }

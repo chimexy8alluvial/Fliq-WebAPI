@@ -1,4 +1,4 @@
-﻿using Fliq.Domain.Enums;
+﻿using Fliq.Domain.Enums.Recommendations;
 
 namespace Fliq.Contracts.Recommendations
 {

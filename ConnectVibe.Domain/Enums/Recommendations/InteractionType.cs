@@ -1,4 +1,4 @@
-﻿namespace Fliq.Domain.Enums
+﻿namespace Fliq.Domain.Enums.Recommendations
 {
     public enum InteractionType
     {
@@ -7,6 +7,7 @@
         Attend,
         Message,
         Review,
-        Match
+        MatchRequest,
+        Match,
     }
 }
