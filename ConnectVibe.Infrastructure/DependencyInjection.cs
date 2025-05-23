@@ -12,11 +12,17 @@ using Fliq.Application.Common.Interfaces.Services.PaymentServices;
 using Fliq.Application.Common.Interfaces.Services.SubscriptionServices;
 using Fliq.Application.Explore.Common.Services;
 using Fliq.Application.SchedulingServices.QuartzJobs;
+using Fliq.Domain.Entities.DatingEnvironment.BlindDates;
+using Fliq.Domain.Entities.DatingEnvironment.SpeedDates;
+using Fliq.Domain.Entities.Event;
+using Fliq.Domain.Entities.Games;
+using Fliq.Domain.Entities.Prompts;
 using Fliq.Infrastructure.Authentication;
 using Fliq.Infrastructure.Event;
 using Fliq.Infrastructure.Persistence;
 using Fliq.Infrastructure.Persistence.Helper;
 using Fliq.Infrastructure.Persistence.Repositories;
+using Fliq.Infrastructure.Persistence.Repositories.Adapters;
 using Fliq.Infrastructure.Persistence.Repositories.Subscriptions;
 using Fliq.Infrastructure.Services;
 using Fliq.Infrastructure.Services.AuthServices;
@@ -44,6 +50,7 @@ namespace Fliq.Infrastructure
         {
             services.AddAuth(configurationManager);
             services.AddStream(configurationManager);
+            services.AddRepositoryAdapters();
             services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IProfileRepository, ProfileRepository>();
@@ -83,6 +90,12 @@ namespace Fliq.Infrastructure
             services.AddScoped<IBlindDateRepository, BlindDateRepository>();
             services.AddScoped<ISpeedDateParticipantRepository, SpeedDateParticipantRepository>();
             services.AddScoped<ISpeedDatingEventRepository, SpeedDatingEventRepository>();
+            services.AddScoped<ISearchRepository, SearchRepository>();
+            services.AddScoped<IRepositoryFactory, RepositoryFactory>();
+            services.AddScoped<IComplianceTypeRepository, ComplianceTypeRepository>();
+            services.AddScoped<IComplianceRepository, ComplianceRepository>();
+            services.AddScoped<IUserConsentRepository, UserConsentRepository>();
+            services.AddScoped<IContentRepository, ContentRepository>();
             services.AddScoped<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
             services.AddScoped<ISubscriptionPlanPriceRepository, SubscriptionPlanPriceRepository>();
             services.AddScoped<IUserSubscriptionRepository, UserSubscriptionRepository>();
@@ -95,6 +108,16 @@ namespace Fliq.Infrastructure
             services.AddScoped<IBusinessIdentificationDocumentRepository, BusinessIdentificationDocumentRepository>();
             services.AddDbContext<FliqDbContext>(options =>
     options.UseSqlServer(configurationManager.GetConnectionString("FliqDbContext") ?? throw new InvalidOperationException("Connection string 'FliqDbContext' not found.")));
+            return services;
+        }
+
+        public static IServiceCollection AddRepositoryAdapters(this IServiceCollection services)
+        {
+            services.AddScoped<IGenericRepository<SpeedDatingEvent>>(sp => new SpeedDatingEventRepositoryAdapter(sp.GetRequiredService<ISpeedDatingEventRepository>()));
+            services.AddScoped<IGenericRepository<BlindDate>>(sp => new BlindDateRepositoryAdapter(sp.GetRequiredService<IBlindDateRepository>()));
+            services.AddScoped<IGenericRepository<Game>>(sp => new GamesRepositoryAdapter(sp.GetRequiredService<IGamesRepository>()));
+            services.AddScoped<IGenericRepository<PromptQuestion>>(sp => new PromptRepositoryAdapter(sp.GetRequiredService<IPromptQuestionRepository>()));
+            services.AddScoped<IGenericRepository<Events>>(sp => new EventsRepositoryAdapter(sp.GetRequiredService<IEventRepository>()));
             return services;
         }
 

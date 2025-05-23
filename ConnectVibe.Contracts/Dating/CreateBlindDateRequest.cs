@@ -12,6 +12,6 @@ namespace Fliq.Contracts.Dating
        DateTime? SessionStartTime,
        DateTime? SessionEndTime,
        DatePhotoDto? BlindDateImage,
-       LocationDto Location
+       LocationDto? Location
         );
 }

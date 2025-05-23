@@ -7,11 +7,11 @@ using Fliq.Domain.Common.Errors;
 using Fliq.Domain.Entities.Event.Enums;
 using MediatR;
 
-namespace Fliq.Application.Tests.DashBoard.Queries.GetEventsTicket
+namespace Fliq.Application.DashBoard.Queries.GetEventsTicket
 {
     public record GetAllEventsTicketsQuery(
                     PaginationRequest PaginationRequest = default!,
-                    EventCategory? Category = null, 
+                    EventCategory? Category = null,
                     string? StatusFilter = null,
                     DateTime? StartDate = null,
                     DateTime? EndDate = null,
@@ -36,7 +36,7 @@ namespace Fliq.Application.Tests.DashBoard.Queries.GetEventsTicket
                 var request = new GetEventsTicketsListRequest
                 {
                     PaginationRequest = query.PaginationRequest,
-                    Category = query.Category, 
+                    Category = query.Category,
                     StatusFilter = query.StatusFilter,
                     StartDate = query.StartDate,
                     EndDate = query.EndDate,

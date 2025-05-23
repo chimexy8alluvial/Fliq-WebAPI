@@ -1,4 +1,5 @@
 ﻿using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.DatingEnvironment.Commands.SpeedDating;
 using Fliq.Application.Prompts.Commands.AddPromptCategory;
 using Fliq.Application.Prompts.Commands.AddSystemPrompt;
 using Fliq.Application.Prompts.Queries;
@@ -12,7 +13,7 @@ namespace Fliq.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class PromptsController : ApiBaseController
     {
         private readonly ISender _mediator;
@@ -76,8 +77,7 @@ namespace Fliq.Api.Controllers
 
         [HttpPost("AddCategory")]
         [Produces(typeof(AddPromptCategoryResponse))]
-        [AllowAnonymous]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "SuperAdmin, Admin")]
         public async Task<IActionResult> AddCategory([FromBody] AddPromptCategoryRequest request)
         {
             _logger.LogInfo($"Add Prompt Category  request received: {request}");
@@ -95,8 +95,6 @@ namespace Fliq.Api.Controllers
 
         [HttpPost("GetCategories")]
         [Produces(typeof(AddPromptCategoryResponse))]
-        [AllowAnonymous]
-        //[Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetCategories()
         {
             _logger.LogInfo($" Prompt Categories Query received");
@@ -115,12 +113,12 @@ namespace Fliq.Api.Controllers
 
         [HttpPost("AddSystemPrompt")]
         [Produces(typeof(AddSystemPromptResponse))]
-        [AllowAnonymous]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "SuperAdmin, Admin")]
         public async Task<IActionResult> AddSystemPrompt([FromBody] AddSystemPromptRequest request)
         {
             _logger.LogInfo($"Add System Prompt request received: {request}");
-            var command = new AddSystemPromptCommand(request.QuestionText, request.CategoryId);
+            var userId = GetAuthUserId();
+            var command = new AddSystemPromptCommand(request.QuestionText, request.CategoryId, userId);
 
             var result = await _mediator.Send(command);
             _logger.LogInfo($"Add System Prompt Command Executed. Result: {result}");
@@ -130,5 +128,43 @@ namespace Fliq.Api.Controllers
                 errors => Problem(string.Join("; ", errors.Select(e => e.Description)))
             );
         }
+
+       //// [Authorize(Roles = "SuperAdmin")]
+       // [HttpPut("approve-prompt/{promptId}")]
+       // public async Task<IActionResult> ApprovePromptById(int promptId)
+       // {
+       //     _logger.LogInfo($"Approve prompt with ID: {promptId} received");
+       //     var userId = GetAuthUserId();
+
+       //     var command = new ApprovePromptCommand(promptId, userId);
+       //     var result = await _mediator.Send(command);
+
+       //     _logger.LogInfo($"Approve prompt with ID: {promptId} executed. Result: {result} ");
+
+       //     return result.Match(
+       //       approvePromptResult => Ok($"Prompt request with ID: {promptId} was successfully approved"),
+       //       errors => Problem(errors)
+       //   );
+       // }
+
+       //// [Authorize(Roles = "SuperAdmin")]
+       // [HttpPut("reject-Prompt/{promptId}")]
+       // public async Task<IActionResult> RejectSPromptById(int promptId)
+       // {
+       //     _logger.LogInfo($"Reject prompt with ID: {promptId} received");
+       //     var userId = GetAuthUserId();
+
+       //     var command = new RejectPromptCommand(promptId, userId);
+       //     var result = await _mediator.Send(command);
+
+       //     _logger.LogInfo($"Reject prompt with ID: {promptId} executed. Result: {result} ");
+
+       //     return result.Match(
+       //       rejectPromptResult => Ok($"Prompt with ID: {promptId} was successfully rejected"),
+       //       errors => Problem(errors)
+       //   );
+       // }
+
+
     }
 }

@@ -1,14 +1,19 @@
 ﻿using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.Common.Pagination;
 using Fliq.Application.DatingEnvironment.Commands;
 using Fliq.Application.DatingEnvironment.Commands.BlindDateCategory;
 using Fliq.Application.DatingEnvironment.Commands.BlindDates;
 using Fliq.Application.DatingEnvironment.Commands.SpeedDating;
 using Fliq.Application.DatingEnvironment.Common;
 using Fliq.Application.DatingEnvironment.Queries.BlindDateCategory;
+using Fliq.Application.DatingEnvironment.Queries.BlindDates;
 using Fliq.Application.DatingEnvironment.Queries.DatingDashboard.BlindDte;
 using Fliq.Application.DatingEnvironment.Queries.DatingDashboard.SpeedDate;
+using Fliq.Application.DatingEnvironment.Queries.SpeedDates;
 using Fliq.Contracts.DashBoard;
 using Fliq.Contracts.Dating;
+using Fliq.Domain.Entities.DatingEnvironment.BlindDates;
+using Fliq.Domain.Entities.DatingEnvironment.SpeedDates;
 using MapsterMapper;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -84,7 +89,7 @@ namespace Fliq.Api.Controllers
 
         [HttpPost("BlindDate")]
         [Produces(typeof(CreateBlindDateResponse))]
-        public async Task<IActionResult> CreateBlindDate([FromBody] CreateBlindDateRequest request)
+        public async Task<IActionResult> CreateBlindDate([FromForm] CreateBlindDateRequest request)
         {
             _logger.LogInfo($"Create Blind Date request received: {request}");
             var userId = GetAuthUserId();
@@ -93,7 +98,8 @@ namespace Fliq.Api.Controllers
             var command = _mapper.Map<CreateBlindDateCommand>(request) with
             {
                 BlindDateImage = request.BlindDateImage is not null
-                ? new DatePhotoMapped ( request.BlindDateImage.DateSessionImageFile): null
+                ? new DatePhotoMapped ( request.BlindDateImage.DateSessionImageFile): null,
+                CreatedByUserId = userId,
             };
 
             var result = await _mediator.Send(command);
@@ -161,6 +167,26 @@ namespace Fliq.Api.Controllers
                 result => Ok(_mapper.Map<EndBlindDateResponse>(result)),
                 errors => Problem(string.Join("; ", errors.Select(e => e.Description)))
             );
+        }
+
+        [HttpGet("blind-date-list")]
+        [Authorize(Roles ="Admin,SuperAdmin")]
+        [Produces(typeof(PaginationResponse<BlindDate>))]
+        public async Task<IActionResult> GetPaginatedBlindDatesForAdmin(
+           [FromQuery] int pageNumber = 1,
+           [FromQuery] int pageSize = 10,
+           [FromQuery] int? CreationStatus = null)
+        {
+            var query = new GetPaginatedBlindDatesForAdminQuery(pageNumber, pageSize, CreationStatus);
+
+            var result = await _mediator.Send(query);
+
+            if (result.IsError)
+            {
+                return BadRequest(result.FirstError.Description);
+            }
+
+            return Ok(result.Value);
         }
 
         [HttpGet("blind-date-count")]
@@ -261,6 +287,27 @@ namespace Fliq.Api.Controllers
                 result => Ok(_mapper.Map<EndSpeedDatingEventResponse>(result)),
                 errors => Problem(string.Join("; ", errors.Select(e => e.Description)))
             );
+        }
+
+        [HttpGet("speed-date-list")]
+        [Authorize(Roles = "Admin,SuperAdmin")]
+        [Produces(typeof(PaginationResponse<SpeedDatingEvent>))]
+        [HttpGet]
+        public async Task<IActionResult> GetPaginatedSpeedDatesForAdmin(
+           [FromQuery] int pageNumber = 1,
+           [FromQuery] int pageSize = 10,
+           [FromQuery] int? CreationStatus = null)
+        {
+            var query = new GetPaginatedSpeedDatesForAdminQuery(pageNumber, pageSize, CreationStatus);
+
+            var result = await _mediator.Send(query);
+
+            if (result.IsError)
+            {
+                return BadRequest(result.FirstError.Description);
+            }
+
+            return Ok(result.Value);
         }
 
         [HttpGet("speed-date-count")]

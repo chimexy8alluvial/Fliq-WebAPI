@@ -54,5 +54,24 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             return _dbContext.PromptQuestions.Any(question => question.QuestionText.ToLower() == QuestionText.ToLower() && question.PromptCategoryId == categoryId);
         }
 
+        public async Task<int> CountAsync()
+        {
+
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_CountPrompts", commandType: CommandType.StoredProcedure);
+                return count;
+            }
+        }
+
+        public async Task<int> FlaggedCountAsync()
+        {
+
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_CountFlaggedPrompts", commandType: CommandType.StoredProcedure);
+                return count;
+            }
+        }
     }
 }

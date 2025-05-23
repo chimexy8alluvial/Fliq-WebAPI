@@ -1,9 +1,10 @@
-﻿using Fliq.Domain.Entities.Profile;
+﻿using Fliq.Domain.Entities.Interfaces;
+using Fliq.Domain.Entities.Profile;
 using Fliq.Domain.Enums;
 
 namespace Fliq.Domain.Entities.DatingEnvironment.BlindDates
 {
-    public class BlindDate : Record
+    public class BlindDate : Record, IApprovableContent
     {
         public int CategoryId { get; set; }
         public BlindDateCategory BlindDateCategory { get; set; } = default!;
@@ -18,6 +19,8 @@ namespace Fliq.Domain.Entities.DatingEnvironment.BlindDates
 
         public string? ImageUrl { get; set; }
 
+        public bool IsFlagged { get; set; }
+
         public bool IsRecordingEnabled { get; set; } = false;
         public string? RecordingUrl { get; set; }
 
@@ -31,8 +34,15 @@ namespace Fliq.Domain.Entities.DatingEnvironment.BlindDates
         public DateStatus Status { get; set; } = DateStatus.Pending;
 
         // Track the creator
+        public bool CreatorIsAdmin { get; set; }
         public int CreatedByUserId { get; set; }
         public User CreatedByUser { get; set; } = default!;
+
+        //Track approval status
+        public ContentCreationStatus ContentCreationStatus { get; set; } = ContentCreationStatus.Pending;
+        public DateTime? ApprovedAt { get; set; }
+        public int? ApprovedByUserId { get; set; }
+        public string? RejectionReason { get; set; }
 
         public ICollection<BlindDateParticipant> Participants { get; set; } = new List<BlindDateParticipant>();
 

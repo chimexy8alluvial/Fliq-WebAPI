@@ -1,9 +1,11 @@
 ﻿using Fliq.Domain.Entities.Event.Enums;
+using Fliq.Domain.Entities.Interfaces;
 using Fliq.Domain.Entities.Profile;
+using Fliq.Domain.Enums;
 
 namespace Fliq.Domain.Entities.Event
 {
-    public class Events : Record
+    public class Events : Record, IApprovableContent
     {
         public EventType EventType { get; set; }
         public string EventTitle { get; set; } = default!;
@@ -23,10 +25,21 @@ namespace Fliq.Domain.Entities.Event
         public bool IsFlagged { get; set; }
         public SponsoredEventDetail? SponsoredEventDetail { get; set; } = default!;
         public EventCriteria EventCriteria { get; set; } = default!;
-        public List<Ticket>? Tickets { get; set; } = default!; //Ticket Types
+        public List<Ticket>? Tickets { get; set; } = default!;
+
+        // Track the creator
         public int UserId { get; set; } = default!;
+        public bool CreatorIsAdmin { get; set; }
+        public User CreatedByUser { get; set; } = default!;
+
         public EventPaymentDetail? EventPaymentDetail { get; set; } = default!;
         public bool InviteesException { get; set; } = default!;
         public List<EventReview> Reviews { get; set; } = new List<EventReview>();
+
+        //Track approval status
+        public ContentCreationStatus ContentCreationStatus { get; set; } = ContentCreationStatus.Pending;
+        public DateTime? ApprovedAt { get; set; }
+        public int? ApprovedByUserId { get; set; }
+        public string? RejectionReason { get; set; }
     }
 }

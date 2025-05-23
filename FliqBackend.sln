@@ -22,6 +22,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FliqContracts", "FliqContracts", "{7719C89D-5DC3-4DCA-A35F-E035AA0B236A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FliqDomain", "FliqDomain", "{1FE50622-6CF4-493B-9410-91DA01117328}"
+	ProjectSection(SolutionItems) = preProject
+		ConnectVibe.Contracts\Profile\GenderDto.cs = ConnectVibe.Contracts\Profile\GenderDto.cs
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FliqInfrastructure", "FliqInfrastructure", "{AEA77C1A-FC61-4685-9D63-741DD6562941}"
 EndProject

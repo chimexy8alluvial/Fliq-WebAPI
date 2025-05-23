@@ -52,6 +52,24 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<BlindDate>> GetBlindDatesForAdmin(int pageSize, int pageNumber, int? creationStatus)
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var sql = "sp_BlindDateListForAdmin";
+
+                var parameter = new { 
+                    PageSize = pageSize,
+                  PageNumber = pageNumber,
+                  CreationStatus = creationStatus
+                };
+
+                var blindDates = await connection.QueryAsync<BlindDate>(sql, parameter, commandType: CommandType.StoredProcedure);
+                return blindDates.ToList();
+            }
+
+        }
+
         public async Task AddAsync(BlindDate blindDate)
         {
             if(blindDate.Id > 0)
@@ -77,6 +95,26 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             blindDate.IsDeleted = true;
             _dbContext.BlindDates.Update(blindDate);
             await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<int> CountAsync()
+        {
+
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_CountBlindDates", commandType: CommandType.StoredProcedure);
+                return count;
+            }
+        }
+
+        public async Task<int> FlaggedCountAsync()
+        {
+
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_FlaggedBlindDateCount", commandType: CommandType.StoredProcedure);
+                return count;
+            }
         }
 
         public async Task<int> GetBlindDateCountAsync()

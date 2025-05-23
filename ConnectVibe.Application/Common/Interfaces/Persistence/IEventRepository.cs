@@ -37,5 +37,8 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         Task<int> CountAllEvents();
         Task<int> CountAllEventsWithPendingApproval();
         Task<int> CountAllSponsoredEvents();
+
+        Task<int> CountAsync();
+        Task<int> FlaggedCountAsync();
     }
 }

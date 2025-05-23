@@ -51,6 +51,25 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             return games;
         }
 
+        public async Task<int> CountAsync()
+        {
+
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_CountGames", commandType: CommandType.StoredProcedure);
+                return count;
+            }
+        }
+
+        public async Task<int> FlaggedCountAsync()
+        {
+
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var count = await connection.QueryFirstOrDefaultAsync<int>("sp_FlaggedGamesCount", commandType: CommandType.StoredProcedure);
+                return count;
+            }
+        }
         public void CreateGameSession(GameSession gameSession)
         {
             if (gameSession.Id > 0)
