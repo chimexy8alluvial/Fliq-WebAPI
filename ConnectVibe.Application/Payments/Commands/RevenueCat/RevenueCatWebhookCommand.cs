@@ -110,6 +110,19 @@ namespace Fliq.Application.Payments.Commands.RevenueCat
                 case "EXPIRATION":
                     operationResult = await _subscriptionService.DeactivateExpiredUserSubscriptionAsync(payload);
                     break;
+                case "REFUNDED":
+                    var refundResult = await _revenueCatServices.RefundTransactionAsync(payload.Event.TransactionId);
+
+                    if (refundResult.IsError)
+                    {
+                        _logger.LogError($"Failed to process refund for transaction {payload.Event.TransactionId}. Error: {refundResult.FirstError.Description}");
+                        operationResult = false;
+                    }
+                    else
+                    {
+                        operationResult = refundResult.Value;
+                    }
+                    break;
                 default:
                     return Errors.Payment.InvalidPayload;
             }
