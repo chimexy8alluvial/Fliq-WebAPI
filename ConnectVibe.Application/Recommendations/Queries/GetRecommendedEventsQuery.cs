@@ -3,14 +3,15 @@ using Fliq.Application.Common.Helpers;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Recommendations;
 using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.Recommendations.Common;
 using Fliq.Domain.Entities.Event;
 using MediatR;
 
 namespace Fliq.Application.Recommendations.Queries
 {
-    public record GetRecommendedEventsQuery(int UserId, int Count = 10) : IRequest<ErrorOr<List<Events>>>;
+    public record GetRecommendedEventsQuery(int UserId, int Count = 10) : IRequest<ErrorOr<List<ScoredEventRecommendation>>>;
 
-    public class GetRecommendedEventsQueryHandler : IRequestHandler<GetRecommendedEventsQuery, ErrorOr<List<Events>>>
+    public class GetRecommendedEventsQueryHandler : IRequestHandler<GetRecommendedEventsQuery, ErrorOr<List<ScoredEventRecommendation>>>
     {
         private readonly IUserRepository _userRepository;
         private readonly IRecommendationCalculator _recommendationCalculator;
@@ -27,7 +28,7 @@ namespace Fliq.Application.Recommendations.Queries
             _logger = logger;
         }
 
-        public async Task<ErrorOr<List<Events>>> Handle(GetRecommendedEventsQuery request, CancellationToken cancellationToken)
+        public async Task<ErrorOr<List<ScoredEventRecommendation>>> Handle(GetRecommendedEventsQuery request, CancellationToken cancellationToken)
         {
             _logger.LogInfo($"Handling GetRecommendedEventsQuery for UserId: {request.UserId}");
 
@@ -35,7 +36,7 @@ namespace Fliq.Application.Recommendations.Queries
             if (user == null)
             {
                 _logger.LogError($"User with UserId: {request.UserId} not found.");
-                return new List<Events>();
+                return new List<ScoredEventRecommendation>();
             }
 
             _logger.LogInfo($"Fetching past event interactions for UserId: {request.UserId}");
@@ -50,7 +51,7 @@ namespace Fliq.Application.Recommendations.Queries
             if (!candidateEvents.Any())
             {
                 _logger.LogWarn($"No upcoming events found for UserId: {request.UserId} with age: {userAge}");
-                return new List<Events>();
+                return new List<ScoredEventRecommendation>();
             }
 
             _logger.LogInfo($"Calculating scores for events for UserId: {request.UserId}");
@@ -62,7 +63,7 @@ namespace Fliq.Application.Recommendations.Queries
                 })
                 .OrderByDescending(item => item.Score)
                 .Take(request.Count)
-                .Select(item => item.Event)
+                .Select(item => new ScoredEventRecommendation(item.Event, item.Score))
                 .ToList();
 
             _logger.LogInfo($"Returning {scoredEvents.Count} recommended events for UserId: {request.UserId}");

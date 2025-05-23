@@ -23,7 +23,7 @@ namespace Fliq.Domain.Entities.Recommendations
         public int? RecommendedUserId { get; set; }
         public User? RecommendedUser { get; set; }
 
-        public double? Score { get; set; }
+        public double Score { get; set; } = 0.0;
         public DateTime ComputedAt { get; set; }
         public bool IsActive { get; set; } = true;
     }

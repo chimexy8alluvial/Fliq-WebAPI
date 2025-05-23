@@ -2,14 +2,15 @@ using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Recommendations;
 using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.Recommendations.Common;
 using Fliq.Domain.Entities.DatingEnvironment.BlindDates;
 using MediatR;
 
 namespace Fliq.Application.Recommendations.Queries
 {
-    public record GetRecommendedBlindDatesQuery(int UserId, int Count = 10) : IRequest<ErrorOr<List<BlindDate>>>;
+    public record GetRecommendedBlindDatesQuery(int UserId, int Count = 10) : IRequest<ErrorOr<List<ScoredBlindDateRecommendation>>>;
 
-    public class GetRecommendedBlindDatesQueryHandler : IRequestHandler<GetRecommendedBlindDatesQuery, ErrorOr<List<BlindDate>>>
+    public class GetRecommendedBlindDatesQueryHandler : IRequestHandler<GetRecommendedBlindDatesQuery, ErrorOr<List<ScoredBlindDateRecommendation>>>
     {
         private readonly IUserRepository _userRepository;
         private readonly IRecommendationCalculator _recommendationCalculator;
@@ -31,7 +32,7 @@ namespace Fliq.Application.Recommendations.Queries
             _logger = logger;
         }
 
-        public async Task<ErrorOr<List<BlindDate>>> Handle(GetRecommendedBlindDatesQuery request, CancellationToken cancellationToken)
+        public async Task<ErrorOr<List<ScoredBlindDateRecommendation>>> Handle(GetRecommendedBlindDatesQuery request, CancellationToken cancellationToken)
         {
             _logger.LogInfo($"Handling GetRecommendedBlindDatesQuery for UserId: {request.UserId}");
 
@@ -39,7 +40,7 @@ namespace Fliq.Application.Recommendations.Queries
             if (user == null)
             {
                 _logger.LogError($"User with UserId: {request.UserId} not found.");
-                return new List<BlindDate>();
+                return new List<ScoredBlindDateRecommendation>();
             }
 
             _logger.LogInfo($"Fetching past blind date interactions for UserId: {request.UserId}");
@@ -51,7 +52,7 @@ namespace Fliq.Application.Recommendations.Queries
             if (!candidateBlindDates.Any())
             {
                 _logger.LogWarn($"No upcoming blind dates found for UserId: {request.UserId}");
-                return new List<BlindDate>();
+                return new List<ScoredBlindDateRecommendation>();
             }
 
             _logger.LogInfo($"Calculating scores for blind dates for UserId: {request.UserId}");
@@ -63,7 +64,7 @@ namespace Fliq.Application.Recommendations.Queries
                 })
                 .OrderByDescending(item => item.Score)
                 .Take(request.Count)
-                .Select(item => item.BlindDate)
+                .Select(item => new ScoredBlindDateRecommendation(item.BlindDate, item.Score))
                 .ToList();
 
             _logger.LogInfo($"Returning {scoredBlindDates.Count} recommended blind dates for UserId: {request.UserId}");

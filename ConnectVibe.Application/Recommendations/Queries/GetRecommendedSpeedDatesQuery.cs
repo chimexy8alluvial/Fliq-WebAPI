@@ -2,15 +2,16 @@ using ErrorOr;
 using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Application.Common.Interfaces.Recommendations;
 using Fliq.Application.Common.Interfaces.Services;
+using Fliq.Application.Recommendations.Common;
 using Fliq.Domain.Entities.DatingEnvironment.SpeedDates;
 using Fliq.Infrastructure.Persistence.Repositories;
 using MediatR;
 
 namespace Fliq.Application.Recommendations.Queries
 {
-    public record GetRecommendedSpeedDatesQuery(int UserId, int Count = 10) : IRequest<ErrorOr<List<SpeedDatingEvent>>>;
+    public record GetRecommendedSpeedDatesQuery(int UserId, int Count = 10) : IRequest<ErrorOr<List<ScoredSpeedDateRecommendation>>>;
 
-    public class GetRecommendedSpeedDatesQueryHandler : IRequestHandler<GetRecommendedSpeedDatesQuery, ErrorOr<List<SpeedDatingEvent>>>
+    public class GetRecommendedSpeedDatesQueryHandler : IRequestHandler<GetRecommendedSpeedDatesQuery, ErrorOr<List<ScoredSpeedDateRecommendation>>>
     {
         private readonly IUserRepository _userRepository;
         private readonly IRecommendationCalculator _recommendationCalculator;
@@ -32,7 +33,7 @@ namespace Fliq.Application.Recommendations.Queries
             _logger = logger;
         }
 
-        public async Task<ErrorOr<List<SpeedDatingEvent>>> Handle(GetRecommendedSpeedDatesQuery request, CancellationToken cancellationToken)
+        public async Task<ErrorOr<List<ScoredSpeedDateRecommendation>>> Handle(GetRecommendedSpeedDatesQuery request, CancellationToken cancellationToken)
         {
             _logger.LogInfo($"Handling GetRecommendedSpeedDatesQuery for UserId: {request.UserId}");
 
@@ -40,7 +41,7 @@ namespace Fliq.Application.Recommendations.Queries
             if (user == null)
             {
                 _logger.LogError($"User with UserId: {request.UserId} not found.");
-                return new List<SpeedDatingEvent>();
+                return new List<ScoredSpeedDateRecommendation>();
             }
 
             _logger.LogInfo($"Fetching past speed dating interactions for UserId: {request.UserId}");
@@ -52,7 +53,7 @@ namespace Fliq.Application.Recommendations.Queries
             if (!candidateSpeedDates.Any())
             {
                 _logger.LogWarn($"No upcoming speed dating events found for UserId: {request.UserId}");
-                return new List<SpeedDatingEvent>();
+                return new List<ScoredSpeedDateRecommendation>();
             }
 
             _logger.LogInfo($"Calculating scores for speed dating events for UserId: {request.UserId}");
@@ -64,7 +65,7 @@ namespace Fliq.Application.Recommendations.Queries
                 })
                 .OrderByDescending(item => item.Score)
                 .Take(request.Count)
-                .Select(item => item.SpeedDate)
+                .Select(item => new ScoredSpeedDateRecommendation(item.SpeedDate, item.Score))
                 .ToList();
 
             _logger.LogInfo($"Returning {scoredSpeedDates.Count} recommended speed dating events for UserId: {request.UserId}");

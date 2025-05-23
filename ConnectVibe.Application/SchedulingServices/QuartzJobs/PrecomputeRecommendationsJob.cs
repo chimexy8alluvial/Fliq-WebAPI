@@ -115,9 +115,10 @@ namespace Fliq.Application.SchedulingServices.QuartzJobs
                             {
                                 UserId = userId,
                                 RecommendationType = RecommendationType.Event.ToString(),
-                                EventId = evt.Id,
+                                EventId = evt.Event.Id,
                                 ComputedAt = DateTime.UtcNow,
-                                IsActive = true
+                                IsActive = true,
+                                Score = evt.Score
                             });
                         }
                         _logger.LogInfo($"Computed {eventRecommendations.Value.Count} event recommendations for user {userId}");
@@ -136,9 +137,10 @@ namespace Fliq.Application.SchedulingServices.QuartzJobs
                             {
                                 UserId = userId,
                                 RecommendationType = RecommendationType.BlindDate.ToString(),
-                                BlindDateId = bd.Id,
+                                BlindDateId = bd.BlindDate.Id,
                                 ComputedAt = DateTime.UtcNow,
-                                IsActive = true
+                                IsActive = true,
+                                Score = bd.Score
                             });
                         }
                         _logger.LogInfo($"Computed {blindDateRecommendations.Value.Count} blind date recommendations for user {userId}");
@@ -157,9 +159,10 @@ namespace Fliq.Application.SchedulingServices.QuartzJobs
                             {
                                 UserId = userId,
                                 RecommendationType = RecommendationType.SpeedDate.ToString(),
-                                SpeedDatingEventId = sd.Id,
+                                SpeedDatingEventId = sd.SpeedDate.Id,
                                 ComputedAt = DateTime.UtcNow,
-                                IsActive = true
+                                IsActive = true,
+                                Score = sd.Score
                             });
                         }
                         _logger.LogInfo($"Computed {speedDateRecommendations.Value.Count} speed date recommendations for user {userId}");

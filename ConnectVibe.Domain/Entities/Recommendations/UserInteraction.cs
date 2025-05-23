@@ -12,7 +12,7 @@ namespace Fliq.Domain.Entities.Recommendations
 
         public InteractionType Type { get; set; } // View, Like, RSVP, Attend
 
-        // The entity being interacted with (one of these will be non-null)
+        // The entity being interacted with (one of these will be non-null for every record)
         public int? EventId { get; set; }
         public Events? Event { get; set; }
 
