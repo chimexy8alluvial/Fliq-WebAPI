@@ -10,6 +10,7 @@ namespace Fliq.Domain.Entities.HelpAndSupport
         public string RequesterName { get; set; } = default!;
         public HelpRequestType RequestType { get; set; }
         public HelpRequestStatus RequestStatus { get; set; }
+        public int IssueId { get; set; }
         public List<HelpMessage> Messages { get; set; } = new List<HelpMessage>();
     }
 }
