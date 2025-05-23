@@ -52,12 +52,11 @@ namespace Fliq.Application.Event.Commands.EventCreation
         private readonly IEventService _eventService;
         private readonly IEmailService _emailService;
         private readonly IMediator _mediator;
-        private readonly ICurrencyRepository _currencyRepository;
         private readonly IProfileRepository _profileRepository;
         private const string _eventDocument = "Event Documents";
 
         public CreateEventCommandHandler(IMapper mapper, ILoggerManager logger, IUserRepository userRepository,
-            IMediaServices mediaServices, IEventRepository eventRepository, ILocationService locationService, IEventService eventService, IEmailService emailService, IMediator mediator, ICurrencyRepository currencyRepository, IProfileRepository profileRepository)
+            IMediaServices mediaServices, IEventRepository eventRepository, ILocationService locationService, IEventService eventService, IEmailService emailService, IMediator mediator, IProfileRepository profileRepository)
         {
             _mapper = mapper;
             _logger = logger;
@@ -68,7 +67,6 @@ namespace Fliq.Application.Event.Commands.EventCreation
             _eventService = eventService;
             _emailService = emailService;
             _mediator = mediator;
-            _currencyRepository = currencyRepository;
             _profileRepository = profileRepository;
         }
 

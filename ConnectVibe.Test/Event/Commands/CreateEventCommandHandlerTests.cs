@@ -31,7 +31,6 @@ namespace Fliq.Test.Event.Commands
         private Mock<IEventService>? _eventServiceMock;
         private Mock<IEmailService>? _emailServiceMock;
         private Mock<IMediator>? _mediatorMock;
-        private Mock<ICurrencyRepository>? _currencyRepositoryMock;
         private Mock<IProfileRepository>? _profileRepositoryMock;
 
         private CreateEventCommandHandler? _handler;
@@ -48,7 +47,6 @@ namespace Fliq.Test.Event.Commands
             _eventServiceMock = new Mock<IEventService>();
             _emailServiceMock = new Mock<IEmailService>();
             _mediatorMock = new Mock<IMediator>();
-            _currencyRepositoryMock = new Mock<ICurrencyRepository>();
             _profileRepositoryMock = new Mock<IProfileRepository>();
 
             _handler = new CreateEventCommandHandler(
@@ -61,7 +59,6 @@ namespace Fliq.Test.Event.Commands
                 _eventServiceMock.Object,
                 _emailServiceMock.Object,
                 _mediatorMock.Object,
-                _currencyRepositoryMock.Object,
                 _profileRepositoryMock.Object
             );
         }
