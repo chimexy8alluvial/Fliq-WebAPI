@@ -32,6 +32,7 @@ namespace Fliq.Application.Common.Interfaces.Persistence
          int? minRating,
          PaginationRequest pagination);
 
+        Task<IEnumerable<Events>> GetUpcomingByAgeRange(int age);
 
         //Count Queries
         Task<int> CountAllEvents();

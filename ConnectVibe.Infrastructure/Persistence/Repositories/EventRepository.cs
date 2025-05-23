@@ -7,8 +7,10 @@ using Fliq.Contracts.Explore;
 using Fliq.Domain.Entities.Event;
 using Fliq.Domain.Entities.Event.Enums;
 using Fliq.Domain.Entities.Profile;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Data;
+using System.Threading;
 
 namespace Fliq.Infrastructure.Persistence.Repositories
 {
@@ -204,6 +206,19 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                 var count = await connection.QueryFirstOrDefaultAsync<int>("sp_CountAllSponsoredEvents", commandType: CommandType.StoredProcedure);
                 return count;
             }
+        }
+
+        public async Task<IEnumerable<Events>> GetUpcomingByAgeRange(int age)
+        {
+            return await _dbContext.Events
+               .Include(e => e.Location)
+               .Include(e => e.Reviews)
+               .Where(e =>
+                   e.StartDate > DateTime.Now &&
+                   e.MinAge <= age &&
+                   e.MaxAge >= age &&
+                   e.Status == EventStatus.Upcoming)
+               .ToListAsync();
         }
 
         #endregion

@@ -5,6 +5,7 @@ using Fliq.Application.Common.Interfaces.Persistence;
 using Fliq.Domain.Entities.DatingEnvironment;
 using Fliq.Domain.Entities.DatingEnvironment.BlindDates;
 using Fliq.Domain.Entities.Event.Enums;
+using Fliq.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Data.Common;
@@ -151,6 +152,16 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                     return (list, totalCount);
                 }
             }
+        }
+
+        public async Task<IEnumerable<BlindDate>> GetUpcomingBlindDates()
+        {
+            return await _dbContext.BlindDates
+                .Where(b => !b.IsDeleted && b.StartDateTime > DateTime.UtcNow && b.Status == DateStatus.Pending)
+                .Include(b => b.BlindDateCategory)
+                .Include(b => b.Location)
+                .Include(b => b.Participants)
+                .ToListAsync();
         }
     }
 }

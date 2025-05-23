@@ -152,5 +152,14 @@ namespace Fliq.Infrastructure.Persistence.Repositories
                 }
             }
         }
+
+        public async Task<IEnumerable<SpeedDatingEvent>> GetUpcomingSpeedDatingEvents()
+        {
+            return await _dbContext.SpeedDatingEvents
+                .Where(b => b.StartTime > DateTime.UtcNow && !b.IsDeleted)
+                .Include(b => b.Location)
+                .Include(b => b.Participants)
+                .ToListAsync();
+        }
     }
 }

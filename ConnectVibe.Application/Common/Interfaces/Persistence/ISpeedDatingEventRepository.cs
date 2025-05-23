@@ -20,5 +20,8 @@ namespace Fliq.Infrastructure.Persistence.Repositories
         Task<int> GetSpeedDateCountAsync();
         Task<int> DeleteMultipleAsync(List<int> speedDatingId);
         Task<(List<DatingListItems> List, int speedCount)> GetAllFilteredListAsync(string Title, DatingType? Type, TimeSpan? Duration, string SubscriptionType, DateTime? dateCreatedFrom, DateTime? dateCreatedTo, string CreatedBy, int Page, int PageSize);
+
+        // Add the missing method definition  
+        Task<IEnumerable<SpeedDatingEvent>> GetUpcomingSpeedDatingEvents();
     }
 }

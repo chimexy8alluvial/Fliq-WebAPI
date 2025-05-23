@@ -16,6 +16,7 @@ namespace Fliq.Application.Common.Interfaces.Persistence
         User? GetUserById(int Id);
         User? GetUserByIdIncludingProfile(int Id);
         Task<List<User>> GetInactiveUsersAsync(DateTime thresholdDate);
+        Task<List<User>> GetActiveUsersInBatchAsync(DateTime thresholdDate, int batchSize);
         Task<ErrorOr<ProfileDataTablesResponse>> GetAllProfileSetupData(CancellationToken cancellationToken);
         Task<IEnumerable<UsersTableListResult>> GetAllUsersByRoleIdAsync(int roleId, int pageNumber, int pageSize);
 

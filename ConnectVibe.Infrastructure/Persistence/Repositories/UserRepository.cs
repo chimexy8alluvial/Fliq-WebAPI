@@ -84,6 +84,18 @@ namespace Fliq.Infrastructure.Persistence.Repositories
             }
         }
 
+        public async Task<List<User>> GetActiveUsersInBatchAsync(DateTime thresholdDate, int batchSize)
+        {
+            using (var connection = _connectionFactory.CreateConnection())
+            {
+                var sql = "sp_GetActiveUsersInBatch";
+                var parameter = new { ThresholdDate = thresholdDate, BatchSize = batchSize };
+
+                var users = await connection.QueryAsync<User>(sql, parameter, commandType: CommandType.StoredProcedure);
+                return users.ToList();
+            }
+        }
+
         public async Task<IEnumerable<UsersTableListResult>> GetAllUsersByRoleIdAsync(int roleId, int pageNumber, int pageSize)
         {
             using (var connection = _connectionFactory.CreateConnection())

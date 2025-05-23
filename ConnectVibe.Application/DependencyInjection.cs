@@ -1,5 +1,7 @@
 ﻿using Fliq.Application.Common.Behaviours;
+using Fliq.Application.Common.Interfaces.Recommendations;
 using Fliq.Application.Common.Interfaces.UserFeatureActivities;
+using Fliq.Application.Common.Recommendations;
 using Fliq.Application.Common.UserFeatureActivities;
 using FluentValidation;
 using MediatR;
@@ -17,6 +19,7 @@ namespace Fliq.Application
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             services.AddSignalR();
             services.AddScoped<IUserFeatureActivityService, UserFeatureActivityService>();
+            services.AddScoped<IRecommendationCalculator, RecommendationCalculator>();
             return services;
         }
     }
