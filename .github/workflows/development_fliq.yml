@@ -43,11 +43,6 @@ jobs:
         with:
           name: .net-app
       
-      - name: Run EF Core Migrations
-        run: dotnet ef database update --project ./ConnectVibe.Infrastructure --startup-project ./ConnectVibe.Api --configuration Release --connection "$CONNECTION_STRING"
-        env:
-          CONNECTION_STRING: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
-
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
