@@ -53,7 +53,9 @@ jobs:
       - name: Run Database Migrations
         run: |
           dotnet tool install --global dotnet-ef
-          dotnet ef database update --project Fliq.Infrastructure --connection "${{ secrets.AZURE_SQL_CONNECTION_STRING }}"
+          dotnet restore
+          dotnet build
+          dotnet ef database update --project ./Fliq.Infrastructure/Fliq.Infrastructure.csproj --startup-project ./Fliq.WebAPI/Fliq.WebAPI.csproj --connection "${{ secrets.AZURE_SQL_CONNECTION_STRING }}"
         env:
           ASPNETCORE_ENVIRONMENT: Production
 
