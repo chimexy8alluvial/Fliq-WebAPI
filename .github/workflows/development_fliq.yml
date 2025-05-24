@@ -53,10 +53,15 @@ jobs:
       - name: Run Database Migrations
         run: |
           dotnet tool install --global dotnet-ef
-          dir
           dotnet restore
           dotnet build --configuration Release
-          dotnet ef database update --project "Fliq.Infrastructure\Fliq.Infrastructure.csproj" --startup-project "Fliq.WebAPI\Fliq.WebAPI.csproj" --connection "${{ secrets.AZURE_SQL_CONNECTION_STRING }}" --verbose
+          dotnet ef database update `
+            --project "Fliq.Infrastructure\Fliq.Infrastructure.csproj" `
+            --startup-project "Fliq.WebAPI\Fliq.WebAPI.csproj" `
+            --msbuildprojectextensionspath "${{ github.workspace }}\obj" `
+            --connection "${{ secrets.AZURE_SQL_CONNECTION_STRING }}" `
+            --verbose
+        shell: pwsh
         env:
           ASPNETCORE_ENVIRONMENT: Production
 
