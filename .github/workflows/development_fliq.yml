@@ -38,6 +38,13 @@ jobs:
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     
     steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.x'
+          
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
@@ -49,7 +56,7 @@ jobs:
           dotnet ef database update --project Fliq.Infrastructure --connection "${{ secrets.AZURE_SQL_CONNECTION_STRING }}"
         env:
           ASPNETCORE_ENVIRONMENT: Production
-          
+
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
