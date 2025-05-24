@@ -52,19 +52,41 @@ jobs:
       
       - name: Run Database Migrations
         run: |
-          dotnet new tool-manifest
-          dotnet tool install dotnet-ef
-          dotnet add Fliq.Infrastructure/Fliq.Infrastructure.csproj package Microsoft.EntityFrameworkCore.Tools
-          dotnet restore
-          dotnet build --configuration Release
-          $workspace = "${{ github.workspace }}"
-          $infrastructure_path = Join-Path $workspace "Fliq.Infrastructure\Fliq.Infrastructure.csproj"
-          $webapi_path = Join-Path $workspace "Fliq.WebAPI\Fliq.WebAPI.csproj"
-          update-database `
-            --project $infrastructure_path `
-            --startup-project $webapi_path `
-            --connection "${{ secrets.AZURE_SQL_CONNECTION_STRING }}" `
-            --verbose
+          # Create migration script
+          $migrationScript = @'
+          using Microsoft.EntityFrameworkCore;
+          using Fliq.Infrastructure.Data;
+          using Microsoft.Extensions.Configuration;
+
+          var configuration = new ConfigurationBuilder()
+              .AddJsonFile("appsettings.json")
+              .AddEnvironmentVariables()
+              .Build();
+
+          var connectionString = args[0];
+          
+          var optionsBuilder = new DbContextOptionsBuilder<FliqDbContext>();
+          optionsBuilder.UseSqlServer(connectionString);
+
+          using (var context = new FliqDbContext(optionsBuilder.Options))
+          {
+              context.Database.Migrate();
+          }
+          '@
+
+          # Save script to file
+          Set-Content -Path "migrate.cs" -Value $migrationScript
+
+          # Run the migration script
+          dotnet new console -n Migration
+          Move-Item -Path "migrate.cs" -Destination "Migration/Program.cs" -Force
+          dotnet add Migration/Migration.csproj reference Fliq.Infrastructure/Fliq.Infrastructure.csproj
+          dotnet add Migration/Migration.csproj package Microsoft.EntityFrameworkCore.SqlServer
+          dotnet add Migration/Migration.csproj package Microsoft.Extensions.Configuration.Json
+          dotnet add Migration/Migration.csproj package Microsoft.Extensions.Configuration.EnvironmentVariables
+          
+          dotnet build Migration/Migration.csproj
+          dotnet run --project Migration/Migration.csproj -- "${{ secrets.AZURE_SQL_CONNECTION_STRING }}"
         shell: pwsh
         env:
           ASPNETCORE_ENVIRONMENT: Production
