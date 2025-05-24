@@ -52,13 +52,17 @@ jobs:
       
       - name: Run Database Migrations
         run: |
-          dotnet tool install --global dotnet-ef
+          dotnet new tool-manifest
+          dotnet tool install dotnet-ef
+          dotnet add Fliq.Infrastructure/Fliq.Infrastructure.csproj package Microsoft.EntityFrameworkCore.Tools
           dotnet restore
           dotnet build --configuration Release
+          $workspace = "${{ github.workspace }}"
+          $infrastructure_path = Join-Path $workspace "Fliq.Infrastructure\Fliq.Infrastructure.csproj"
+          $webapi_path = Join-Path $workspace "Fliq.WebAPI\Fliq.WebAPI.csproj"
           dotnet ef database update `
-            --project "Fliq.Infrastructure\Fliq.Infrastructure.csproj" `
-            --startup-project "Fliq.WebAPI\Fliq.WebAPI.csproj" `
-            --msbuildprojectextensionspath "${{ github.workspace }}\obj" `
+            --project $infrastructure_path `
+            --startup-project $webapi_path `
             --connection "${{ secrets.AZURE_SQL_CONNECTION_STRING }}" `
             --verbose
         shell: pwsh
