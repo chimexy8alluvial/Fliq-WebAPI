@@ -52,67 +52,22 @@ jobs:
       
       - name: Run Database Migrations
         run: |
-          # Create migration script
-          $migrationScript = @'
-          using System;
-          using Microsoft.EntityFrameworkCore;
-          using Microsoft.Extensions.Configuration;
-          using System.IO;
+          dotnet tool install --global dotnet-ef
           
-          namespace MigrationTool
-          {
-              public class Program
-              {
-                  public static void Main(string[] args)
-                  {
-                      var connectionString = args[0];
-                      Console.WriteLine("Starting database migration...");
-                      
-                      try 
-                      {
-                          var assembly = typeof(Fliq.Infrastructure.Data.FliqDbContext).Assembly;
-                          var optionsBuilder = new DbContextOptionsBuilder<Fliq.Infrastructure.Data.FliqDbContext>();
-                          optionsBuilder.UseSqlServer(connectionString);
-
-                          using (var context = new Fliq.Infrastructure.Data.FliqDbContext(optionsBuilder.Options))
-                          {
-                              Console.WriteLine("Applying migrations...");
-                              context.Database.Migrate();
-                              Console.WriteLine("Migrations completed successfully.");
-                          }
-                      }
-                      catch (Exception ex)
-                      {
-                          Console.WriteLine($"Error during migration: {ex.Message}");
-                          Console.WriteLine(ex.StackTrace);
-                          throw;
-                      }
-                  }
-              }
-          }
-          '@
-
-          # Save script to file
-          Set-Content -Path "migrate.cs" -Value $migrationScript
-
-          # Run the migration script
-          dotnet new console -n Migration
-          Move-Item -Path "migrate.cs" -Destination "Migration/Program.cs" -Force
+          # List directory contents to verify project structure
+          dir
           
-          # Add all necessary package references
-          dotnet add Migration/Migration.csproj reference Fliq.Infrastructure/Fliq.Infrastructure.csproj
-          dotnet add Migration/Migration.csproj package Microsoft.EntityFrameworkCore.SqlServer
-          dotnet add Migration/Migration.csproj package Microsoft.EntityFrameworkCore.Design
-          dotnet add Migration/Migration.csproj package Microsoft.Extensions.Configuration.Json
-          dotnet add Migration/Migration.csproj package Microsoft.Extensions.Configuration.EnvironmentVariables
+          # Install EF Core tools to the Infrastructure project
+          dotnet add Fliq.Infrastructure/Fliq.Infrastructure.csproj package Microsoft.EntityFrameworkCore.Tools
+          dotnet add Fliq.Infrastructure/Fliq.Infrastructure.csproj package Microsoft.EntityFrameworkCore.Design
           
-          # Build and run with verbose output
-          dotnet build Migration/Migration.csproj --verbosity detailed
-          if ($LASTEXITCODE -eq 0) {
-              dotnet run --project Migration/Migration.csproj -- "${{ secrets.AZURE_SQL_CONNECTION_STRING }}"
-          } else {
-              throw "Build failed"
-          }
+          # Restore and build
+          dotnet restore
+          dotnet build
+          
+          # Run migrations directly on the Infrastructure project
+          cd Fliq.WebAPI
+          dotnet ef database update --project ../Fliq.Infrastructure/Fliq.Infrastructure.csproj --context FliqDbContext --connection "${{ secrets.AZURE_SQL_CONNECTION_STRING }}"
         shell: pwsh
         env:
           ASPNETCORE_ENVIRONMENT: Production
