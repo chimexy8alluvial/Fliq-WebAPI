@@ -60,7 +60,7 @@ jobs:
           $workspace = "${{ github.workspace }}"
           $infrastructure_path = Join-Path $workspace "Fliq.Infrastructure\Fliq.Infrastructure.csproj"
           $webapi_path = Join-Path $workspace "Fliq.WebAPI\Fliq.WebAPI.csproj"
-          dotnet ef database update `
+          update-database `
             --project $infrastructure_path `
             --startup-project $webapi_path `
             --connection "${{ secrets.AZURE_SQL_CONNECTION_STRING }}" `
