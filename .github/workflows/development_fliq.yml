@@ -52,22 +52,28 @@ jobs:
       
       - name: Run Database Migrations
         run: |
-          dotnet tool install --global dotnet-ef
-          
-          # List directory contents to verify project structure
+          Write-Host "Current directory:"
+          pwd
+          Write-Host "`nDirectory contents:"
           dir
           
+          dotnet tool install --global dotnet-ef
+          
           # Install EF Core tools to the Infrastructure project
-          dotnet add Fliq.Infrastructure/Fliq.Infrastructure.csproj package Microsoft.EntityFrameworkCore.Tools
-          dotnet add Fliq.Infrastructure/Fliq.Infrastructure.csproj package Microsoft.EntityFrameworkCore.Design
+          dotnet add "./Fliq.Infrastructure/Fliq.Infrastructure.csproj" package Microsoft.EntityFrameworkCore.Tools
+          dotnet add "./Fliq.Infrastructure/Fliq.Infrastructure.csproj" package Microsoft.EntityFrameworkCore.Design
           
           # Restore and build
           dotnet restore
           dotnet build
           
-          # Run migrations directly on the Infrastructure project
-          cd Fliq.WebAPI
-          dotnet ef database update --project ../Fliq.Infrastructure/Fliq.Infrastructure.csproj --context FliqDbContext --connection "${{ secrets.AZURE_SQL_CONNECTION_STRING }}"
+          # Run migrations from the root directory
+          dotnet ef database update `
+            --project "./Fliq.Infrastructure/Fliq.Infrastructure.csproj" `
+            --startup-project "./Fliq.WebAPI/Fliq.WebAPI.csproj" `
+            --context FliqDbContext `
+            --connection "${{ secrets.AZURE_SQL_CONNECTION_STRING }}" `
+            --verbose
         shell: pwsh
         env:
           ASPNETCORE_ENVIRONMENT: Production
