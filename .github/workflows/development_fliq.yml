@@ -48,5 +48,5 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'fliqapidev'
-          package: ./myapp
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_176841E87CC74A64861DA0C0BBBE6FA0 }}
+          package: .
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
